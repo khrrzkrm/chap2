@@ -1,0 +1,36 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex
+*.bbl
+*.blg
+*.brf
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.pdfsync
+*.alg
+*.loa
+*.thm
+
+# Latexmk and Tectonic
+latexmkrc
+*.xdv
+
+# Temporary files
+*.tmp
+*.bak
+*~
+*.swp
+
+# TeXstudio, TeXShop, Overleaf, etc
+*.synctex(busy)
+*.DS_Store
