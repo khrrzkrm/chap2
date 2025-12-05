@@ -1,0 +1,384 @@
+\usepackage{pdflscape}
+\usepackage{xspace}
+\usepackage{paralist}
+%\usepackage{inparaenum}
+\newcommand{\defn}[1]{\emph{#1}}
+\newcommand{\PAY}{\ensuremath{\mathsf{PAY\_R}}\xspace}
+\newcommand{\PAYF}{\ensuremath{\mathsf{PAY\_F}}\xspace}
+\newcommand{\notifrepair}{\ensuremath{\mathsf{Notif\_R}}}   % tenant repair request (notification)
+\newcommand{\notifterm}{\ensuremath{\mathsf{Notif\_T}}}         % tenant termination notice
+\newcommand{\REPAIR}{\ensuremath{\mathsf{Maint\_P}}}
+\newcommand{\OCC}{\ensuremath{\mathsf{OCC}}\xspace}
+%\newcommand{\OCC}{\ensuremath{\mathsf{OCC}}\xspace}
+\newcommand{\occ}[1]{\OCC^{(#1)}}
+\newcommand{\pay}[1]{\PAY^{(#1)}}
+\newcommand{\payf}[1]{\PAYF^{(#1)}}
+ \newcommand{\Cpayp}[1]{\PAY_{#1}^{+}}
+ \newcommand{\Cpaym}[1]{\PAY_{#1}^{-}}
+ \newcommand{\Coccp}[1]{\OCC_{#1}^{+}}
+ \newcommand{\Coccm}[1]{\OCC_{#1}^{-}}
+ \newcommand{\SigA}[1]{\Sigma^{A}_{#1}} % active-participation (enablers)
+ \newcommand{\SigI}[1]{\Sigma^{I}_{#1}} % interference (blockers)
+\newcommand{\Wordsfin}[1]{#1^{*}}
+\newcommand{\Wordsinf}[1]{#1^{\omega}}
+\newcommand{\Words}[1]{#1^{\le\omega}} % = finite or infinite
+\newcommand{\acta}{\ensuremath{\mathsf{a} \xspace} }
+\newcommand{\Undef}{{\ensuremath{\mathsf{undefined}}\xspace}}
+% Trace meta-notation
+\newcommand{\Tr}[1]{\ensuremath{\mathsf{Tr}(#1)}}
+\newcommand{\pos}[2]{\ensuremath{\mathsf{pos}(#1,#2)}}
+\newcommand{\Live}{\mathsf{Live}}
+\newcommand{\Pref}{\mathsf{Pref}}
+
+\newcommand{\llangle}{\langle\!\langle}
+\newcommand{\rrangle}{\rangle\!\rangle}
+\newcommand{\trig}[2][]{\llangle #1 \rrangle #2 }
+
+\newcommand{\concat}{\circ}
+% Macros for constructs (put in preamble)
+\newcommand{\obl}[2][]{\mathbf{O}_{#1}(#2)}        % obligation
+\newcommand{\frb}[2][]{\mathbf{F}_{#1}(#2)}        % prohibition
+\newcommand{\perm}[2][]{\mathbf{P}_{#1}(#2)}        % permission
+\newcommand{\repit}[1]{\mathbf{Rep}(#1)}             % repetition
+\newcommand{\guard}[2][]{\lceil #1 \rceil #2 }   % guard
+\newcommand{\repair}{\blacktriangleright}          % choice operator
+       
+\newcommand{\strat}{\mathfrak{S}}
+\newcommand{\unlab}{\mathsf{unlab}}
+\newcommand{\unlabone}{\mathsf{unlab}_1}
+\newcommand{\unlabtwo}{\mathsf{unlab}_2}
+%\newcommand{\emptytrace}{\varepsilon}
+\newcommand{\Sig}[1]{\Sigma_{#1}}
+\newcommand{\taumt}{\tau^{\mathrm{mt}}}           % metric-timed word symbol
+\newcommand{\Ik}[1]{I_{#1}}                        % interval I_k
+\newcommand{\Aik}[2]{A^{(#1)}_{#2}}                % A^{(i)}_k
+\newcommand{\AggI}{\mathsf{Agg}_{I}}               % aggregation operator Agg_I
+\newcommand{\wordsets}[1]{(2^{#1})} 
+\newcommand{\trace}[1]{\ensuremath{\langle #1 \rangle \xspace}}
+\newcommand{\emptytrace}{\ensuremath{\trace{-}}}
+%\newcommand{\defn}{\emph}
+\newcommand{\shuffle}{\mathbin{|\!|\!|}}
+%\newcommand{\taumt}{\tau^{\mathrm{mt}}}
+\newcommand{\tault}{\tau^{\mathrm{lt}}}
+\newcommand{\taust}{\tau^{\mathrm{st}}}
+\newcommand{\LT}{\ensuremath{\mathsf{LT}}}
+\newcommand{\erase}{\ensuremath{\mathsf{erase}}}
+\newcommand{\ST}{\ensuremath{\mathsf{ST}}}
+% \newcommand{\obl}{O}
+% \newcommand{\frb}{F}
+% \newcommand{\perm}{P}
+\newcommand\bydef[1]{\xLeftrightarrow{\text{#1}}}
+\newcommand\cDLunmath{c\mathcal{DL}\xspace}
+%\newcommand{\badclass}[1]{\mathrm{BPL}(#1)}\
+\newcommand\cDL{\logic{TACNL}\xspace}
+\newcommand\cdl{\cDL}
+\newcommand{\andd}{~\text{and}~}
+\newcommand{\Rej}{\textit{Rej}}
+\newcommand{\Acc}{\textit{Acc}}
+\newcommand\mydef{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+\newcommand\sat{\models_{\top}}
+\newcommand\viol{\models_{\perp}}
+\newcommand\satt{\models_{\topt}}
+\newcommand\violt{\models_{\bott}}
+
+\newcommand{\presat}{\models_{?}}
+\newcommand{\clossat}{\models_{Cl}}
+
+\newcommand{\postsat}{\models_{\topp}}
+\newcommand{\postviol}{\models_{\botp}}
+
+\newcommand\qsat{\models_{Q,\top}^p}
+\newcommand\qsatv{\models_{Q,\bot}^p}
+\newcommand\qsatun{\models_{Q,?}^p}
+\newcommand\qsatt[1]{\models_{Q}^#1}
+\newcommand\score{\rho}
+%newcommand\guard{\rotatebox[origin=c]{-90}{$\bumpeq$}}
+\newcommand{\sequence}[1]{\ensuremath{\langle #1 \rangle}}
+\newcommand\trans{\tau}
+\newcommand\vtrans{\bar{\tau}}
+\newcommand{\tool}[1]{\ensuremath{\textsl{#1}}\xspace}
+\newcommand{\monadop}[3]{\tool{#1}^{#2}(#3)}
+\newcommand{\dyadop}[5]{\tool{#1}^{#2}(#3\mid^{#4} #5)}
+\newcommand{\dyadopa}[5]{\tool{#1}^{#2}(#3~\|^{#4} #5)}
+\newcommand{\dop}{\tool{dop}}
+\newcommand{\mt}[1]{$#1$}
+\newcommand{\dotcup}{\mathbin{\dot\cup}}
+
+\newcommand{\topt}{\top^t}
+\newcommand{\bott}{\bot^t}
+\newcommand{\topp}{\top^p}
+\newcommand{\botp}{\bot^p}
+\newcommand{\bottp}[1]{\mathbin{\bot^{t}_{#1}}} 
+\newcommand{\botpp}[1]{\mathbin{\bot^{p}_{#1}}}
+\newcommand{\bottone}{\bottp{1}}
+\newcommand{\botttwo}{\bottp{2}}
+\newcommand{\botttwelve}{\bottp{1,2}}
+
+
+
+\newcommand{\BindFiveRegions}[1]{%
+  \begingroup
+  \def\Llocal{#1}%
+  \xdef\PreDef{\noexpand\Pre{\Llocal} := \noexpand\closureclass{\noexpand\minlang{\Llocal}}\setminus \noexpand\minlang{\Llocal}}%
+  \xdef\EADef{\noexpand\EAL{\Llocal} := \noexpand\minlang{\Llocal}}%
+  \xdef\ERDef{\noexpand\ERL{\Llocal} := \noexpand\sbad{\Llocal}}%
+  \endgroup
+}
+% (Use text to state the equalities; LaTeX macro assignment of sets is for readability.)
+
+% --- Five-valued semantics bracket ---
+\newcommand{\semfive}[1]{\left\llbracket #1 \right\rrbracket_{5}}
+
+\newcommand{\Pre}[1]{\mathsf{Pre}\!\left(#1\right)}   % pre-eager verdict
+\newcommand{\EAL}[1]{\mathsf{EA}\!\left(#1\right)}    % eager acceptance
+\newcommand{\ERL}[1]{\mathsf{ER}\!\left(#1\right)}    % eager rejection
+\newcommand{\IALs}[1]{\IAL{#1}}                        % irrelevant acceptance (already defined)
+\newcommand{\IRLs}[1]{\IRL{#1}}     
+%duty relation
+\newcommand{\dutysat}{\ensuremath{\vDash_D }\xspace}
+%right relation
+\newcommand{\rightsat}{\ensuremath{\vDash_R}\xspace}
+%pointed violation
+\newcommand{\dutyviol}{\ensuremath{\nvDash_D}\xspace}
+%duty violation
+\newcommand{\minviol}{\vDash_D^{\tool{viol}}}
+%pointed satisfaction
+\newcommand{\minsat}{\vDash_D^{\tool{sat}}}
+%if mathmode
+\newcommand{\ift}{\text{if \xspace}}
+%then mathmode
+\newcommand{\thent}{\text{ then \xspace}}
+%else mathmode
+\newcommand{\elset}{\text{ else \xspace}}
+%generic monad obligation 
+\newcommand{\monadob}{\ensuremath{\monadop{O}{\is}{a}}}
+%generic monad prohibition 
+\newcommand{\monadf}{\ensuremath{\monadop{F}{\is}{a}}}
+%generic monad strict permission
+\newcommand{\monadsp}{\ensuremath{\monadop{SP}{\is}{a}}}
+%generic monad obligation permission
+\newcommand{\monadp}{\ensuremath{\monadop{P}{\is}{a}}}
+%generic absolute dyadic obligation 
+\newcommand{\abdyadob}{\ensuremath{\dyadopa{O}{\is}{a}{R}{b}}}
+%generic absolute dyadic prohibition
+\newcommand{\abdyadf}{\ensuremath{\dyadopa{F}{\is}{a}{R}{b}}}
+%generic absolute dyadic strict obligation
+\newcommand{\abdyadsp}{\ensuremath{\dyadopa{SP}{\is}{a}{R}{b}}}
+%generic absolute dyadic permission
+\newcommand{\abdyadp}{\ensuremath{\dyadopa{P}{\is}{a}{R}{b}}}
+
+
+\newcommand{\timedevents}{\ensuremath{\Sigma \times \mathbb{N}}}
+\newcommand{\timedist}{\ensuremath{\mathsf{tdist}}}
+
+
+%generic relative dyadic obligation 
+\newcommand{\dyadob}{\ensuremath{\dyadop{O}{\is}{a}{R}{b}}}
+%generic relative dyadic prohibition
+\newcommand{\dyadf}{\ensuremath{\dyadop{F}{\is}{a}{R}{b}}}
+%generic relative dyadic strict obligation
+\newcommand{\dyadsp}{\ensuremath{\dyadop{SP}{\is}{a}{R}{b}}}
+%generic relative dyadic permission
+\newcommand{\dyadp}{\ensuremath{\dyadop{P}{\is}{a}{R}{b}}}
+\newcommand{\phid}{\ensuremath{\phi_d}}
+\newcommand{\phir}{\ensuremath{\phi_r}}
+
+\newcommand{\DOP}[1]{\ensuremath{\norm{DOP}}_#1}
+\newcommand{\nc}{\norm{NC}}
+\newcommand{\ns}{\norm{NS}}
+\newcommand{\NS}{\mathcal{NS}}
+\newcommand{\size}[1]{\vert #1\vert}
+\newcommand{\n}{\norm{N}}
+\newcommand{\oplusl}{\vec{\oplus}}
+\newcommand{\tmin}{t_{min}}
+\newcommand{\tmax}{t_{max}}
+\newcommand{\occisarg}[2]{\ensuremath{\mathsf{tp}(w,#1,#2)}}
+\newcommand{\occisa}{\ensuremath{\mathsf{tp}(w,\is,a)}}
+\newcommand{\mtp}{\ensuremath{\mathsf{mtp}}}
+\newcommand{\cl}{\ensuremath{\mathsf{Cl}}}
+\newcommand{\mtpa}{\ensuremath{\mathsf{mtp}(w,\is,a)}}
+\newcommand{\mtpb}{\ensuremath{\mathsf{mtp}(w,\is,b)}}
+\newcommand{\occis}{\ensuremath{\mathsf{tp}}}
+\newcommand{\occisb}{\ensuremath{\mathsf{tp}(w,\is,b)}}
+\newcommand{\pref}{\ensuremath{\mathsf{pre}}}
+\newcommand{\DC}{\ensuremath{\mathsf{NC}}}
+\newcommand{\suff}{\ensuremath{\mathsf{suf}}}
+\newcommand{\ntd}{\ensuremath{\mathsf{NTD}}}
+\newcommand{\synth}{\ensuremath{\mathsf{synthetize}}}
+\newcommand{\tcst}{\ensuremath{\mathsf{Tcstr}}}
+\newcommand{\psts}{\ensuremath{\mathsf{psts}}}
+\newcommand{\maxpush}{\ensuremath{\union^{m}}}
+\newcommand{\cst}{\ensuremath{\mathsf{cstr}}}
+\newcommand{\cstp}{\ensuremath{\mathsf{CstrC}}}
+\newcommand{\remin}{\ensuremath{\mathsf{rem}}}
+% \newcommand{\bottp}[1]{\mathbin{\bot^{t}_{#1}}}    % tight violation blamed on agent set #1 ∈ {1,2,1,2}
+% \newcommand{\botpp}[1]{\mathbin{\bot^{p}_{#1}}}    % post violation blamed on agent set #1
+\newcommand{\barp}{\overline{p}}    
+
+\newcommand{\opx}{\ensuremath{~\mathsf{op}}~}
+\newcommand{\bad}{\ensuremath{\mathsf{Mbad}}}
+\newcommand{\tblamemon}{\ensuremath{\mathcal{M}_{11}}}
+\newcommand{\tmon}{\ensuremath{\mathcal{M}^{TS}}}
+\newcommand{\tsmc}{\ensuremath{\mathsf{TSMC}}}
+\newcommand{\regmon}{\ensuremath{\mathsf{RTM}}}
+\newcommand{\occisam}{\ensuremath{w_{min}(\is,a)}}
+\newcommand{\inset}{\bigvee_{I \in \is} I}
+\newcommand{\gpre}{\ensuremath{\mathsf{gpre}(w,\nc) \xspace}\xspace}
+\newcommand{\bpre}{\ensuremath{\mathsf{bpre}(w,\nc) \xspace}\xspace}
+\newcommand{\gprearg}[1]{\ensuremath{\mathsf{gpre}(w,#1) \xspace}}
+\newcommand{\bprearg}[1]{\ensuremath{\mathsf{bpre}(w,#1) \xspace}}
+\newcommand{\usat}{\ensuremath{\mathsf{U-sat} \xspace}}
+\newcommand{\satext}{\ensuremath{\mathsf{sat} \xspace}}
+\newcommand{\unsat}{\ensuremath{\mathsf{unsat} \xspace}}
+\newcommand{\mintau}{\tau_{min}}
+\newcommand{\tNFA}{\ensuremath{\mathsf{2NFA}}\xspace}
+% Automata macros (inserted if not already defined)
+\newcommand{\NFA}{\ensuremath{\mathsf{NFA}}\xspace}
+\newcommand{\DFA}{\ensuremath{\mathsf{DFA}}\xspace}
+\newcommand{\aut}{\ensuremath{\mathcal{A}}\xspace}
+\newcommand{\autre}{\ensuremath{\mathsf{A}_{re}}\xspace}
+\newcommand{\autrep}{\ensuremath{\mathsf{A}_{re}}\xspace}
+\newcommand{\autrec}[1]{\ensuremath{\mathsf{A}_{#1}}\xspace}
+\newcommand{\primdos}{{\prime\prime}}
+\newcommand{\trigg}{\text{trig}}
+\newcommand{\guardd}{\text{guard}}
+\newcommand{\nrep}{\text{frep}}
+\newcommand{\omga}{\ensuremath{\omega}}
+%Logics
+\newcommand{\logic}[1]{\ensuremath{\mathsf{#1}}\xspace}
+\newcommand{\TDDL}{\logic{MTNL}}
+\newcommand{\LTL}{\logic{LTL}}
+\newcommand{\LDL}{\logic{LDL}}
+\newcommand{\CTL}{\logic{CTL}}
+\newcommand{\DL}{\logic{DL}}
+\newcommand{\STIT}{\logic{STIT}}
+\newcommand{\TDDLfm}{\logic{FMMTNL}}
+\newcommand{\TDDLm}{\ensuremath{\logic{MTNL^{m}}~}}
+\newcommand{\IO}{\logic{I/O Logic}}
+\newcommand{\DDL}{{\ensuremath{\mathsf{DDL}}}\xspace}
+\newcommand{\CTD}{{\ensuremath{\mathsf{CTD}}}\xspace} 
+%norms
+\newcommand{\tightverdicts}{\ensuremath{\mathbb{V}_5} \xspace}
+
+%bad language
+%\newcommand{\badclass}[1]{\llbracket #1 \rrbracket_{BL}}
+% === Core symbols ===
+\newcommand{\re}{\ensuremath{\mathsf{re}}}
+\newcommand{\modelsre}{\ensuremath{\models_{\re}}}
+
+% === Language-of (for a regexp or an automaton) ===
+% Use \Lang(\cdot) for "language of ...", avoid \lang vs \class collision.
+\newcommand{\Lang}[1]{\mathcal{L}\!\left(#1\right)}
+
+% === Language operators on sets of words ===
+% Prefix-closure and bad-prefix
+\newcommand{\closureclass}[1]{\operatorname{\mathsf{PCl}}\!\left(#1\right)}
+\newcommand{\badclass}[1]{\operatorname{\mathsf{BPl}}\!\left(#1\right)} % Bad Prefix language
+
+\newcommand{\ECl}{\mathrm{ECl}}
+
+% Minimal elements of a language
+\newcommand{\minlang}[1]{\operatorname{\mathsf{Min}}\!\left(#1\right)}
+
+% Three derived regions (make them proper operators with 1 arg)
+\newcommand{\IAL}[1]{\operatorname{\mathsf{IAL}}\!\left(#1\right)} % Irrelevant Acceptance Language
+\newcommand{\sbad}[1]{\operatorname{\mathsf{SBad}}\!\left(#1\right)} % Strict Bad frontier
+\newcommand{\IRL}[1]{\operatorname{\mathsf{IRL}}\!\left(#1\right)} % Irrelevant Rejection Language
+
+% Complement of a set (works for languages too)
+\newcommand{\cclass}[1]{\overline{#1}}
+
+% === Automaton builders (keep separate from language operators) ===
+\newcommand{\badc}[1]{\mathsf{BP}\!\left(#1\right)}     % automaton for bad-prefix
+\newcommand{\minc}[1]{\mathsf{MinAut}\!\left(#1\right)} % automaton for minimal language
+
+% === Optional nicknames for regions (labels, not operators) ===
+\newcommand{\EAP}{\ensuremath{\mathsf{EAP}}} % eager acceptance (alias for \minlang{L} when labeling figures)
+\newcommand{\ERP}{\ensuremath{\mathsf{ERP}}} % eager rejection (alias for \sbad{L} when labeling figures)
+
+
+% Prefix closure language
+%\newcommand{\closureclass}[1]{\mathrm{PCL}(#1)}
+\newcommand{\closure}[1]{\mathsf{PC}(#1)}
+\newcommand{\cclosureclass}[1]{\overline{\mathrm{PCL}(#1)}}
+
+% Bad language
+%\newcommand{\badclass}[1]{\mathrm{BL}(#1)}
+%tight language
+\newcommand{\tightclass}[1]{\ensuremath{\llbracket #1 \rrbracket_{TL}}}
+\newcommand{\dutyclass}[1]{\ensuremath{\llbracket #1 \rrbracket_D}}
+\newcommand{\dutyclassts}[1]{\ensuremath{\llbracket #1 \rrbracket_D^{sat}}}
+\newcommand{\dutyclasstv}[1]{\ensuremath{\llbracket #1 \rrbracket_D^{viol}}}
+\newcommand{\dutyclassb}[1]{\overline{\llbracket #1 \rrbracket}_D}
+\newcommand{\envclass}[1]{\ensuremath{\llbracket #1 \rrbracket_{env}}}
+\newcommand{\rightclass}[1]{
+	\ensuremath{\llbracket #1 \rrbracket_R}}
+	
+\newcommand{\regex}{\ensuremath{re}}
+\newcommand{\is}{\ensuremath{\mathfrak{I}}}
+\newcommand{\norm}[1]{\ensuremath{\mathtt{#1}}}
+\newcommand{\nd}{\text{ and }}
+\newcommand{\sor}{\text{ or }}
+\newcommand{\ob}{\ensuremath{\tool{O}}}
+\newcommand{\pe}{\ensuremath{\tool{P}}}
+\newcommand{\pr}{\ensuremath{\tool{F}}}
+\newcommand{\opi}{\ensuremath{\tool{O}_\pi}}
+\newcommand{\oar}{\ensuremath{\tool{O}_r}}
+\newcommand{\popi}{\ensuremath{\tool{PO}_\pi}}
+\newcommand{\pstar}{\ensuremath{\tool{P}_*}}
+\newcommand{\pst}{\ensuremath{\tool{O,P}}}
+\newcommand{\seqe}{ ~;\!\!;}
+\newcommand{\seqc}{ ~;}
+\newcommand{\dts}{\logic{DTS}}
+%\newcommand{\rtddl}{\tool{DTDDL}}
+\newcommand{\rtddl}{\tool{TDDL}}
+\newcommand{\satframe}[1]{\|#1\|_{sat}}
+\newcommand{\projection}[1]{\Theta(#1)}
+
+\newcommand{\subin}{~\underline{\in}~}
+\newcommand{\uniw}{\ensuremath{2^\mathbb{I}}}
+
+\newcommand{\boxalignfigure}[5]{%
+	\begin{figure}[htbp] % Define a figure environment
+		\centering
+		\setlength{\fboxsep}{1pt} % Adjust padding between box and content
+		\fbox{%
+			\vbox{% Use \vbox to reduce vertical space
+				#4 % Adjust this value to control space before the first line
+				\hbox{%
+					\begin{minipage}{\textwidth}
+						#1 % Insert the align content
+					\end{minipage}%
+				}%
+				#4
+			}%
+		}
+		\caption{#2} % Insert the caption provided as the second argument
+		\label{#3} % Insert the label provided as the third argument
+	\end{figure}
+}
+
+%\newcommand{\or}{\text{ or }}
+
+%\newcommand{\bs}{\ensuremath{\backslash}}
+\newcommand{\modif}[1]{{#1}\xspace}
+\newcommand{\SA}{\ensuremath{\mathsf{SA}}}
+\newcommand{\agt}{\ensuremath{\mathsf{agt}}}
+\newcommand{\synctr}{\ensuremath{\pi_{\mathsf{sync}}}}
+\newcommand{\sync}{\mathbin{||}}
+\newcommand{\Reach}{\mathsf{Reach}}
+\newcommand{\eg}{\textit{e.g.}\xspace}
+\newcommand{\ie}{\textit{i.e.}\xspace}
+%\newcommand{\etc}{\textit{etc.}\xspace}
+\newcommand{\cf}{\textit{cf.}\xspace}
+\newcommand{\dbot}{%
+  \mathrel{\ooalign{%
+    $\bot$\cr
+    \hidewidth\raise.22ex\hbox{\rule{.8em}{.1ex}}\hidewidth\cr
+  }}}
+
+  %\newcommand{\tblamemon}{\ensuremath{\mathcal{M}_{11}}}
+  %\newcommand{\tmon}{\ensuremath{\mathcal{M}^{TS}}}
+  %\newcommand{\tsmc}{\ensuremath{\mathsf{TSMC}}}
+  \newcommand{\bmc}{\ensuremath{\mathsf{BMC}}}
+ % \newcommand{\regmon}{\ensuremath{\mathsf{RTM}}}

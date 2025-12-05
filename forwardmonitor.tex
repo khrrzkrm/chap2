@@ -1,0 +1,292 @@
+\subsection{Forward-looking blaming semantics}
+The tight semantics of \cDL identifies when a contract is satisfied or violated but does not explain \emph{who} caused a violation.  
+To attribute responsibility, we refine the violation verdicts according to which party failed to meet the corresponding normative requirement.  
+We break down tight and post violations into violations caused by agent 1, violations caused by agent 2, violations caused jointly by both, and violations where neither party is responsible (blameless cases).  
+Formally, we introduce tight violation verdicts
+\[
+\bottone,\quad \bottp{2},\quad \bottp{12},\quad \bottp{0},
+\]
+and their post violation counterparts
+\[
+\botpp{1},\quad \botpp{2},\quad \botpp{12},\quad \botpp{0}.
+\]
+By replacing the undifferentiated violation verdicts of the five-valued semantics with these responsibility-aware variants, and keeping the three non-violating verdicts \(\mathsf{?},\topt,\topp\), we obtain the forward looking blame eleven-valued semantics
+\[
+\mathbb{V}_{11}
+    = \{\mathsf{?},\topt,\topp\}
+      \cup \{\bot^{t}_{S},\bot^{p}_{S}\mid S\in\{0,1,2,12\}\}.
+\]
+This refined judgement structure allows the monitors constructed in the next section to pinpoint the agents responsible for each contractual breach.
+
+\subsubsection{Blame rules for literals}
+\begin{definition}[Blame assignment for literals]
+Let $p\in\{1,2\}$ be the main subject of the norm and let $\barp$ denote the other party.
+Let $\trace{A}$ be a single-step word with $A\in\Gamma$. We write $a^{(i)}\in A$ when party $i$ attempts $a$ in this step.
+
+\paragraph{Obligation \(\obl[p]{a}\).}
+Violation occurs if and only if the joint execution does not happen. Blame principle:
+if the subject does not attempt, blame the subject; otherwise, blame the other party for not cooperating:
+\[
+\begin{aligned}
+\trace{A}\ \vDash_{\bottp{p}}\ \obl[p]{a} \;&\mydef\; a^{(p)}\notin A,\\
+\trace{A}\ \vDash_{\bottp{\barp}}\ \obl[p]{a} \;&\mydef\; a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
+\end{aligned}
+\]
+These two cases partition tight violation of $\obl[p]{a}$.
+
+\paragraph{Prohibition \(\frb[p]{a}\).}
+Violation requires the joint act to occur. Since the subject should refrain, blame the subject:
+\[
+\trace{A}\ \vDash_{\bottp{p}}\ \frb[p]{a}\ \;\mydef\;\ \{a^{(1)}, a^{(2)}\}\subseteq A.
+\]
+If only one agent attempts the action, it does not violate a prohibition, so no other possible blame arises. An agent cannot be blamed for a prohibition that was not assigned to it.
+
+\paragraph{Power \(\perm[p]{a}\).}
+Blame occurs only when the subject of the power attempts and the other party withholds cooperation and the blame goes to the other party:
+\[
+\trace{A}\ \vDash_{\bottp{\barp}}\ \perm[p]{a}\ \;\mydef\;\ a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
+\]
+
+\paragraph{Units: Valid ($\top$) and invalid ($\bot$).}
+\(\lnot(\trace{A}\vDash_{\bottp{S}}\top)\) for all $S$.  
+\(\trace{A}\vDash_{\bottp{0}}\bot\) by convention (unsatisfiable literal with no party subject).
+
+\paragraph{Post violation (prefix closure of blame).}
+Tight blame persists to extensions, and post blame is exactly “some earlier tight blame”:
+\[
+\trace{A}\ \vDash_{\bottp{S}}\ \ell\ \Longrightarrow\ 
+\forall\,\pi\ne\varepsilon:\ \trace{A}\pi\ \vDash_{\botpp{S}}\ \ell,
+\qquad
+\pi\ \vDash_{\botpp{S}}\ \ell\ \Longleftrightarrow\ \exists\,j<|\pi|:\ \pi[0,j]\ \vDash_{\bottp{S}}\ \ell.
+\]
+\end{definition}
+
+\paragraph{Why no joint blame at the literal level.}
+Each literal is decided on a single step and the only responsibility split is between the subject and the other party:
+either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\) (or empty for \(\bot\)), never \(\{1,2\}\).
+
+\begin{example}[Obligation, prohibition, and power blame]
+By fixing $p=1$, $\barp=2$. Consider the following letters $A\in\Gamma$:
+
+\smallskip
+\noindent\emph{Obligation \(\obl[1]{a}\).}
+\[
+\begin{array}{lcl}
+A=\emptyset: & \trace{A}\ \vDash_{\bottp{1}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
+A=\{a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{1}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
+A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{2}}\ \obl[1]{a} & \text{(other party did not cooperate)}\\
+A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(joint execution present).}
+\end{array}
+\]
+
+\noindent\emph{Prohibition \(\frb[1]{a}\).}
+\[
+\begin{array}{lcl}
+A=\{a^{(1)},a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{1}}\ \frb[1]{a} & \text{(subject should have refrained)}\\
+A=\{a^{(1)}\} \quad: & \text{no violation} & \text{The prohibited action was not successful}
+\end{array}
+\]
+
+\noindent\emph{Power \(\perm[1]{a}\).}
+\[
+\begin{array}{lcl}
+A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{2}}\ \perm[1]{a} & \text{(subject asked, other party withheld)}\\
+A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(properly supported)}\\
+A\in\{\emptyset,\{a^{(2)}\}\}: & \text{no violation} & \text{(no unsupported subject attempt).}
+\end{array}
+\]
+\end{example}
+
+\paragraph{No joint blame at the literal level.}
+Each literal is decided on a single step and the only responsibility split is between the subject and the other party:
+either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\), never \(\{1,2\}\).
+\subsubsection{Blame propagation in contracts}
+\paragraph{Conjunction.}
+For $S \subseteq\{1, 2\}$ of agent(s), and a two contract $C$ and $C'$ from \cDL and a synchronous trace $\pi$, blame is defined for the conjunction $C \wedge C'$ is defined as:
+\[
+\pi\ \vDash_{\bottp{S}}\ (C\wedge C') \;\iff\;
+\begin{cases}
+\pi\ \vDash_{\bottp{S}}\ C \ \nd\ \pi \vDash_{\dbot} C',\\[2pt]
+\pi\ \vDash_{\bottp{S}}\ C' \ \nd\ \pi \vDash_{\dbot} C,\\[2pt]
+\pi\ \vDash_{\bottp{S_1}}\ C\ \nd\ \pi\ \vDash_{\bottp{S_2}}\ C' \text{ with } S=S_1\cup S_2.
+\end{cases}
+\]
+Where $\dbot \in \{\,?,\ \topp,\ \topt\,\}$\\
+\emph{Intuition.}
+The three cases summarize the possible outcomes that results from the forward-looking blame.
+The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contract could be violated on the same time point, in this case the agent or agents responsible for \emph{both simoultanous} violation gets the blame.
+
+For the rest of the operators,  blame  follows a similar definition as the tight violation, with $k \in [0, \size{\pi}]$:
+
+\paragraph{Sequence.}
+For \(S\subseteq\{1,2\}\), contracts \(C,C'\) in \cDL, and a synchronous trace \(\pi\):
+\[
+\pi\ \vDash_{\bottp{S}}\ (C;C') \;\iff\;
+\begin{cases}
+\pi\ \vDash_{\bottp{S}}\ C,\\[2pt]
+\pi_k\ \vDash_{\topt} \ C \ \nd\ \pi^{k+1}\ \vDash_{\bottp{S}}\ C'.
+\end{cases}
+\]
+\emph{Intuition.} The first decisive failure before \(C\) has tightly succeeded belongs to \(C\), so its blame propagates. Once \(C\) has tightly succeeded (\(\topt\)) or is in post-success (\(\topp\)), only \(C'\) can still fail, so the blame comes from \(C'\). There is no tie, since \(C'\) becomes active only after \(C\) has tightly succeeded.
+
+\paragraph{Reparation.}
+For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) is defined as:
+\[
+\pi\ \vDash_{\bottp{S}}\ (C\repair C')
+\;\iff\;
+\exists\,k\ \text{such that}\ 
+\pi[0,k]\ \vDash_{\bott}\ C
+\ \nd\
+\pi[k{+}1,|\pi|]\ \vDash_{\bottp{S}}\ C'.
+\]
+\emph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\) therefore corresponds to the agents responsible for the violation of the reparation \(C'\) once it is triggered. The blame for $C$ is not considered as one cares only for the overall violation of the combined contracts.
+
+
+\begin{example}[Witness traces for all blame verdicts]
+We use $\Sigma_C=\{\PAY,\PAYF,\OCC\}$ and letters $A_t\subseteq\Gamma$ with agent tags $\cdot^{(1)},\cdot^{(2)}$.
+Recall
+\[
+C_2' := \perm[1]{\OCC}\ ;\ \perm[1]{\OCC},\qquad
+C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
+\]
+
+
+\medskip
+\noindent\textbf{Tight blame for agent 1 }
+\[
+\pi_1=\langle A_0\rangle,\quad A_0=\{\OCC^{(1)}\}
+\]
+Here $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdict are:
+\begin{itemize}
+\item The tenant (1) gets blamed for violating the obligation to pay rent:\\ $\pi_1 \vDash_{\bottp{1}} \obl[1]{\PAY}.$. 
+\item The landlord (2) gets blamed for violating the power of the tenant to occupy the flat:\\
+$\pi_1 \vDash_{\bottp{2}} \perm[1]{\PAY}$.
+\end{itemize}
+But the specification allows for the reparation $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$. So consequently, no tight violation can be diagnosed at $T=1$:\\
+$\pi_1 \presat \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.$
+Consequently, only the landlord gets the blame for the overall specification:
+\[\pi_1 \vDash_{\bottp{2}} C_2' \wedge C_3.\]
+
+Moreover, consider the trace of  $\pi_2:= \trace{\{\OCC^{(1)}\}, \{\OCC^{(1)}\}}$, the extension of $\pi_1$ with the same event, as the blame is forward and tight looking, the blame is still assigned only to agent $2$ (landlord) as he/she is responsible for the the first violation.
+
+Let us consider instead the following trace $\pi_3:=\trace{A_0',A_1}$ with $A_0':= \{\OCC^{(1)}, \OCC^{(2)}\} $ and $A_1:= \{\OCC^{1}\}$.
+
+Here:
+\begin{itemize}
+\item The landlord gets the blame at $T=2$ for violating the power of the tenant to occupy the flat on the second month:\\
+$\pi_3 \vDash_{\bottp{2}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
+\item The tenant gets the blame for failing to pay the rent and paying the fine
+\\ $\pi_3 \vDash_{\bottp{1}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF} $.
+\end{itemize}
+\end{example}
+\subsection{From Tight Contract Satisfaction Monitor to tight Blame Monitor}
+
+\begin{definition}[Blame refinement of a contract monitor]
+  \label{def:bm-refinement}
+  Let $\mathcal{M}(C)=(Q,\Gamma,\delta,q_0,\lambda)$ be the five-valued Moore monitor for contract $C$, with outputs in $\mathbb{V}_5 = \{\mathsf{?},\topt,\bott,\topp,\botp\}$.
+  
+  The \emph{tight blame monitor} $\mathcal{BM}(C)$ is constructed by retaining the control structure of $\mathcal{M}(C)$ while refining the violation outputs to pinpoint responsibility. Formally:
+  \[
+  \mathcal{BM}(C) = (Q,\Gamma,\delta,q_0,\lambda^{\mathcal{BM}}),
+  \]
+  where the new output function $\lambda^{\mathcal{BM}}: Q \to \mathbb{V}_{11}$ is defined for every state $q \in Q$ (reached by some trace $\pi$) as follows:
+  
+  \[
+  \lambda^{\mathcal{BM}}(q) = 
+  \begin{cases}
+    % Non-violating cases remain identical
+    \lambda(q) & \text{if } \lambda(q) \in \{\mathsf{?},\ \topt,\ \topp\}, \\[8pt]
+    
+    % Tight Violation Split
+    \bottp{S} & \text{if } \lambda(q) = \bott \text{ and } \pi \vDash_{\bottp{S}} C, \\[8pt]
+    
+    % Post Violation Split
+    \botpp{S} & \text{if } \lambda(q) = \botp \text{ and } \pi \vDash_{\botpp{S}} C.
+  \end{cases}
+  \]
+  
+  This transformation effectively partitions the set of generic violation states into disjoint subsets of blamed states:
+  \begin{itemize}
+      \item The tight violation states are split: $\{q \mid \lambda(q)=\bott\} = \bigcup_{S} \{q \mid \lambda^{\mathcal{BM}}(q)=\bottp{S}\}$,
+      \item The post violation states are split: $\{q \mid \lambda(q)=\botp\} = \bigcup_{S} \{q \mid \lambda^{\mathcal{BM}}(q)=\botpp{S}\}$.
+  \end{itemize}
+  \end{definition}
+
+% \paragraph{Lifting contract verdicts to blame verdicts.}
+% Intuitively, refines the five-valued verdicts of the tight contract monitor by attaching a blame set to every violating region. The three non-violating outcomes,
+% \[
+% \mathsf{?},\quad \topt,\quad \topp,
+% \]
+% are kept unchanged. Whenever the tight semantics reaches a tight violation at some prefix, the corresponding state in $\mathcal{BM}$ outputs a symbol of the form $\bot^t_S$ where $S\in\{\{1\},\{2\},\{1,2\},\emptyset\}$ specifies who is responsible. Likewise, every post-violation region is labeled by some $\bot^p_S$.
+
+% Formally, let $\vDash_{\bottp{S}}$ and $\vDash_{\botpp{S}}$ be the denotational blame judgements introduced above. For a finite trace $\pi$ and prefix index $k<|\pi|$, define the \emph{ideal} blame verdict
+% \[
+% \mathsf{Blame}_C\big(\pi[0,k]\big) \in \mathbb{V}_{11}
+% \]
+% as follows:
+% \[
+% \mathsf{Blame}_C\big(\pi[0,k]\big) =
+% \begin{cases}
+% \mathsf{?} 
+% & \text{if }\pi[0,k]\ \presat\ C,\\[4pt]
+% \topt 
+% & \text{if }\pi[0,k]\ \satt\ C,\\[4pt]
+% \topp 
+% & \text{if }\pi[0,k]\ \postsat\ C,\\[4pt]
+% \bot^t_S 
+% & \text{if }\pi[0,k]\ \vDash_{\bottp{S}} C,\\[4pt]
+% \bot^p_S 
+% & \text{if }\pi[0,k]\ \vDash_{\botpp{S}} C.
+% \end{cases}
+% \]
+% By construction of the five-way semantics and the blame rules, exactly one of these cases applies to each prefix, and the set $S$ is uniquely determined whenever a blame judgement holds.
+
+% \begin{definition}[Blame refinement of a contract monitor]
+% \label{def:bm-refinement}
+% Let $\mathcal{M}(C)=(Q,\Gamma,\delta,q_0,\lambda^{\mathcal{M}})$ be the five-valued Moore monitor for $C$, with outputs in $\{\mathsf{?},\topt,\bott,\topp,\botp\}$. The blame monitor $\mathcal{BM}(C)$ is obtained by keeping the same control structure and refining the outputs:
+% \[
+% \mathcal{BM}(C) = (Q,\Gamma,\delta,q_0,\lambda^{\mathcal{BM}}),
+% \]
+% where for every state $q\in Q$ and every trace $\pi$ whose run reaches $q$ at prefix index $k$,
+% \[
+% \lambda^{\mathcal{BM}}(q) := \mathsf{Blame}_C\big(\pi[0,k]\big).
+% \]
+% Equivalently, $\lambda^{\mathcal{BM}}$ is the unique function $\lambda:Q\to\mathbb{V}_{11}$ that agrees with $\mathsf{Blame}_C$ on every reachable state.
+% \end{definition}
+
+% Since Moore machines are deterministic, each finite trace $\pi$ induces a unique run
+% \[
+% q_0,q_1,\dots,q_k,\dots
+% \]
+% and therefore a unique output sequence
+% \[
+% \lambda^{\mathcal{BM}}(q_0),\lambda^{\mathcal{BM}}(q_1),\dots
+% \]
+% which coincides with the prefix-wise denotational blame verdicts.
+
+% \begin{theorem}[Correctness of the blame monitor]
+% \label{thm:bm-correct}
+% Let $C$ be a contract in \cDL, and let $\mathcal{BM}(C)$ be its blame Moore monitor. For every finite trace $\pi$ and every prefix index $k<|\pi|$, if the run of $\mathcal{BM}(C)$ on $\pi$ is
+% \[
+% q_0,q_1,\dots,q_k,
+% \]
+% then
+% \[
+% \lambda^{\mathcal{BM}}(q_k) = \mathsf{Blame}_C\big(\pi[0,k]\big).
+% \]
+% In particular:
+% \begin{itemize}
+%   \item $\lambda^{\mathcal{BM}}(q_k)\in\{\mathsf{?},\topt,\topp\}$  
+%   iff $\pi[0,k]\in\{\presat,\satt,\postsat\}$ for $C$,
+%   \item $\lambda^{\mathcal{BM}}(q_k)=\bot^t_S$  
+%   iff $\pi[0,k]\ \vDash_{\bottp{S}} C$,
+%   \item $\lambda^{\mathcal{BM}}(q_k)=\bot^p_S$  
+%   iff $\pi[0,k]\ \vDash_{\botpp{S}} C$.
+% \end{itemize}
+% \end{theorem}
+
+% \begin{proof}[Proof sketch]
+% Correctness of $\mathcal{M}(C)$ with respect to the five-valued semantics has already been established for all constructors. The blame rules for literals and contract operators are defined by structural recursion on $C$ and share the same tight frontiers as the underlying violation semantics. By Lemma~\ref{lem:mutual prefix}, each prefix carries at most one tight frontier and the five regions are disjoint. The inductive clauses for blame propagation mirror the violation clauses, so for every reachable state $q_k$ on the run over $\pi$, the contract semantics assigns a unique verdict in $\mathbb{V}_{11}$ to the prefix $\pi[0,k]$. By Definition~\ref{def:bm-refinement}, $\lambda^{\mathcal{BM}}(q_k)$ is exactly that verdict. The statement follows by induction on the structure of $C$ and on the length of $\pi$.
+% \end{proof}
+
+% The blame monitor thus provides a concrete, prefix-based implementation of the forward-looking blame semantics. It reads the same synchronous trace as the tight satisfaction monitor, but instead of only declaring whether $C$ is satisfied or violated, it refines every violation region with a precise allocation of responsibility to the involved agents.
