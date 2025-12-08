@@ -150,3 +150,18 @@
 \contentsline {paragraph}{Inductive Step: Sequence.}{85}{section*.113}%
 \contentsline {paragraph}{Inductive Step: Reparation.}{85}{section*.114}%
 \contentsline {subsection}{\numberline {8.5}Conclusion and Limitation}{86}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Quantitative Violation Semantics}{88}{section.9}%
+\contentsline {paragraph}{Motivation for Quantitative Semantics.}{88}{section*.118}%
+\contentsline {paragraph}{Determining the Scope of Quantification.}{88}{section*.119}%
+\contentsline {paragraph}{Section Plan.}{89}{section*.120}%
+\contentsline {subsection}{\numberline {9.1}Contract Progress Monitor}{89}{subsection.9.1}%
+\contentsline {paragraph}{Literals.}{90}{section*.121}%
+\contentsline {paragraph}{Conjunction.}{90}{section*.122}%
+\contentsline {paragraph}{Sequence.}{90}{section*.123}%
+\contentsline {paragraph}{Reparation.}{90}{section*.124}%
+\contentsline {paragraph}{Repetition.}{90}{section*.125}%
+\contentsline {paragraph}{Guarded Contract ($\guard [re]{C}$).}{90}{section*.126}%
+\contentsline {paragraph}{Triggered Contract ($\trig [re]{C}$).}{91}{section*.127}%
+\contentsline {paragraph}{Concatenation}{91}{section*.128}%
+\contentsline {paragraph}{Union}{91}{section*.129}%
+\contentsline {paragraph}{Kleene Star}{91}{section*.130}%

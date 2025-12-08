@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1764956528.90963 "main.aux" "main.bbl" "main" 1764956531.1003 0
+["bibtex main"] 1765214897.02882 "main.aux" "main.bbl" "main" 1765215380.50236 0
   "./bibd.bib" 1764763971.20574 53058 f95a45382163f7406622f2c7507bbd7e ""
   "/usr/local/texlive/2024/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "main.aux" 1764956530.85986 47423 f9df0f6f77aa150170e9288d36af9091 "pdflatex"
+  "main.aux" 1765215380.26615 49075 196f8502c22d722c8f58aea9eaaa0c8a "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1764956528.9951 "/Users/krm/Desktop/gits/chap2dissertation/main.tex" "main.pdf" "main" 1764956531.10045 0
-  "/Users/krm/Desktop/gits/chap2dissertation/main.tex" 1764954082.0982 113889 8aadcb8a4c811be01871af13f1a9e30e ""
+["pdflatex"] 1765215378.40645 "/Users/krm/Desktop/gits/chap2/main.tex" "main.pdf" "main" 1765215380.50253 0
+  "/Users/krm/Desktop/gits/chap2/main.tex" 1765199180.71484 113918 7e3d6381de333016cd00107afd17586f ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/adobe/symbol/psyr.tfm" 1136768653 1408 5937f58aa508ea2cea4901c07d10f5fe ""
@@ -283,14 +283,15 @@
   "/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1733415531.03869 5467645 128b85b7cde5f5edc5cb7f1dd7ff8736 ""
   "/usr/local/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1733415451 8221416 e4dc6387cf7942c10ecbad572d566677 ""
   "/usr/local/texlive/2024/texmf.cnf" 1710266656 577 e590dabc9e28c5b61546e15f63eebcdf ""
-  "forwardtight.tex" 1764956526.41379 125689 b6cd405085760c8553495bcf8fa6a4a0 ""
-  "macros.tex" 1764609021.34061 15727 35c4e87ea116e84df4ec1254d560e08a ""
-  "main.aux" 1764956530.85986 47423 f9df0f6f77aa150170e9288d36af9091 "pdflatex"
-  "main.bbl" 1764956528.99212 5835 d2a5e042d4467bbc3b2eee2e8dc7b62b "bibtex main"
-  "main.out" 1764956530.86239 16276 1100e9361a62149e1a3ead7c4b6cb921 "pdflatex"
-  "main.tex" 1764954082.0982 113889 8aadcb8a4c811be01871af13f1a9e30e ""
-  "main.toc" 1764956530.8626 13347 0eac8f8d9fb70af531b6923ab672e69d "pdflatex"
+  "forwardtight.tex" 1765195188.02744 125689 b6cd405085760c8553495bcf8fa6a4a0 ""
+  "macros.tex" 1765195995.81354 15841 b64a88b17fc54f8e04ae373275be2028 ""
+  "main.aux" 1765215380.26615 49075 196f8502c22d722c8f58aea9eaaa0c8a "pdflatex"
+  "main.bbl" 1765214897.10305 5835 d2a5e042d4467bbc3b2eee2e8dc7b62b "bibtex main"
+  "main.out" 1765215380.26876 16675 4f68eb340db68be02bcddc50626ee2bb "pdflatex"
+  "main.tex" 1765199180.71484 113918 7e3d6381de333016cd00107afd17586f ""
+  "main.toc" 1765215380.26895 14384 9d6144c3cc26d7922f91dfd1676baddd "pdflatex"
   "packages.tex" 1764690153.17335 1958 c4be98399c30c00018106f0be51377c2 ""
+  "quantitativeviol.tex" 1765215378.15902 9355 2a765ebfb8512206968cd2b41183cebc ""
   "tightmotivation.tex" 1763768240.33154 40610 9e0575e98e4a07d9fdc3f85f1db817f6 ""
   (generated)
   "main.aux"
