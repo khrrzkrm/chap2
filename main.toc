@@ -162,6 +162,8 @@
 \contentsline {paragraph}{Repetition.}{90}{section*.125}%
 \contentsline {paragraph}{Guarded Contract ($\guard [re]{C}$).}{90}{section*.126}%
 \contentsline {paragraph}{Triggered Contract ($\trig [re]{C}$).}{91}{section*.127}%
-\contentsline {paragraph}{Concatenation}{91}{section*.128}%
-\contentsline {paragraph}{Union}{91}{section*.129}%
-\contentsline {paragraph}{Kleene Star}{91}{section*.130}%
+\contentsline {paragraph}{Atomic regular expressions}{91}{section*.128}%
+\contentsline {paragraph}{Concatenation}{91}{section*.129}%
+\contentsline {paragraph}{Union}{91}{section*.130}%
+\contentsline {paragraph}{n-repition}{91}{section*.131}%
+\contentsline {paragraph}{Operator $+$}{91}{section*.132}%

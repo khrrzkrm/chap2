@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.12.5)  8 DEC 2025 18:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.12.5)  11 DEC 2025 18:33
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1481,16 +1481,17 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [86] [87]) (./quantitativeviol.tex [88] [89]
-Overfull \hbox (8.52383pt too wide) detected at line 64
-[]\OT1/ztmcm/m/n/10 (\OMS/ztmcm/m/n/10 h\OML/ztmcm/m/it/10 A\OMS/ztmcm/m/n/10 i\OML/ztmcm/m/it/10 ; C[]\OT1/ztmcm/m/n/10 ; \OML/ztmcm/m/it/10 C[]\OT1/ztmcm/m/n/10 ) = []
+Overfull \hbox (14.08362pt too wide) detected at line 64
+[]\OT1/ztmcm/m/n/10 (\OMS/ztmcm/m/n/10 h\OML/ztmcm/m/it/10 A\OMS/ztmcm/m/n/10 i\OML/ztmcm/m/it/10 ; C[]\OT1/ztmcm/m/n/10 ; \OML/ztmcm/m/it/10 C[]\OT1/ztmcm/m/n/10 ) := []
  []
 
-
-Overfull \hbox (4.08643pt too wide) in paragraph at lines 86--87
- []\OT1/ptm/b/n/10 Guarded Con-tract ($\OMS/ztmcm/m/n/10 d\OML/ztmcm/m/it/10 re\OMS/ztmcm/m/n/10 e\OML/ztmcm/m/it/10 C$\OT1/ptm/b/n/10 ).[] \OT1/ptm/m/it/10 The guard re-stricts $\OML/ztmcm/m/it/10 C$ \OT1/ptm/m/it/10 to hold only while the trace matches
+[90] [91]
+Overfull \hbox (2.79999pt too wide) in paragraph at lines 229--229
+ [][] 
  []
 
-[90]) (./main.bbl [91] [92]) [93] (./main.aux)
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 236.
+) (./main.bbl [92] [93]) [94] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -1504,18 +1505,18 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 4F68EB340DB68BE02BCDDC50626EE2BB;16675.
  ) 
 Here is how much of TeX's memory you used:
- 36084 strings out of 474116
- 716310 string characters out of 5743682
+ 36177 strings out of 474116
+ 717987 string characters out of 5743682
  1967187 words of memory out of 5000000
- 57281 multiletter control sequences out of 15000+600000
+ 57368 multiletter control sequences out of 15000+600000
  647664 words of font info for 240 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  115i,20n,110p,1323b,1424s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/rsfs/rsfs10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/stmaryrd/stmary10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (93 pages, 570341 bytes).
+Output written on main.pdf (94 pages, 574308 bytes).
 PDF statistics:
- 1406 PDF objects out of 1440 (max. 8388607)
- 1239 compressed objects within 13 object streams
- 464 named destinations out of 1000 (max. 500000)
+ 1418 PDF objects out of 1440 (max. 8388607)
+ 1250 compressed objects within 13 object streams
+ 470 named destinations out of 1000 (max. 500000)
  621 words of extra memory for PDF output out of 10000 (max. 10000000)
 

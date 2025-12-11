@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1765214897.02882 "main.aux" "main.bbl" "main" 1765215380.50236 0
-  "./bibd.bib" 1764763971.20574 53058 f95a45382163f7406622f2c7507bbd7e ""
+["bibtex main"] 1765474395.95304 "main.aux" "main.bbl" "main" 1765474398.03549 0
+  "./bibd.bib" 1765284705.92494 52840 3195b94cf751733e750942f9fdd1a9d9 ""
   "/usr/local/texlive/2024/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "main.aux" 1765215380.26615 49075 196f8502c22d722c8f58aea9eaaa0c8a "pdflatex"
+  "main.aux" 1765474397.81739 50177 85adfecfbbddbf2b257475b9ea0febe0 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1765215378.40645 "/Users/krm/Desktop/gits/chap2/main.tex" "main.pdf" "main" 1765215380.50253 0
-  "/Users/krm/Desktop/gits/chap2/main.tex" 1765199180.71484 113918 7e3d6381de333016cd00107afd17586f ""
+["pdflatex"] 1765474396.041 "/Users/krm/Desktop/gits/chap2/main.tex" "main.pdf" "main" 1765474398.03565 0
+  "/Users/krm/Desktop/gits/chap2/main.tex" 1765284554.31947 113914 410a259a03b2adb3b8afb0176261f127 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/adobe/symbol/psyr.tfm" 1136768653 1408 5937f58aa508ea2cea4901c07d10f5fe ""
@@ -285,13 +285,13 @@
   "/usr/local/texlive/2024/texmf.cnf" 1710266656 577 e590dabc9e28c5b61546e15f63eebcdf ""
   "forwardtight.tex" 1765195188.02744 125689 b6cd405085760c8553495bcf8fa6a4a0 ""
   "macros.tex" 1765195995.81354 15841 b64a88b17fc54f8e04ae373275be2028 ""
-  "main.aux" 1765215380.26615 49075 196f8502c22d722c8f58aea9eaaa0c8a "pdflatex"
-  "main.bbl" 1765214897.10305 5835 d2a5e042d4467bbc3b2eee2e8dc7b62b "bibtex main"
-  "main.out" 1765215380.26876 16675 4f68eb340db68be02bcddc50626ee2bb "pdflatex"
-  "main.tex" 1765199180.71484 113918 7e3d6381de333016cd00107afd17586f ""
-  "main.toc" 1765215380.26895 14384 9d6144c3cc26d7922f91dfd1676baddd "pdflatex"
+  "main.aux" 1765474397.81739 50177 85adfecfbbddbf2b257475b9ea0febe0 "pdflatex"
+  "main.bbl" 1765474396.03774 5670 e8a98a7473ddc561b0d9831dafade3dd "bibtex main"
+  "main.out" 1765474397.82 16675 4f68eb340db68be02bcddc50626ee2bb "pdflatex"
+  "main.tex" 1765284554.31947 113914 410a259a03b2adb3b8afb0176261f127 ""
+  "main.toc" 1765474397.82022 14515 35d62fb5da01b633e8627f6e86ac8c4f "pdflatex"
   "packages.tex" 1764690153.17335 1958 c4be98399c30c00018106f0be51377c2 ""
-  "quantitativeviol.tex" 1765215378.15902 9355 2a765ebfb8512206968cd2b41183cebc ""
+  "quantitativeviol.tex" 1765474393.71093 12952 20a3bb94abdae838d040ee9cf5bad6f0 ""
   "tightmotivation.tex" 1763768240.33154 40610 9e0575e98e4a07d9fdc3f85f1db817f6 ""
   (generated)
   "main.aux"

@@ -1,10 +1,5 @@
 \begin{thebibliography}{10}
 
-\bibitem{alur1994theory}
-Rajeev Alur and David~L. Dill.
-\newblock A theory of timed automata.
-\newblock In {\em Real Time Systems Symposium}, pages 182--193, 1990.
-
 \bibitem{AlurDill94}
 Rajeev Alur and David~L. Dill.
 \newblock A theory of timed automata.

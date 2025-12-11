@@ -37,36 +37,36 @@ The core of the quantitative framework is the ability to track the state of the 
 \begin{definition}[Contract Progression Function]
 Let $\Gamma = 2^\Sigma$ be the event alphabet and let $\mathcal{C}$ be the set of all contracts in \cDL extended with a special symbol $\emptc$. The symbol $\emptc$ signals that all parts of the contract have been enforced before (i.e., the contract is effectively empty or fully processed).
 The progression function $\Prog: \Gamma^* \times \cDL \to \cDL \cup \{\emptc\}$ reduces the formula on the fly following the timed progress on the trace. It takes a finite trace prefix $\pi$ and a contract $C$ and returns the residual contract.
-For the empty trace $\epsilon$, $\Prog(\epsilon, C) = C$.
+For the empty trace $\epsilon$, $\Prog(\epsilon, C) := C$.
 For a single event step $\trace{A}$ with $A \in \Gamma$, the function is defined recursively on the structure of $C$:
 
  \paragraph{Literals.}
  For any literal $\ell$:
  \[
- \Prog(\trace{A}, \ell) = \emptc
+ \Prog(\trace{A}, \ell) := \emptc
  \]
 Whether the literal is satisfied ($\trace{A} \satt \ell$) or violated ($\trace{A} \violt \ell$), it is consumed by the step $A$. The distinction between satisfaction and violation is handled by the quantitative scoring function, not the structural progression.
 
  \paragraph{Conjunction.}
  \[
- \Prog(\trace{A}, C_1 \wedge C_2) = \Prog(\trace{A}, C_1) \wedge \Prog(\trace{A}, C_2)
+ \Prog(\trace{A}, C_1 \wedge C_2) := \Prog(\trace{A}, C_1) \wedge \Prog(\trace{A}, C_2)
  \]
  With the identity: $\emptc \wedge C' \equiv C'$ and $C' \wedge \emptc \equiv C'$.
 
  \paragraph{Sequence.}
  For a sequence $C_1 ; C_2$, the progression depends on whether $C_1$ has been fully discharged (reduced to $\emptc$).
  \[
- \Prog(\trace{A}, C_1 ; C_2) = 
+ \Prog(\trace{A}, C_1 ; C_2) := 
  \begin{cases}
    \Prog(\trace{A}, C_1) ; C_2 & \text{if } \Prog(\trace{A}, C_1) \neq \emptc, \\
-   \Prog(\trace{A}, C_2) & \text{if } \Prog(\trace{A}, C_1) = \emptc \text{ (immediate hand-over)}.
+   \Prog(\trace{A}, C_2) & \text{if } \Prog(\trace{A}, C_1) := \emptc \text{ (immediate hand-over)}.
  \end{cases}
  \]
  Technically, if $C_1$ finishes exactly at step $A$, the residual is $C_2$. If $C_1$ takes multiple steps, we remain in the sequence structure. 
 
  \paragraph{Reparation.}
  \[
- \Prog(\trace{A}, C_1 \repair C_2) = 
+ \Prog(\trace{A}, C_1 \repair C_2) := 
  \begin{cases}
    \Prog(\trace{A}, C_1) \repair C_2 & \text{if } \trace{A} \presat C_1 \text{ (still pending)}, \\
    \Prog(\trace{A}, C_2) & \text{if } \trace{A} \violt C_1 \text{ (failure triggers repair)}, \\
@@ -76,58 +76,161 @@ Whether the literal is satisfied ($\trace{A} \satt \ell$) or violated ($\trace{A
 
  \paragraph{Repetition.}
  \[
- \Prog(\trace{A}, C^n) = \Prog(\trace{A}, C) ; C^{n-1}
+ \Prog(\trace{A}, C^n) := \Prog(\trace{A}, C) ; C^{n-1}
  \]
  \[
- \Prog(\trace{A}, \repit{C}) = \Prog(\trace{A}, C) ; \repit{C}
+ \Prog(\trace{A}, \repit{C}) := \Prog(\trace{A}, C) ; \repit{C}
  \]
 
  \paragraph{Guarded Contract ($\guard[re]{C}$).}
- The guard restricts $C$ to hold only while the trace matches prefixes of $re$. Let $re' = \delta(re, A)$ be the Brzozowski derivative of $re$ with respect to $A$.
+
  \[
- \Prog(\trace{A}, \guard[re]{C}) =
+ \Prog(\trace{A}, \guard[re]{C}) :=
  \begin{cases}
    \emptc & \text{if } \trace{A} \satt \guard[re]{C} , \\
    \guard[\Prog_{re}(re')]{\Prog(\trace{A}, C)} & \text{otherwise (guard continues)}.
  \end{cases}
  \]
- Note: For regular expressions, $\satt re'$ implies $\epsilon \in \Lang(re')$.
+
 
  \paragraph{Triggered Contract ($\trig[re]{C}$).}
- The trigger activates $C$ once $re$ matches. Let $re' = \delta(re, A)$.
+ The trigger activates $C$ once $re$ matches.
  \[
- \Prog(\trace{A}, \trig[re]{C}) =
+ \Prog(\trace{A}, \trig[re]{C}) :=
  \begin{cases}
    \emptc & \text{if } \trace{A} \violt re \text{ (trigger impossible)}, \\
-   C & \text{if } \trace{A} \satt re' \text{ (Trigger fires)}, \\
-   \trig[\Prog_{re}(re)]{C} & \text{if } \trace{A} \presat re.
+   C & \text{if } \trace{A} \satt re \text{ (Trigger fires)}, \\
+   \trig[\Prog_{re}(\trace{A},re)]{C} & \text{if } \trace{A} \presat re.
  \end{cases}
  \]
- Where $\Prog_{re}: 2^\Gamma \times \cDL_{re} \to \cDL_{re} $ is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
- \paragraph{Concatenation}x
+ Where the regular progress function $\Prog_{re}: 2^\Gamma \times \cDL_{re} \to \cDL_{re} $ is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
+ We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon$ 
+ \paragraph{Atomic regular expressions}
+ For a set of actions $A \in \Gamma$ we have:
+$Prog_{re}(\trace{A}, A') := \epsilon.$ 
+  
+ \paragraph{Concatenation}
 For $\re \cdot \re'$, the progression is defined as:
 \[
-\Prog_{re}(A, \re \cdot \re') = \Prog_{re}(A, re) \cdot \re_2
+\Prog_{re}(\trace{A}, \re \cdot \re') := 
+    \Prog_{re}(\trace{A}, re) \cdot re'.
 \]
-\noindent where $\nu(\psi_1) = \epsilon$ if $\epsilon \in \mathcal{L}(\psi_1)$, and $\emptyset$ otherwise.
 
 \paragraph{Union}
-For $\psi = re \mid re'$, the progression is defined by distinguishing cases based on violation:
+For $re \mid re'$, the progression is defined by distinguishing cases based on violation:
 \[
-\Prog_{re}(A, re \mid re') = \begin{cases} 
-\Prog_{re}(A, re') & \text{if } \trace{A} \violt re \\
-\Prog_{re}(A, re) & \text{if } \trace{A} \violt re' \\
-\Prog_{re}(A, re) \mid \Prog_{re}(A, re') & \text{otherwise}
+\Prog_{re}(\trace{A}, re \mid re') := \begin{cases} 
+\Prog_{re}(\trace{A}, re') & \text{if } \trace{A} \violt re ,\\
+\Prog_{re}(\trace{A}, re) & \text{if } \trace{A} \violt re' ,\\
+\Prog_{re}(\trace{A}, re) \mid \Prog_{re}(A, re') & \text{otherwise}.
 \end{cases}
 \]
 
-
-\paragraph{Kleene Star}
-For $\re^*$, the progression is defined as:
+\paragraph{n-repition}
+For $\re^n$, with $n \in \mathbb{N}^*$ the progression is defined as:
 \[
-\Prog_{re}(A, re^*) = \Prog_{re}(A, re) \cdot re^*
+\Prog_{re}(\trace{A}, re^n) := \Prog_{re}(\trace{A},re)\cdot re^{n-1}.
+\]
+
+
+\paragraph{Operator $+$}
+For $\re^+$, the progression is defined as:
+\[
+\Prog_{re}(\trace{A}, re^+) := \Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A},re)\cdot re^+.
+\]
+
+Moving up for the special case of single event traces, for $\pi = \trace{A} \circ \pi'$ with
+$A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix. Then:
+\[
+  \Prog(\trace{A} \circ \pi', C) :=
+  \begin{cases}
+    \emptc & \text{if } \Prog(\trace{A}, C) = \emptc, \\[4pt]
+    \Prog\bigl(\pi',\,\Prog(\trace{A}, C)\bigr) & \text{otherwise}.
+  \end{cases}
 \]
 \end{definition}
 
 
-This definition ensures that for any trace $\pi$, $\Prog(\pi, C)$ returns exactly the part of the contract that remains to be enforced in the continuation $\pi'$, filtering out parts that have already been processed (successfully or not).
+
+\begin{lemma}[Termination of Progression Function]
+  \label{lem:prog-termination}
+  For every finite trace prefix $\pi \in \Gamma^*$ and every contract $C$ in \cDL, the progression call $\Prog(\pi, C)$ terminates.  
+  Moreover, it performs at most $\lvert \pi \rvert$ recursive steps on the trace.
+  \end{lemma}
+  
+  \begin{proof}[Proof sketch]
+  For a prefix $\pi = \trace{A} \circ \pi'$, the definition first computes the one-step residual $\Prog(\trace{A}, C)$.  
+  This computation always terminates since it proceeds by structural recursion on strict subparts of~$C$, or yields $\emptc$ directly in the literal case.
+  
+  If $\Prog(\trace{A}, C) = \emptc$, the entire evaluation stops immediately because the residual contract is empty and no further events in $\pi'$ need to be processed.
+  
+  If $\Prog(\trace{A}, C) \neq \emptc$, the progression continues with the suffix $\pi'$.  
+  Since $\pi'$ is strictly shorter than $\trace{A} \circ \pi$, each recursive descent reduces the length of the remaining prefix by exactly one.  
+  
+  Because $\pi$ is finite, at most $\lvert \pi \rvert$ such descents are possible.  
+  The process therefore always terminates, either earlier when the residual becomes $\emptc$, or after consuming the entire prefix.  
+  No infinite recursion can occur.
+  \end{proof}
+
+  \begin{example}[Progression for $C=\repit(\obl{\PAY})$]
+    \label{ex:prog-repit}
+    
+    Consider the contract
+    \[
+      C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
+      \]
+  
+  We study the progress of the function on the first trace, where the first event satisfy the contract:
+  $\pi= \trace{A_1, A_2}$, where:
+  $A_1=\{\PAY^1, \PAY^2\}$, and $A_2=\{\OCC^1\}$. The result is summarized in Fig.\ref{example:prog-repitc}
+    \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
+    \begin{tikzpicture}[y=1.6cm,x=3.0cm]
+    
+      \tikzset{
+        cell/.style={
+          draw, rectangle, text width=26mm,
+          minimum height=7mm, align=center, font=\small
+        }
+      }
+    
+      % Labels
+      \node at (0,0)   {Month $i$};
+      \node at (0,-1)  {Event at i $A_i$};
+      \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+    
+      % Row 1: time
+      \node[cell] at (1,0) (t1) {$1$};
+      \node[cell] at (2,0) (t2) {$2$};
+    
+      % Row 2: events
+      \node[cell] at (1,-1) (e1) {$\{\PAY^{(12)}\}$};
+      \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+    
+      % Row 3: residuals
+      \node[cell] at (1,-2) (r1) {\emptc};
+      \node[cell] at (2,-2) (r2) {$-$};
+    
+      % Arrows
+      \draw (t1)--(t2);
+      \draw (e1)--(e2);
+      \draw (r1)--(r2);
+    
+      % Vertical alignment
+      \draw[dotted](t1.south)--(e1.north);
+      \draw[dotted](e1.south)--(r1.north);
+    
+      \draw[dotted](t2.south)--(e2.north);
+      \draw[dotted](e2.south)--(r2.north);
+    
+    \end{tikzpicture}
+    }}
+    {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which a no reparation is not required}
+    {example:prog-repitc}
+    {\vspace{8pt}}{\vspace{-12pt}}
+
+
+    We study the progress of the function on a second trace $\pi'$, where the first event of this trace does not satisfy the contract:
+    
+
+    \end{example}
+    \todo{regexp norm, repeat}
