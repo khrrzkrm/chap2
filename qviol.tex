@@ -646,6 +646,122 @@ The \emph{Quantitative Monitor Construction} function that returns for a contrac
 % \end{itemize}
 \end{definition}
 
+\begin{example}[Quantitative Monitor for a Guarded Repetition]
+    \label{ex:qmc-guard-repit}
+    We construct (a finite fragment of) the quantitative monitor $\qmc(C)$ for the guarded contract
+    \[
+      C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}},
+      \qquad\text{where }\; C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
+    \]
+    Let $re := \Gamma^+ \cdot \notifterm^{(1)}$.
+    We write $\guard[re]{\repit{C_3}}$ for the guard instance used below.
+    Recall that, by Definition~\ref{def:qmc}, the monitor states are residual contracts and the transition and output functions are
+    \[
+      \delta(q,A) := \Prog(\trace{A},q),
+      \qquad
+      \lambda(q,A) := \qsem{\trace{A},q}.
+    \]
+    
+    \paragraph{Reachable residual states (finite fragment).}
+    For illustration, we restrict to the residuals reached by the events $\PAY^{(12)}$, $\OCC^{(1)}$, $\PAYF^{(12)}$, and $\notifterm^{(1)}$.
+    Let
+    \[
+      q_0 := C,
+      \qquad
+      q_1 := \guard[\notifterm^{(1)} \mid ]{(\obl[1]{\PAYF};\repit{C_3})},
+      \qquad
+      q_2 := \guard[\notifterm^{(1)} \mid ]{\repit{C_3}},
+      q_\epsilon := \emptc.
+    \]
+    Then a representative fragment of $\qmc(C)$ has state set $Q := \{q_0,q_1,q_2,q_\epsilon\}$ and initial state $q_0$.
+    The transition outputs shown on edges are the instantaneous scores $\lambda(q,A) \in \{0,1\}$.
+    For the transitions we have:
+    Starting from $C$ and after computing all cases $\LH(C):= \obl[1]{\PAY} $ and $\Prog{\trace{A}C}$, we obtain the two transitions\\
+    $\delta(q_0, \PAY^{12})= q_2 \qquad \delta(C, \overline{\PAY^{12}})= q_1$\\
+    Focusing on
+    $\delta(q_1, \overline{\PAYF^{12}} \wedge \overline{\notifterm^1})= q_2; \qquad \delta(q_1, \overline{\PAYF^{12}}\wedge \overline{\notifterm^1})= q_2;$\\
+    $\delta(q_2, \PAY^{12} \wedge \notifterm^1)= q_\epsilon \qquad \delta(q_2, \overline{\PAY^{12}}\wedge =\notifterm^1)= q_\epsilon$\\
+    $\delta(q_1, \overline{\PAYF^{12}} \wedge \notifterm^1)=: q_\epsilon; \qquad \delta(q_2, \overline{\PAYF^{12}}\wedge =\notifterm^1)= q_\epsilon.$\\
+
+
+\paragraph{Computing the output $\lambda$.}
+By Definition~\ref{def:qmc} we have $\lambda(q,A):=\qsem{\trace{A},q}$, and by Definition~\ref{def:quant-violation-semantics} the instantaneous score is
+\[
+  \lambda(q,A)=
+  \begin{cases}
+    0, & \text{if } \lnot(\trace{A}\violt\LH(q)) \;\text{or}\; \LH(q)=\epsilon_\ell,\\
+    1, & \text{if } \trace{A}\violt\LH(q).
+  \end{cases}
+\]
+For our residual states, using the definition of $\LH$ and that $re\neq\epsilon$:
+\[
+  \LH(q_0)=\LH(C)=\obl[1]{\PAY},
+  \qquad
+  \LH(q_1)=\obl[1]{\PAYF},
+  \qquad
+  \LH(q_2)=\obl[1]{\PAY},
+  \qquad
+  \LH(q_\epsilon)=\epsilon_\ell.
+\]
+Hence the outputs attached to the representative transitions are:
+\[
+\begin{aligned}
+  &\lambda(q_0,\{\PAY^{(12)}\})=0,\qquad \lambda(q_0,\{\OCC^{(1)}\})=1,\qquad \lambda(q_0,\{\notifterm^{(1)}\})=1,\\
+  &\lambda(q_1,\{\PAYF^{(12)}\})=0,\qquad \lambda(q_1,\{\OCC^{(1)}\})=1,\qquad \lambda(q_1,\{\notifterm^{(1)}\})=1,\\
+  &\lambda(q_2,\{\PAY^{(12)}\})=0,\qquad \lambda(q_2,\{\OCC^{(1)}\})=1,\qquad \lambda(q_2,\{\notifterm^{(1)}\})=1,\\
+  &\lambda(q_\epsilon,A)=0\quad\text{for all }A\in\Gamma.
+\end{aligned}
+\]
+    
+
+
+    
+    \boxalignfigure{{%
+    \centering
+    \begin{tikzpicture}[node distance=32mm, on grid, auto]
+      \tikzset{
+        every node/.style={font=\scriptsize},
+        state/.style={draw, rectangle, rounded corners, align=center, inner sep=3pt},
+        accepting/.style={double}
+      }
+
+      \node[state,initial] (q0) {$\Gamma^+ \cdot \notifterm^{(1)}$\\${\repit{C_3}}$};
+      \node[state, right=7cm of q0] (q2) {$\notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)}$\\${\repit{C_3}}$};
+      \node[state, below=of q0] (q1) {$\notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)}$\\$(\obl[1]{\PAYF};\repit{C_3})$};
+      \node[state, accepting, below =of q2] (qe) {$\emptc$};
+
+      % q0 transitions
+      \path[->]
+        (q0) edge node[left] {$\overline{\PAY^{(12)}}$/\,1} (q1)
+        (q0) edge node {$\PAY^{(12)}$/\,0} (q2)
+       ;
+
+      % q1 transitions
+      \path[->]
+        (q1) edge[bend left =22] node[above,sloped] {$\{\PAYF^{(12)}\}\,/\,0$} (q2)
+        (q1) edge[bend left =8] node[above,sloped] {$(\overline{\PAYF^{(12)}}, \overline{\notifterm})\,/\,1$} (q2)
+        (q1) edge node {$\notifterm^{(1)}, \PAYF{(12)}\,/\,0$} (qe)
+        (q1) edge[bend right =8] node[below]  {$\notifterm^{(1)}, \overline{\PAYF{(12)}}\,/\,1$} (qe);
+       % q1 transitions  
+       \path[->]
+       (q2) edge[loop above] node[align=center]
+{$\overline{\notifterm^{(1)}},\PAY^{(12)}$\\$/\,0$} (q2)
+(q2) edge node[left, align=center] {$\notifterm^{(1)},$\\$\PAY^{(12)}/\,0$} (qe)
+(q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(1)},\PAY{(12)}}\,/\,1$} (q1) 
+        (q2) edge[bend left =20] node  {$\notifterm^{(1)},\overline{\PAY{(12)}}\,/\,1$} (qe);
+    \end{tikzpicture}
+    }}
+    {The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$. States are residual contracts.}
+    {fig:qmc-guard-repit}
+    {\vspace{6pt}}{\vspace{-10pt}}
+    
+    \paragraph{Reading the diagram.}
+    From $q_0$, observing $\OCC^{(1)}$ yields a violation score $1$ and moves to the residual where the fine is due, namely $q_1$.
+    Observing $\PAYF^{(12)}$ from $q_1$ discharges the fine and returns to the repeated primary, hence the transition back to $q_0$ with score $0$.
+    Finally, observing $\notifterm^{(1)}$ completes the guard pattern and discharges the guarded contract to $\emptc$ with score $0$.
+    \end{example}
+    
+
 \begin{theorem}[Correctness of Quantitative Monitor]
 Let $C$ be a contract and $\pi = \trace{A_0, \dots, A_n}$ be a trace.
 Then the cumulative quantitative violation score is exactly the sum of the monitor outputs:
