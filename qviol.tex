@@ -655,63 +655,52 @@ The \emph{Quantitative Monitor Construction} function that returns for a contrac
     \]
     Let $re := \Gamma^+ \cdot \notifterm^{(1)}$.
     We write $\guard[re]{\repit{C_3}}$ for the guard instance used below.
-    Recall that, by Definition~\ref{def:qmc}, the monitor states are residual contracts and the transition and output functions are
+    Starting from the contract contract as the initiat state:
     \[
-      \delta(q,A) := \Prog(\trace{A},q),
-      \qquad
-      \lambda(q,A) := \qsem{\trace{A},q}.
+    q_0 := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}},
     \]
+    the states of the Mealy machine are obtained by exhaustively analyzing which classes of events
+    \(
+    A \in \Gamma
+    \)
+    produce a change in the residual via the progress function
+    \(
+    \Prog(\trace{A},q)
+    \),
+    and by recording the corresponding instantaneous cost
+    \(
+    \qsem{\trace{A},q}.
+    \)
     
-    \paragraph{Reachable residual states (finite fragment).}
-    For illustration, we restrict to the residuals reached by the events $\PAY^{(12)}$, $\OCC^{(1)}$, $\PAYF^{(12)}$, and $\notifterm^{(1)}$.
-    Let
+    From $q_0$, only the satisfaction or violation of the head obligation of $C_3$ can affect progression, since the guard does not discharge until a termination notification occurs. The head of the repetition body is the primary obligation $\obl[1]{\PAY}$. Therefore, two event classes are relevant.
+    
+    If $A \in \PAY^{(12)}$, the primary obligation is satisfied. No violation is incurred, hence
     \[
-      q_0 := C,
-      \qquad
-      q_1 := \guard[\notifterm^{(1)} \mid ]{(\obl[1]{\PAYF};\repit{C_3})},
-      \qquad
-      q_2 := \guard[\notifterm^{(1)} \mid ]{\repit{C_3}},
-      q_\epsilon := \emptc.
+    \qsem{\trace{A},q_0} = 0,
     \]
-    Then a representative fragment of $\qmc(C)$ has state set $Q := \{q_0,q_1,q_2,q_\epsilon\}$ and initial state $q_0$.
-    The transition outputs shown on edges are the instantaneous scores $\lambda(q,A) \in \{0,1\}$.
-    For the transitions we have:
-    Starting from $C$ and after computing all cases $\LH(C):= \obl[1]{\PAY} $ and $\Prog{\trace{A}C}$, we obtain the two transitions\\
-    $\delta(q_0, \PAY^{12})= q_2 \qquad \delta(C, \overline{\PAY^{12}})= q_1$\\
-    Focusing on
-    $\delta(q_1, \overline{\PAYF^{12}} \wedge \overline{\notifterm^1})= q_2; \qquad \delta(q_1, \overline{\PAYF^{12}}\wedge \overline{\notifterm^1})= q_2;$\\
-    $\delta(q_2, \PAY^{12} \wedge \notifterm^1)= q_\epsilon \qquad \delta(q_2, \overline{\PAY^{12}}\wedge =\notifterm^1)= q_\epsilon$\\
-    $\delta(q_1, \overline{\PAYF^{12}} \wedge \notifterm^1)=: q_\epsilon; \qquad \delta(q_2, \overline{\PAYF^{12}}\wedge =\notifterm^1)= q_\epsilon.$\\
-
-
-\paragraph{Computing the output $\lambda$.}
-By Definition~\ref{def:qmc} we have $\lambda(q,A):=\qsem{\trace{A},q}$, and by Definition~\ref{def:quant-violation-semantics} the instantaneous score is
-\[
-  \lambda(q,A)=
-  \begin{cases}
-    0, & \text{if } \lnot(\trace{A}\violt\LH(q)) \;\text{or}\; \LH(q)=\epsilon_\ell,\\
-    1, & \text{if } \trace{A}\violt\LH(q).
-  \end{cases}
-\]
-For our residual states, using the definition of $\LH$ and that $re\neq\epsilon$:
-\[
-  \LH(q_0)=\LH(C)=\obl[1]{\PAY},
-  \qquad
-  \LH(q_1)=\obl[1]{\PAYF},
-  \qquad
-  \LH(q_2)=\obl[1]{\PAY},
-  \qquad
-  \LH(q_\epsilon)=\epsilon_\ell.
-\]
-Hence the outputs attached to the representative transitions are:
-\[
-\begin{aligned}
-  &\lambda(q_0,\{\PAY^{(12)}\})=0,\qquad \lambda(q_0,\{\OCC^{(1)}\})=1,\qquad \lambda(q_0,\{\notifterm^{(1)}\})=1,\\
-  &\lambda(q_1,\{\PAYF^{(12)}\})=0,\qquad \lambda(q_1,\{\OCC^{(1)}\})=1,\qquad \lambda(q_1,\{\notifterm^{(1)}\})=1,\\
-  &\lambda(q_2,\{\PAY^{(12)}\})=0,\qquad \lambda(q_2,\{\OCC^{(1)}\})=1,\qquad \lambda(q_2,\{\notifterm^{(1)}\})=1,\\
-  &\lambda(q_\epsilon,A)=0\quad\text{for all }A\in\Gamma.
-\end{aligned}
-\]
+    and progression consumes the obligation and re-enters the repetition:
+    \[
+    \Prog(\trace{A},q_0) = \repit{C_3}.
+    \]
+    This residual is represented as state $q_2$.
+    
+    If $A \in \overline{\PAY^{(12)}}$, the primary obligation is violated. This yields a unit penalty
+    \[
+    \qsem{\trace{A},q_0} = 1,
+    \]
+    and progression activates the reparation clause, producing the residual
+    \[
+    \Prog(\trace{A},q_0) = \obl[1]{\PAYF};\repit{C_3},
+    \]
+    which is represented as state $q_1$.
+    
+    From $q_1$, the head obligation is now the fine obligation $\obl[1]{\PAYF}$. Again, only events that affect its satisfaction or the guard condition are relevant. If $A \in \PAYF^{(12)}$ and no termination notification occurs, the fine is satisfied with zero cost and progression returns to the repetition residual $q_2$. If $A \in \overline{\PAYF^{(12)}}$ and no termination occurs, the fine is violated, yielding cost $1$, but progression still returns to the repetition, as the fine obligation is consumed after one step.
+    
+    If a termination notification $A \in \notifterm^{(1)}$ occurs in state $q_1$, the guard condition is fulfilled. Progression therefore yields the empty contract $\emptc$, independently of whether the fine is satisfied or violated, while the instantaneous cost is determined by the compliance of the active head obligation at that step.
+    
+    From $q_2$, the repetition phase is stable. Successful payment events $A \in \PAY^{(12)}$ yield zero cost and leave the residual unchanged, resulting in a self-loop. Failed payment events yield a unit penalty and progress back to the fine residual $q_1$. As before, the occurrence of a termination notification immediately discharges the contract to $\emptc$, with the instantaneous cost reflecting whether the payment obligation was satisfied at that final step.
+    
+    Collecting all distinct residuals reachable from $q_0$ under these event classes yields exactly the states and transitions shown in Figure~\ref{fig:qmc-guard-repit}.
     
 
 
@@ -725,41 +714,62 @@ Hence the outputs attached to the representative transitions are:
         accepting/.style={double}
       }
 
-      \node[state,initial] (q0) {$\Gamma^+ \cdot \notifterm^{(1)}$\\${\repit{C_3}}$};
-      \node[state, right=7cm of q0] (q2) {$\notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)}$\\${\repit{C_3}}$};
-      \node[state, below=of q0] (q1) {$\notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)}$\\$(\obl[1]{\PAYF};\repit{C_3})$};
-      \node[state, accepting, below =of q2] (qe) {$\emptc$};
+      \node[state,initial] (q0) {$\lceil \Gamma^+ \cdot \notifterm^{(1)} \rceil $\\${\repit{C_3}}$};
+      \node[state, right=7cm of q0] (q2) {$\lceil \notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)} \rceil$\\${\repit{C_3}}$};
+      \node[state, below=of q0] (q1) {$\lceil \notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)} \rceil$\\$(\obl[1]{\PAYF};\repit{C_3})$};
+      \node[state, below =of q2] (qe) {\qquad$\emptc$ \qquad};
 
       % q0 transitions
       \path[->]
-        (q0) edge node[left] {$\overline{\PAY^{(12)}}$/\,1} (q1)
-        (q0) edge node {$\PAY^{(12)}$/\,0} (q2)
+        (q0) edge  node[left] {$ \overline{\PAY^{(12)}} $/\,1} (q1)
+        (q0) edge [bend left =8]node {$\PAY^{(12)}$/\,0} (q2)
        ;
 
       % q1 transitions
       \path[->]
-        (q1) edge[bend left =22] node[above,sloped] {$\{\PAYF^{(12)}\}\,/\,0$} (q2)
-        (q1) edge[bend left =8] node[above,sloped] {$(\overline{\PAYF^{(12)}}, \overline{\notifterm})\,/\,1$} (q2)
-        (q1) edge node {$\notifterm^{(1)}, \PAYF{(12)}\,/\,0$} (qe)
-        (q1) edge[bend right =8] node[below]  {$\notifterm^{(1)}, \overline{\PAYF{(12)}}\,/\,1$} (qe);
+        (q1) edge[bend left =22] node[above,sloped] {$\PAYF^{(12)} \wedge \overline{\notifterm^{(1)}}\,/\,0$} (q2)
+        (q1) edge[bend left =8] node[above,sloped] {$(\overline{\PAYF^{(12)}} \wedge \overline{\notifterm})\,/\,1$} (q2)
+        (q1) edge node {$\notifterm^{(1)} \wedge \PAYF^{(12)}\,/\,0$} (qe)
+        (q1) edge[bend right =8] node[below]  {$\notifterm^{(1)} \wedge \overline{\PAYF^{(12)}}\,/\,1$} (qe);
        % q1 transitions  
        \path[->]
        (q2) edge[loop above] node[align=center]
-{$\overline{\notifterm^{(1)}},\PAY^{(12)}$\\$/\,0$} (q2)
-(q2) edge node[left, align=center] {$\notifterm^{(1)},$\\$\PAY^{(12)}/\,0$} (qe)
-(q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(1)},\PAY{(12)}}\,/\,1$} (q1) 
-        (q2) edge[bend left =20] node  {$\notifterm^{(1)},\overline{\PAY{(12)}}\,/\,1$} (qe);
+{$\overline{\notifterm^{(1)}} \wedge\PAY^{(12)}$\\$/\,0$} (q2)
+(q2) edge node[left, align=center] {$\notifterm^{(1)} \wedge $\\$\PAY^{(12)}/\,0$} (qe)
+(q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(1)}} \wedge \overline{\PAY^{(12)}}\,/\,1$} (q1) 
+        (q2) edge[bend left =20] node [align=center] {$\notifterm^{(1)} \wedge $\\$\overline{\PAY^{(12)}}/\,1$} (qe);
     \end{tikzpicture}
     }}
-    {The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$. States are residual contracts.}
+    {The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$, with $re:=\Gamma^+ \cdot \notifterm^{(1)} $ and $C_3:= \obl[1]{\PAY} \repair \obl[1]{\PAYF}$. On the transitions:\\
+    $\PAY^{(12)}:=\{A \in \Gamma \mid \{\PAY^{(1)}, \PAY^{(2)}\} \subseteq A\}$ a shorthand for when the payement successfully occured.\\
+    $\notifterm^{(1)}:=\{A \in \Gamma \mid \{\notifterm^{(1)}\} \subseteq A\}$ for agent (1) sending a terminiation notification.\\
+    $ \overline{P}:= \{A \in \Gamma \setminus P\}.$\\
+    $P \wedge Q := \{A \mid A \in P \cap Q\}.$}
     {fig:qmc-guard-repit}
     {\vspace{6pt}}{\vspace{-10pt}}
-    
-    \paragraph{Reading the diagram.}
-    From $q_0$, observing $\OCC^{(1)}$ yields a violation score $1$ and moves to the residual where the fine is due, namely $q_1$.
-    Observing $\PAYF^{(12)}$ from $q_1$ discharges the fine and returns to the repeated primary, hence the transition back to $q_0$ with score $0$.
-    Finally, observing $\notifterm^{(1)}$ completes the guard pattern and discharges the guarded contract to $\emptc$ with score $0$.
-    \end{example}
+
+    We now compute the quantitative execution score for a trace in which the termination notification occurs at the third event.  
+Let
+\[
+\pi = \trace{A_1,A_2,A_3}
+\]
+with $A_1:=\{\PAY^{(1)}, \PAY^{(2)}\}$, $A_2=\{\OCC^{1}\}$, and $A_3:=\{\notifterm^{(1)}, \PAYF^{(12)}\}$.
+
+By inspection of Figure~\ref{fig:qmc-guard-repit} and by Definition~\ref{def:quant-execution-score}, the unique run of $\qmc(C)$ on $\pi$ is
+\[
+q_0 \xrightarrow{A_1/0} q_2 \xrightarrow{A_2/1} q_1 \xrightarrow{A_3/0} \emptc.
+\]
+Therefore, the cumulative quantitative score is
+\[
+\sc(\qmc(C),\pi)
+= \lambda(q_0,A_1) + \lambda(q_2,A_2) + \lambda(q_1,A_3)
+= 0 + 1 + 0
+= 1.
+\]
+
+This shows that although the trace satisfies the guarded contract in the tight semantics due to termination at the third step, the quantitative monitor records the intermediate violation as a persistent cost.
+\end{example}
+
     
 
 \begin{theorem}[Correctness of Quantitative Monitor]
