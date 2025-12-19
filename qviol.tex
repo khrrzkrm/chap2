@@ -1,4 +1,4 @@
-\section{Quantitative violation semantics}
+\subsection{Quantitative violation semantics}
 To define the quantitative violation semantics to not stop at the first violation prefix, we reuse  \emph{Contract Progress function} as the underlying state-transition mechanism.
  The progression function $\Prog$ is utilized to dynamically evolve the contract after every observation, producing a sequence of \emph{residual contracts} that represent the exact normative state at each point in time.
   By updating the contract state step-by-step, we ensure that the violation score for any given event is calculated strictly against the specific literals in force at that moment, accounting for all prior satisfactions, discharges, or triggered reparations. Then propagating the updated residual to the subsequent evaluation step.
@@ -781,8 +781,296 @@ Then the cumulative quantitative violation score is exactly the sum of the monit
 \end{theorem}
 
 \begin{proof}
-The proof follows directly from the definition of $\lambda_{\mathcal{Q}}$ and $\delta$.
-By Definition~\ref{def:quant-monitor}, $\lambda_{\mathcal{Q}}(q, A) = \qsem{A, q}$.
-By the definition of the monitor transition, $q_{i+1} = \Prog(A_i, q_i)$, which matches the residual contract evolution in the definition of $\qsem{}$.
-Thus, summing the outputs of the monitor is equivalent to the recursive summation in Definition~\ref{def:quant-violation-semantics}.
+Let $\pi = \trace{A_0,\dots,A_{n-1}}$ be a finite trace of length $n$.
+Write $q_0 := C$ and, for each $0 \le i < n$, define the unique run of $\qmc(C)$ on $\pi$ by
+\[
+  q_{i+1} := \delta(q_i,A_i) = \Prog(\trace{A_i},q_i).
+\]
+By definition of the monitor output function, for every $i$ we have
+\[
+  \lambda(q_i,A_i) = \qsem{\trace{A_i},q_i}.
+\]
+Hence, by Definition~\ref{def:quant-execution-score},
+\[
+  \qscore(\qmc(C),\pi) 
+  = \sum_{i=0}^{n-1} \lambda(q_i,A_i)
+  = \sum_{i=0}^{n-1} \qsem{\trace{A_i},q_i}.
+\]
+
+It remains to show that $\qsem{\pi,C}$ expands to the same sum.
+We prove by induction on $n$ that
+\[
+  \qsem{\pi,C} = \sum_{i=0}^{n-1} \qsem{\trace{A_i},q_i}.
+\]
+
+\paragraph{Base case ($n=1$).}
+If $\pi = \trace{A_0}$, then by Definition~(Quantitative Violation Semantics)
+\(
+  \qsem{\pi,C} = \qsem{\trace{A_0},C} = \qsem{\trace{A_0},q_0}.
+\)
+This is exactly the required sum.
+
+\paragraph{Inductive step.}
+Assume the claim holds for all traces of length $n$.
+Let $\pi' = \trace{A_0,\dots,A_n}$ be a trace of length $n+1$.
+Unfolding the recursive definition of $\qsem{}$ yields
+\begin{align*}
+  \qsem{\pi',C} &= \qsem{\trace{A_0},C} + \qsem{\trace{A_1,\dots,A_n},\Prog(\trace{A_0},C)}\\
+  &= \qsem{\trace{A_0},q_0} + \qsem{\trace{A_1,\dots,A_n},q_1}.
+\end{align*}
+Applying the induction hypothesis to the suffix trace $\trace{A_1,\dots,A_n}$ with initial contract $q_1$ gives
+\[
+  \qsem{\trace{A_1,\dots,A_n},q_1} = \sum_{i=1}^{n} \qsem{\trace{A_i},q_i}.
+\]
+Therefore,
+\[
+  \qsem{\pi',C} = \qsem{\trace{A_0},q_0} + \sum_{i=1}^{n} \qsem{\trace{A_i},q_i}
+  = \sum_{i=0}^{n} \qsem{\trace{A_i},q_i}.
+\]
+This establishes the inductive claim.
+
+Combining the two displayed equalities, we obtain\\
+\(
+  \qsem{\pi,C} = \sum_{i=0}^{n-1} \qsem{\trace{A_i},q_i} = \qscore(\qmc(C),\pi).
+\)
 \end{proof}
+
+\paragraph{Conclusion of the quantitative monitor construction.}
+The monitor construction $\qmc(C)$ gives a finite, executable representation of the quantitative violation semantics whenever the set of reachable residual contracts under $\Prog$ is finite. Its key benefit is operational: instead of re-evaluating a contract from scratch on each prefix, we track the evolving residual contract as the current state, and we emit a local score via $\lambda(q,A)=\qsem{\trace{A},q}$. The correctness theorem above guarantees that summing these transition-local outputs exactly recovers the trace-level cost $\qsem{\pi,C}$. In the next section we refine this cost into an \emph{attribution} measure by splitting the accumulated score across agents.
+
+\subsection{Quantitative Blame Semantics}
+While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, it does not explain \emph{who} caused the deviation in a multi-agent setting. Quantitative blame addresses this gap by refining each unit violation into an agent-indexed contribution. Concretely, we replace the scalar output alphabet $\mathbb{N}$ by vectors in $\mathbb{N}^2$, where the first component counts violations attributed to agent $1$ and the second counts violations attributed to agent $2$. The definition below mirrors the structure of $\qsem{}$ and reuses the same progress-based unfolding of residual contracts.
+
+\begin{definition}[Quantitative Blame Semantics]
+    \label{def:quant-blame}
+    Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
+    The \emph{quantitative blame semantics} is a function
+    \[
+      \qblame{\cdot} : \Gamma^* \times \cDL \to \mathbb{N}^2
+    \]
+    that maps a trace and a contract to a blame vector $(n_1,n_2)$, where
+    $n_i$ counts the number of violations attributed to agent $i$.
+    
+    The function is defined recursively on the trace structure as follows:
+    \[
+    \qblame{\trace{A}\concat \pi, C} :=
+    \begin{cases}
+      \qblame{\trace{A}, C} 
+        & \text{if } \pi = \epsilon \lor \Prog(\trace{A},C)=\emptc,\\[4pt]
+      \qblame{\trace{A}, C} + \qblame{\pi, \Prog(\trace{A},C)}
+        & \text{otherwise}.
+    \end{cases}
+    \]
+    
+    The \emph{instantaneous quantitative blame} for a single event
+    $\trace{A}$ against a contract $C$ is defined by:
+    \[
+    \qblame{\trace{A}, C} :=
+    \begin{cases}
+      \qblame{\trace{A},C_1} + \qblame{\trace{A},C_2}
+        & \text{if } C = C_1 \wedge C_2, \\[6pt]
+    
+      (1,0)
+        & \text{if } \trace{A} \vDash_{\bottp{1}} \LH(C), \\[4pt]
+    
+      (0,1)
+        & \text{if } \trace{A} \vDash_{\bottp{2}} \LH(C), \\[4pt]
+    
+      (0,0)
+        & \text{otherwise}.
+    \end{cases}
+    \]
+    \end{definition}
+
+\paragraph{Additivity and accumulation.}
+The recursive clause uses the usual component-wise addition on $\mathbb{N}^2$: if an event contributes $(i,j)$ at the current step and the suffix contributes $(k,l)$, then their sum is $(i+k,\,j+l)$. Hence the blame vector accumulated over a trace counts, for each agent separately, how many step-local violations were attributed to that agent along the unique progress-induced run. This mirrors the scalar accumulation in $\qsem{}$, but preserves per-agent accountability.
+
+\paragraph{Why there is no $(1,1)$ case.}
+We do not include a rule for a joint violation vector $(1,1)$ in the defintion of $\qblame{\trace{A}, C}$, such as a hypothetical condition $\trace{A} \vDash_{\bottp{12}} \LH(C)$. This is intentional: for the atomic head literal $\LH(C)$, the blame verdicts used in $\vDash_{\bottp{i}}$ are mutually exclusive in the underlying tight blame semantics, so a single literal cannot be violated by both agents in the same step. When multiple obligations are active concurrently, the conjunction case $C=C_1\wedge C_2$ already captures multiple violations in one step by summing the vectors returned for each component, and this can yield a total vector whose two components are both positive, but only via \emph{distinct} literals.
+
+\begin{example}[Blame Attribution and Quantitative Scores on the Same Traces]
+    We reuse the contracts and traces from the quantitative violation semantics section
+    and evaluate them simultaneously under the forward-looking blame semantics and
+    the quantitative violation score.
+    
+    Recall the contract
+    \[
+    C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF},
+    \]
+    and the permission
+    \[
+    C_2 := \perm[1]{\OCC}.
+    \]
+    
+    \paragraph{Trace $\pi = \trace{A_1,A_2}$ with
+    $A_1=\{\OCC^{(1)}\}$ and $A_2=\{\PAYF^{(12)}\}$.}
+    
+    \emph{Step 1.}
+    The active obligation is $\obl[1]{\PAY}$.
+    Since $A_1$ contains no $\PAY^{(1)}$, the obligation is violated.
+    Under the blame semantics,
+    \[
+    \trace{A_1} \vDash_{\bottp{1}} \obl[1]{\PAY},
+    \]
+    so agent~1 is blamed.
+    Quantitatively,
+    \[
+    \qsem{\trace{A_1}, C_3} = 1.
+    \]
+    Progression activates the reparation:
+    \[
+    \Prog(\trace{A_1}, C_3) = \obl[1]{\PAYF}.
+    \]
+    
+    \emph{Step 2.}
+    The active obligation is now $\obl[1]{\PAYF}$.
+    Since $A_2=\{\PAYF^{(12)}\}$, the obligation is satisfied.
+    No new blame arises and no quantitative penalty is incurred:
+    \[
+    \trace{A_2} \not\vDash_{\bottp{S}} \obl[1]{\PAYF}
+    \quad\text{for all }S,
+    \qquad
+    \qsem{\trace{A_2}, \obl[1]{\PAYF}} = 0.
+    \]
+    
+    \emph{Cumulative result.}
+    The tight semantics yields $\pi \satt C_3$,
+    while blame semantics records a single tight violation by agent~1.
+    The quantitative score is obtained by summation:
+    \[
+    \qsem{\pi, C_3}
+    = \qsem{\trace{A_1}, C_3} + \qsem{\trace{A_2}, \Prog(\trace{A_1},C_3)}
+    = 1 + 0 = 1.
+    \]
+    
+    \paragraph{Trace $\pi'=\trace{A_1}$ with $A_1=\{\OCC^{(1)}\}$.}
+    
+    Consider now the conjunction $C_2 \wedge C_3$.
+    
+    The permission $\perm[1]{\OCC}$ is violated because the subject attempts
+    $\OCC$ without cooperation:
+    \[
+    \trace{A_1} \vDash_{\bottp{2}} \perm[1]{\OCC}.
+    \]
+    Simultaneously, the obligation $\obl[1]{\PAY}$ is violated, yielding
+    \[
+    \trace{A_1} \vDash_{\bottp{1}} \obl[1]{\PAY}.
+    \]
+    Hence, blame semantics assigns joint responsibility:
+    \[
+    \trace{A_1} \vDash_{\bottp{12}} (C_2 \wedge C_3).
+    \]
+    
+    Quantitatively, both conjuncts contribute independently:
+    \[
+    \qsem{\trace{A_1}, C_2 \wedge C_3}
+    = \qsem{\trace{A_1}, C_2} + \qsem{\trace{A_1}, C_3}
+    = 1 + 1 = 2.
+    \]
+    \emph{Quantitative blame.}
+By Definition~\ref{def:quant-blame}, the instantaneous blame at Step~1 is
+\[
+\qblame{\trace{A_1}, C_3} = (1,0),
+\]
+since $\trace{A_1} \vDash_{\bottp{1}} \obl[1]{\PAY}$.
+At Step~2, no violation occurs, hence
+\[
+\qblame{\trace{A_2}, \obl[1]{\PAYF}} = (0,0).
+\]
+Therefore, the cumulative blame vector is obtained by component-wise addition:
+\[
+\qblame{\pi, C_3}
+= (1,0) + (0,0)
+= (1,0).
+\]
+    \end{example}
+
+So far we introduced two quantitative views of non-compliance. The first one, $\qsem{\pi,C}$, gives a single number that counts how many violations happen along the trace, without caring who caused them. The second one, $\qblame{\pi,C}$, keeps the same idea but splits the count into two parts, one per agent. Since both definitions use the same progress function and add up step-by-step contributions, it is natural to ask whether the split version still matches the original total. In other words, does adding up the two blame counters always give back the same score as $\qsem{\pi,C}$? The following lemma answers this by proving that the overall quantitative violation score is exactly the sum of the two blame components, so quantitative blame is just a finer view of the same quantity, not a different measure.
+
+
+    \begin{lemma}[Decomposition of Quantitative Score into Blame Components]
+        \label{lem:qsem-qblame-decomp}
+        Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
+        
+        \[ \text{If }
+        \qblame{\pi,C} = (n_1,n_2)
+        \]
+        is the quantitative blame vector for $\pi$ and $C$,
+        then the quantitative violation score decomposes as
+        \[
+        \qsem{\pi,C} = n_1 + n_2.
+        \]
+        \end{lemma}
+
+        \begin{proof}
+            We prove the claim by induction on the length of the trace $\pi$.
+            
+            \paragraph{Base case.}
+            Let $\pi=\trace{A}$ be a single-event trace.
+            By Definitions~\ref{def:quant-blame} and (Quantitative Violation Semantics),
+            both $\qsem{\trace{A},C}$ and $\qblame{\trace{A},C}$ are defined solely from the
+            instantaneous evaluation of the head literal $\LH(C)$.
+            
+            If $\trace{A}$ violates no active literal, then
+            \[
+            \qsem{\trace{A},C}=0
+            \quad\text{and}\quad
+            \qblame{\trace{A},C}=(0,0).
+            \]
+            If $\trace{A}$ violates $\LH(C)$ and the violation is attributed to agent $i$,
+            then
+            \[
+            \qsem{\trace{A},C}=1
+            \quad\text{and}\quad
+            \qblame{\trace{A},C}=
+            \begin{cases}
+            (1,0) & \text{if } i=1,\\
+            (0,1) & \text{if } i=2.
+            \end{cases}
+            \]
+            In all cases, $\qsem{\trace{A},C}=n_1+n_2$.
+            
+            \paragraph{Inductive step.}
+            Let $\pi=\trace{A}\concat \pi'$ with $\Prog(\trace{A},C)\neq\emptc$.
+            By the recursive definitions,
+            \[
+            \qsem{\pi,C}
+            =
+            \qsem{\trace{A},C}
+            +
+            \qsem{\pi',\Prog(\trace{A},C)},
+            \]
+            and
+            \[
+            \qblame{\pi,C}
+            =
+            \qblame{\trace{A},C}
+            +
+            \qblame{\pi',\Prog(\trace{A},C)}.
+            \]
+            Write
+            \[
+            \qblame{\trace{A},C}=(a_1,a_2)
+            \quad\text{and}\quad
+            \qblame{\pi',\Prog(\trace{A},C)}=(b_1,b_2).
+            \]
+            By the induction hypothesis,
+            \[
+            \qsem{\pi',\Prog(\trace{A},C)}=b_1+b_2,
+            \]
+            and by the base case,
+            \[
+            \qsem{\trace{A},C}=a_1+a_2.
+            \]
+            Therefore,
+            \[
+            \qsem{\pi,C}
+            =
+            (a_1+a_2)+(b_1+b_2)
+            =
+            (a_1+b_1)+(a_2+b_2)
+            =
+            n_1+n_2,
+            \]
+            as required.
+            \end{proof}
