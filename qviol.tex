@@ -1,4 +1,4 @@
-\subsection{Quantitative violation semantics}
+\subsection{Quantitative Violation Semantics}
 To define the quantitative violation semantics to not stop at the first violation prefix, we reuse  \emph{Contract Progress function} as the underlying state-transition mechanism.
  The progression function $\Prog$ is utilized to dynamically evolve the contract after every observation, producing a sequence of \emph{residual contracts} that represent the exact normative state at each point in time.
   By updating the contract state step-by-step, we ensure that the violation score for any given event is calculated strictly against the specific literals in force at that moment, accounting for all prior satisfactions, discharges, or triggered reparations. Then propagating the updated residual to the subsequent evaluation step.
@@ -988,7 +988,7 @@ Therefore, the cumulative blame vector is obtained by component-wise addition:
 So far we introduced two quantitative views of non-compliance. The first one, $\qsem{\pi,C}$, gives a single number that counts how many violations happen along the trace, without caring who caused them. The second one, $\qblame{\pi,C}$, keeps the same idea but splits the count into two parts, one per agent. Since both definitions use the same progress function and add up step-by-step contributions, it is natural to ask whether the split version still matches the original total. In other words, does adding up the two blame counters always give back the same score as $\qsem{\pi,C}$? The following lemma answers this by proving that the overall quantitative violation score is exactly the sum of the two blame components, so quantitative blame is just a finer view of the same quantity, not a different measure.
 
 
-    \begin{lemma}[Decomposition of Quantitative Score into Blame Components]
+    \begin{lemma}[The relation of the blame score to the violation score]
         \label{lem:qsem-qblame-decomp}
         Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
         
@@ -1074,3 +1074,170 @@ So far we introduced two quantitative views of non-compliance. The first one, $\
             \]
             as required.
             \end{proof}
+
+            \begin{lemma}[Blame Score vs. Forward Blame Semantics]
+                \label{lem:qblame-vs-forward}
+                Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
+                If the forward blame monitor assigns blame to a set of agents $S \subseteq \{1,2\}$ on $\pi$, then the corresponding component(s) of the persistent quantitative blame vector are non-zero. Formally,
+                \[
+                  \text{if } \fb{\pi,C} = \bott_{S} \sor \fb{\pi,C} = \botp_{S}
+                \]
+                then there exist $x,y \in \mathbb{N}$ such that
+                \[
+                  \qblame{\pi,C} = (x,y)
+                  \quad\text{and}\quad
+                  \begin{cases}
+                    x \neq 0 & \text{if } 1 \in S,\\
+                    y \neq 0 & \text{if } 2 \in S.
+                  \end{cases}
+                \]
+                \end{lemma}
+
+
+            \subsection{Quantitative Blame Monitor}
+            \label{subsec:quant-blame-monitor}
+            
+            The forward-looking blame monitor $\bmc(C)$ identifies the \emph{first} decisive blame frontier and then remains in a post-violation sink. To account for \emph{all} blame occurrences over the whole lifespan of an interaction, we introduce a quantitative blame monitor whose output is a pair of natural numbers counting blame assigned to each agent.
+            
+            \paragraph{Monitor interface.}
+            We fix two agents $\{1,2\}$ and write $\mathbb{N}^2$ for blame vectors. For $\vec{n}=(n_1,n_2)$ and $\vec{m}=(m_1,m_2)$ we write
+            \[
+            \vec{n}+\vec{m} := (n_1+m_1,\;n_2+m_2).
+            \]
+            
+            \begin{definition}[Quantitative blame monitor]
+            \label{def:qbm}
+            Let $C$ be a contract in \cDL. The \emph{quantitative blame monitor} for $C$ is the Mealy machine
+            \[
+            \qbm(C) := (Q,q_0,\Gamma,\delta,\lambda_{\mathbb{N}^2}),
+            \]
+            where:
+            \begin{enumerate}
+              \item $Q := \{\Prog(\pi,C) \mid \pi\in\Gamma^*\}$ is the set of reachable residual contracts.
+              \item $q_0 := \Prog(\epsilon,C)=C$.
+              \item $\delta(q,A) := \Prog(\trace{A},q)$.
+              \item $\lambda_{\mathbb{N}^2}(q,A) := \qblame{\trace{A},q}$, that is, the instantaneous blame vector contributed by the current letter $A$ when the active residual is $q$.
+            \end{enumerate}
+            \end{definition}
+            
+            \begin{definition}[Quantitative blame execution score]
+            \label{def:qbm-score}
+            Let $\qbm(C)=(Q,q_0,\Gamma,\delta,\lambda_{\mathbb{N}^2})$ and let $\pi=\langle A_0,\dots,A_{n-1}\rangle\in\Gamma^*$. The \emph{quantitative blame score} of $\pi$ on $\qbm(C)$ is
+            \[
+            \qscore(\qbm(C),\pi) := \sum_{i=0}^{n-1} \lambda_{\mathbb{N}^2}(q_i,A_i),
+            \]
+            where $q_{i+1}:=\delta(q_i,A_i)$ and the sum is componentwise.
+            \end{definition}
+            
+            \paragraph{Conformance to the quantitative blame semantics.}
+            The next theorem states that the machine-level accumulation coincides with the denotational quantitative blame semantics.
+            
+            \begin{theorem}[Conformance of $\qbm$ to quantitative blame semantics]
+            \label{thm:qbm-conformance}
+            For every \cDL contract $C$ and every finite trace $\pi\in\Gamma^*$,
+            \[
+            \qscore(\qbm(C),\pi) \,=\, \qblame{\pi,C}.
+            \]
+            \end{theorem}
+            
+            \begin{proof}
+            We proceed by induction on $n:=|\pi|$.
+            
+            \smallskip
+            \noindent\emph{Base case $n=0$.}
+            If $\pi=\epsilon$, then by Definition~\ref{def:qbm-score} the sum is the neutral element $(0,0)$.
+            By the definition of $\qblame{\cdot,\cdot}$ on the empty trace, $\qblame{\epsilon,C}=(0,0)$.
+            Hence the equality holds.
+            
+            \smallskip
+            \noindent\emph{Inductive step.}
+            Let $\pi=\trace{A}\concat \pi'$ with $|\pi'|=n-1$.
+            The first output produced by $\qbm(C)$ is
+            $\lambda_{\mathbb{N}^2}(q_0,A)=\qblame{\trace{A},C}$
+            by Definition~\ref{def:qbm}. The next state is
+            $q_1=\delta(q_0,A)=\Prog(\trace{A},C)$.
+            Therefore, unfolding Definition~\ref{def:qbm-score} yields
+            \[
+            \qscore(\qbm(C),\pi)
+            = \qblame{\trace{A},C} + \qscore(\qbm(q_1),\pi').
+            \]
+            By the induction hypothesis applied to the residual contract $q_1$, we have
+            \[
+            \qscore(\qbm(q_1),\pi')=\qblame{\pi',q_1}.
+            \]
+            Hence
+            \[
+            \qscore(\qbm(C),\pi)
+            = \qblame{\trace{A},C} + \qblame{\pi',\Prog(\trace{A},C)}.
+            \]
+            Finally, this is exactly the recursive clause of the quantitative blame semantics, which evaluates the head letter against the current residual and then propagates the progressed residual to the tail. Thus $\qscore(\qbm(C),\pi)=\qblame{\pi,C}$.
+            \end{proof}
+\subsection{Quantitative Blame Monitor Construction}
+\label{subsec:qbm}
+
+The quantitative blame setting combines the persistence of the quantitative monitors with the responsibility granularity of the blame verdicts.
+Instead of outputting a Boolean or multi-valued status, the monitor outputs a \emph{blame increment vector} in $\mathbb{N}^2$ at each step, where the $i$-th component counts how many violations at that step are blamed on agent $i$.
+The overall quantitative blame score is obtained by summing these vectors along the run.
+
+% --- BEGIN PATCHED EXAMPLE: Quantitative Blame Monitor for Double Blame ---
+\begin{example}[Quantitative Blame Monitor for Double Blame]
+\label{ex:qbm-doubleblame}
+We construct the quantitative blame monitor for the contract
+\[
+  C := \perm[1]{\OCC} \wedge \obl[1]{\PAY},
+\]
+where $\perm[1]{\OCC}$ models the tenant's power to occupy.
+As in Example~\ref{ex:doubleblame}, the first step fully determines whether a violation occurs.
+However, in the quantitative blame view the transition is labeled with a vector in $\mathbb{N}^2$ that counts \emph{how many} violations occurred at that step and \emph{who} is responsible.
+
+We use the following event classes (as shorthand predicates over a letter $A\subseteq\Gamma$):
+\begin{itemize}
+  \item $\OCC^\surd$: occupation succeeds (tenant attempts and landlord cooperates),
+  \item $\OCC^\times$: occupation is blocked (tenant attempts, landlord withholds cooperation),
+  \item $\PAY^\surd$: rent payment succeeds (joint execution present),
+  \item $\PAY^{\text{fail}}$: tenant does not attempt to pay ($\PAY^{(1)}\notin A$),
+  \item $\PAY^{\text{blk}}$: tenant attempts to pay but the landlord blocks cooperation ($\PAY^{(1)}\in A\wedge \PAY^{(2)}\notin A$).
+\end{itemize}
+
+The crucial point is that conjunction is \emph{additive} at a time point.
+Hence, when both conjuncts are violated in the same step, we add their blame contributions component-wise.
+In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ yields $(1,1)$, while the joint failure $\OCC^\times\wedge \PAY^{\text{blk}}$ yields $(0,2)$ since both violations are blamed on agent $2$.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  ->, >=Stealth, node distance=45mm,
+  every state/.style={
+    rectangle,rounded corners,draw,
+    minimum width=16mm,minimum height=7mm,
+    inner sep=2pt,font=\scriptsize,align=center
+  },
+  initial text={}
+]
+
+% --- Two residual states only ---
+\node[initial,state] (q0) {$\perm[1]{\OCC}\ \wedge\ \obl[1]{\PAY}$};
+\node[state, right=of q0] (qe) {$\emptc$};
+
+% --- All relevant one-step outcomes go from the initial residual to \emptc ---
+% Use different bending for readability.
+\path
+  (q0) edge[bend left=36] node[above] {\scriptsize $\OCC^\surd \land \PAY^\surd\,/\,(0,0)$} (qe)
+  (q0) edge[bend left=12] node[above] {\scriptsize $\OCC^\times \land \PAY^{\text{fail}}\,/\,(1,1)$} (qe)
+  (q0) edge node[below]      {\scriptsize $\OCC^\surd \land \PAY^{\text{fail}}\,/\,(1,0)$} (qe)
+  (q0) edge[bend right=15] node[below] {\scriptsize $\OCC^\times \land \PAY^\surd\,/\,(0,1)$} (qe)
+  (q0) edge[bend right=35] node[below] {\scriptsize $\OCC^\surd \land \PAY^{\text{blk}}\,/\,(0,1)$} (qe)
+  (q0) edge[bend right=60] node[below] {\scriptsize $\OCC^\times \land \PAY^{\text{blk}}\,/\,(0,2)$} (qe);
+
+% --- Absorbing empty residual ---
+%\path
+ % (qe) edge[loop right] node {\scriptsize $*\,/\,(0,0)$} (qe);
+
+\end{tikzpicture}
+\caption{Quantitative blame monitor fragment for $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$.
+The label $/\,(n_1,n_2)$ is the instantaneous blame increment vector.
+Note the two joint-failure cases: $(1,1)$ when the violations are blamed on different agents, and $(0,2)$ when both violations are blamed on agent $2$ in the same step.}
+\label{fig:qbm-joint-blame}
+\end{figure}
+\end{example}
+% --- END PATCHED EXAMPLE ---
