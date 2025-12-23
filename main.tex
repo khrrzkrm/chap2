@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 
-\title{remastered chap3}
+\title{Chapter 2: On Monitoring compliance to contract for }
 \author{kharrazkaram }
 \date{September 2025}
 \usepackage{subcaption}
@@ -19,50 +19,141 @@
 
 \tableofcontents
 
-\section{Motivations}
-In this section, we are interested in normative specification in multiagent scenarios. Our vision in this work is that normative specification, and more precisely, what we will refer to as contracts in this section, specify \emph{collaborative} instead of adversarial behaviors: the agents are not playing
-zero-sum games, but instead must coordinate to achieve successful interactions. We limit our reasoning 
- to the case of two-agent settings, which already suffices to capture many core difficulties of collaboration.
+\section{Motivation}
+Normative specifications are often presented as constraints on what an agent must do or must avoid.
+In many real settings, however, compliance is not an individual achievement.
+It is the outcome of an interaction in which each party can enable, ignore, or obstruct the other.
+This chapter studies such \emph{collaborative} normative settings, where agents are not assumed to play a zero-sum game, yet strategic behavior and conflicting incentives remain possible.
+We focus on two agents, since the core difficulties already arise in the simplest bilateral contracts.
 
 \paragraph{Interactions and collaboration.}
-Norms typically prescribe when an agent must, may, or should abstain from performing, yet their successful execution
-may depend on the cooperation with another agent. In the real world, examples abound: in a house rental contract, a landlord and tenant maintaining a lease, or two drivers yielding
-at an intersection. To capture such interactions, we need an abstraction that
-makes explicit when success requires joint effort or the non-interference of one of the parties to fail the efforts of the other.
+Standard deontic formalisms describe duties and prohibitions of a single agent in isolation.
+By contrast, many norms presuppose that a desired outcome materializes only when both parties contribute.
+For instance, a tenant can attempt to pay rent, but successful payment may depend on the landlord providing a payment channel or accepting the transfer.
+Similarly, occupancy is meaningful only if one party grants access while the other actually occupies.
+A useful model must therefore distinguish between (i) \emph{attempts} that each agent performs and (ii) \emph{successful collaboration} that emerges from a compatible combination of attempts.
+It must also account for \emph{non-interference}, where compliance requires one party to refrain from actions that would prevent the other from fulfilling its duties.
 
-\paragraph{Infinite normative interactions.}
-Normative specifications rarely describe one-off events; they often govern
-interactions that potentially persist indefinitely. A paradigmatic example is a rental
-agreement: the tenant must pay rent each month, and the landlord must provide
-housing services in return. Such contracts generate a potentially unbounded interaction of
-obligations and permissions, motivating a formalism that can reason about
-potentially unbounded behavior.
+\paragraph{Open-ended normative interactions.}
+Normative specifications s may specify long terms collaborations.
+For instance, contracts typically govern interactions that can persist indefinitely unless properly terminated, often with a periodic structure.
+A rental agreement, for example, imposes recurring monthly obligations, conditional repairs triggered by requests, and contrary-to-duty obligations that arise after non-compliance.
+This motivates a trace model that supports (a) aggregation at the level at which the norm is written (such as months) and (b) prefix-based evaluation, since monitoring and dispute resolution rely on partial observations of an ongoing relationship.
 
-\paragraph{The Challenge of Blame.}
-Most importantly in this chapter is that when norms are violated, the question of \emph{blame} arises: who is
-responsible for the failure of collaboration? This is a notoriously subtle
-notion, intersecting with debates in law, philosophy, and multiagent reasoning.
-Is an agent to blame for not attempting its part of a joint action? Or does
-responsibility shift when the other agent obstructs fulfillment? Our aim in this
-work is to study how blame can be assigned systematically within a formal
-framework, without appealing to moral or psychological notions of responsibility.
-
-
-
+\paragraph{Blame and accountability.}
+When a collaborative norm is violated, it is not enough to say that the contract is violated.
+One must explain \emph{who} is responsible and \emph{why}.
+This is equally important in contractual disputes and in regulatory settings, where enforcement decisions require an explicit account of causation and justification.
+In bilateral scenarios such as landlord--tenant disputes, courts typically reconstruct a timeline and ask ``who blocked whom'': did the tenant fail to pay while still being entitled to possession, did the landlord deny access without following the legally required steps (for example notice, deadlines, and, where applicable, a court order), or did the landlord deny access first so that rent withholding or reduction could be justified and proportionate.
+Often, both parties contribute to escalation, and the resolution hinges on allocating remedies to the harms caused at each step, such as restoring access, ordering arrears payment, granting rent reduction for unusable periods, awarding damages for proven losses caused by denial of access, and checking whether termination and eviction procedures were complied with.
+Beyond this qualitative attribution, practical compliance analysis also needs a quantitative view of \emph{how much} non-compliance occurred, for instance how many months rent was not paid, how often access was denied, or how many repair obligations were missed.
+A blame notion that is useful for compliance tooling must therefore be formally defined, operationally checkable, and robust under incremental observation of the interaction.
+This chapter develops such a notion alongside executable monitors, and then extends it with quantitative scores that go beyond the common ``first-failure-only'' perspective.
 
 
 \paragraph{Research questions.}
-These considerations raise several questions that guide this work:
+These considerations lead to the following questions from a formal method perspective:
 \begin{enumerate}
-    \item How can we design a logic that treats collaboration between agents as a
-    first-class object, rather than as an adversarial competition?
-    \item What abstractions are best suited to capture cooperative and
-    non-interfering behavior in normative specifications?
-    \item How can we model normative specifications that open-ended streams
-    of obligations, such as ongoing contracts?
-    \item How should we define and reason about blame in a way that is both
-    conforming with the legal domain and computationally tractable?
+  \item How can we model collaboration as a first-class semantic object, separating individual attempts from jointly successful outcomes?
+  \item Which trace abstractions capture both cooperative behavior and non-interference at the granularity induced by contractual periods?
+  \item How can we specify and monitor open-ended, potentially infinite, streams of duties and right in a contract setting?
+  \item How can we define blame and quantitative accountability in a way that is more faithful to the real life legal systems reasoning and supports automated monitoring?
 \end{enumerate}
+
+
+\section{Methodology}
+
+To address the research questions outlined above, we adopt a constructive \emph{formal methods} methodology.
+Our approach is predicated on the rigorous separation of \emph{specification} (what the contract means) from \emph{implementation} (how compliance is checked).
+This separation ensures that our monitoring tools are not merely ad-hoc scripts, but correct-by-construction artifacts derived from a principled logical foundation.
+
+The research is structured into four distinct methodological phases, progressing from conceptual modeling to operational deployment:
+
+\paragraph{Phase 1: Domain Abstraction and Trace Modeling.}
+The first phase involves creating a mathematical model of the domain that captures the nuances of collaborative behavior.
+Standard trace models (sequences of atomic events) are insufficient for distinguishing between a party's unwillingness to act and their inability to act due to obstruction.
+\emph{Methodologically}, we address this by elevating ``attempts'' and ``outcomes'' to first-class semantic objects.
+We define a trace algebra that models interactions not as simple events, but as the resolution of conflicting or cooperating individual strategies.
+This abstraction forms the bedrock of our analysis, allowing us to reason formally about non-interference.
+
+\paragraph{Phase 2: Semantics-First Specification.}
+In the second phase, we define the normative requirements declaratively.
+We introduce the \emph{Two-Agents Collaborative Normative Logic} (\cDL) to capture the temporal and structural complexities of real-world contracts.
+A key methodological choice here is to define the \emph{denotational semantics} of the logic before considering its execution.
+We first develop a family of \emph{Forward Tight Semantics} that maps finite interaction prefixes to definitive verdicts.
+This baseline semantics evaluates whether a contract has been successfully terminated without violation.
+We develop a foundational family of \emph{Forward Tight Semantics} that maps finite interaction prefixes to definitive verdicts regarding contract compliance.
+This initial formalism determines whether a contract has been satisfied without violation.
+From there, we derive a \emph{blame semantics} to attribute responsibility for the initial breach.
+However, to overcome the limitation of the ``first-failure'' of the forward tight semantics, we extend the framework to a \emph{quantitative violation semantics} that accumulates violations and blame over time, persisting even after the first violation is detected.
+This entire semantic layer provides the theoretical ``ground truth'' for compliance, defined independently of implementation constraints.
+Furthermore, we establish the formal relationships between these semantics, specifically demonstrating their mutual consistency.
+
+\paragraph{Phase 3: Automata-Theoretic Operationalization.}
+The third phase bridges the gap between theory and practice by translating the declarative logic into executable artifacts.
+We employ an automata-theoretic approach, mapping the formulas of \cDL to deterministic Moore machines.
+Unlike the abstract semantics, which describe truth, these machines describe computation.
+Our methodology focuses on the structural synthesis of these monitors, ensuring that every logical operator (e.g., sequence, reparation) has a direct, constructive counterpart in the universe of automata transformations.
+
+\paragraph{Phase 4: Verification and Refinement.}
+The final phase validates the pipeline.
+We do not treat the generated monitors as black boxes; rather, we provide formal proofs of \emph{conformance}, demonstrating that the outputs of the automata are isomorphic to the semantic verdicts defined in Phase 2.
+Once this binary compliance baseline is established, we refine the model to address accountability.
+We extend the semantics to propagate ``blame'' and ``quantitative scores,'' ensuring that the resulting analysis provides the granular detail required for legal and regulatory dispute resolution.
+
+\medskip
+\noindent
+By following this methodology, we ensure that the resulting compliance monitors are both legally more expressive and mathematically sound.
+
+
+
+\section{Contributions}
+This chapter establishes a comprehensive framework for the specification and runtime verification of collaborative normative systems.
+Unlike approaches that define monitoring behavior through ad-hoc operational rules, we adopt a \emph{semantics-first philosophy}.
+We postulate that the \emph{meaning} of compliance (what constitutes a violation) must be defined abstractly and independently of the \emph{mechanism} used to detect it.
+
+Consequently, the primary contribution of this chapter is the development of a verified pipeline that bridges the gap between high-level normative abstractions and low-level executable monitors.
+We ensure that the operational behavior of the generated monitors is conceptually sound with respect to the underlying legal intuition.
+
+The specific theoretical and technical contributions are structured as follows:
+
+\begin{enumerate}[label={(Con\arabic*)}]
+  \item \textbf{A Conceptual Distinction Between Attempt and Outcome.}
+  We introduce a novel interaction model that distinguishes between an agent's individual \emph{attempt} to act and the actual \emph{successful outcome}.
+  Standard models often obscure the difference between a failure to act (laziness) and a failure caused by the other party's obstruction.
+  By treating these as separate layers, we can model non-interference and ``active participation'' as first-class concepts.
+  This allows us to verify not just whether an action occurred, but whether an agent did everything in their power to make it occur.
+
+  \item \textbf{The Two-Agents Collaborative Normative Logic (\cDL).}
+  We formalize \cDL, a contract logic designed explicitly for bilateral, periodic interaction.
+  Existing logics often struggle with the nuances of long-running contracts.
+  Our logic integrates complex temporal triggers (defining when obligations activate) and contrary-to-duty structures (defining what happens when obligations are violated).
+  Crucially, we define the semantics of this logic first, providing a ground truth for compliance that exists independently of any software tool.
+
+  \item \textbf{A Theory of Timely Verdicts (Tight Semantics).}
+  A major theoretical contribution is the resolution of the ``infinite wait'' problem in monitoring.
+  Standard theoretical models often delay verdicts indefinitely, waiting for an infinite future to determine compliance.
+  We introduce a \emph{tight semantics} that identifies the earliest possible moment a contract is satisfied or violated.
+  This ensures that our definitions of compliance are actionable in real-time, providing immediate feedback rather than theoretical eventualities.
+
+  \item \textbf{Correct-by-Construction Monitor Synthesis.}
+  We provide a constructive method to compile any contract written in \cDL{} into an executable monitor.
+  Rather than writing monitoring code by hand, which is error-prone, we derive the monitor automatically from the logic.
+  We provide structural proofs demonstrating that this generated monitor is \emph{operationally equivalent} to the abstract logic.
+  This guarantees that the software is correct by design, eliminating the need to verify the monitoring tool itself.
+
+  \item \textbf{Rich Accountability: Blame and Quantification.}
+  Finally, we extend the framework to support legal reasoning beyond simple binary compliance.
+  We introduce a notion of \emph{blame} that refines generic violations into agent-specific responsibilities, determining exactly who caused a failure.
+  Furthermore, we introduce a \emph{quantitative} dimension to monitoring.
+  Instead of stopping at the first error, our approach allows for the dynamic counting of cumulative violations over time, essential for calculating penalties or damages in open-ended contracts.
+\end{enumerate}
+
+\paragraph{Organization.}
+We first ground the problem in a rental-agreement example and extract the modeling requirements.
+We then develop the trace and synchronization layer for collaborative interaction, introduce \cDL, and finally present the monitor-based semantics, blame attribution, and quantitative extensions.
+
+
 
 
 \section{Motivating Example}
@@ -135,689 +226,7 @@ Such a framework requires both a formal model of interacting agent behaviors and
 
 
 
-\section{Preliminaries and State of the Art}
 
-
-
-
-
-In the remainder of the chapter we instantiate this abstract notion of trace with logical-time, metric-timed, and synchronous-time traces over suitable structured alphabets.
-
-\subsection{Traces and Their Synchronization Mechanisms}
-
-Traces (also called \emph{executions}, \emph{runs}, or \emph{behaviors}) form the semantic backbone for describing how systems evolve over time. They serve as \emph{abstract representations} of a system’s evolution and may take the form of \emph{sequences of discrete events} or \emph{sets of continuously varying signals}. Such traces are used to determine whether the modeled or observed behavior of a system \emph{satisfies} a given property, and they also function as \emph{witnesses} demonstrating the feasibility of compliant or desirable behaviors against the target properties.
-
-This section presents a state-of-the-art overview of the main trace notions used in modeling and verification, with the specific aim of clarifying the two trace models employed in this dissertation. We introduce precise definitions, explain the contexts in which each trace type appears, and highlight their differences through focused examples. Particular emphasis is placed on the two \emph{discrete trace models over atomic actions} that underpin the technical developments of this work.
-
-
-
-Traces and related notions appear across many areas of artificial intelligence and formal verification, often under different names that emphasise specific semantic viewpoints. This subsection provides a brief taxonomy of these notions as they are used in the literature, focusing on how different terminologies converge on a common semantic foundation. We intentionally avoid discussing the internal structure of events, since this will be addressed in the next subsection.
-
-\begin{figure}[t]
-  \centering
-  \begin{tikzpicture}[
-    node distance=10mm and 15mm,
-    box/.style={rectangle,draw,rounded corners,align=center,
-                inner sep=4pt,minimum width=3.2cm},
-    arrow/.style={->,>=stealth,thick,dashed},
-    every node/.style={font=\small}
-  ]
-  
-  % Central trace concept at top
-  \node[box, fill=yellow!25, minimum width=4cm] (trace) 
-    {\textbf{Trace}\\(shared semantic object)};
-  
-  % Two branches below
-  \node[box, below left=15mm and 2mm of trace, fill=blue!12] (planning)
-    {\textbf{AI Planning}\\(Intentional view)};
-  \node[box, below right=15mm and 2mm of trace, fill=green!12] (verification)
-    {\textbf{Systems Verification}\\(Observational view)};
-  
-  % Planning concepts
-  \node[box, below=8mm of planning, fill=blue!5] (plans) {Plans};
-  \node[box, below=6mm of plans, fill=blue!5] (execp) {Executions};
-  \node[box, below=6mm of execp, fill=blue!5] (behp) {Behaviors};
-  
-  % Verification concepts
-  \node[box, below=8mm of verification, fill=green!5] (runs) {Runs};
-  \node[box, below=6mm of runs, fill=green!5] (execv) {Executions};
-  \node[box, below=6mm of execv, fill=green!5] (obsv) {Observations};
-  
-  % Arrows showing abstraction (pointing upward to trace)
-  \draw[arrow] (plans.north) -- (planning.south);
-  \draw[arrow] (execp.north) -- (planning.south);
-  \draw[arrow] (behp.north) -- (planning.south);
-  \draw[arrow] (runs.north) -- (verification.south);
-  \draw[arrow] (execv.north) -- (verification.south);
-  \draw[arrow] (obsv.north) -- (verification.south);
-  \draw[arrow] (planning.north) -- (trace.south west);
-  \draw[arrow] (verification.north) -- (trace.south east);
-  
-  % Legend
-  \node[below=70mm of trace, font=\footnotesize, align=center] 
-    {Dashed arrows indicate abstraction/projection to trace semantics};
-    
-  \end{tikzpicture}
-  \caption{Conceptual alignment of trace notions across AI planning and systems verification. 
-           Arrows indicate abstraction relationships between domain-specific concepts and the 
-           shared notion of traces.}
-\end{figure}
-
-\paragraph{Runs.}
-In automata theory and the semantics of reactive systems, a \emph{run} is an execution of an abstract machine such as an automaton or transition system. A run determines a behaviour by following the transitions allowed by the underlying model. Runs form the core semantic notion in classical automata-theoretic model checking~\cite{vardi1994automata,emerson1990temporal}. Every run induces a (linear-time) behaviour by projecting the visited configurations to their observable components, making runs the operational counterpart of trace-based views of system behaviour.
-
-\paragraph{Executions.}
-In operational semantics and concurrency theory, an \emph{execution} refers to the (often maximal) evolution of a system, typically formalised as a path in a labelled transition system. Executions serve as the semantic basis of process calculi, labelled transition systems, and state-based verification frameworks~\cite{milner1980ccs, Hoare85}. Although richer than purely observational accounts, executions can be abstracted to trace-like objects when only the externally relevant behaviour is considered, for instance by hiding internal actions or projecting to observable variables.
-
-\paragraph{Behaviours.}
-The term \emph{behaviour} is used to denote any admissible evolution permitted by a system model. Depending on context, behaviours may correspond to runs, executions, or directly to sequences of observable states or events. Behavioural models appear prominently in the semantics of reactive and concurrent systems, where sets of behaviours are used to characterise implementations and specifications, and to define refinement and conformance relations~\cite{harel1985reactive,lynch1996distributed,AlurDill94}. The behavioural viewpoint abstracts away from internal structure and focuses on the admissible patterns of interaction with the environment.
-
-\paragraph{Plans.}
-In AI planning, a \emph{plan} is a finite, intended evolution of an agent or system. Plans are typically treated as finite sequences of actions that describe how a goal should be achieved, and are central in classical planning languages such as STRIPS~\cite{fikes1971strips} and PDDL~\cite{fox2003pddl}. At execution time, plans generate concrete behaviours of the underlying transition system. These behaviours are finite, in contrast to the infinite computations usually considered in reactive system verification; nevertheless, they can be related to linear-time formalisms, for example via finite-trace temporal logics such as LTL$_f$~\cite{degiacomo2013ltlf}.
-
-\paragraph{Observations.}
-An \emph{observation} is a fragment of behaviour available to an external monitor or agent. Observations are often incomplete: they may arise from projections onto a subsystem, from hiding of internal actions, or from partial information about states. This notion is essential in runtime verification~\cite{leucker2009brief}, epistemic reasoning about knowledge and information flow~\cite{fagin1995reasoning}, and distributed monitoring~\cite{bauer2011runtime}. Observations highlight the distinction between the full behaviours a system may exhibit and the partial behavioural evidence actually accessible to an analyst or monitoring component.
-
-Table~\ref{tab:trace-correspondence} summarises the correspondences between these notions across the two domains.
-
-\begin{table}[t]
-  \centering
-  \caption{Correspondence of trace-related terminology across AI planning and systems verification}
-  \label{tab:trace-correspondence}
-  \begin{tabular}{llll}
-    \toprule
-    \textbf{Domain} & \textbf{Term} & \textbf{Typical Length} & \textbf{Level of Abstraction} \\
-    \midrule
-    \multirow{3}{*}{Planning} & Plan & Finite & Intentional (goal-directed) \\
-                              & Plan Execution & Finite & Operational \\
-                              & Behaviour & Finite/Infinite & Observable \\
-    \midrule
-    \multirow{3}{*}{Verification} & Run & Infinite & Operational (automaton) \\
-                                  & Execution & Finite/Infinite & Operational (transition system) \\
-                                  & Observation & Finite prefix & Partial information \\
-    \midrule
-    \textbf{Common} & Trace & Finite/Infinite & Observable (projection) \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-We now move to an abstract definition of traces that captures their essential structure independently of these domain-specific terminologies.
-
-\subsubsection{Abstract Trace Theory}
-
-\paragraph{Informal overview.}
-Traces are mathematical objects that record how a system evolves over time.  
-Two fundamental forms appear across logic, semantics, and verification.  
-\emph{Discrete traces} describe executions as sequences of events indexed by natural numbers.  
-\emph{Continuous traces} describe behaviors as signals evolving over real time.  
-Both serve as abstractions of system behavior, yet they rely on very different underlying notions of time.
-
-\paragraph{Events and event domains.}
-A single element that occurs during an execution is called an \emph{event}.  
-Events do not carry a prescribed structure. They may represent system actions, state changes, observations, valuations, or abstract labels.  
-An event set can be instantiated by any concrete \emph{event domain} $\mathbb{E}$, which allows the trace definitions below to remain general and domain neutral.
-
-\begin{definition}[Discrete traces]
-Let $\mathbb{E}$ be an event domain.  
-A \emph{finite trace} over $\mathbb{E}$ is either the empty trace $\emptytrace$ or a sequence
-
-  $\langle e_0, e_1, \dots, e_{n-1} \rangle
-  \quad\text{with}\quad n \ge 1,\ e_i \in \mathbb{E}.$
-We write the \emph{domain of finite discrete traces}, written $\mathbb{E}^{\ast}$ as:
-\[
-  \mathbb{E}^{\ast}
-  := \{\emptytrace\}
-     \cup
-     \{\,\langle e_0,\dots,e_{n-1}\rangle \mid n\ge 1,\ e_i\in\mathbb{E}\,\}.
-\]
-
-A \emph{infinite trace} over $\mathbb{E}$ is a function $\tau_\text{inf}:\mathbb{N}\to\mathbb{E}$, equivalently written as $\trace{e_0,e_1,e_2,\dots}$, and \emph{the set of all infinite traces} is $\mathbb{E}^{\omega}$.  
-The full discrete trace space is
-\[
-  \mathbb{E}^{\infty} := \mathbb{E}^{\ast} \cup \mathbb{E}^{\omega}.
-\]
-
-\end{definition}
-
-
-
-\begin{figure}
-\begin{tikzpicture}[
-  basic/.style  = {
-      draw,
-      drop shadow,
-      font=\sffamily,
-      rectangle,
-      rounded corners=4pt,
-      thin,
-      align=center,
-      fill=white,
-      inner sep=5pt
-  },
-  root/.style   = {
-      basic,
-      fill=blue!10,
-      text width=4cm,
-      font=\large\bfseries
-  },
-  lvl2/.style   = {
-      basic,
-      fill=green!10,
-      text width=3.5cm,
-      font=\bfseries
-  },
-  lvl3/.style   = {
-      basic,
-      fill=orange!10,
-      text width=3.2cm,
-      font=\bfseries
-  },
-  >=latex,
-  every path/.style={thick, draw=gray!60}
-]
-
-% Root
-\node[root] (root) at (0,3) {Discrete Traces};
-
-% Level 2 nodes
-\node[lvl2] (state)  at (-4,1) {State};
-\node[lvl2] (action) at ( 0,1) {Action};
-\node[lvl2] (hybrid) at ( 4,1) {Hybrid};
-
-% Level 3 nodes under Action
-\node[lvl3] (logical) at (-4,-1.5) {Logical-Time};
-\node[lvl3] (metric)  at ( 0.0,-1.5)  {Metric-Timed};
-\node[lvl3] (sync)    at ( 4,-1.5)  {Synchronous-Time};
-
-% ------------------------------------------
-% Arrows from Root to Level 2 (with offsets)
-% ------------------------------------------
-
-% Root → State : down 0.2, LEFT 2 cm, down
-\draw[->] (root.south)
-    -- ++(0,-0.4)
-    -- ++(-4,0)
-    -- (state.north);
-
-% Root → Action : down 0.2 then straight down
-\draw[->] (root.south)
-    -- ++(0,-0.4)
-    -- (action.north);
-
-% Root → Hybrid : down 0.2, RIGHT 2 cm, down
-\draw[->] (root.south)
-    -- ++(0,-0.4)
-    -- ++(4,0)
-    -- (hybrid.north);
-
-% ------------------------------------------
-% Arrows from Action to Level 3 (with offsets)
-% ------------------------------------------
-
-% Action → Logical-Time : down 0.2, LEFT 2 cm, down
-\draw[->] (action.south)
-    -- ++(0,-0.4)
-    -- ++(-4,0)
-    -- (logical.north);
-
-% Action → Metric (center): down 0.2 then down
-\draw[->] (action.south)
-    -- ++(0,-0.4)
-    -- (metric.north);
-
-% Action → Synchronous-Time : down 0.2, RIGHT 2 cm, down
-\draw[->] (action.south)
-    -- ++(0,-0.4)
-    -- ++(4,0)
-    -- (sync.north);
-
-\end{tikzpicture}
-\caption{Classification of discrete traces following there event types and for the action, the sub-classes following their timing setup.}
-\label{fig:taxonomy of Discrete traces}
-\end{figure}
-
-
-\paragraph{Trace length.}
-The size of a trace $\tau$ from $E^\infty$ is written as $\size{\tau}$ and is defined as the number of events in the trace. That is:
-For any finite non-empty trace $\tau = \langle e_0, e_1, \dots, e_{n-1} \rangle$, we have $ \size{\tau} := n.$
-
-For the empty trace $\emptytrace$, the size is defined as: $\size{\emptytrace}=0$.
-For any infinite trace $\tau_\text{inf}$ from $\mathbb{E}^\omega$, we have $\size{\tau_\text{inf}}= \infty$.
-\paragraph{Position lookup.}
-For any trace $\pi\in\mathbb{E}^{\infty}$ we define a partial \emph{position lookup function}
-\[
-  \pos{\pi}{i} \;:=\;
-  \begin{cases}
-    e_i, & \text{if }\pi=\trace{e_0,\dots,e_{n-1}}\text{ with }0\le i<n,\\[2pt]
-    e_i, & \text{if} \pi=\trace{e_0,\dots,e_{n-1}, \dots},\\[2pt]
-    \Undef, & \text{otherwise}.
-  \end{cases}
-\]
-It returns the event at index $i$ whenever this index exists.  
-Finite traces provide events only up to their last position.  
-Infinite traces provide an event at every natural index.
-
-\paragraph{Event precedence axiom.}
-Discrete traces impose a strict temporal ordering on their events.  
-For any trace $\pi \in \mathbb{E}^{\infty}$, if $\pos{\pi}{i} = e_i$ and $\pos{\pi}{j} = e_j$ with $i < j$, then $e_i$ \emph{precedes} $e_j$ in the execution.  
-This precedence relation reflects the intrinsic time structure of discrete traces: earlier indices represent earlier steps, and no two different events share the same position.
-\paragraph{Prefix notations.}
-For any trace $\tau \in \mathbb{E}^{\infty}$ and any index $k \in \mathbb{N}$ we define \emph{the finite prefix up to $k$}, written $\tau[0,k]$ by
-\[
-  \tau[0,k] :=
-  \begin{cases}
-    \langle e_0, e_1, \dots, e_k \rangle,
-    & \text{if } \tau = \langle e_0,\dots,e_{n-1}\rangle \text{ with } k < n,\\[4pt]
-    \langle e_0, e_1, \dots, e_k \rangle,
-    & \text{if } \tau = \langle e_0,e_1,\dots\rangle \text{ (infinite trace)},\\[4pt]
-    \Undef, & \text{otherwise}.
-  \end{cases}
-\]
-Thus, $\tau[0,k]$ yields the finite list of all events in $\tau$ from position $0$ to position $k$, whenever these positions exist.  
-Finite traces admit prefixes only up to their last valid index, while infinite traces admit prefixes for every natural number.
-
-For two traces $\tau$ and $\tau'$ over $\mathbb{E}^\infty$ we say that \emph{$\tau$ is a prefix $\tau'$}, written  $\tau \preceq \tau'$
-\[
-  \tau \preceq \tau'
-  \quad\text{iff}\quad
-  \tau = \tau'[0,k] \text{ for some } k \in \mathbb{N}.
-\]
-
-\paragraph{Suffix notation.}
-For any trace $\pi \in \mathbb{E}^{\infty}$ and any index $k \in \mathbb{N}$ we define the suffix $\pi^{k}$ by
-\[
-  \pi^{k} :=
-  \begin{cases}
-    \langle e_k, e_{k+1}, \dots, e_{n-1} \rangle,
-      & \text{if } \pi = \langle e_0,\dots,e_{n-1}\rangle \text{ and } k<n, \\[4pt]
-    \langle e_k, e_{k+1}, \dots \rangle,
-      & \text{if } \pi = \langle e_0, e_1, \dots \rangle \text{ (infinite trace)}, \\[4pt]
-    \Undef, & \text{otherwise}.
-  \end{cases}
-\]
-Thus, $\pi^{k}$ returns the portion of the trace that begins at position $k$ when this position exists.
-
-\paragraph{Informal view on continuous behavior.}
-Continuous behavior does not rely on sequences of events.  
-It models systems that evolve through uninterrupted time, such as physical processes, hybrid dynamics, or real-time controllers.  
-The mathematical primitive is not a sequence but a function that assigns a value to each real-valued non-zero instant, i.e time-points from $\mathbb{R}_{\ge 0}$.  
-Values may represent system states, sensor readings, or continuous variables.
-
-\begin{definition}[Continuous traces]
-  Let $V$ be a value domain.  
-  A \emph{continuous trace} $\widetilde{\tau}$ is a function
-  \[
-    \widetilde{\tau} : \mathbb{R}_{\ge 0} \to V,
-  \]
-  mapping each real-valued time instant to a value in $V$.
-  \end{definition}
-
-Lifting the discrete trace operators to continuous traces is non-trivial,
-because the underlying time domain changes from the countable order
-$\mathbb{N}$ to the dense, uncountable order $\mathbb{R}_{\ge 0}$.  Simple
-combinators such as prefix, suffix, and concatenation rely on a notion of
-“position” given by natural-number indices and on traces being built from
-finite or $\omega$-sequences of events.  For continuous traces
-$\pi : \mathbb{R}_{\ge 0} \to V$, there is no last position and no canonical
-next point in time, so discrete prefix/suffix operators have to be replaced
-by restriction to intervals, time-shifts, and composition on real domains,
-typically formulated in terms of signal or trajectory operators from hybrid
-systems and signal temporal logic~\cite{Koymans1990, MalerNickovic2004, DonzeMaler2010}.
-This change of time model also forces temporal operators and monitoring
-algorithms to account for dense-time semantics and uncountably many
-potential discontinuities, making direct reuse of the discrete machinery
-impossible in general.
-
-Formal verification of software systems focuses primarily on abstraction for discrete traces because algorithms, programs, and protocol interactions proceed through countable computational steps.  
-This dissertation adopts this perspective and works exclusively with discrete traces.
-
-We now introduce the different concrete event domains used in the remainder of the chapter.
-
-
-
-\section{Discrete Trace Taxonomy}
-
-Discrete traces differ according to the choice of event domain $\mathbb{E}$.
-
-I am confused help i need also to say that event are rich data structures i.e  vector of other data structure but mainly I want to introduce action, states and state action
-\paragraph{Action Traces}
-
-Action traces have , a set of elementary actions or transition
-labels.  
-Each event denotes a computational step or interaction.  
-This model underlies labeled transition systems, process algebras such as CCS
-and CSP, and classical trace theory.
-
-\paragraph{State Traces}
-
-State traces use $2^{AP}$.  
-Each event is a full state valuation describing which propositions hold at that
-step.  
-This is the semantic model for Kripke structures and temporal logics
-such as LTL and CTL.
-
-\paragraph{Hybrid State--Action Traces}
-
-Hybrid traces combine states and actions, either by pairing events in
-$S\times A$ or by alternating states and actions $s_0,a_0,s_1,a_1,\dots$.  
-These traces arise in operational semantics, debugging, and model checker
-counterexample explanations.
-
-
-\subsection{Comparison of Trace Types}
-
-\begin{center}
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textbf{Trace Type}
-& \textbf{Event Meaning}
-& \textbf{Semantic Focus}
-& \textbf{Frameworks} \\ \hline
-
-Action 
-
-& Transition steps
-& Control flow
-& LTS, CCS, CSP \\ \hline
-
-State 
-
-& Propositional valuations
-& Temporal truth
-& Kripke structures, LTL \\ \hline
-
-State--action 
-& Cause and resulting state
-& Operational causality
-& Operational semantics, SPIN \\ \hline
-\end{tabular}
-\end{center}
-
-
-
-
-In this dissertation we focus on \emph{action traces}, where events are drawn from a finite alphabet of actions. We work with per-agent action alphabets~$\Sigma_i$ and write $\Sigma := \bigcup_i \Sigma_i$ for the global alphabet. The literature has converged on three canonical action trace models, each embodying a different view of time:
-\emph{metric-timed traces}, \emph{logical-time traces}, and \emph{synchronous-time traces}. Metric-timed traces are standard in real time verification and timed automata~\cite{AlurDill94}; logical-time traces supports interleaving models for process calculi and concurrency~\cite{Milner89,Hoare85,DiekertRozenberg95}; and synchronous-time traces are used in synchronous languages and round-based control~\cite{Halbwachs93}. For each model we describe:
-\begin{enumerate}
-  \item the event domain and the motivation in practice,
-  \item the notion of timed distance between events that is different for each type of action trace, and
-  \item a synchronization operator that combines two traces of the same type.
-\end{enumerate}
-
-To talk about temporal timed distance between event in a uniform way we define different variants of a partial \emph{timed distance} function
-\[
-  \timedist : \mathbb{E} \times \mathbb{E} \rightharpoonup \mathbb{Z},
-\]
-whose concrete definition depends on the type of the trace. We now instantiate this scheme for the three trace models of interest.
-
-\subsubsection{Metric-Timed Action Traces}
-
-\paragraph{Motivation and usage.}
-Metric-timed traces record which action occurs and at which discrete time point. They are the staple model for real time systems, timed automata, and timed process theories, where absolute time and quantitative delays are semantically relevant~\cite{AlurDill94}. Typical applications include scheduling constraints, deadlines, and bounded response obligations.
-
-\paragraph{Event domain.}
-Given an action alphabet~$\Sigma$, the metric-timed event domain is the set of action–timestamp pairs
-\[
-  \mathbb{E}_{\mathrm{mt}} \;:=\; \Sigma \times \mathbb{N}.
-\]
-
-\begin{definition}[Action Lookup Function by timestamp]\label{defrho}
-  The \emph{action lookup function} $\rho : \mathbb{E}_{mt}^*\times \mathbb{N} \to \Sigma \cup \{ \Undef \}$ returns the action $\acta$ performed at time $t$ in trace $\tau$, if any:
-  \[
-  \rho\big(\trace{(a_1,t_1)\dots(a_n,t_n)}, t\big) := 
-  \begin{cases} 		
-  a_i & \text{if } t_i=t \text{ for some } i,\\
-  \text{undefined} & \text{otherwise.}
-  \end{cases}
-  \]
-  and for the empty trace, $\rho(\emptytrace, t):=\text{undefined} $
-  \end{definition}
-
-
-\begin{definition}[Timed distance for two metric timed events from the same trace]
-   \[\text{Let }
-  \taumt \;=\; \trace{(a_0,t_0),(a_1,t_1),\dots,(a_{n-1},t_{n-1})}
-  \;\in\; (\Sigma \times \mathbb{N})^{*}
-\]
-we define the distance between any two events from the metric timed trace as $\timedist_{mt}:\mathbb{E}_{mt} \times \mathbb{E}_{mt} \to \mathbb{Z}$ :
-\[
-  \timedist_{mt}\big((a_i,t_i),(a_j,t_j)\big) \;:=\; t_j - t_i
-\]
-
-\end{definition}
-whenever $t_j \ge t_i$. For metric-timed traces this yields the intuitive timed distance between any two events on the same trace. Metric-timed synchronization captures simultaneous behavior of two agents/systems that share the same time scale and act at concrete timestamps.
-
-We move now to define the classical synchronization mechanism which relies on \emph{the global clock assumption}
-\begin{definition}[Synchronization of two timed traces]
-
-\[\text{Let }
-  \taumt_1 \in (\Sigma_1 \times \mathbb{N})^{*}
-  \quad\text{and}\quad
-  \taumt_2 \in (\Sigma_2 \times \mathbb{N})^{*}
-\]
-be two metric-timed traces defined by the same global clock. Their synchronized trace
-\[
-  \taumt_1 \sync_{\mathrm{mt}} \taumt_2
-\]
-is the (finite) trace over $(\Sigma_1 \times \Sigma_2) \times \mathbb{N}$ that pairs up events with the same timestamp:
-\[
-  \taumt_1 \sync_{\mathrm{mt}} \taumt_2
-  \;:=\;
-  \trace{((a^{(1)}_{k_0},a^{(2)}_{\ell_0}),t_0),\dots,((a^{(1)}_{k_m},a^{(2)}_{\ell_m}),t_m)}
-\]
-where:
-\begin{itemize}
-  \item each $t_j$ belongs to $\mathsf{time}(\taumt_1) \cap \mathsf{time}(\taumt_2)$,
-  \item $(a^{(1)}_{k_j},t_j)$ occurs in $\taumt_1$ and $(a^{(2)}_{\ell_j},t_j)$ occurs in $\taumt_2$, and
-  \item the timestamps $t_0 < \dots < t_m$ enumerate $\mathsf{time}(\taumt_1) \cap \mathsf{time}(\taumt_2)$ in increasing order.
-\end{itemize}
-Events that do not share a timestamp remain local to the respective agent and can be handled later through projection or product constructions in the usual way for timed automata.
-\end{definition}
-
-\begin{example}[Factory robot and quality controller]
-  Let
-  \[
-  \Sigma_{1}=\{\textsf{load},\ \textsf{weld},\ \textsf{paint}\},
-  \qquad
-  \Sigma_{2}=\{\textsf{inspect},\ \textsf{approve},\ \textsf{reject}\}.
-  \]
-  
-  Consider the two metric timed traces
-  \[
-  \begin{aligned}
-  \taumt_1&=\trace{(\textsf{load},1),\ (\textsf{weld},4),\ (\textsf{paint},7)},\\[2pt]
-  \taumt_2&=\trace{(\textsf{inspect},4),\ (\textsf{approve},5),\ (\textsf{inspect},7)}.
-  \end{aligned}
-  \]
-  
-  \paragraph{Event lookup using \(\rho\).}
-  \[
-  \rho(\taumt_1,4)=\textsf{weld},\qquad
-  \rho(\taumt_2,5)=\textsf{approve},\qquad
-  \rho(\taumt_1,2)\text{ undefined}.
-  \]
-  
-  \paragraph{Timed distances.}
-  \[
-  \timedist_{mt}\big((\textsf{load},1),(\textsf{weld},4)\big)=4-1=3,
-  \qquad
-  \timedist_{mt}\big((\textsf{inspect},4),(\textsf{inspect},7)\big)=7-4=3.
-  \]
-  
-  \end{example}
-
-\subsubsection{Logical-Time Action Traces}
-
-\paragraph{Motivation and usage.}
-Logical-time traces abstract away absolute time and retain only the order in which actions occur. They are the underlying objects in interleaving models for process calculi such as CCS and CSP~\cite{Milner89,Hoare85} and in Mazurkiewicz trace theory for true concurrency~\cite{DiekertRozenberg95}. This view is appropriate when only causal or ordering information matters and concrete delays are irrelevant.
-
-\paragraph{Event domain.}
-Given an action alphabet~$\Sigma$, the logical-time event domain is simply
-\[
-  \mathbb{E}_{\mathrm{lt}} \;:=\; \Sigma.
-\]
-
-\paragraph{Formal definition.}
-A \emph{finite logical-time trace} over~$\Sigma$ is a word
-\[
-  \tault \;=\; \trace{a_0,a_1,\dots,a_{n-1}} \;\in\; \Sigma^{*}
-\]
-with $a_k \in \Sigma$. We write $|\tault| := n$ and $\mathsf{pos}(\tault) := \{0,\dots,n-1\}$ for the position set.
-
-\paragraph{Timed distance.}
-Since logical time discards timestamps, there is no meaningful metric distance between events. We reflect this by treating the timed distance as undefined on logical-time events:
-\[
-  \timedist(e_i,e_j) \text{ is undefined for all } e_i,e_j \in \mathbb{E}_{\mathrm{lt}}.
-\]
-Only the relative order of events is available.
-
-\paragraph{Synchronization.}
-Synchronization on logical-time traces is given by the standard asynchronous interleaving or \emph{shuffle} operator that combines two local traces while preserving the local order of each. Let $\Sigma = \Sigma_1 \uplus \Sigma_2$ be the disjoint union of per-agent alphabets and let
-\[
-  u \in \Sigma_1^{*},
-  \qquad
-  v \in \Sigma_2^{*}.
-\]
-The asynchronous synchronization $u \sync_{\mathrm{lt}} v$ is the set of all words in $\Sigma^{*}$ obtained by interleaving $u$ and $v$ without reordering the letters of either argument. Formally, we define
-\[
-  u \sync_{\mathrm{lt}} v \;:=\; u \shuffle v,
-\]
-where the shuffle $u \shuffle v$ is characterised inductively by
-\[
-  \begin{aligned}
-  \emptytrace \shuffle v &= \{\,v\,\},\\
-  u \shuffle \emptytrace &= \{\,u\,\},\\
-  (a \cdot u') \shuffle (b \cdot v')
-  &= \{\,a \cdot w \mid w \in u' \shuffle (b \cdot v')\,\}
-   \cup \{\,b \cdot w \mid w \in (a \cdot u') \shuffle v'\,\},
-  \end{aligned}
-\]
-with $a \in \Sigma_1$ and $b \in \Sigma_2$. Every $w \in u \shuffle v$ satisfies the projection property
-\[
-  w{\upharpoonright}\Sigma_1 = u,
-  \qquad
-  w{\upharpoonright}\Sigma_2 = v.
-\]
-This operator corresponds to the standard interleaving semantics used in process calculi~\cite{Milner89,Hoare85}.
-
-\subsubsection{Synchronous-Time Action Traces}
-
-\paragraph{Motivation and usage.}
-Synchronous-time traces assume a single global logical clock. All components react simultaneously at each round, and absence of action is explicit. This is the semantic basis of synchronous languages such as Lustre and Esterel and of many round-based controllers and distributed protocols with a globally synchronised step~\cite{Halbwachs93}.
-
-\paragraph{Event domain.}
-Given an action alphabet~$\Sigma$, we extend it with a dedicated stutter symbol ``$-$'' that is not in~$\Sigma$ and define
-\[
-  \mathbb{E}_{\mathrm{st}} \;:=\; \Sigma \cup \{-\}.
-\]
-At each round the event either records a concrete action from~$\Sigma$ or records that no action occurs.
-
-\paragraph{Formal definition.}
-Fix a global round clock indexed by $\mathbb{N}$. A \emph{finite synchronous-time trace} over~$\Sigma$ is a word
-\[
-  \taust \;=\; \trace{s_0,s_1,\dots,s_T} \;\in\; (\Sigma \cup \{-\})^{*}
-\]
-with $s_t \in \Sigma \cup \{-\}$ the observation at round $t$. The length is $|\taust| := T{+}1$ when the word is nonempty and the set of positions is $\mathsf{pos}(\taust) := \{0,\dots,T\}$.
-
-\paragraph{Timed distance.}
-We fix a positive constant $\Delta > 0$ for the duration of one global round. For synchronous-time events we interpret the timed distance by their round indices:
-\[
-  \timedist(s_{r_i}, s_{r_j}) \;:=\; (r_j - r_i) \cdot \Delta
-\]
-whenever $0 \le r_i \le r_j \le T$. Thus the temporal separation between events is given by the number of intervening rounds multiplied by the fixed round duration.
-
-\paragraph{Synchronization.}
-Synchronization on synchronous-time traces is given by a lockstep or \emph{zip} operator that combines two global views round by round. Let
-\[
-  \taust_1 = \trace{s_0,\dots,s_{T_1}} \in (\Sigma_1 \cup \{-\})^{*},
-  \qquad
-  \taust_2 = \trace{r_0,\dots,r_{T_2}} \in (\Sigma_2 \cup \{-\})^{*}.
-\]
-Set $T := \max(T_1,T_2)$ and extend the shorter word with stutters up to horizon $T$. The synchronous synchronization
-\[
-  \taust_1 \sync_{\mathrm{st}} \taust_2
-\]
-is the trace over $(\Sigma_1 \cup \{-\}) \times (\Sigma_2 \cup \{-\})$ defined by
-\[
-  \taust_1 \sync_{\mathrm{st}} \taust_2
-  \;:=\;
-  \trace{(s_0,r_0),(s_1,r_1),\dots,(s_T,r_T)}.
-\]
-Each position $t$ of the result records the joint round of both agents. Projecting onto the first (respectively second) component recovers the padded version of $\taust_1$ (respectively $\taust_2$). This is the standard lockstep product used in synchronous languages and synchronous composition of automata~\cite{Halbwachs93}.
-
-\medskip
-In summary, these three action trace models share the same abstract notion of events and traces but differ in the temporal information carried by each event, in the induced notion of timed distance, and in their native synchronization operators. We build on these models in the rest of the chapter when we introduce automata-based tools and multi-agent synchronization disciplines for collaborative normative specifications.
-
-\subsection{Model Based Logics}
-\subsubsection{Regular Languages}
-\subsection{\omga-Regular Languages}
-
-
-\subsection{Formal tools for trace verification}
-\label{subsec:formal-tools-trace}
-Trace-based verification reduces semantic questions about systems and specifications to questions about sets of words over an alphabet. Two central analysis tasks are model checking and runtime monitoring.
-
-\paragraph{Model checking versus monitoring.}
-In model checking, a (finite-state) model of the system is given, for example as a labelled transition system, and a specification is given as a logical formula or an automaton. Verification asks whether all executions of the model satisfy the specification, which can be reduced to language inclusion or emptiness of a product construction. In runtime monitoring, only a single concrete execution trace is available, generated by a running system. A monitor processes the trace incrementally and produces a verdict about whether the observed behaviour satisfies, violates, or is still inconclusive with respect to the specification.
-
-\medskip
-In both cases, finite automata over traces are the core workhorse. They serve either as compiled forms of temporal or deontic specifications, or as abstract models of the behaviours that a system can generate. We recall the standard notions needed later.
-
-\paragraph{Nondeterministic finite automata.}
-\begin{definition}[Nondeterministic finite automaton (\NFA)]
-Let $\Sigma$ be an alphabet. A nondeterministic finite automaton (\NFA) over $\Sigma$ is a tuple
-\[
-   \mathcal{A} \;=\; (Q,\Sigma,\delta,q_0,F),
-\]
-where:
-\begin{itemize}
-  \item $Q$ is a finite set of states,
-  \item $q_0 \in Q$ is the initial state,
-  \item $F \subseteq Q$ is the set of accepting states,
-  \item $\delta \subseteq Q \times \Sigma \times Q$ is a transition relation.
-\end{itemize}
-A \emph{run} of $\mathcal{A}$ on a finite word $\pi = \langle a_0,\dots,a_{n-1}\rangle \in \Sigma^{*}$ is a sequence of states
-\[
-   r = \langle q_0,q_1,\dots,q_n\rangle
-\]
-such that $(q_k,a_k,q_{k+1}) \in \delta$ for every $k < n$. The run is \emph{accepting} if $q_n \in F$. The language recognised by $\mathcal{A}$ is
-\[
-   \Lang{\mathcal{A}} \;:=\; \{\, \pi \in \Sigma^{*} \mid \text{there exists an accepting run of $\mathcal{A}$ on $\pi$} \,\}.
-\]
-\end{definition}
-
-\paragraph{$\epsilon$-\NFA.}
-\begin{definition}[$\epsilon$-\NFA]
-An $\epsilon$-\NFA over alphabet $\Sigma$ is an \NFA
-\[
-   \mathcal{A}_{\epsilon} \;=\; (Q,\Sigma,\delta,q_0,F)
-\]
-where the transition relation $\delta$ may additionally contain transitions of the form $(q,\epsilon,q')$ that consume no input symbol. A run of $\mathcal{A}_{\epsilon}$ on a word $\pi \in \Sigma^{*}$ is allowed to take $\epsilon$-transitions between consuming letters. An $\epsilon$-\NFA recognises the same class of regular languages as \NFA{}s. Every $\epsilon$-\NFA can be transformed into an equivalent \NFA (without $\epsilon$-moves) by the standard $\epsilon$-elimination construction.
-\end{definition}
-
-\paragraph{Deterministic finite automata.}
-\begin{definition}[Deterministic finite automaton (\DFA)]
-A deterministic finite automaton (\DFA) over an alphabet $\Sigma$ is a tuple
-\[
-   \mathcal{D} \;=\; (Q,\Sigma,\delta,q_0,F),
-\]
-where $Q$, $\Sigma$, $q_0$, and $F$ are as above, and the transition function
-\[
-   \delta : Q \times \Sigma \to Q
-\]
-is total and single-valued. Thus, for every state $q \in Q$ and letter $a \in \Sigma$ there is exactly one successor state $\delta(q,a)$. A run of $\mathcal{D}$ on a word $\pi = \langle a_0,\dots,a_{n-1}\rangle$ is the unique state sequence
-\[
-   r = \langle q_0,q_1,\dots,q_n\rangle
-\]
-with $q_{k+1} = \delta(q_k,a_k)$ for all $k < n$. The word $\pi$ is accepted if $q_n \in F$, and the recognised language $\Lang{\mathcal{D}}$ is defined accordingly.
-\end{definition}
-
-\medskip
-\noindent\textbf{Automata and trace verification.}
-For a property $\varphi$ over traces on alphabet $\Sigma$, the set of all traces that satisfy $\varphi$ can often be represented as a regular language $L_{\varphi} \subseteq \Sigma^{*}$ accepted by some \NFA or \DFA. Model checking questions such as “does every execution of the system satisfy $\varphi$?” can then be reduced to language inclusion problems $L_{\text{sys}} \subseteq L_{\varphi}$, whereas monitoring questions “does the current finite trace satisfy $\varphi$?” are answered by running the corresponding automaton on the observed prefix. Later in this chapter, we specialise these constructions to deontic and collaborative specifications and refine them into Moore machines that produce rich verdicts instead of simple accept or reject outcomes.
-
-\subsection{Moore Machines}
 
 \section{Trace Synchronization in Multi-Agent Models}
 \label{sec:multiagent-sync}
@@ -1507,7 +916,8 @@ By Lemma~\ref{lem:agg-to-periodic}, for agent~1 the element $\textsf{start\_occ}
 $\textsf{pay\_rent\_f}\in \Aik{1}{3}$ (witness times $35<95$), and similarly for agent~2.
 \end{example}
 
-\subsubsection{The Abstraction of Attempted/Declined Interactions Over Synchronized Alphabets}
+% Normalized capitalization for subsubsection
+\subsubsection{The Abstraction of Attempted and Declined Interactions Over Synchronized Alphabets}
 We introduce here the second aspect of our abstraction, which is the notion of interaction alphabets. We first merge the action alphabets of both agents into a unique one and then encode in the trace that when $a$ is an event, it means either an agent has instantiated or accepted to collaborate on it. On the other hand, when an action is absent from the event, it means that the agent either did not do it or that he actively did another action to prevent its success. We begin by demonstrating on our example how this abstraction maintains the same meaning while reducing the number of action types. Then we demonstrate an operator to compute the successful interaction at each period of the synchronized trace. This transformation cannot be automated as long as the set of enabling and interfering actions is not explicitly stated in the normative specification. If it is not the case, the digitization engineer has to define them manually, as we are doing here.
 
 We consider three collaborative objectives that are identified in the Example.\ref{ME}:
@@ -1805,7 +1215,7 @@ $s^0_i,s^1_i,\dots$ with $s^{k+1}_i=\delta_i(s^k_i,X_k)$ and outputs $Y_k=\lambd
   which is the output associated with the last state of the run on $X$.
   \end{definition}
 
-\subsubsection{Interactive strategy computation}
+\subsubsection{Interactive Strategy Computation}
 
 We present the property of two Moore machines that can feed each other and progress together.
 
@@ -2065,7 +1475,7 @@ $\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
 
 
 \section{The Two-Agents Collaborative Normative Logic \cDL}
-\subsection{Syntax of \cDL \ }
+\subsection{Syntax of \cDL}
 As summarized in Fig.~\ref{fig:cdl-syntax}, the syntax of \cDL\ is organized into three blocks: regular expressions, literals, and contracts.
 
 \begin{figure}[h]
@@ -2147,7 +1557,7 @@ This block composes literals into full specifications using:
 \emph{repetition} \(\repit{C}\) for repetitive occurrence of a contract.
 Together, these constructs could be used to capture the clauses of a contract, conditions upon which they are activated or terminated, and how the clauses relate to each other regarding reparation or the timed order between them. More specifically, the combination of repetition and a guarded contract can capture the notion of open-ended contracts.
  In the following example, we illustrate how we could capture our motivating example:
-\subsection{Illustrating the encoding in \cDL for the motivating example}
+\subsection{Illustrating the Encoding in \cDL for the Motivating Example}
 \begin{example}[Encoding the rental clauses in \cDL]
 \label{ex:contract-encoding}
 We now illustrate how the rental agreement introduced in Example~\ref{ME} 

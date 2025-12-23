@@ -1094,8 +1094,8 @@ So far we introduced two quantitative views of non-compliance. The first one, $\
                 \end{lemma}
 
 
-            \subsection{Quantitative Blame Monitor}
-            \label{subsec:quant-blame-monitor}
+                \subsection{Quantitative Blame Monitor Construction}
+                \label{subsec:qbm}
             
             The forward-looking blame monitor $\bmc(C)$ identifies the \emph{first} decisive blame frontier and then remains in a post-violation sink. To account for \emph{all} blame occurrences over the whole lifespan of an interaction, we introduce a quantitative blame monitor whose output is a pair of natural numbers counting blame assigned to each agent.
             
@@ -1172,8 +1172,7 @@ So far we introduced two quantitative views of non-compliance. The first one, $\
             \]
             Finally, this is exactly the recursive clause of the quantitative blame semantics, which evaluates the head letter against the current residual and then propagates the progressed residual to the tail. Thus $\qscore(\qbm(C),\pi)=\qblame{\pi,C}$.
             \end{proof}
-\subsection{Quantitative Blame Monitor Construction}
-\label{subsec:qbm}
+
 
 The quantitative blame setting combines the persistence of the quantitative monitors with the responsibility granularity of the blame verdicts.
 Instead of outputting a Boolean or multi-valued status, the monitor outputs a \emph{blame increment vector} in $\mathbb{N}^2$ at each step, where the $i$-th component counts how many violations at that step are blamed on agent $i$.
