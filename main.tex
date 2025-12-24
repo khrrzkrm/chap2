@@ -1499,11 +1499,11 @@ The syntax of \cdl is defined inductively via the following grammar:
 \begin{alignedat}{3}
 \textbf{Regular expressions}\quad
 \re\ &::=&\ \mathsf{A}                                      && \hfill[\text{tagged action set}] \\
-   &\mid&\ *                               && \hfill[\text{trump card}] \\
+   &\mid&\ \Gamma                             && \hfill[\text{trump card}] \\
    &\mid&\ \varepsilon                             && \hfill[\text{empty word}] \\
    &\mid&\ \emptyset                              &&  \hfill\quad\qquad [\text{empty set of actions}] \\
    &\mid&\ (\re \mid \re)                           && \hfill[\text{union}] \\
-   &\mid&\ \re~;~\re                                   && \hfill[\text{concatenation}] \\
+   &\mid&\ \re \cdot \re                           && \hfill[\text{concatenation}] \\
    &\mid&\ \re^{n}                                  && \hfill[\text{n-repetition}] \\
    &\mid&\ \re^{+}                                  && \hfill[\text{Kleene plus}] \\[6pt]
 %
@@ -1529,14 +1529,15 @@ C\ &::=&\ \ell                                    && \hfill[\text{literal}] \\
 \end{figure}
 
 
+ 
 \medskip
 \noindent\textbf{Regular expressions (\emph{re}).}
 This block specifies \emph{when} clauses apply by describing patterns over monthly positions.
 An \emph{atom} is a tagged action-set \(A \subseteq \Sigma\) stating what the two parties did in a month.
-Complex expressions are formed with \emph{union} \((re \mid re)\), \emph{concatenation} \((re;re)\) for next-month sequencing,
+Complex expressions are formed with \emph{union} \((re \mid re)\), \emph{concatenation} \((re \cdot re)\) for next-month sequencing,
 \emph{power} \(re^n\) (exactly \(n\) repetitions), and \emph{Kleene plus} \(re^+\) (one or more repetitions).
-The \emph{wildcard} \(*\) is the union of all $A \subseteq \Sigma$ used to skip a position, and \(\emptyset\) denotes the \emph{empty language}.
-These constructs enable patterns such as “a repair is requested this month” (an atom), “after any number of months if Agent $1$ asks for termination (\(*;\)), or “three consecutive months” \((re)^3\).
+The \emph{wildcard} \(\Gamma\) is the union of all $A \subseteq \Sigma$ used to skip a position, and \(\emptyset\) denotes the \emph{empty set of actions}.
+These constructs enable patterns such as “a repair is requested this month” (an atom), “after any number of months if Agent $1$ asks for termination (\(\Gamma \cdot\)), or “three consecutive months” \((re)^3\).
 
 \medskip
 \noindent\textbf{Literals (\emph{\(\ell\)}).}
@@ -1612,7 +1613,7 @@ The encoding proceeds clause by clause, following the contract structure:
   persist for three additional months before ending.  
   This behavior is captured with a guarded contract:
   \[
-  C_5 := \guard[\,*^+\,;\,\{\notifterm^{(1)}\}\,;\,*^{3}\,] (\ C_3\ \wedge\ C_2\ \wedge\ C_4\ ).
+  C_5 := \guard[\,\Gamma^+\,;\,\{\notifterm^{(1)}\}\,;\,\Gamma^{3}\,] (\ C_3\ \wedge\ C_2\ \wedge\ C_4\ ).
   \]
 \end{itemize}
 
