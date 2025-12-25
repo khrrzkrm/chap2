@@ -1,7 +1,6 @@
 \section{Tight Forward Reasoning on Contract Compliance}
 \subsection{Denotational Semantics for Forward-Looking Tight Contract Satisfaction}\label{forwardsatsem}
-Fix the tagged collaboration alphabet 
-$\Sigma = \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$
+Fix the tagged collaboration alphabet $\Sigma = \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$
 and the letter alphabet $\Gamma = 2^{\Sigma}$.
 A (finite or infinite) trace is $\pi = \langle A_0, A_1, \dots \rangle$
 with $A_t \in \Gamma$.
@@ -50,8 +49,7 @@ These five regions are disjoint and jointly exhaustive.
 
 \medskip
 \paragraph{Collapsed two-valued judgements.}
-For downstream use (e.g., compliance checking),
-we collapse the five tight judgements into a two-valued view:
+For downstream use (e.g., compliance checking), we collapse the five tight judgments into a two-valued view:
 \[
 \begin{array}{rcl}
 \pi\ \sat\ C
@@ -80,32 +78,35 @@ Intuitively, for party~1:
 party~2 simultaneously supports it with $a^{(2)}$.
 
 
+%
 \begin{definition}[Literal tight satisfaction]\label{def:lattsat}
-Given a single event word $\trace{A}$ with $A\in\Gamma$, 
-the tight semantics of literals for party~$p=1$ are:
+Given a single event word $\trace{A}$ with $A\in\Gamma$, the tight semantics of literals for party~$p=1$ are:
+
 \[
-\begin{array}{l@{\quad}c@{\quad}l@{\qquad\qquad}l@{\quad}c@{\quad}l}
-\multicolumn{3}{c}{\textbf{Tight satisfaction on } \trace{A}} &
-\multicolumn{3}{c}{\textbf{Tight violation on } \trace{A}}\\[2mm]
+\textbf{Tight satisfaction on } \trace{A}
+\]
+\[
+\begin{array}{l@{\quad}c@{\quad}l}
+\trace{A}\ \satt\ \top      &\mydef& \text{true}.\\[4pt]
+\trace{A}\ \satt\ \bot      &\mydef& \text{false}.\\[6pt]
+\trace{A}\ \satt\ \obl[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\subseteq A.\\[6pt]
+\trace{A}\ \satt\ \frb[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\not\subseteq A.\\[6pt]
+\trace{A}\ \satt\ \perm[1]{a} &\mydef& \text{if }(a^{(1)}\in A) \text{ then }(a^{(2)}\in A).
+\end{array}
+\]
 
-\trace{A}\ \satt\ \top      &\mydef& \text{true}. &
-\trace{A}\ \violt\ \top      &\mydef& \text{false}.
-\\[4pt]
+\medskip
 
-\trace{A}\ \satt\ \bot      &\mydef& \text{false}. &
-\trace{A}\ \violt\ \bot      &\mydef& \text{true}.
-\\[6pt]
-
-\trace{A}\ \satt\ \obl[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\subseteq A. &
-\trace{A}\ \violt\ \obl[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\not\subseteq A.
-\\[6pt]
-
-\trace{A}\ \satt\ \frb[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\not\subseteq A. &
-\trace{A}\ \violt\ \frb[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\subseteq A.
-\\[6pt]
-
-\trace{A}\ \satt\ \perm[1]{a} &\mydef& (a^{(1)}\in A)\Rightarrow(a^{(2)}\in A). &
-\trace{A}\ \violt\ \perm[1]{a} &\mydef& (a^{(1)}\in A)\wedge(a^{(2)}\notin A).
+\[
+\textbf{Tight violation on } \trace{A}
+\]
+\[
+\begin{array}{l@{\quad}c@{\quad}l}
+\trace{A}\ \violt\ \top      &\mydef& \text{false}.\\[4pt]
+\trace{A}\ \violt\ \bot      &\mydef& \text{true}.\\[6pt]
+\trace{A}\ \violt\ \obl[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\not\subseteq A.\\[6pt]
+\trace{A}\ \violt\ \frb[1]{a} &\mydef& \{a^{(1)},a^{(2)}\}\subseteq A.\\[6pt]
+\trace{A}\ \violt\ \perm[1]{a} &\mydef& (a^{(1)}\in A) \nd (a^{(2)}\notin A).
 \end{array}
 \]
 The case $p=2$ is symmetric.
@@ -122,15 +123,15 @@ Then
 Let $A'=\{a^{(1)},b^{(1)},b^{(2)}\}$. Then
 \[
 \trace{A'}\ \violt\ \perm[1]{a}\quad\text{(since $a^{(2)}\notin A'$)},\qquad
-\trace{A'}\ \satt\ \frb[2]{a}\quad\text{(no joint $a^{(1)}{+}a^{(2)}$ occurs).}
+\trace{A'}\ \satt\ \frb[2]{a}\quad\text{(no joint $a^{(1)} \nd a^{(2)}$ occurs).}
 \]
 Also, $\trace{A'}\ \satt\ \perm[2]{a}$ holds vacuously since $a^{(2)}\notin A'$.
 
 \medskip
 \noindent\textbf{Two-event trace.}
 Consider $\trace{A,A'}$.
-Since literals decide at the first letter,
-the overall collapsed verdict follows from $\trace{A}$:
+Since literals are decided at the first letter,
+the overall collapsed verdict follows from $\trace{A}$ are post satisfaction or post violation:
 \[
 \begin{array}{l}
 \trace{A,A'}\ \postsat\ \obl[1]{a},\\[4pt]
@@ -143,7 +144,7 @@ the overall collapsed verdict follows from $\trace{A}$:
 \subsubsection{Binary Contract Operators Tight Semantics}
 \label{sec:tight-binary}
 Binary contract operators combine two contracts into structured compositions that capture
-parallel, sequential, or conditional behaviour.  
+parallel, sequential, or conditional behavior.  
 In \cDL\ we use
 \[
 \textsf{op} \in \{\wedge,\ ;\ ,\ \repair\},
@@ -155,11 +156,9 @@ and $\repair$ means “if $C$ fails, \emph{repair} with $C'$.”
 \noindent\textbf{Reading guide (tight view).}
 All clauses below are tight: they identify the \emph{first decisive point}
 where satisfaction or violation becomes determined.
-For conjunction, the decisive point for satisfaction is the latter of the two individual successes;
-for violation, the first conjunct that fails.
+For conjunction, the decisive point for satisfaction is the latter of the two individual successes; for violation, the first conjunct that fails.
 For sequencing, a split index $k$ witnesses that $C$ succeeds before $C'$ is checked.
-Reparation requires, on the other hand, that either $C$ succeeds directly,
-or at the first tight violation of $C$ the repair $C'$ must succeed on the remainder.
+Reparation, on the other hand, requires that either $C$ succeeds directly, or, at the first tight violation of $C$, the repair $C'$ must succeed on the remainder.
 
 \begin{definition}[Binary Contract Operators]
 \label{def:binary-contract-semantics}
@@ -208,13 +207,11 @@ and by $\pi^k$ the suffix $\pi[k,\size{\pi}]$.
 \end{definition}
 
 \paragraph{Semantics summary.}
-\emph{Conjunction} succeeds once both parts succeed (possibly at different times);
-its decisive index is the latter of the two.  
+\emph{Conjunction} succeeds once both parts succeed (possibly at different times); its decisive index is the latter of the two.  
 It fails as soon as either part fails.  
 \emph{Sequence} requires a witness split $k$:
 first $C$ succeeds on $[0,k]$, then $C'$ on $[k{+}1,s]$.
-\emph{Reparation} allows $C'$ to take over at the first violation of $C$;
-overall success means either direct success of $C$
+\emph{Reparation} allows $C'$ to take over at the first violation of $C$; overall success means either direct success of $C$
 or a violation-then-repair pattern.
 
 \begin{example}[Tight satisfaction and violation for $(C_2 \wedge C_3)$]
@@ -229,7 +226,7 @@ C_2 := \perm[1]{\OCC}, \qquad
 C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
 \]
 
-\paragraph{Tight satisfaction (longest prefix).}
+\paragraph{Tight satisfaction (the longest prefix).}
 Consider the trace
 \[
 \pi_{\textsf{sat}} = \langle A_0, A_1\rangle,
@@ -247,7 +244,7 @@ Hence, by conjunction,
 $\pi_{\textsf{sat}}\ \satt\ (C_2 \wedge C_3)$
 at the longest decisive prefix.
 
-\paragraph{Tight satisfaction (shortest prefix).}
+\paragraph{Tight satisfaction (the shortest prefix).}
 For the single-event trace 
 \[
 \trace{A_0'} \quad\text{with}\quad A_0'=\{\OCC^{(2)},\PAY^{(1)},\PAY^{(2)}\},
@@ -286,9 +283,7 @@ $\pi_{\textsf{viol}}\ \violt\ (C_2 \wedge C_3)$.
 
 \medskip
 This shows that $(C_2 \wedge C_3)$
-satisfies either immediately when both conjuncts hold,
-or later when a reparation compensates a missed rent,
-while violation arises when both payment and its repair fail.
+satisfies either immediately when both conjuncts hold, or later when a reparation compensates for a missed rent, while violation arises when both payment and its repair fail.
 \end{example}
 
 \subsubsection{Repetition Contracts Tight Semantics}
@@ -325,16 +320,13 @@ immediately after the previous one completes.
 The satisfaction condition unfolds recursively:
 a trace satisfies $C^n$ if it can be decomposed into a prefix where $C$ holds,
 followed by a suffix that satisfies $C^{n-1}$.
-A violation occurs either when the first occurrence of $C$ fails,
-or when some later repetition cannot be fulfilled after a previously satisfied segment.
-Hence, $C^n$ behaves as a \emph{sequential chain} of obligations,
-and any broken link invalidates the entire chain.
+A violation occurs either when the first occurrence of $C$ fails, or when some later repetition cannot be fulfilled after a previously satisfied segment.
+Hence, $C^n$ behaves as a \emph{sequential chain} of responsibilities and rights, and any broken link invalidates the entire chain.
 
 The infinite form $\repit{C}$ captures \emph{unbounded repetition}.
 Since finite traces cannot exhibit infinite iteration,
-$\repit{C}$ is never fully satisfied (\textsf{false} under tight semantics);
-it is only meaningful with respect to violation:
-a trace violates $\repit{C}$ once it violates one of its finite unfoldings $C^n$.
+$\repit{C}$ is never fully satisfied (\textsf{false} under tight semantics); it is only meaningful with respect to violation:
+a trace violates $\repit{C}$ once it violates one of its finite unfolding $C^n$.
 Intuitively, $\repit{C}$ models \emph{renewable or continuing} contracts such as
 subscriptions or recurring payments, where each cycle restarts the same normative
 condition indefinitely.
@@ -345,8 +337,7 @@ condition indefinitely.
 
 \subsubsection{Contracts-Regular Expression Binary Operator Semantics}
 \label{sec:regex-contract}
-Contracts guarded by regular expressions specify that a normative condition 
-becomes active only after the trace matches a given regular pattern.  
+Contracts guarded by regular expressions specify that a normative condition becomes active only after the trace matches a given regular pattern.  
 Such patterns, written $re$, are interpreted over the letter alphabet 
 $\Gamma = 2^{\Sigma}$ introduced above.  
 They act as \emph{temporal triggers} that delimit
@@ -400,8 +391,7 @@ Let the collaboration alphabet be
 \]
 
 \paragraph{(a) Triggered contract.}
-Clause~$C_4$ specifies that when the tenant requests a repair,
-the landlord must perform it within the following period:
+Clause~$C_4$ specifies that when the tenant requests a repair,the landlord must perform it within the following period:
 \[
 C_4 := \trig[\{\notifrepair^{(1)}\}]{\obl[2]{\REPAIR}}.
 \]
@@ -478,12 +468,8 @@ $\pi_{\mathsf{viol}}\ \violt\ C_9$.
 
 \subsubsection{Coherence of the Forward-Looking Contract Satisfaction Semantics}
 
-Coherence requires that for any fixed contract and trace there is never more
-than one decisive verdict. A trace cannot both tightly satisfy and tightly
-violate the same contract on different prefixes, since this would yield two
-incompatible outcomes for a single execution. Forward semantics must therefore
-rule out situations where tight satisfaction appears on one prefix and tight
-violation appears on another prefix of the same trace. Ensuring this exclusion
+Coherence requires that for any fixed contract and trace, there is never more than one decisive verdict. A trace cannot both tightly satisfy and tightly violate the same contract on different prefixes, since this would yield two incompatible outcomes for a single execution. Forward semantics must therefore
+rule out situations where tight satisfaction appears on one prefix and tight violation appears on another prefix of the same trace. Ensuring this exclusion
 makes the decisive point unique, which is required to justify every verdict from $\tightverdicts$.
 The next lemma states this exclusion precisely by showing that the two frontiers cannot arise on distinct prefixes of the same trace.
 
@@ -508,8 +494,7 @@ By structural induction on the syntactical structure of $C$.
 \emph{Base case: literals.}
 By Def.~\ref{def:lattsat}, a literal is decided on a single letter:
 $\trace{A}\ \satt\ \ell$ iff the letter constraint holds, and
-$\trace{A}\ \violt\ \ell$ iff it does not. These are complements on that step,
-so the two implications are immediate and uniqueness follows.
+$\trace{A}\ \violt\ \ell$ iff it does not. These are complements on that step, so the two implications are immediate, and uniqueness follows.
 
 \medskip
 \noindent\textbf{Inductive hypotheses.}
@@ -529,11 +514,10 @@ By Def.~\ref{def:binary-contract-semantics}, tight satisfaction requires
 first successes at some $k,k'$ with decisive index $j^\star=\max\{k,k'\}$.
 For every $j<j^\star$, either $j<k$ or $j<k'$ holds, hence by (IH-$C$-sat) and
 (IH-$C'$-sat) neither $\pi[0,j]\ \violt\ C$ nor $\pi[0,j]\ \violt\ C'$ holds.
-Since a tight violation of a conjunct is a tight violation of the conjunction,
+Since a tight violation of a conjunction is a tight violation of the conjunction,
 no $j<j^\star$ violates $C\wedge C'$. This proves the first implication.
 For the second, if some prefix tightly violates a conjunct, then by
-(IH-$C$-viol) or (IH-$C'$-viol) no earlier prefix tightly satisfies that conjunct,
-hence no earlier prefix tightly satisfies the conjunction.
+(IH-$C$-viol) or (IH-$C'$-viol) no earlier prefix tightly satisfies that conjunct, hence, no earlier prefix tightly satisfies the conjunction.
 
 \paragraph{Sequence $C;C'$.}
 By Def.~\ref{def:binary-contract-semantics}, tight satisfaction needs a split
@@ -542,16 +526,15 @@ For any $j\le k$, (IH-$C$-sat) forbids $\pi[0,j]\ \violt\ C$; for any
 $j>k$, (IH-$C'$-sat) applied to the suffix forbids $\violt C'$ before its
 own decisive point. A tight violation of $C;C'$ before satisfaction is either
 a violation of $C$ before $k$ or a violation of $C'$ after $k$, both excluded.
-The dual implication follows by (IH-$C$-viol) and (IH-$C'$-viol).
+The dual implication follows from (IH-$C$-viol) and (IH-$C'$-viol).
 
 \paragraph{Reparation $C\repair C'$.}
 By Def.~\ref{def:binary-contract-semantics}, either $C$ succeeds, or else at
 the first tight violation index $k$ of $C$ the repair $C'$ must succeed on
-$\pi^{k+1}$. In the first branch, (IH-$C$-sat) excludes earlier violations.
+$\pi^{k+1}$. In the first branch (IH-$C$-sat), it excludes earlier violations.
 In the second branch, (IH-$C$-viol) gives minimal property of the failure point of $C$,
 and (IH-$C'$-sat) on the suffix excludes earlier failure of the composite
-before its tight success. The dual implication is symmetric, using
-(IH-$C$-viol) and (IH-$C'$-viol).
+before its tight success. The dual implication is symmetric, using (IH-$C$-viol) and (IH-$C'$-viol).
 
 \paragraph{Finite repetition $C^n$.}
 Unfold $C^n \equiv C;(C^{n-1})$ and argue by a secondary induction on $n$,
@@ -572,14 +555,13 @@ index $k$ is minimal by (IH-$re$-sat); before $k$ the composite is undecided, an
 after $k$ we apply (IH-$C$-sat)/(IH-$C$-viol) on the suffix to obtain both implications.
 
 \paragraph{Guarded $[re]\,C$.}
-While $\pi$ \emph{closes} $re$ (that is, $\pi$ is in the open region for $re$),
-any tight or post failure of $C$ yields a tight or post failure of the composite.
+While $\pi$ \emph{closes} $re$ (that is, $\pi$ is in the open region for $re$), any tight or post failure of $C$ yields a tight or post failure of the composite.
 Once $re$ becomes impossible, the composite satisfies provided $C$ has not failed.
 Combine (IH-$re$-sat) and (IH-$re$-viol) with (IH-$C$-sat) and (IH-$C$-viol),
 and the guarded case table in Def.~\ref{def:trigger-guard-semantics}, to derive the two implications.
 
 \medskip
-All constructors preserve the two “no-backtrack” properties, hence the claim for all $C$.
+All constructors preserve the two “no-backtrack” properties; hence, the claim holds for all $C$.
 \end{proof}
 
 \begin{theorem}[Consistency of the forward looking 5 tight semantics]
@@ -623,9 +605,7 @@ where:
 \end{definition}
 
 The next definition introduces the construction for any contract into its tight
-satisfaction monitor. The construction is a function
-that maps each contract $C$ to a tight satisfaction monitor that enforces. The construction proceeds by structural induction on
-the syntax of $C$, and each operator in \cDL is matched by a corresponding monitor combination operator. Regular expression guards and triggers rely on the
+satisfaction monitor. The construction is a function that maps each contract $C$ to a tight satisfaction monitor that enforces it. The construction proceeds by structural induction on the syntax of $C$, and each operator in \cDL is matched by a corresponding monitor combination operator. Regular expression guards and triggers rely on the
 tight satisfaction monitor $\tsmc(\re)$ introduced earlier in
 Definition~\ref{def:tsmc-re}.
 
@@ -666,10 +646,8 @@ Where the tight monitor construction for regular expressions $\tsmc(\re)$ is alr
 
 \subsubsection{Construction for Literal Contracts}
 \paragraph{From Tight Semantics to 5-Valued Monitoring.}
-The literal clauses above define one-step satisfaction and violation
-judgments for a single event word~$\trace{A}$.
-We lift these clauses into a five-valued Moore machine
-whose outputs track the evolution of the tight verdicts over prefixes.
+The literal clauses above define one-step satisfaction and violation judgements for a single event word $\trace{A}$.
+We lift these clauses into a five-valued Moore machine whose outputs track the evolution of the tight verdicts over prefixes.
 \begin{definition}[Tight Satisfaction Monitor Construction for Literals]
 \label{def:moore-5-literal}
 For a literal $\ell$ from \cDL, the \emph{Tight Satisfaction monitor construction} for $\ell$, written $\tsmc_{\mathit{lit}}(\ell)$ is defined as:
@@ -731,16 +709,15 @@ Definition~\ref{def:lattsat} but refines it with explicit prefix continuity.
   (q0) edge[bend left=12] node[above,pos=0.5]
     {$\{a^{(1)},a^{(2)}\}\subseteq A$} (qs)
   (q0) edge[bend right=12] node[left,pos=0.45]
-    {$\text{otherwise}$} (qv)
-  (qs)  edge node[above] {*} (qps)
-  (qv)  edge node[below] {*} (qpv)
-  (qps) edge[loop right] node {*} (qps)
-  (qpv) edge[loop right] node {*} (qpv);
+    {$\{a^{(1)},a^{(2)}\} \not\subseteq A$} (qv)
+  (qs)  edge node[above] {$\Gamma$} (qps)
+  (qv)  edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} (qps)
+  (qpv) edge[loop right] node {$\Gamma$} (qpv);
 \end{tikzpicture}
 \caption{Compact 5-verdict Moore machine for the obligation literal
-$\obl[1]{a}$. The symbol $*$ stand for any $A \subseteq 2^\Sigma$.
-Each node displays its internal state and the corresponding output
-verdict $\in\tightverdicts$.
+$\obl[1]{a}$. 
+Each node displays its internal state and the corresponding output verdict $\in\tightverdicts$.
 The first joint execution of $a^{(1)}$ and $a^{(2)}$ yields~$\topt$,
 otherwise~$\bott$; subsequent steps emit the post-frontier verdicts
 $\topp$ or $\botp$.}
@@ -751,8 +728,7 @@ $\topp$ or $\botp$.}
 \subsubsection{Construction for Binary Contract Operators}
 
 For binary contract operators of the form $C\ \textsf{op}\ C'$ with
-$\textsf{op} \in \{\wedge,\ ;\ ,\ \repair\}$, the monitor for the composite
-contract is obtained by combining the already constructed monitors
+$\textsf{op} \in \{\wedge,\ ;\ ,\ \repair\}$, the monitor for the composite contract is obtained by combining the already constructed monitors
 $\tsmc(C)$ and $\tsmc(C')$. Each operator has its own monitor construction,
 defined below for conjunction, sequence, and reparation. We begin with the
 conjunction case.
@@ -778,7 +754,7 @@ $C \wedge C'$, written $\tsmc_{\wedge}(C,C')$, is defined as:
   \[
     Q_{\wedge} = Q \times Q',
   \]
-  with initial state
+  with the initial state
   \[
     q_0^{\wedge} = (q_0,\,q'_0).
   \]
@@ -819,8 +795,7 @@ The operator is symmetric, commutative, and idempotent.
 \noindent\textbf{Partial dominance for $\wedge$.}
 \noindent
 \textbf{Partial dominance rules for $\wedge$.}
-The monitor for $C \wedge C'$ checks both components at the same time
-and decides the global verdict according to the following rules:
+The monitor for $C \wedge C'$ checks both components at the same time and decides the global verdict according to the following rules:
 
 \begin{itemize}
   \item If any component gives $\botp$, the result is $\botp$:
@@ -833,7 +808,7 @@ and decides the global verdict according to the following rules:
   \[
   \forall v\in\{\mathsf{?},\topt,\topp\}:\quad \bott \sqcap v = \bott,
   \]
-  That is a single tight violation makes the conjunction fail tightly.
+  That is, a single tight violation makes the conjunction fail tightly.
 
   \item Tight and permanent success combine as the weakest success:
   \[
@@ -886,8 +861,7 @@ tight semantics of $C \wedge C'$.
 
 \begin{itemize}
   \item Permanent violation in either component produces $\botp$ immediately.
-  \item A tight violation in one component produces $\bott$ whenever no permanent
-  result is already present.
+  \item A tight violation in one component produces $\bott$ whenever no permanent result is already present.
   \item Satisfaction requires both components to reach satisfaction states.  
         If one is in $\topp$ or $\topt$ and the other is non-violating, the
         combined verdict matches the corresponding entry in the table.
@@ -895,8 +869,7 @@ tight semantics of $C \wedge C'$.
 \end{itemize}
 
 These cases match exactly the clauses for tight satisfaction, tight violation,
-post-satisfaction, and post-violation for the contract $C \wedge C'$. The monitor
-therefore implements the tight semantics of conjunction correctly.
+post-satisfaction, and post-violation for the contract $C \wedge C'$. The monitor, therefore, correctly implements the tight semantics of conjunction.
 \qed
 
 
@@ -904,10 +877,8 @@ Sequential composition is the second binary operator of \cDL. Given two already
 constructed monitors $\tsmc(C)$ and $\tsmc(C')$, the monitor for the composite
 contract $C\,;\,C'$ must first execute $C$ on the incoming trace and, once $C$
 reaches tight satisfaction, must continue execution with $C'$ on the remaining
-suffix. The construction below reuses the state spaces of both component
-monitors and redirects transitions that correspond to tight success of $C$
-into the initial state of $C'$. This yields a tight prefix monitor that exactly
-matches the semantics of sequential composition.
+suffix. The construction below reuses the state spaces of both components by redirecting transitions that correspond to the tight success of $C$
+into the initial state of $C'$. This yields a tight prefix monitor that exactly matches the semantics of sequential composition.
 
 \begin{definition}[Sequential Monitor Construction]
 \label{def:moore-seq}
@@ -980,7 +951,7 @@ trace.
 \label{lem:seq-correct}
 Let $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
 and let $\tsmc_{;}(\tsmc(C),\tsmc(C'))
-= (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor output the same verdict according to the sequence semantics:
+= (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor outputs the same verdict according to the sequence semantics:
 \[
 \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)=
 \semfive{\pi \vDash C~;~C'}.
@@ -1011,9 +982,7 @@ inductive hypothesis.
 
 \smallskip
 \emph{Violation case.}
-If $C$ violates before any tight success, the redirection never occurs
-and the global verdict is exactly the violation of $C$,
-matching $\pi\ \violt\ C;C'$.
+If $C$ violates before any tight success, the redirection never occurs, and the global verdict is exactly the violation of $C$, matching $\pi\ \violt\ C;C'$.
 
 \smallskip
 \emph{Satisfaction case.}
@@ -1026,7 +995,7 @@ of $C'$ is propagated, matching the semantics of $\satt\ C;C'$.
 Every prefix of $\pi$ is handled by either:
 (1) normal execution of $C$ or $C'$,
 or (2) the single redirection step that hands control from $C$ to $C'$.
-All verdicts therefore coincide exactly with the tight prefix semantics of
+All verdicts, therefore, coincide exactly with the tight prefix semantics of
 $C;C'$.
 \qed
 
@@ -1092,18 +1061,14 @@ is defined as the tuple
 
 \noindent
 \textbf{Intuition.}
-The reparation operator activates the secondary contract $C'$ after the primary
-contract $C$ reaches a tight failure. The construction mirrors the sequential
-case, except that the redirection applies to the transitions that lead to a
-tight violation of $C$ rather than to tight satisfaction.
+The reparation operator activates the secondary contract $C'$ after the primary contract $C$ reaches a tight failure. The construction mirrors the sequential case, except that the redirection applies to transitions leading to a tight violation of $C$ rather than to those leading to tight satisfaction.
 
 All states of $C$ whose verdicts are already violating
 ($\lambda_5(q)\in\{\bott,\botp\}$) are removed. Every transition in $C$ that
 would enter such a state is redirected to $q'_0$, the initial state of $C'$.
 This starts $C'$ exactly at the first prefix where $C$ tightly fails.  
 
-As long as no violation occurs, the monitor behaves exactly as $C$. Once a tight
-failure is detected, the remainder of the input is processed by $C'$.
+As long as no violation occurs, the monitor behaves exactly as $C$. Once a tight failure is detected, the remaining input is processed by $C'$.
 
 \begin{lemma}[Correctness of the reparation monitor construction]
 \label{lem:rep-correct}
@@ -1136,8 +1101,7 @@ which matches the tight semantics of $C\repair C'$ on the empty trace.
 
 \smallskip
 \emph{Inductive step.}
-Assume correctness for prefixes up to length $n$ and consider the next letter
-$A$. If $\lambda_5(\delta(x,A))=\bott$, then
+Assume correctness for prefixes up to length $n$ and consider the next letter $A$. If $\lambda_5(\delta(x,A))=\bott$, then
 $\delta_{\repair}(x,A)=q'_0$, so $C'$ takes over on the remaining suffix.
 This matches the semantic clause
 \[
@@ -1146,18 +1110,16 @@ This matches the semantic clause
 \pi^{k+1}\ \satt\ C'.
 \]
 
-If no tight violation occurs, $\delta_{\repair}$ behaves exactly as $\delta$,
-so the inductive hypothesis applies.
+If no tight violation occurs, $\delta_{\repair}$ behaves exactly as $\delta$, so the inductive hypothesis applies.
 
 \smallskip
 \emph{Violation case.}
-If $C$ reaches a tight failure and $C'$ later fails on the suffix,
-the monitor outputs $\botp$, exactly as prescribed by the semantics.
+If $C$ reaches a tight failure and $C'$ later fails on the suffix, the monitor outputs $\botp$, exactly as prescribed by the semantics.
 
 \smallskip
 \emph{Satisfaction case.}
 If $C$ tightly fails and $C'$ succeeds on the suffix, the monitor outputs
-$\topt$ or $\topp$ depending on whether the success occurs tightly or
+$\topt$ or $\topp$, depending on whether the success occurs tightly or
 post-satisfaction.
 
 \smallskip
@@ -1182,19 +1144,13 @@ The structural constructions of Definitions~\ref{def:moore-seq} and~\ref{def:moo
 can be seen as the static counterpart of the \emph{control-phase} view
 used in runtime-verification frameworks.
 Instead of introducing an explicit control variable
-$m \in \{\mathbf{L}, \mathbf{R}\}$, with $\mathbf{L}$ for left-hand side and $\mathbf{R}$ for the right, 
-to determine which component is active,
-our transformation achieves the same effect directly on the transition graph:
-deleting the terminal states of the left monitor
+$m \in \{\mathbf{L}, \mathbf{R}\}$, with $\mathbf{L}$ for left-hand side and $\mathbf{R}$ for the right, to determine which component is active, our transformation achieves the same effect directly on the transition graph deleting the terminal states of the left monitor
 and redirecting the transitions that reach a decisive verdict
 ($\topt$ for sequence, $\bott$ for reparation)
-to the initial state of the right monitor.
-This compile-time construction encodes the same operational behavior
-as a mode-augmented monitor that switches from $\mathbf{L}$ to $\mathbf{R}$
+to the initial state of the right monitor. This compile-time construction encodes the same operational behavior as a mode-augmented monitor that switches from $\mathbf{L}$ to $\mathbf{R}$
 when the switching condition is met.
 
-This idea parallels the phase-based runtime semantics
-proposed in the RV literature~\cite{falcone2009runtime,bartocci2018rv},
+This idea parallels the phase-based runtime semantics proposed in the runtime verification literature~\cite{falcone2009runtime,bartocci2018rv},
 where control modes are used to synchronize sub-monitors
 for sequential patterns such as ``\emph{after $C$ succeeds, check $C'$}''.
 In contrast, the reparation composition corresponds to the
@@ -1213,15 +1169,13 @@ that those frameworks handle explicitly through control variables.
 \label{ex:moore-c3-literals}
 The reparation contract $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ combines two obligations:
 the primary duty $\obl[1]{\PAY}$ to pay rent,
-and the secondary reparation $\obl[1]{\PAYF}$ to pay a late fee
-if the first is violated.
+and the secondary reparation $\obl[1]{\PAYF}$ to pay a late fee if the first is violated.
 In addition, $C_2=\perm[1]{\OCC}$ grants the tenant (agent~2) permission to occupy the property.
 Below, we show the literal monitors, their reparation composition, and the conjunction $C_2\wedge C_3$,
 with verdict outputs $\tightverdicts=\{\mathsf{?},\topt,\bott,\topp,\botp\}$.
 
 
-We construct $C_2 \wedge C_3$ by the synchronous product of the 5-output monitors
-for $C_2=\perm[2]{\OCC}$ and $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$, then keep only
+We construct $C_2 \wedge C_3$ by the synchronous product of the 5-output monitors for $C_2=\perm[2]{\OCC}$ and $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$, then keep only
 reachable states and minimize construction~\ref{fig:moore-c3-literals}.
 The Letter classes used on edges correspond to  shorthand for literal satisfaction or violation conditions:
 \[
@@ -1239,20 +1193,17 @@ $\bott$ if any conjunct tightly rejects, $\botp$ if any conjunct is post-reject,
 $\topt$ when one conjunct hits $\topt$ while the other is already at/past acceptance
 ($\topt$ or $\topp$), $\topp$ if both are post-accept, and $\mathsf{?}$ otherwise.
 
-Reading Fig.~\ref{fig:c2andc3} with the letter classes defined above:
-from $s_0$ (pre) there are three behaviors.
-(i) If \,$\OCC^\surd \land \PAY^\surd$\ holds in the current letter, both conjuncts succeed
-(perm is respected and the primary obligation is met), so the product emits $\topt$
+Reading Fig.~\ref{fig:c2andc3} with the letter classes defined above: from $s_0$ (pre) there are three behaviors:
+(i) If \,$\OCC^\surd \land \PAY^\surd$\ holds in the current letter, both conjuncts succeed (perm is respected, and the primary obligation is met), so the product emits $\topt$
 and moves to post-accept $\topp$.
 (ii) If \,$\OCC^{\times}$\ holds, the permission conjunct fails tightly, so the product
 emits $\bott$ and then $\botp$ forever.
 (iii) If \,$\OCC^\surd \land \PAY^{\times}$\ holds, the reparation branch of $C_3$
 is activated, and we move to the waiting state $s_1$ (still $\mathsf{?}$). From $s_1$,
 \,$\PAYF^\surd$\ discharges the reparation and triggers $\topt$; otherwise
-\,$\PAYF^{\times}$\ yields $\bott$. After $\topt$ (accepting frontier) all continuations
+\,$\PAYF^{\times}$\ yields $\bott$. After $\topt$ (accepting frontier), all continuations
 are in $\topp$; after $\bott$ (reject frontier) all continuations are in $\botp$.
-Thus, the decisive index for the conjunction is the latter of the two successes when both
-succeed, or the earlier tight failure when any conjunct fails, exactly as the figure shows.
+Thus, the decisive index for the conjunction is the latter of the two successes when both succeed, or the earlier tight failure when any conjunct fails, exactly as the figure shows.
 
 
 
@@ -1280,10 +1231,10 @@ succeed, or the earlier tight failure when any conjunct fails, exactly as the fi
 \path[->]
   (q0) edge[bend left=10] node[above,pos=0.5] {$\PAY^\surd$} (qs)
   (q0) edge[bend right=10] node[left,pos=0.5] {$ \PAY^\times$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{$\obl[1]{\PAY}$.
 Satisfaction occurs when both agents perform $\PAY$.}
@@ -1307,10 +1258,10 @@ Satisfaction occurs when both agents perform $\PAY$.}
 \path[->]
   (q0) edge[bend left=10] node[above,pos=0.5] {$\PAYF^\surd$} (qs)
   (q0) edge[bend left=10] node[left,pos=0.5] {$\PAYF^\times$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{$\obl[1]{\PAYF}$.
 Satisfaction occurs when both agents perform $\PAYF$.}
@@ -1344,10 +1295,10 @@ Satisfaction occurs when both agents perform $\PAYF$.}
   (q0) edge[bend right=10] node[left,pos=0.45]  {\scriptsize$\PAY^{\times}$} (qwait)
   (qwait) edge[bend left=8] node[right,pos=0.45] {\scriptsize$\PAYF^{\surd}$} (qs)
   (qwait) edge[bend right=10] node[below,pos=0.45] {\scriptsize$\PAY^{\times}$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{Reparation composition $\tsmc_\repair (\obl[1]{\PAY},\obl[1]{\PAYF})$.
 The monitor activates $\PAYF$ after tight failure of $\PAY$.}
@@ -1385,10 +1336,10 @@ The monitor activates $\PAYF$ after tight failure of $\PAY$.}
   (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
   (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
   (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{Conjunctive composition $\tsmc_{\wedge}(C_2,C_3)$, where $C_2=\perm[1]{\OCC}$.}
 \label{fig:c2andc3}
@@ -1408,13 +1359,8 @@ $\PAY^\surd:= \{A \mid \PAY^{(1)},\PAY^{(2)}\} \subseteq A $. The case $\PAYF^\s
 \newpage
 \subsubsection{Construction for Binary Regular Expression-Contracts}
 Triggered contracts activate their body $C$ once the triggering pattern $re$
-reaches its first tight match. Before that point, the monitor behaves exactly
-as the regular-expression monitor for $re$ and emits only $\mathsf{?}$. Once
-the trigger fires, the monitor switches permanently to the contract monitor
-$\tsmc(C)$. If the pattern becomes impossible before it fires, the contract is
-vacuously satisfied. The construction follows the same blueprint as sequence
-and reparation, but applied to the decisive states of the regular-expression
-monitor.
+reaches its first tight match. Before that point, the monitor behaves exactly as the regular-expression monitor for $re$ and emits only $\mathsf{?}$. Once the trigger fires, the monitor switches permanently to the contract monitor $\tsmc(C)$. If the pattern becomes impossible before it fires, the contract is
+vacuously satisfied. The construction follows the same blueprint as sequence and reparation, but applied to the decisive states of the regular expression monitor.
 
 \begin{definition}[Triggered Monitor Construction]
 \label{def:moore-trigger-seq}
@@ -1490,7 +1436,7 @@ The triggered monitor for $\trig[re]{C}$ is the machine
 
 
 \paragraph{Intuition.}
-The trigger monitor is obtained with the same redirection recipe used for sequence, but applied to the trigger. Keep only states that are still open in the trigger (outputs in \(\{\,\mathsf{?},\topt,\topp\,\}\)). Remove its decisive states. Redirect every transition that would be the first tight match of the triggering regular expression (the step that enters \(\topt\)) to the initial state of the contract monitor \(C\). From that point on, the global output is exactly the output of \(C\) on the suffix. Redirect every transition that would make the guard impossible (enter \(\bott\) or \(\botp\)) to a vacuous-success sink that emits \(\topt\) once then \(\topp\). While the guard remains open, only the guard component advances and the product emits \(\mathsf{?}\), so no premature verdict appears. This realizes the prefix clauses: success either because the trigger never becomes true which we refer to as vacuous satisfaction, or because it fires at the earliest index and the suffix satisfies \(C\); violation only if the guard fires and the suffix violates \(C\).
+The trigger monitor is obtained with the same redirection recipe used for sequence, but applied to the trigger. Keep only states that are still open in the trigger (outputs in \(\{\,\mathsf{?},\topt,\topp\,\}\)). Remove its decisive states. Redirect every transition that would be the first tight match of the triggering regular expression (the step that enters \(\topt\)) to the initial state of the contract monitor \(C\). From that point on, the global output is exactly the output of \(C\) on the suffix. Redirect every transition that would make the trigger impossible (enter \(\bott\) or \(\botp\)) to a vacuous-success sink for the overall contact that emits \(\topt\). While the guard remains open, only the guard component advances and the product emits \(\mathsf{?}\), so no premature verdict appears. This realizes the prefix clauses: success either because the trigger never becomes true, which we refer to as vacuous satisfaction, or because it fires at the earliest index and the suffix satisfies \(C\); violation only if the guard fires and the suffix violates \(C\).
 
 \begin{lemma}[Correctness of the triggered monitor construction]
 \label{lem:trigg-correct}
@@ -1507,8 +1453,7 @@ $\trig[re]{C}$. Then, for every trace $\pi$,
 
 \noindent
 \textbf{Proof sketch.}
-The proof follows the same pattern as for sequence and reparation, by induction
-on the length of $\pi$.
+The proof follows the same pattern as for sequence and reparation, by induction on the length of $\pi$.
 
 \smallskip
 \emph{Base case.}
@@ -1518,8 +1463,7 @@ of the guard. The value
 \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\varepsilon)\bigr)
   = \lambda_5^r(r_0) = \mathsf{?}
 \]
-coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace:
-no trigger has fired, and no violation has occurred.
+coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
 
 \smallskip
 \emph{Inductive step.}
@@ -1542,16 +1486,12 @@ There are two regions:
     This matches the case where the trigger never fires and $\trig[re]{C}$
     holds vacuously.
     \item $\delta_r(x,A)$ if $\delta_r(x,A)\in Q_r^{?}$, in which case the
-    guard remains open and the global verdict stays $\mathsf{?}$. This matches
-    the semantic clause that no decisive information is available as long as
-    neither a match nor impossibility has been detected.
+    guard remains open, and the global verdict stays $\mathsf{?}$. This matches the semantic clause that no decisive information is available as long as neither a match nor an impossibility has been detected.
   \end{itemize}
-  The inductive hypothesis on the guard monitor ensures that the moment of
-  redirection coincides with the earliest decisive prefix of $re$.
+  The inductive hypothesis on the guard monitor ensures that the moment of redirection coincides with the earliest decisive prefix of $re$.
 
   \item \emph{Contract-active region ($y\in Q_c$).}
-  Once the monitor has been redirected into $c_0$, all transitions are given
-  by $\delta_c$, and outputs by $\lambda_5^c$. The induction hypothesis for
+  Once the monitor has been redirected into $c_0$, all transitions are given by $\delta_c$, and outputs by $\lambda_5^c$. The induction hypothesis for
   $\tsmc(C)$ gives
   \[
   \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
@@ -1575,8 +1515,7 @@ $\trigg[re]{C}$ leaves the status undecided.
 
 \smallskip
 \emph{Conclusion.}
-At each prefix, the monitor is either simulating the guard with the correct
-decisive redirection points, or simulating $C$ on the correct suffix. Hence
+At each prefix, the monitor either simulates the guard with the correct decisive redirection points or simulates $C$ on the correct suffix. Hence
 for every trace $\pi$ the monitor verdict
 \(
 \lambda_5^{\trigg}(\delta_{\trigg}(q_0^{\trigg},\pi))
@@ -1662,8 +1601,7 @@ The guard reads both monitors in lockstep and enforces:
   \end{align*}
 \end{itemize}
 
-The resulting case table is symmetric and total, and it collapses to the expected
-two-valued clauses once tight/post outcomes are merged into satisfied vs.\ violated.
+The resulting case table is symmetric and total, and it collapses to the expected two-valued clauses once tight/post outcomes are merged into satisfied vs.\ violated.
 
 \begin{lemma}[Correctness of the guarded monitor construction]
 \label{lem:guard-correct}
@@ -1713,8 +1651,7 @@ There are three semantic regions, corresponding to the three guard statuses.
   \item \textbf{Guard open}
   \(\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}\).  
   This means $\pi$ still possibly satisfies the guard.  
-  The guarded semantics requires that any tight or post failure of $C$ becomes
-  the global failure.  
+  The guarded semantics requires that any tight or post failure of $C$ becomes the global failure.  
   The monitor table assigns $\bott$ or $\botp$ precisely in these cases, and
   $\mathsf{?}$ otherwise, matching
   \[
@@ -1726,15 +1663,14 @@ There are three semantic regions, corresponding to the three guard statuses.
   \item \textbf{Guard impossible}
   \(\lambda_5^r(x)\in\{\bott,\botp\}\).  
   This corresponds exactly to $\pi\ \violt\ re$.  
-  The guarded semantics declares vacuous acceptance provided that $C$ has not
-  already failed.  
+  The guarded semantics declares vacuous acceptance provided that $C$ has not already failed.  
   The output table assigns $\topt$ or $\topp$ if $C$ has not failed, and
   propagates $\bott$ or $\botp$ if it has.  
   This matches the semantic requirements for vacuous satisfaction.
 
   \item \textbf{Guard closed (triggered or concluded)}
   \(\lambda_5^r(x)\in\{\topt,\topp\}\).  
-  In this region the guard has fired or completed successfully, and the
+  In this region, the guard has fired or completed successfully, and the
   semantics require $C$ to satisfy or to fail.  
   The output table combines the post-accept and tight-accept verdicts of $C$
   with those of $re$ exactly as demanded by the five-valued semantics:
@@ -1766,9 +1702,7 @@ for all traces $\pi$.
 \subsubsection{Construction for repetition contracts}
 
 Repetition contracts describe behaviors that must be satisfied several times in
-sequence. The monitor construction follows the intuition that each repetition
-runs an independent copy of the monitor for $C$, with the next copy becoming
-active exactly when the previous one reaches tight success. For finite
+sequence. The monitor construction follows the intuition that each repetition runs an independent copy of the monitor for $C$, with the next copy becoming active exactly when the previous one reaches tight success. For finite
 repetition $C^n$, this results in $n$ chained monitors. For unbounded
 repetition $\repit{C}$, we obtain an infinite cycle without ever reporting
 tight success.
@@ -1857,8 +1791,7 @@ For sink states:
 
 \medskip
 \noindent
-This completes the construction of the five-valued monitor
-for $\nrep(n,C)$.
+This completes the construction of the five-valued monitor for $\nrep(n,C)$.
 \end{definition}
 
 \begin{lemma}[Correctness of the finite repetition monitor]
@@ -1875,7 +1808,7 @@ $\tsmc_{\nrep}(n,C)
 
 
 
-In the next sections we use the different languages defintion in the semantics of \cdl and the automata constructions and transformations to enable automatic detection of violations and attribution of blame for synchronous interactions over contracts in \cDL.
+In the next sections, we use the definitions of the different languages in the semantics of \cdl, along with automata constructions and transformations, to enable automatic detection of violations and the attribution of blame for synchronous interactions over contracts in \cDL.
 
 
 \begin{definition}[Tight monitor construction for unbounded repetition $\repit{C}$]
@@ -1957,8 +1890,7 @@ Otherwise, it remains in the undecided verdict $\mathsf{?}$.
 W\begin{example}[Open ended contract monitor construction]
 \label{ex:open-ended}
 
-We illustrate the constructions for the guarded open-ended contract
-\(\guard[re]{\repit{C_3}}\) where
+We illustrate the constructions for the guarded open-ended contract \(\guard[re]{\repit{C_3}}\) where
 \(re = *^{+};\{\notifterm^{(1)}\}\) and
 \(C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}\).
 The construction proceeds in three steps:
@@ -1970,9 +1902,7 @@ are shown in Figure~\ref{fig:one-per-line}.
 \medskip
 \noindent\textbf{(a) \(\tsmc(\repit{C_3})\)
 (Subfigure~\ref{fig:rep-c3_vertical}).}
-The monitor contains the states
-\(q_0/\mathsf{?}\), \(q_w/\mathsf{?}\), \(q_{\bott}/\bott\), and \(q_{\botp}/\botp\).
-The meaning of the transitions is as follows.
+The monitor contains the states \(q_0/\mathsf{?}\), \(q_w/\mathsf{?}\), \(q_{\bott}/\bott\), and \(q_{\botp}/\botp\). The meaning of the transitions is as follows.
 
 A joint payment \(\PAY^\surd\) keeps the monitor at \(q_0\).
 A missed payment \(\PAY^\times\) moves to the waiting state \(q_w\).
@@ -1982,15 +1912,14 @@ violation and moves to \(q_{\bott}\), which then steps on any letter to the
 permanent sink \(q_{\botp}\). The sink loops on all letters.
 
 This matches the construction of Definition~\ref{def:moore-repeat-unbounded}:
-tight success restarts a new cycle and tight failure leads to a permanent
+tight success restarts a new cycle, and tight failure leads to a permanent
 violation.
 
 \medskip
 \noindent\textbf{(b) \(\tsmc_{re}(re)\) for
 \(re = *^{+};\{\notifterm^{(1)}\}\)
 (Subfigure~\ref{fig:guard-}).}
-The monitor has states
-\(s_0/\mathsf{?}\), \(s_1/\mathsf{?}\), \(s^t/\topt\), and \(s^{+}/\topp\).
+The monitor has states \(s_0/\mathsf{?}\), \(s_1/\mathsf{?}\), \(s^t/\topt\), and \(s^{+}/\topp\).
 
 The regular-expression part reads arbitrary letters:
 \(s_0 \xrightarrow{*} s_1\).
@@ -2014,8 +1943,7 @@ The reachable combinations while the guard is open are
 \(s_0\times q_0\),
 \(s_1\times q_w\),
 and \(s_1\times q_0\).
-Their transitions follow the product rule
-\((x,y)\xrightarrow{A}(\delta_r(x,A),\delta_c(y,A))\).
+Their transitions follow the product rule \((x,y)\xrightarrow{A}(\delta_r(x,A),\delta_c(y,A))\).
 Examples include:
 \[
 \begin{aligned}
@@ -2046,7 +1974,7 @@ This behavior follows directly from Definition~\ref{def:moore-guard}:
 while \(\lambda_r\in\{\mathsf{?},\topt,\topp\}\) the guard is open, so any tight or
 post violation of \(\repit{C_3}\) becomes a violation of the guarded contract.
 Once the guard becomes true on \(T\), the contract must satisfy \(\repit{C_3}\)
-from that point on for the global verdict to be tight or post acceptance.
+from that point on, for the global verdict to be tight or post acceptance.
 
 
 \end{example}
@@ -2079,8 +2007,8 @@ from that point on for the global verdict to be tight or post acceptance.
     (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0) % restart on tight success
     (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
     % Failure sink:
-    (qv)  edge node[left] {$*$} (qpv)
-    (qpv) edge[loop right] node {$*$} ();
+    (qv)  edge node[left] {$\Gamma$} (qpv)
+    (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}
 \caption{Monitor for $\repit{C_3}$.}
 \label{fig:rep-c3_vertical}
@@ -2099,21 +2027,20 @@ from that point on for the global verdict to be tight or post acceptance.
 
 % --- Transitions ---
 \path
-  (s0) edge node[above,pos=0.4] {$*$} (g)
+  (s0) edge node[above,pos=0.4] {$\Gamma$} (g)
   (g) edge[loop below] node[below] {$\overline{T}$} ()
   (g) edge node[above] {$T$} (acc)
-%   (t2) edge node[left,pos=0.5] {$*$} (acc)
-  (acc) edge node[above] {$*$} (ap)
-  (ap) edge[loop above] node {$*$} ();
+%   (t2) edge node[left,pos=0.5] {$\Gamma$} (acc)
+  (acc) edge node[above] {$\Gamma$} (ap)
+  (ap) edge[loop above] node {$\Gamma$} ();
 
 % --- Legend ---
-\node[below=10mm of g,align=center,font=\scriptsize] (leg){
+\node[below=10mm of g,align=center] (leg){
 $T := \{\,A\in\Gamma\mid \notifterm^{(1)}\in A\,\}$,\;
 $\overline{T} := \Gamma\!\setminus\! T$,\;
-$*$ = any letter in $\Gamma$.
 };
 \end{tikzpicture}
-\caption{Monitor for the regular expression  $*^+\ ; \ \{terminate^{(1)}\}$.}
+\caption{Monitor for the regular expression  $\Gamma^+ \cdot  \ \{terminate^{(1)}\}$.}
 \label{fig:guard-}
 \end{subfigure}
 \vspace{3mm}
@@ -2150,8 +2077,8 @@ $*$ = any letter in $\Gamma$.
   (Oq0) edge node[left]        {\scriptsize $\PAY^\times$} (Oqw)
   (Oqw) edge[bend left=14] node[below]{\scriptsize $\PAYF^\times$} (Oqv)
  % (Oqw) edge[bend left=12] node[left]{\scriptsize $\PAYF^\surd$} (Oq0)
-  (Oqv) edge              node[left] {$*$} (Oqpv)
-  (Oqpv) edge[loop left]  node {$*$} ();
+  (Oqv) edge              node[left] {$\Gamma$} (Oqpv)
+  (Oqpv) edge[loop left]  node {$\Gamma$} ();
 
 % --- Mode switches: Open -> Imposs (guard hits bott/botp) ---
 \path
@@ -2167,15 +2094,15 @@ $*$ = any letter in $\Gamma$.
 
 % --- Imposs region loops ---
 \path
- % (Iq0t) edge[loop right] node {$*$} ()
-  (Iqwt) edge[loop right] node {$*$} ()
+ % (Iq0t) edge[loop right] node {$\Gamma$} ()
+  (Iqwt) edge[loop right] node {$\Gamma$} ()
   (Oqq00) edge[loop right] node {\scriptsize$\PAY^\surd \wedge \overline{T}$} ();
 
 \end{tikzpicture}
-\caption{Tight satisfaction monitor construction for $\guard[*^+\ ; \ \{terminate^{(1)}\}]{\repit{C_3}}$.}
+\caption{Tight satisfaction monitor construction for $\guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$.}
 \label{fig:guard-repC3}
 \end{subfigure}
-\caption{Progressive construction for  $\guard[(*^+ ; \notifterm^{(1)})]{\repit{C_3}}$.}
+\caption{Progressive construction for  $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$. Sub-figure (c) is obtained by applying $\tsmc_\guardd$ on sub-figure (b) and (a). }
 \label{fig:one-per-line}
 \end{figure}
 
@@ -2183,21 +2110,21 @@ $*$ = any letter in $\Gamma$.
 
 The guarded open-ended contract illustrates how the automaton constructions combine.  
 The unbounded repetition of \(C_3\) enforces an indefinite sequence of payments with repair, and the regular expression \(re\) recognizes the first occurrence of a termination notice.  
-The guarded product synchronizes both behaviors: while the guard is open, all failures of \(\repit{C_3}\) propagate to the global verdict; once the guard closes, the open-ended obligation is discharged and the monitor collapses to post acceptance provided that no violation has occurred.  
+The guarded product synchronizes both behaviors: while the guard is open, all failures of \(\repit{C_3}\) propagate to the global verdict; once the guard closes, the open-ended obligation is discharged, and the monitor collapses to post acceptance provided that no violation has occurred.  
 This example shows that the tight constructions scale to nested patterns of sequencing, repetition, guarding, and reparation while still preserving a direct correspondence with the prefix semantics of \cDL.
 \subsection{Forward-Looking Blaming Semantics}
-The tight semantics of \cDL identifies when a contract is satisfied or violated but does not explain \emph{who} caused a violation.  
-To attribute responsibility, we refine the violation verdicts according to which party failed to meet the corresponding normative requirement.  
-We break down tight and post violations into violations caused by agent 1, violations caused by agent 2, violations caused jointly by both, and violations where neither party is responsible (blameless cases).  
+The tight semantics of \cDL identify when a contract is satisfied or violated, but do not explain \emph{who} caused a violation.  
+To attribute responsibility, we refine the violation verdicts based on which party failed to meet the relevant normative requirement.  
+We break down tight and post violations into those caused by agent 1, those caused by agent 2, those caused jointly by both, and those where neither party is responsible (blameless cases).  
 Formally, we introduce tight violation verdicts
 \[
 \bottone,\quad \bottp{2},\quad \bottp{12},\quad \bottp{0},
 \]
-and their post violation counterparts
+and their post-violation counterparts
 \[
 \botpp{1},\quad \botpp{2},\quad \botpp{12},\quad \botpp{0}.
 \]
-By replacing the undifferentiated violation verdicts of the five-valued semantics with these responsibility-aware variants, and keeping the three non-violating verdicts \(\mathsf{?},\topt,\topp\), we obtain the forward looking blame eleven-valued semantics
+By replacing the undifferentiated violation verdicts of the five-valued semantics with these responsibility-aware variants, and keeping the three non-violating verdicts \(\mathsf{?},\topt,\topp\), we obtain the forward-looking blame eleven-valued semantics
 \[
 \mathbb{V}_{11}
     = \{\mathsf{?},\topt,\topp\}
@@ -2220,7 +2147,7 @@ if the subject does not attempt, blame the subject; otherwise, blame the other p
 \trace{A}\ \vDash_{\bottp{\barp}}\ \obl[p]{a} \;&\mydef\; a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
 \end{aligned}
 \]
-These two cases partition tight violation of $\obl[p]{a}$.
+These two cases partition a tight violation of $\obl[p]{a}$.
 
 \paragraph{Prohibition \(\frb[p]{a}\).}
 Violation requires the joint act to occur. Since the subject should refrain, blame the subject:
@@ -2230,7 +2157,7 @@ Violation requires the joint act to occur. Since the subject should refrain, bla
 If only one agent attempts the action, it does not violate a prohibition, so no other possible blame arises. An agent cannot be blamed for a prohibition that was not assigned to it.
 
 \paragraph{Power \(\perm[p]{a}\).}
-Blame occurs only when the subject of the power attempts and the other party withholds cooperation and the blame goes to the other party:
+Blame occurs only when the subject of the power attempts and the other party withholds cooperation, and the blame goes to the other party:
 \[
 \trace{A}\ \vDash_{\bottp{\barp}}\ \perm[p]{a}\ \;\mydef\;\ a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
 \]
@@ -2250,8 +2177,8 @@ Tight blame persists to extensions, and post blame is exactly “some earlier ti
 \end{definition}
 
 \begin{remark}[No joint blame at the literal level]
-    Each literal is decided on a single step and the only responsibility split is between the subject and the other party:
-    either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\) (or empty for \(\bot\)), never \(\{12\}\).
+    Each literal is decided on a single step, and the only responsibility split is between the subject and the other party:
+    either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals, the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\) (or empty for \(\bot\)), never \(\{12\}\).
 \end{remark}
 
 
@@ -2300,8 +2227,8 @@ For $S \subseteq\{1, 2\}$ of agent(s), and  two contract $C$ and $C'$ from \cDL 
 \]
 Where $\dbot$ stand for a non violation verdict, i.e, $\dbot \in \{\,?,\ \topp,\ \topt\,\}$\\
 \emph{Intuition.}
-The three cases summarize the possible outcomes that results from the forward-looking blame.
-The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contract could be violated on the same time point, in this case the agent or agents responsible for \emph{both simultaneous} violation gets the blame.
+The three cases summarize the possible outcomes of forward-looking blame.
+The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contracts could be violated at the same time point, in this case, the agent or agents responsible for \emph{both simultaneous} violation get the blame.
 
 For the rest of the operators,  blame  follows a similar definition as the tight violation, with $k \in [0, \size{\pi}]$:
 
@@ -2326,7 +2253,7 @@ For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) i
 \ \nd\
 \pi[k{+}1,|\pi|]\ \vDash_{\bottp{S}}\ C'.
 \]
-\emph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\) therefore corresponds to the agents responsible for the violation of the reparation \(C'\) once it is triggered. The blame for $C$ is not considered as one cares only for the overall violation of the combined contracts.
+\emph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\), therefore, corresponds to the agents responsible for violating the reparation \(C'\) once it is triggered. The blame for $C$ is not considered, as one cares only for the overall violation of the combined contracts.
 
 
 \begin{example}[Witness traces for all blame verdicts]
@@ -2364,14 +2291,14 @@ Here:
 $\pi_3 \vDash_{\bottp{2}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
 \item For the reparation clause $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ we must distinguish two different situations in which the fine is not honoured:
   \begin{itemize}
-    \item if the tenant never attempts to pay the fine, that is no letter of the trace contains $\PAYF^{(1)}$, then the blame goes to agent 1:\\
+    \item if the tenant never attempts to pay the fine, that is, no letter of the trace contains $\PAYF^{(1)}$, then the blame goes to agent 1:\\
     $\pi \vDash_{\bottp{1}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$,
-    \item if instead the tenant attempts to pay the fine and the landlord does not cooperate, for example in a letter $A$ with $\PAYF^{(1)}\in A$ and $\PAYF^{(2)}\notin A$, then the fine obligation is violated and the blame goes to agent 2:\\
+    \item if instead the tenant attempts to pay the fine and the landlord does not cooperate, for example, in a letter $A$ with $\PAYF^{(1)}\in A$ and $\PAYF^{(2)}\notin A$, then the fine obligation is violated, and the blame goes to agent 2:\\
     $\pi \vDash_{\bottp{2}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$.
   \end{itemize}
 \end{itemize}
 \end{example}
-\subsection{From Tight Contract Satisfaction Monitor to tight Blame Monitor}
+\subsection{From Tight Contract Satisfaction Monitor to Tight Blame Monitor}
 
 \begin{definition}[Blame monitor]
 \label{def:blamemonitor}
@@ -2396,8 +2323,7 @@ where:
 \end{enumerate}
 \end{definition}
 
-The blame monitor refines the five-valued tight satisfaction monitor by keeping
-the same control structure and replacing each violating region with a
+The blame monitor refines the five-valued tight satisfaction monitor by keeping the same control structure and replacing each violating region with a
 responsibility-aware verdict from $\mathbb{V}_{11}$.
 
 \begin{definition}[Blame monitor construction]
@@ -2405,7 +2331,7 @@ responsibility-aware verdict from $\mathbb{V}_{11}$.
 Let $C$ be a contract in \cDL. The \emph{blame monitor construction} is a
 function on contracts, written $\bmc(C)$, that returns the blame monitor over
 $\mathbb{V}_{11}$ for $C$.
-We define $\bmc(C)$ by reuse of the tight satisfaction monitor construction of
+We define $\bmc(C)$ by reusing the tight satisfaction monitor construction of
 Definition~\ref{def:tsmc}. Let
 \[
 \tsmc(C) = (Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)
@@ -2427,14 +2353,13 @@ non-violating outcomes,
 \[
 \mathsf{?},\quad \topt,\quad \topp,
 \]
-are kept unchanged. Whenever the tight semantics reaches a tight violation at
+are kept unchanged. Whenever the tight semantics reach a tight violation at
 some prefix, the corresponding state in the blame monitor outputs a symbol of
-the form $\bot^t_S$ where $S\in\{\{1\},\{2\},\{1,2\},\emptyset\}$ specifies
-who is responsible. Likewise, every post-violation region is labeled by some
+the form $\bot^t_S$ where $S\in\{\{1\},\{2\},\{1,2\},\emptyset\}$ specifies who is responsible? Likewise, every post-violation region is labeled by some
 $\bot^p_S$.
 
 Formally, let $\vDash_{\bottp{S}}$ and $\vDash_{\botpp{S}}$ be the
-denotational blame judgements introduced above. For a finite trace $\pi$ and
+denotational blame judgments introduced above. For a finite trace $\pi$ and
 prefix index $k<|\pi|$, define the \emph{ideal} blame verdict
 \[
 \mathsf{Blame}(C,\pi[0,k]) \in \mathbb{V}_{11}
@@ -2455,9 +2380,7 @@ as follows:
   & \text{if }\pi[0,k]\ \vDash_{\botpp{S}} C.
 \end{cases}
 \]
-By construction of the five-way semantics and the blame rules, exactly one of
-these cases applies to each prefix, and the set $S$ is uniquely determined
-whenever a blame judgement holds.
+By construction of the five-way semantics and the blame rules, exactly one of these cases applies to each prefix, and the set $S$ is uniquely determined whenever a blame judgement holds.
 
 \begin{definition}[Blame refinement of a contract monitor]
   \label{def:bm-refinement}
@@ -2624,7 +2547,7 @@ whenever a blame judgement holds.
     \]
    By construction, $Q_1$ excludes all violation states of $C_1$, so $\lambda_{11}$ simply returns the non-violating 5-valued verdict. If $C_1$ fails, the monitor moves to $Q_2$, where the blame is determined entirely by the reparation contract $C_2$.
     \end{proof}
-    In all cases, $\lambda_{11}$ correctly maps the state to the specific blame verdict defined by the forward-looking semantics. We move now to illustrate this refinement on two interesting examples
+    In all cases, $\lambda_{11}$ correctly maps the state to the specific blame verdict defined by the forward-looking semantics. We now move to illustrate this refinement with two interesting examples.
 
     \begin{example}[Blame Monitor for $C_2 \wedge C_3$]
       Let us recall that $C_2 = \perm[1]{\OCC}$ represents the tenant's power to occupy the property, and $C_3 = \obl[1]{\PAY} \repair \obl[1]{\PAYF}$ represents the obligation to pay rent, repaired by paying a fine.
@@ -2664,8 +2587,8 @@ whenever a blame judgement holds.
         (q0) edge[bend left=10] node[above,pos=0.6] {\scriptsize$\OCC^\surd \land \PAY^{\surd}$} (qs)
         (q0) edge[bend left=12] node[pos=0.6,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
         (q1) edge[bend left=8] node[right,pos=0.4] {\scriptsize$\PAYF^\surd$} (qs)
-        (qs) edge node[above] {$*$} (qps)
-        (qps) edge[loop right] node {$*$} ();
+        (qs) edge node[above] {$\Gamma$} (qps)
+        (qps) edge[loop right] node {$\Gamma$} ();
       
       % 2. Violation: Landlord Fault (Blame 2)
       % From s0: Landlord blocks occupation (Violation of P_1(OCC))
@@ -2685,10 +2608,10 @@ whenever a blame judgement holds.
       
       % 4. Post-Violation Loops
       \path
-        (qv2) edge node[left] {$*$} (qpv2)
-        (qv1) edge node[right] {$*$} (qpv1)
-        (qpv2) edge[loop left] node {$*$} ()
-        (qpv1) edge[loop right] node {$*$} ();
+        (qv2) edge node[left] {$\Gamma$} (qpv2)
+        (qv1) edge node[right] {$\Gamma$} (qpv1)
+        (qpv2) edge[loop left] node {$\Gamma$} ()
+        (qpv1) edge[loop right] node {$\Gamma$} ();
       
       \end{tikzpicture}
       \caption{Blame Monitor $\mathcal{BM}(C_2 \wedge C_3)$.
@@ -2704,7 +2627,7 @@ whenever a blame judgement holds.
       \end{example}
 
       Although the previous example is constructed using a conjunction, the reparation operator within $C_3$ delays the assignment of blame for the payment obligation.
-Specifically, if the tenant fails to pay rent, the monitor transitions to a waiting state for the reparation (outputting $\mathsf{?}$) rather than emitting an immediate violation verdict.
+Specifically, if the tenant fails to pay rent, the monitor transitions to a waiting state for the repair (outputting $\mathsf{?}$) rather than immediately emitting a violation verdict.
 Consequently, it is impossible for both conjuncts to return a tight violation $\bott$ at the same initial step.
 To illustrate a scenario where the monitor can output the joint blame verdict $\bottp{12}$, we consider the reparation-free reduction of the specification: $C_2 \wedge \obl[1]{\PAY}$.
 
@@ -2749,26 +2672,26 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
         % Success: Tenant pays AND Landlord allows occupation
         \path
           (q0) edge node[above] {\scriptsize$\OCC^\surd \land \PAY^\surd$} (qs)
-          (qs) edge node[above] {$*$} (qps)
-          (qps) edge[loop right] node {$*$} ();
+          (qs) edge node[above] {$\Gamma$} (qps)
+          (qps) edge[loop right] node {$\Gamma$} ();
         
         % Joint Violation: Tenant doesn't pay AND Landlord blocks occupation
         \path
           (q0) edge[bend left=20] node[sloped,above] {\scriptsize$\OCC^\times \land \PAY^{\text{fail}}$} (q12)
-          (q12) edge node[above] {$*$} (qp12)
-          (qp12) edge[loop right] node {$*$} ();
+          (q12) edge node[above] {$\Gamma$} (qp12)
+          (qp12) edge[loop right] node {$\Gamma$} ();
         
         % Tenant Violation: Landlord allows occupation, BUT Tenant doesn't pay
         \path
           (q0) edge[bend right=5] node[sloped,above,pos=0.6] {\scriptsize$\OCC^\surd \land \PAY^{\text{fail}}$} (q1)
-          (q1) edge node[above] {$*$} (qp1)
-          (qp1) edge[loop right] node {$*$} ();
+          (q1) edge node[above] {$\Gamma$} (qp1)
+          (qp1) edge[loop right] node {$\Gamma$} ();
         
         % Landlord Violation: Tenant pays, BUT Landlord blocks occupation
         \path
           (q0) edge[bend right=30] node[sloped,below] {\scriptsize$\OCC^\times \vee \PAY^{\text{blk}}$} (q2)
-          (q2) edge node[above] {$*$} (qp2)
-          (qp2) edge[loop right] node {$*$} ();
+          (q2) edge node[above] {$\Gamma$} (qp2)
+          (qp2) edge[loop right] node {$\Gamma$} ();
         
         \end{tikzpicture}
         \caption{Blame Monitor for $C_2 \wedge \obl[1]{\PAY}$.\\
@@ -2831,10 +2754,10 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
           % 4. Sinks (The Limitation)
           % Once in a sink, the monitor loops forever, ignoring future events
           \path
-              (qv1)  edge node[above] {$*$} (qpv1)
-              (qpv1) edge[loop right] node {$*$} ()
-              (qv2)  edge node[above] {$*$} (qpv2)
-              (qpv2) edge[loop right] node {$*$} ();
+              (qv1)  edge node[above] {$\Gamma$} (qpv1)
+              (qpv1) edge[loop right] node {$\Gamma$} ()
+              (qv2)  edge node[above] {$\Gamma$} (qpv2)
+              (qpv2) edge[loop right] node {$\Gamma$} ();
           
           \end{tikzpicture}
           \caption{Blame Monitor for $\repit{C_3}$.
@@ -2844,25 +2767,25 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
           \end{example}     
           
 \subsection{Conclusion and Limitation}      
-          We have presented a forward-looking  semantics and a corresponding monitor construction that refines the standard satisfaction verdicts with responsibility assignments. 
+          We have presented forward-looking semantics and a corresponding monitor construction that refine the standard satisfaction verdicts by assigning responsibility. 
           This approach is computationally efficient and provides immediate feedback on the \emph{status} of the contract, allowing for runtime enforcement and dispute resolution at the moment a breach occurs.
           
           However, this prefix-based view naturally implies a limitation regarding the completeness of the violation history. 
           The semantics is designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. 
           Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
           A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment.
-          Consequently, any subsequent violations The next lemma makes this coherence property explicit.committed by other agents at later time steps are effectively masked by the first failure.
+          Consequently, any subsequent violations committed by other agents at later time steps are effectively masked by the first failure.
           
           This limitation is particularly evident in open-ended contracts involving the repetition operator. 
           As illustrated by the monitor for $\repit{C_3}$ (Figure~\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
           Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
           Therefore, while this framework is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction. 
-          This is a notable constraint, as in law and normative systems one typically has to account for all violations to determine the full extent of liability or penalties.
+          This is a notable constraint, as in law and normative systems, one typically has to account for all violations to determine the full extent of liability or penalties.
           Capturing such multi-point violations would require a mechanism to reset or parallelize monitoring threads after a failure, rather than absorbing them into a permanent sink.
           
           Finally, extending this framework to support a cumulative blame semantics suggests interesting theoretical challenges. 
-          In particular, the interaction between timed operators and conjunctions complicates the aggregation of faults. 
-          For instance, determining whether overlapping failures in concurrent branches or repeated violations within sliding time windows should be counted as distinct or continuous breaches requires a more complex, possibly non-monotonic, judgement structure than the one presented here.          
+          In particular, the interaction between timed operators and conjunctions complicates fault aggregation. 
+          For instance, determining whether overlapping failures in concurrent branches or repeated violations within sliding time windows should be counted as distinct or continuous breaches requires a more complex, possibly non-monotonic, judgment structure than the one presented here.          
 
 % \begin{theorem}[Correctness of the blame monitor]
 % \label{thm:bm-correct}
@@ -2893,7 +2816,7 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 % The blame rules for literals and contract operators are defined by structural
 % recursion on $C$ and share the same tight frontiers as the underlying
 % violation semantics. By Lemma~\ref{lem:mutual prefix}, each prefix carries at
-% most one tight frontier and the five regions are disjoint. The inductive
+% most one tight frontier, and the five regions are disjoint. The inductive
 % clauses for blame propagation mirror the violation clauses, so for every
 % reachable state $q_k$ on the run over $\pi$, the contract semantics assigns a
 % unique verdict in $\mathbb{V}_{11}$ to the prefix $\pi[0,k]$.
@@ -2942,8 +2865,8 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 %     (q0) edge[bend right=13] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
 %     (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0)
 %     (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
-%     (qv)  edge node[left] {$*$} (qpv)
-%     (qpv) edge[loop right] node {$*$} ();
+%     (qv)  edge node[left] {$\Gamma$} (qpv)
+%     (qpv) edge[loop right] node {$\Gamma$} ();
 % \end{tikzpicture}
 % \caption{Blame monitor for $\repit{C_3}$. All unrepaired violations of $C_3$ are blamed on agent 1.}
 % \label{fig:rep-c3-blame}
@@ -2975,10 +2898,10 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 %   (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
 %   (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
 %   (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
-%   (qs) edge node[above] {$*$} (qps)
-%   (qv) edge node[below] {$*$} (qpv)
-%   (qps) edge[loop right] node {$*$} ()
-%   (qpv) edge[loop right] node {$*$} ();
+%   (qs) edge node[above] {$\Gamma$} (qps)
+%   (qv) edge node[below] {$\Gamma$} (qpv)
+%   (qps) edge[loop right] node {$\Gamma$} ()
+%   (qpv) edge[loop right] node {$\Gamma$} ();
 % \end{tikzpicture}}
 % \caption{Blame monitor for $C_2\wedge C_3$. $S$ denotes the blame set prescribed by the conjunction blame rules.}
 % \label{fig:c2andc3-blame}
@@ -2987,4 +2910,4 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 % \caption{Blame monitor construction by reuse of the tight monitors for $\repit{C_3}$ and $C_2\wedge C_3$. States and transitions are inherited from the five-valued monitors; only the outputs are refined from $\bott,\botp$ to the responsibility-aware verdicts $\bot^t_S,\bot^p_S$.}
 % \label{fig:blame-monitors-c2-c3}
 % \end{figure}
-% \end{example}
+% \end{example

@@ -1,14 +1,13 @@
-\section{The notion of tight semantics:}
-\subsection{The need of tight semantics}
+\section{The Notion of Tight Semantics}
+\subsection{The Need for Tight Semantics}
 \label{sec:motivate-tight}
 
-Contracts in \cdl\ are subject to \emph{when} clauses are first met or first broken.
-A rent payment that occurs \emph{now} settles the duty at this exact position; any
-later symbols should not re-open (nor re-justify) the same decision.  Likewise,
-the first missed deadline fixes the violation point; subsequent steps are merely
-after-the-fact evidence.  Before introducing the formal machinery, we motivate
-the need for a \emph{tight}, prefix-based semantics that singles out these
-decisive instants.
+
+In \cdl, contracts integrate responsibilities across multiple agents and temporal dimensions, making timing integral to their interpretation. Each duty is associated with a specific moment, and failure to fulfill it punctually results in an immediate contractual shift: the violation is registered at a distinct point, after which reparation obligations are activated. Semantically, this necessitates partitioning a trace into a \emph{pre-violation} prefix and a \emph{post-violation} suffix, with the reparation component evaluated exclusively on the post-violation segment.
+
+This partitioning must be exact. It is necessary to identify a unique earliest violation point, and correspondingly, a unique earliest satisfaction point, to ensure a single, unambiguous decomposition of observed behavior into segments occurring before and after the decisive instant. In the absence of such a unique boundary, reparations may be initiated prematurely, belatedly, or multiple times, leading to ambiguity in responsibility attribution. The prefix-based tight semantics introduced below are constructed to isolate these unique boundaries and thereby render the before-and-after evaluation well-defined.
+
+This approach is termed \emph{tight forward} semantics. The term \emph{forward} indicates that each verdict is determined sequentially from left to right over prefixes, without reference to future events, and that contract progression follows the chronological order of the trace. The term \emph{tight} signifies that the semantics are anchored at the first decisive instant, isolating a unique earliest satisfaction frontier and a unique earliest violation frontier, and classifying all strict extensions as post-frontier, thus precluding repeated triggering of the same responsibility. Thus, \emph{tight forward} denotes a prefix-based, left-to-right evaluation with a uniquely defined division between pre- and post-frontier phases.
 
 \medskip
 \noindent
@@ -47,56 +46,63 @@ correctness, fairness, and auditable timing in contracts.
 
 \medskip
 \noindent
-With this motivation in place, we now introduce the language-theoretic operators
-and automata constructions that realize these frontiers and, subsequently, define
+Building on this motivation, the following section introduces the language-theoretic operators and automata constructions that establish these frontiers and subsequently define
 the tight five-valued semantics.
 
-\subsection{Regular Language-engineering for tight behavior}
+\subsection{From Language Membership to Tight Prefix}
 \label{sec:lang-frontiers-tight}
 
+In this subsection, we generalize the construction of tight semantics to \emph{any regular language} $L \subseteq \Sigma^*$.
+To do so, we must distinguish between the classical notion of \emph{static language membership} and the requirements of \emph{behaviour evaluation}.
+
+Standard language theory evaluates a word $w$ holistically: $w$ is either inside or outside $L$.
+From the normative, behaviour-oriented point of view, we instead ask whether the desired behaviour has \emph{already} been achieved on some prefix.
+This requires a prefix-sensitive notion of evaluation together with \emph{eagerness}: we must identify the \emph{first} prefix at which the behaviour becomes satisfied or becomes impossible.
+This viewpoint diverges from plain set membership.
+For example, if $L=\{a\}$, the word $aa$ is not in $L$ (it is rejected by language membership).
+However, for behavioural monitoring, the prefix $a$ already establishes success; the second $a$ is merely an irrelevant extension, not a failure.
+
+Our objective is to formalize this shift by partitioning $\Sigma^*$ into regions that isolate these \emph{boundaries of decision}, explicitly resolving conflicts between ``bad words'' and ``extensions of good words'' in favor of the latter.
+
+\subsubsection{Topological Boundaries}
+We begin by identifying the candidate boundaries using standard topological operators on strings: the viable prefixes and the minimal evidence for membership or exclusion.
+
+\begin{definition}[Closures and Frontiers]\label{def:closure-bad}
+    For a regular language $L \subseteq \Sigma^*$:
+    \begin{enumerate}
+        \item The \textbf{Prefix Closure} ($\closureclass{L}$) is the set of all prefixes of words in $L$.
+        \item The \textbf{Bad Class} ($\badclass{L}$) is the complement of the closure (prefixes that can never lead to acceptance).
+        \item The \textbf{Minimal Frontier} ($\minlang{S}$) of a set is the set of its shortest elements.
+    \end{enumerate}
+\end{definition}
+
+Applying the minimal frontier operator yields two sets of candidates:
+\begin{itemize}
+    \item $\minlang{L}$: The candidates for \emph{Eager Acceptance} (shortest words in $L$).
+    \item $\minlang{\badclass{L}}$: The candidates for \emph{Eager Rejection} (shortest words deviating from $L$).
+\end{itemize}
+
+\subsubsection{The Priority of Acceptance}
+A rigorous definition of monitoring behavior requires resolving semantic overlaps between these frontiers.
+A word can be a minimal bad prefix while simultaneously extending a minimal accepted word (e.g., as noted, $aa$ regarding $L=\{a\}$).
+
+To ensure deterministic, forward-looking behavior, we enforce a \textbf{priority of acceptance}:
+Once a trace reaches the acceptance frontier $\minlang{L}$, any further extension is classified as \emph{irrelevant post-acceptance}, regardless of whether that extension technically belongs to $\badclass{L}$.
+
+\begin{definition}[Canonical Semantic Partition]\label{def:partition-sets}
+    We define the five disjoint sets forming the partition of $\Sigma^*$ as follows:
+    \begin{align*}
+        \EAL{L} &:= \minlang{L}                                  && \text{(Eager Acceptance)} \\
+        \IAL{L} &:= \EAL{L}\,\Sigma^{+}                          && \text{(Irrelevant Acceptance)} \\
+        \ERL{L} &:= \minlang{\badclass{L}} \setminus \IAL{L}     && \text{(Eager Rejection)} \\
+        \IRL{L} &:= \ERL{L}\,\Sigma^{+}                          && \text{(Irrelevant Rejection)} \\
+        \Pre{L} &:= \closureclass{\EAL{L}} \setminus \EAL{L}     && \text{(Pre-Verdict / Unknown)}
+    \end{align*}
+\end{definition}
+
 \noindent
-For the sake of simplicity this subsection shows how to build the motivated tight semantics on \emph{any regular languages} defined over $L\subseteq\Sigma^*$.
-We introduce prefix-based operators that isolate the first decisive points of
-\emph{acceptance} and \emph{rejection}, and separate them from their \emph{extension by any suffix}.
-The outcome is a disjoint and complete five-way partition of $\Sigma^*$ tailored to tight semantics.
-We write $u\preceq v$ when $u$ is a (possibly empty) prefix of $v$, and $u\prec v$ for a strict prefix.
-For $S,X\subseteq\Sigma^*$, $SX:=\{uv\mid u\in S,\,v\in X\}$, and $\Sigma^{+}:=\Sigma^*\setminus\{\varepsilon\}$.
-
-
-\begin{definition}[Prefix-closure and bad-prefix]\label{def:closure-bad}
-For a language $L\subseteq\Sigma^*$,
-\[
-\closureclass{L} \ :=\ \bigl\{\,u\in\Sigma^* \mid \exists v\in L:\ u\preceq v\,\bigr\},
-\qquad
-\badclass{L} \ :=\ \Sigma^* \setminus \closureclass{L}.
-\]
-\end{definition}
-
-\begin{definition}[Minimal elements]\label{def:min}
-For any $S\subseteq\Sigma^*$,
-\[
-\minlang{S} \ :=\ \bigl\{\,u\in S \mid \nexists v\in S:\ v\prec u\,\bigr\}.
-\]
-In particular, $\minlang{L}$ are the \emph{first acceptance} words, and
-$\minlang{\badclass{L}}$ are the \emph{first rejection} (minimal bad) words.
-\end{definition}
-
-\begin{definition}[Additional frontier definitions]\label{def:overshoots}
-\[
-\begin{array}{rcll}
-\IAL{L}  &:=& \minlang{L}\,\Sigma^{+}                            & \text{(irrelevant acceptance)},\\[2pt]
-\sbad{L} &:=& \minlang{\badclass{L}} \ \setminus\ \IAL{L}        & \text{(strict bad frontier)},\\[2pt]
-\IRL{L}  &:=& \sbad{L}\,\Sigma^{+}                                & \text{(irrelevant rejection)}.
-\end{array}
-\]
-\end{definition}
-
-\paragraph{Why the subtraction $\minlang{\badclass{L}}\setminus \IAL{L}$?}
-A word may be simultaneously a minimal bad prefix and a strict extension of a minimal
-acceptance (e.g.\ $aa$ for $L=\{a\}$ over $\Sigma=\{a,b\}$).
-We resolve this tie \emph{in favor of acceptance}, classifying such words as
-\emph{acceptance overhead}. Removing $\IAL{L}$ from $\minlang{\badclass{L}}$
-keeps the two frontiers disjoint.
+The critical operation here is the subtraction in $\ERL{L}$.
+By removing $\IAL{L}$ from the bad frontier, we formally encode the shift from membership to monitoring: determining that a trace is ``bad'' is meaningful only if it has not already been declared ``good.''
 
 \paragraph{Deconstructing regular language for tight behavior}
 
@@ -120,13 +126,12 @@ $\closureclass{L}\cap \badclass{L}=\emptyset$.
 
 (2) By definition of prefix-closure over the set of minimal acceptances.
 The decomposition into the disjoint union with $\minlang{L}$ is immediate since
-$\minlang{L}\subseteq \closureclass{\minlang{L}}$ and the difference removes
-exactly the minimal elements.
+$\minlang{L}\subseteq \closureclass{\minlang{L}}$ and the difference removes exactly the minimal elements.
 \end{proof}
 
 \paragraph*{Disjoint and complementary notation.}
 We write  for the \emph{disjoint complementary union} of sets \(A\), \(B\), written $X = A \dotcup B$.
-Thus \(X = A \dotcup B \dotcup C\) asserts that \(A,B,C\) are pairwise disjoint, i.e the intersection of any two different sets from $\{A,B,C\}$ is empty, and
+Thus \(X = A \dotcup B \dotcup C\) asserts that \(A,B,C\) are pairwise disjoint, i.e, the intersection of any two different sets from $\{A,B,C\}$ is empty, and
 \(X = A \cup B \cup C\).
 
 
@@ -231,22 +236,21 @@ Five regions:
 
 
 
-\subsubsection{Tight five-valued semantics}
-We now introduce a prefix-level semantics that takes values in the set
-$\tightverdicts=\{\mathsf{?},\topt,\bott,\topp,\botp\}$, corresponding respectively to:
+\subsubsection{Tight Five-Valued Semantics}
+We now introduce a prefix-level semantics that takes values in the set $\tightverdicts=\{\mathsf{?},\topt,\bott,\topp,\botp\}$, corresponding respectively to:
 pre-eager verdict (undecided but extendable), eager acceptance (first satisfaction),
 eager rejection (first violation), irrelevant acceptance (post acceptance),
-and irrelevant rejection (post rejection).
+and irrelevant rejection (post-rejection).
 
 \paragraph*{Shortcut notation.}
-For a regular language $L\subseteq\Sigma^*$. For brevity we fix:
+For a regular language $L\subseteq\Sigma^*$. For brevity, we fix:
 \[
 \begin{array}{rcll}
 \Pre{L} &:=& \closureclass{\minlang{L}}\setminus \minlang{L}, & \text{(pre-eager verdict)},\\[2pt]
 \EAL{L} &:=& \minlang{L},                                     & \text{(eager acceptance)},\\[2pt]
-\IAL{L} &:=& \minlang{L}\,\Sigma^{+},                         & \text{(irrelevant acceptance)},\\[2pt]
+\IAL{L} &:=& \EAL{L}\,\Sigma^{+},                         & \text{(irrelevant acceptance)},\\[2pt]
 \ERL{L} &:=& \minlang{\badclass{L}} \ \setminus\ \IAL{L},                                      & \text{(eager rejection)},\\[2pt]
-\IRL{L} &:=& \sbad{L}\,\Sigma^{+}.                            & \text{(irrelevant rejection)}.
+\IRL{L} &:=& \ERL{L}\,\Sigma^{+}.                            & \text{(irrelevant rejection)}.
 \end{array}
 \]
 
@@ -270,37 +274,13 @@ By Theorem~\ref{thm:five-way}, the sets $\Pre{L}$, $\EAL{L}$, $\ERL{L}$, $\IAL{L
 form a pairwise-disjoint and complete partition of $\Sigma^*$. Hence
 $\semfive{u \vDash L}$ is well-defined and single-valued for every $u\in\Sigma^*$.
 
-\begin{theorem}[Frontier and evolution properties of the tight five semantics]\label{prop:tightness-obligations-unindexed}
-Fix $L\subseteq\Sigma^*$ and $u\in\Sigma^*$. Then:
-\begin{itemize}
-  \item[\textbf{(A)}] \textbf{Post-eager acceptance irrelevance.}
-  If $\semfive{u \vDash L}=\topt$, then for every strict longer word $v$ with $u\prec v$
-  we have $\semfive{v \vDash L}=\topp$.
-
-  \item[\textbf{(B)}] \textbf{Unique eager-acceptance frontier before post-acceptance.}
-  If $\semfive{u \vDash L}=\topp$, then there exists a \emph{unique} strict prefix
-  $m\prec u$ such that $\semfive{m \vDash L}=\topt$.
-
-  \item[\textbf{(C)}] \textbf{Post-rejection irrelevance.}
-  If $\semfive{u \vDash L}=\bott$, then for every strict longer word $v$ with $u\prec v$
-  we have $\semfive{v \vDash L}=\botp$.
-
-  \item[\textbf{(D)}] \textbf{Unique eager-rejection frontier before post-rejection.}
-  If $\semfive{u \vDash L}=\botp$, then there exists a \emph{unique} strict prefix
-  $m\prec u$ such that $\semfive{m \vDash L}=\bott$.
-
-  \item[\textbf{(E)}] \textbf{Two-way continuation (unique minimal frontiers).}
-  If $\semfive{u \vDash L}=\mathsf{?}$, then there exist unique integers
-  $\ell_{\topt},\ell_{\bott}\ge 1$ such that:
-  \begin{itemize}
-    \item there exists a unique suffix $v\in\Sigma^{\ell_{\topt}}$ with
-          $\semfive{uv \vDash L}=\topt$, and for every strict prefix $v'$ of $v$
-          we have $\semfive{uv' \vDash L}=\mathsf{?}$;
-    \item if some extension of $u$ eventually leaves $\closureclass{L}$, then there exists
-          a unique suffix $x\in\Sigma^{\ell_{\bott}}$ with $\semfive{ux \vDash L}=\bott$,
-          and for every strict prefix $x'$ of $x$ we have $\semfive{ux' \vDash L}=\mathsf{?}$.
-  \end{itemize}
-\end{itemize}
+\begin{theorem}[Monotonicity and Determinacy]\label{prop:tightness-properties}
+  The semantics satisfy the following stability properties for any $u \in \Sigma^*$:
+  \begin{enumerate}
+      \item \textbf{Stability of Verdicts:} If $\semfive{u \vDash L} \in \{\topt, \topp\}$, then for all extensions $v \succ u$, $\semfive{v \vDash L} = \topp$. Analogously for rejection.
+      \item \textbf{Unique Frontier:} If $\semfive{u \vDash L} = \topp$, there exists a unique strict prefix $u' \prec u$ such that $\semfive{u' \vDash L} = \topt$.
+      \item \textbf{Determinism:} Since the partition in Theorem \ref{thm:five-way} is disjoint and complete, the semantics yields exactly one verdict for any input trace.
+  \end{enumerate}
 \end{theorem}
 
 \begin{proof}
@@ -316,11 +296,11 @@ uniqueness is by minimality over $\mathbb{N}$ together with prefix-freeness.
 
 
 
-\subsubsection{From Language automaton to Tight monitor construction}
+\subsubsection{From Language Automaton to Tight Monitor Construction}
 
 This subsection explains how the deterministic language automaton obtained for a regular expression is lifted into a tight monitor. A language automaton recognises complete words of a regular expression, whereas a tight monitor must classify every prefix of every word into one of the five semantic regions. The transition structure of the automaton is therefore preserved, and only the output behaviour changes: each state receives a tight verdict according to the five-valued prefix semantics. This yields the tight monitor for regular expressions introduced in Definition~\ref{def:tsmc-re}.
 
-We now recall the components used in this transformation and show how the DFA is turned into a Moore machine equipped with tight verdicts.
+We now recall the components used in this transformation and show how to convert the DFA into a Moore machine with tight verdicts.
 
 
 \begin{definition}[Five-region automata]\label{def:five-aut}
@@ -342,8 +322,7 @@ be a DFA for $L$. We define the following DFAs, all over the same alphabet $\Sig
   \item $\aut_{\mathrm{IRL}}(L) := (Q_{\mathrm{IRL}},\Sigma,\delta_{\mathrm{IRL}},q^{0}_{\mathrm{IRL}},F_{\mathrm{IRL}})$
         with $\Lang{\aut_{\mathrm{IRL}}(L)}=\IRL{L}$.
 \end{itemize}
-These DFAs are obtained using the constructions described in the previous subsection
-(prefix-closure, complement, minimal frontiers, and right-ideal saturation).
+These DFAs are obtained using the constructions described in the previous subsection (prefix-closure, complement, minimal frontiers, and right-ideal saturation).
 \end{definition}
 
 \begin{definition}[Five-region Moore machine]\label{def:five-moore}
@@ -411,7 +390,7 @@ unique accepting component among the five regions $\Pre{L}, \EAL{L}, \ERL{L}, \I
 \node[initial,state,fill=gray!10]    (s0) {$s_0$\\$\mathsf{?}$};
 \node[state,fill=green!18,right=26mm of s0]  (sa) {$s_a$\\$\topt$};
 \node[state,fill=green!10,right=26mm of sa]  (sp) {$s_+$\\$\topp$};
-\node[state,fill=gray!10,below=18mm of s0]   (sb) {$s_b$\\$\mathsf{?}$};
+\node[state,fill=gray!10,below=18mm of s0]   (sb) {Literal satisfaction and violation$s_b$\\$\mathsf{?}$};
 \node[state,fill=red!18,below=18mm of sa]    (sv) {$s_v$\\$\bott$};
 \node[state,fill=red!10,below=18mm of sp]    (sm) {$s_-$\\$\botp$};
 
@@ -429,7 +408,7 @@ unique accepting component among the five regions $\Pre{L}, \EAL{L}, \ERL{L}, \I
 \end{tikzpicture}
 \caption{Minimized five-valued Moore machine for $L=\{a,ab,bb\}$.
 Each node shows its name and output verdict ($\tightverdicts$).
-Green states denote satisfaction, red denote violation, gray undecided.
+Green states denote satisfaction, red denotes violation, and gray denotes undecided.
 From $s_0$, input $a$ or $bb$ yields~$\topt$, input $ba$ yields~$\bott$,
 and further inputs move to the post-frontier verdicts $\topp$ or $\botp$.}
 \label{fig:moore-tight-compact}
@@ -476,8 +455,7 @@ u\in\IAL{L}  &\iff \delta_{\mathrm{IAL}}^{*}(q^{0}_{\mathrm{IAL}},u)\in F_{\math
 u\in\IRL{L}  &\iff \delta_{\mathrm{IRL}}^{*}(q^{0}_{\mathrm{IRL}},u)\in F_{\mathrm{IRL}}.
 \end{aligned}
 \]
-By Theorem~\ref{thm:five-way}, the five languages form a pairwise-disjoint, complete
-partition of $\Sigma^*$. Hence for each $u$ exactly one of the five memberships holds,
+By Theorem~\ref{thm:five-way}, the five languages form a pairwise-disjoint, complete partition of $\Sigma^*$. Hence, for each $u$ exactly one of the five memberships holds,
 and $\lambda$ (by Definition~\ref{def:five-moore}) returns the unique verdict
 of Definition~\ref{def:five-valued-semantics}. Therefore
 $\lambda(\delta^{*}(s^0,u))=\semfive{u \vDash L}$.
@@ -564,34 +542,28 @@ Theorem~\ref{prop:tightness-obligations-unindexed}: the output leaves $\mathsf{?
 either $\topt$ or $\bott$, and then remains in the corresponding post phase $\topp$ or $\botp$.
 
 \paragraph*{Summary}
-This section developed a \emph{correct-by-construction} toolkit that turns any regular
-language $L\subseteq\Sigma^*$ into the five semantic regions required by tight monitoring,
-and then into a single verdicting monitor. The workflow relies only on classical
-automata-theoretic constructions—completion, product, complement, and breadth-first search
-on the DFA graph—used exactly as standard.
+This section developed a \emph{correct-by-construction} toolkit that turns any regular language $L\subseteq\Sigma^*$ into the five semantic regions required by tight monitoring,
+and then into a single verdicting monitor. The workflow relies only on classical automata-theoretic constructions—completion, product, complement, and breadth-first search on the DFA graph—used exactly as standard.
 
-Starting from a DFA $\aut(L)$ we systematically build the prefix-closure automaton
+Starting from a DFA $\aut(L)$, we systematically build the prefix-closure automaton
 $\closure{\aut(L)}$, which recognizes $\closureclass{L}$; its complement
 $\badc{\aut(L)}$, which recognizes $\badclass{L}$; and the minimal-frontier automaton
 $\minc{\aut(L)}$, which recognizes $\minlang{L}$. Two right-ideal saturations yield the
 post regions $\IAL{L}$ and $\IRL{L}$, and one language difference realizes the
 acceptance-first tie-break $\ERL{L} := \minlang{\badclass{L}}\setminus \IAL{L}$.
 
-Practically, the approach is modular: each region is an ordinary DFA; scalable: construct
-only the reachable part of products and minimize components; and reusable across
-specifications that share the same $L$. Conceptually, it aligns the linguistic
-requirements of normative systems, where norms enter into force at exact positions, with
+Practically, the approach is modular: each region is an ordinary DFA; scalable: construct only the reachable part of products and minimize components; and reusable across
+specifications that share the same $L$. Conceptually, it aligns the linguistic requirements of normative systems, where norms enter into force at exact positions, with
 executable monitors whose decisions are fair (no premature verdicts) and final
-(no evolution to the opposite verdict). In short, standard automata technology,
-assembled carefully, delivers a monitor that is \emph{correct by design}.
+(no evolution to the opposite verdict). In short, standard automata technology, assembled carefully, delivers a monitor that is \emph{correct by design}.
 
-\subsection{Illustration through Regular expressions from \cDL}
+\subsection{Illustration Through Regular Expressions from \cDL}
 \label{subsec:re-tight}
 
-We demonstrate how we can define monitors for regular expressions from \cDL by first defining the language semantics of the regular expression, then via a traditional transformation a deterministic automaton. Finally we use the transformation shown in the previous subsection in order to define the 5 tight semantic monitor for the formula. 
+This section demonstrates the process of defining monitors for regular expressions from \cDL. The procedure begins by specifying the language semantics of the regular expression, followed by a standard transformation into a deterministic automaton. Subsequently, the transformation described in the previous subsection is applied to construct the five tight semantic monitors for the formula.
 This subsection fixes the semantics of the regular expressions that act as temporal guards in \cDL.
 
-\subsubsection{Semantics for regular expression}
+\subsubsection{Semantics for Regular Expressions}
 We work over the \emph{letter alphabet}
 \[
 \Gamma \ :=\ 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}},
@@ -604,13 +576,13 @@ The relation is given inductively:
 \[
 \begin{array}{lcl}
 \pi \modelsre \mathsf{A} &\text{iff}&  |\pi| = 1\ \text{and}\ \mathsf{A}\subseteq A_0,\\[4pt]
-\pi \modelsre * &\text{iff}& |\pi| = 1,\\[4pt]
+\pi \modelsre \Gamma &\text{iff}& |\pi| = 1,\\[4pt]
 \pi \modelsre \varepsilon &\text{iff}& \pi = \varepsilon,\\[4pt]
 \pi \modelsre \emptyset &\text{iff}& A_0=\emptyset \nd |\pi| = 1,\\[4pt]
-\pi \modelsre (\re_1 \mid \re_2) &\text{iff}& (\pi \modelsre \re_1) \;\text{or}\; (\pi \modelsre \re_2),\\[4pt]
-\pi \modelsre (\re_1~;~\re_2) &\text{iff}& \exists k\leq n\leq \size{\pi} : 
+\pi \modelsre \re_1 \mid \re_2 &\text{iff}& (\pi \modelsre \re_1) \;\text{or}\; (\pi \modelsre \re_2),\\[4pt]
+\pi \modelsre \re_1\cdot\re_2 &\text{iff}& \exists k\leq n\leq \size{\pi} : 
   \pi[0,k] \modelsre \re_1 \;\text{and}\; \pi[k{+}1,n] \modelsre \re_2,\\[4pt]
-\pi \modelsre \re^n &\text{iff}&  (\text{if } n>1 \text{ then } \pi \modelsre re;re^{n-1}) \nd (\pi \modelsre re \text{ if } n=1),\\[4pt]
+\pi \modelsre \re^n &\text{iff}&  (\text{if } n>1 \text{ then } \pi \modelsre re \cdot re^{n-1}) \nd (\pi \modelsre re \text{ if } n=1),\\[4pt]
 \pi \modelsre \re^+ &\text{iff}& 
   \exists\, n\ge1 : \pi \modelsre \re^n.
 \end{array}
@@ -620,33 +592,33 @@ We write $\Lang{\re} := \{\pi\in\Gamma^* \mid \pi \modelsre \re\}$ for the langu
 
 \noindent
 \noindent
-\emph{Reading the clauses.}
+{\emph{Reading the clauses.}}
 \begin{itemize}
   \item \textbf{Atom $\mathsf{A}$.} Matches exactly one period: $\pi=\langle A_0\rangle$ with $\mathsf{A}\subseteq A_0$.
-  \item \textbf{Wildcard $*$.} Matches any single period: $\pi=\langle A_0\rangle$ for arbitrary $A_0\in\Gamma$.
+  \item \textbf{Wildcard $\Gamma$.} Matches any single period: $\pi=\langle A_0\rangle$ for arbitrary $A_0\in\Gamma$.
   \item \textbf{Empty word $\varepsilon$.} Matches only the empty trace: $\pi=\varepsilon$.
   \item \textbf{Empty-action letter $\emptyset$.} Matches the one-period trace with no actions: $\pi=\langle \emptyset\rangle$.
   \item \textbf{Union $(re_1\mid re_2)$.} Holds iff at least one disjunct holds on the whole trace.
-  \item \textbf{Sequencing $(re_1\,;\,re_2)$.} There is a split index $k$ with
+  \item \textbf{Sequencing $(re_1 \cdot re_2)$.} There is a split index $k$ with
         $\pi[0,k]\modelsre re_1$ and $\pi[k{+}1,n]\modelsre re_2$ (both parts finite).
   \item \textbf{Fixed power $re^n$.} Iterated sequencing of $re$ exactly $n$ times:
-        $re^1\equiv re$; for $n>1$, $\pi\modelsre re^n$ iff $\pi\modelsre re\,;\,re^{n-1}$.
+        $re^1\equiv re$; for $n>1$, $\pi\modelsre re^n$ iff $\pi\modelsre re \cdot re^{n-1}$.
   \item \textbf{Kleene plus $re^+$.} Some positive iteration holds: $\exists n\ge1$ with $\pi\modelsre re^n$.
 \end{itemize}
-All satisfaction is defined on \emph{finite} traces, we show how to detect trigger and terminating condition on regular expression using the 5 valued semantics.
+All satisfaction is defined on \emph{finite} traces, we show how to detect triggers and terminating conditions on regular expressions using the 5-valued semantics.
 
 
 
 
 
-\subsubsection{Automata construction matching the denotational semantics}
+\subsubsection{Automata Construction Matching the Denotational Semantics}
 \label{subsec:re-to-dfa}
 
 We now give a concrete, standard pipeline that realizes the semantics of
 Definition~\ref{def:re-semantics} \emph{exactly} by an automaton over the
 alphabet $\Gamma=2^{\Sigma_C^{(1)}\cup\Sigma_C^{(2)}}$.
 
-\paragraph*{Stage 1  Thompson-style $\varepsilon$-NFA $\aut_{\varepsilon}(re)$ (alphabet-aware).}
+{\paragraph*{Stage 1  Thompson-style $\varepsilon$-NFA $\aut_{\varepsilon}(re)$ (alphabet-aware).}}
 We build $\aut_{\varepsilon}(re)$ by structural recursion on $re$, using the
 usual two distinguished states $(s_{\mathrm{in}},s_{\mathrm{out}})$ per fragment
 and $\varepsilon$-transitions for wiring
@@ -660,7 +632,7 @@ that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
         a transition $p \xrightarrow{X} q$.
         This enforces “one period, with all actions in $\mathsf{A}$ present.”
 
-  \item \textbf{Wildcard $*$:} create $p\xrightarrow{X} q$ for \emph{all} $X\in\Gamma$.
+  \item \textbf{Wildcard $\Gamma$:} create $p\xrightarrow{X} q$ for \emph{all} $X\in\Gamma$.
 
   \item \textbf{Empty word $\varepsilon$:} create $p \xrightarrow{\varepsilon} q$.
 
@@ -672,7 +644,7 @@ that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
         $p \xrightarrow{\varepsilon} p_1$, $p \xrightarrow{\varepsilon} p_2$,
         $q_1 \xrightarrow{\varepsilon} q$, $q_2 \xrightarrow{\varepsilon} q$.
 
-  \item \textbf{Sequencing $(re_1\,;\,re_2)$:} build $(p_1,q_1)$ and $(p_2,q_2)$, then
+  \item \textbf{Sequencing $(re_1 \cdot re_2)$:} build $(p_1,q_1)$ and $(p_2,q_2)$, then
         add $q_1 \xrightarrow{\varepsilon} p_2$ and take $(p_1,q_2)$ as entry/exit.
         This matches the split $\pi[0,k]$ and $\pi[k{+}1,n]$ in the semantics.
 
@@ -687,17 +659,14 @@ Mark the global entry of the whole construction as initial, and the global exit 
 accepting. The resulting NFA accepts exactly $\Lang{re}$.
 
 \paragraph*{Stage 2  Determinization.}
-Apply the standard subset construction with $\varepsilon$-closures to obtain a DFA
-$\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language
+Apply the standard subset construction with $\varepsilon$-closures to obtain a DFA $\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language
 (\cite{RabinScott1959,HopcroftUllman2001}).
 
 
 \paragraph*{Correctness (sketch).}
-By structural induction on $re$. The letter fragments implement exactly the one-step
-clauses (\(\mathsf{A}\), $*$, $\emptyset$), union and sequencing are the usual
+By structural induction on $re$. The letter fragments implement exactly the one-step clauses (\(\mathsf{A}\), $*$, $\emptyset$), union and sequencing are the usual
 $\varepsilon$-wiring proofs, and $re^n$ (unrolled) and $re^+$ (loop back from the exit)
-match the inductive clauses in Definition~\ref{def:re-semantics}. Determinization and
-completion preserve language.
+match the inductive clauses in Definition~\ref{def:re-semantics}. Determinization and completion preserve language.
 
 \medskip
 \noindent
@@ -710,7 +679,7 @@ Continuing from Example.~\ref{ex:contract-encoding}, we demonstrate the automata
 
 \[
 \begin{aligned}
-\re_{C_5} &:= *^{+}\ ;\ \{\notifterm^{(1)}\}\ ;\ *^{3},\\
+\re_{C_5} &:= \Gamma^{+}\ \cdot \ \{\notifterm^{(1)}\}\ \cdot\ \Gamma^{3},\\
 \Gamma    &:= 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}},\\
 \Sigma_C  &:= \{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \notifterm,\ \REPAIR\}.
 \end{aligned}
@@ -742,7 +711,7 @@ Figure~\ref{fig:thompson-C5} depicts the Thompson-style $\varepsilon$-NFA for $\
   % Epsilon wiring: entry to + loop region
   \path (s0) edge[dashed] node[left] {$\varepsilon$} (s1);
   % + block: at least one Γ then possibly repeat (Thompson for re^+)
-  \path (s1) edge node[above] {$*$} (s2);
+  \path (s1) edge node[above] {$\Gamma$} (s2);
   \path (s2) edge[dashed,bend left=40] node[above] {$\varepsilon$} (s1);
 
   % Move from the + block to the atom {notifterm^(1)}
@@ -751,21 +720,21 @@ Figure~\ref{fig:thompson-C5} depicts the Thompson-style $\varepsilon$-NFA for $\
   \path (s3) edge node[above] {$\mathsf{T}$} (s4);
 
   % Then exactly 3 wildcards (three periods)
-  \path (s4) edge node[right] {$*$} (s5);
-  \path (s5) edge node[above] {$*$} (s6);
-  \path (s6) edge node[above] {$*$} (s7);
+  \path (s4) edge node[right] {$\Gamma$} (s5);
+  \path (s5) edge node[above] {$\Gamma$} (s6);
+  \path (s6) edge node[above] {$\Gamma$} (s7);
 
   % Legend (optional, small)
   \node[below=14mm of s2,align=center] (leg) {%
-    $*$: any letter in $2^{\Sigma}$ \quad
+    $\Gamma$: any letter in $2^{\Sigma}$ \quad
     $\mathsf{T}$: set $A$ with $\notifterm^{(1)}\in A$ \quad
     dashed $\,\varepsilon$: wiring
   }
   ;
 \end{tikzpicture}
 \caption{Thompson-style $\varepsilon$-NFA for
-$\re_{C_5} = *^{+}\ ;\ \{\notifterm^{(1)}\}\ ;\ *^{3}$ over $\Gamma=2^{\Sigma}$.
-From $s_0$ we enter the $*^{+}$ block ($s_1 \xrightarrow{\Gamma} s_2$ with a back
+$\re_{C_5} = \Gamma^{+} \cdot  \{\notifterm^{(1)}\} \cdot \Gamma^{3}$ over $\Gamma=2^{\Sigma}$.
+From $s_0$ we enter the $\Gamma^{+}$ block ($s_1 \xrightarrow{\Gamma} s_2$ with a back
 $\varepsilon$-loop to enforce “one or more” steps), then take a single
 $\mathsf{T}$-labeled letter (the period that contains $\notifterm^{(1)}$),
 followed by exactly three arbitrary periods (three $\Gamma$ transitions) to the
@@ -788,27 +757,25 @@ Definition~\ref{def:re-semantics}.}
   \node[state,fill=red!12,left=22mm of qAcc] (sink) {$\bot$};     % sink for any overrun / dead move
 
   % Transitions
-  % From q0: first letter must be in *^+, so either T or \overline{T} goes to pre
-  \path (q0) edge node[right] {$T,\overline{T}$} (qpre);
+  % From q0: first letter must be in \Gamma^+, so any \Gamma goes to pre
+  \path (q0) edge node[right] {$\Gamma$} (qpre);
 
-  % In q_pre: keep consuming *^+ by \overline{T} (stay), or take the middle T to enter the tail counter
+  % In q_pre: keep consuming \Gamma^+ by non-T (stay), or take the middle T to enter the tail counter
   \path (qpre) edge[loop left] node {$\overline{T}$} ()
               edge node[above] {$T$} (qT0);
 
   % After the middle T: count exactly 3 more letters (any)
-  \path (qT0) edge node[above] {$T,\overline{T}$} (qT1);
-  \path (qT1) edge node[above] {$T,\overline{T}$} (qT2);
-  \path (qT2) edge node[left]  {$T,\overline{T}$} (qAcc);
+  \path (qT0) edge node[above] {$\Gamma$} (qT1);
+  \path (qT1) edge node[above] {$\Gamma$} (qT2);
+  \path (qT2) edge node[left]  {$\Gamma$} (qAcc);
 
   % From accepting, any further letter overruns → sink; sink loops
-  \path (qAcc) edge node[above] {$T,\overline{T}$} (sink);
-  \path (sink) edge[loop left] node {$T,\overline{T}$} ();
+  \path (qAcc) edge node[above] {$\Gamma$} (sink);
+  \path (sink) edge[loop left] node {$\Gamma$} ();
 
 \end{tikzpicture}
-\caption{Determinized and completed DFA for \(\re_{C_5}=*^{+};\{\notifterm^{(1)}\};*^{3}\),
-abstracting \(\Gamma\) by \(T:=\{A\in\Gamma\mid \notifterm^{(1)}\in A\}\) and
-\(\overline{T}:=\Gamma\setminus T\).
-State \(q_{\text{pre}}\) collects the initial \( *^{+}\) segment; transition on \(T\) begins
+\caption{Determinized and completed DFA for \(\re_{C_5}=\Gamma^{+}\cdot\{\notifterm^{(1)}\}\cdot\Gamma^{3}\) over the alphabet \(\Gamma=2^{\Sigma}\).
+State \(q_{\text{pre}}\) collects the initial $\Gamma^{+}$ segment; transition on \(T\) begins
 the “+3 letters” counter (\(q_{T+0}\to q_{T+1}\to q_{T+2}\to q_{\mathrm{acc}}\)).
 Any overrun moves to the sink.}
 \label{fig:dfa-C5-determinized}
@@ -816,7 +783,7 @@ Any overrun moves to the sink.}
 \end{example}
 
 
-\subsubsection{From Language automaton to Tight monitor construction}\label{subsec:re-to-monitor}
+\subsubsection{From Language Automaton to Tight Monitor Construction}\label{subsec:re-to-monitor}
 
 \begin{definition}[Tight monitor construction for regular expressions]\label{def:tsmc-re}
 Let $\re$ be a regular expression over the alphabet $\Gamma$ and let
@@ -861,36 +828,32 @@ Continuing Example~\ref{ex:end-to-end-C5}, Figure~\ref{fig:moore-C5-tight-compac
 
 % --- Transitions ---
 \path
-  (s0) edge node[right,pos=0.4] {$*$} (g)
+  (s0) edge node[right,pos=0.4] {$\Gamma$} (g)
   (g) edge[loop below] node {$\overline{T}$} ()
   (g) edge node[above,pos=0.45] {$T$} (t0)
-  (t0) edge node[above,pos=0.5] {$*$} (t1)
-  (t1) edge node[above,pos=0.5] {$*$} (t2)
-  (t2) edge node[left,pos=0.5] {$*$} (acc)
-  (acc) edge node[above,pos=0.5] {$*$} (ap)
-  (ap) edge[loop above] node {$*$} ();
+  (t0) edge node[above,pos=0.5] {$\Gamma$} (t1)
+  (t1) edge node[above,pos=0.5] {$\Gamma$} (t2)
+  (t2) edge node[left,pos=0.5] {$\Gamma$} (acc)
+  (acc) edge node[above,pos=0.5] {$\Gamma$} (ap)
+  (ap) edge[loop above] node {$\Gamma$} ();
 
 % --- Legend ---
 \node[below=10mm of t0,align=center,font=\scriptsize] (leg){
 $T := \{\,A\in\Gamma\mid \notifterm^{(1)}\in A\,\}$,\;
 $\overline{T} := \Gamma\!\setminus\! T$,\;
-$*$ = any letter in $\Gamma$.
+$\Gamma$ = any letter in $\Gamma$.
 };
 
 \end{tikzpicture}
 \caption{Compact five-valued Moore monitor for
-$re_{C_5}=*^{+};\{\notifterm^{(1)}\};*^{3}$.
-Outputs are shown inside the states ($\tightverdicts$).
+$re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
+Outputs are shown inside the states ($\tightverdicts$). 
 All prefixes remain undecided ($\mathsf{?}$) until the first usable
 termination event $T$ appears, then exactly three more steps reach
 the tight satisfaction frontier~$\topt$,
 and further extensions yield the post-acceptance verdict~$\topp$.
-No $\bott/\botp$ states exist because no prefix is permanently rejecting.}
+No $\bott/\botp$ states exist because no prefix is permanently rejecting.} 
 \label{fig:moore-C5-tight-compact}
 \end{figure}
 
-
-
-
 \end{example}
-
