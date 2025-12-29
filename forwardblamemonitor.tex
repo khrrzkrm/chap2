@@ -62,7 +62,8 @@ Tight blame persists to extensions, and post blame is exactly “some earlier ti
 \]
 \end{definition}
 
-\paragraph{Why no joint blame at the literal level.}
+% Headline Style for paragraph
+\paragraph{Why No Joint Blame at the Literal Level.}
 Each literal is decided on a single step and the only responsibility split is between the subject and the other party:
 either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\) (or empty for \(\bot\)), never \(\{1,2\}\).
 
@@ -98,9 +99,11 @@ A\in\{\emptyset,\{a^{(2)}\}\}: & \text{no violation} & \text{(no unsupported sub
 \]
 \end{example}
 
-\paragraph{No joint blame at the literal level.}
+% Headline Style for paragraph
+\paragraph{No Joint Blame at the Literal Level.}
 Each literal is decided on a single step and the only responsibility split is between the subject and the other party:
 either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\), never \(\{1,2\}\).
+% Headline Style for subsubsection
 \subsubsection{Blame Propagation in Contracts}
 \paragraph{Conjunction.}
 For $S \subseteq\{1, 2\}$ of agent(s), and a two contract $C$ and $C'$ from \cDL and a synchronous trace $\pi$, blame is defined for the conjunction $C \wedge C'$ is defined as:
@@ -185,7 +188,8 @@ $\pi_3 \vDash_{\bottp{2}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
   \end{itemize}
 \end{itemize}
 \end{example}
-\subsection{From Tight Contract Satisfaction Monitor to tight Blame Monitor}
+% Headline Style for subsection
+\subsection{From Tight Contract Satisfaction Monitor to Tight Blame Monitor}
 
 \begin{definition}[Blame monitor]
 \label{def:blamemonitor}
@@ -234,7 +238,8 @@ function are reused from $\tsmc(C)$, and only the output function is refined
 from $\lambda_5$ to $\lambda_{11}$ as described below.
 \end{definition}
 
-\paragraph{Lifting contract verdicts to blame verdicts.}
+% Headline Style for paragraph
+\paragraph{Lifting Contract Verdicts to Blame Verdicts.}
 Intuitively, $\lambda_{11}$ refines the five-valued verdicts of the tight
 contract monitor by attaching a blame set to every violating region. The three
 non-violating outcomes,
@@ -251,11 +256,11 @@ Formally, let $\vDash_{\bottp{S}}$ and $\vDash_{\botpp{S}}$ be the
 denotational blame judgements introduced above. For a finite trace $\pi$ and
 prefix index $k<|\pi|$, define the \emph{ideal} blame verdict
 \[
-\mathsf{Blame}(C,\pi[0,k]) \in \mathbb{V}_{11}
+\fb{C,\pi[0,k]} \in \mathbb{V}_{11}
 \]
 as follows:
 \[
-\mathsf{Blame}(C,\pi[0,k]) =
+\fb{C,\pi[0,k]} =
 \begin{cases}
 \mathsf{?}
   & \text{if }\pi[0,k]\ \presat\ C,\\[4pt]
@@ -306,7 +311,7 @@ whenever a blame judgement holds.
     \[
     \lambda^{\mathcal{BM}}\bigl(\delta^{\mathcal{BM}}(q_0,\pi)\bigr) 
       \;=\; 
-    \mathsf{Blame}(C,\pi).
+ \fb{C,\pi}.
     \]
     Furthermore, the blame monitor is consistent with the tight satisfaction monitor for non-violating verdicts. For all traces $\pi$:
     \[
@@ -522,7 +527,7 @@ Specifically, if the tenant fails to pay rent, the monitor transitions to a wait
 Consequently, it is impossible for both conjuncts to return a tight violation $\bott$ at the same initial step.
 To illustrate a scenario where the monitor can output the joint blame verdict $\bottp{12}$, we consider the reparation-free reduction of the specification: $C_2 \wedge \obl[1]{\PAY}$.
 
-      \begin{example}[Blame Monitor with double blame]
+\begin{example}[Blame Monitor with Double Blame]\label{ex:doubleblame}
         The following monitor shows the emergence of joint blame. From the initial state $s_0$, three distinct violation paths are possible depending on who fails. The path to $s_{\bott}^{12}$ represents the simultaneous failure of both parties.
         
         \begin{figure}[h!]

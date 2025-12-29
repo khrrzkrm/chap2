@@ -19,7 +19,8 @@
 
 \tableofcontents
 \newpage
-\section{Motivation}
+\section{Overview}
+\subsection{Motivation}
 
 Normative specifications are often presented as constraints on what an agent must do or must avoid.
 
@@ -1318,7 +1319,7 @@ This abstraction allows the reader to focus on the semantic challenges of monito
     \path[->]
       (s_0) edge[bend left=10] node {$\OCC^{(2)}$} (s_1)
       (s_1) edge[loop above] node {$\OCC^{(2)}$} ()
-            edge[bend left=10] node {$\neg\,\OCC^{(2)}$} (s_2);
+            edge[bend left=10] node {$\overline{\OCC^{(2)}}$} (s_2);
   \end{tikzpicture}}
   \caption{$M_1^1$ (tenant).\\ $\mathrm{A_1}=\{\PAY^{(1)}\}$, $\mathrm{B_1}=\{\OCC^{(1)},\PAY^{(1)}\}$, $\mathrm{C_1}=\emptyset$.}
   \label{fig:moore-tenant}
@@ -1335,7 +1336,7 @@ This abstraction allows the reader to focus on the semantic challenges of monito
   
     \path[->]
       (s_0) edge[loop above] node {$\PAY^{(1)}$} ()
-            edge[bend left=10] node {$\neg\PAY^{(1)}$} (s_1)
+            edge[bend left=10] node {$\overline{\PAY^{(1)}}$} (s_1)
       (s_1) edge[bend left=10] node {$\PAYF^{(1)}$} (s_0)
             edge[bend left=10] node {$\PAY^{(1)}$} (s_2);
   \end{tikzpicture}}
@@ -1477,7 +1478,7 @@ This abstraction allows the reader to focus on the semantic challenges of monito
     \path[->]
       (s_0) edge[bend left=10] node {$\OCC^{(2)}$} (s_1)
       (s_1) edge[loop above] node {$\OCC^{(2)}$} ()
-            edge[bend left=10] node {$\neg\,\OCC^{(2)}$} (s_2);
+            edge[bend left=10] node {$\overline{\OCC^{(2)}}$} (s_2);
   \end{tikzpicture}}
   \caption{$M_1^1$ (tenant), with\\ $\mathrm{A_1}=\{\PAY^{(1)}\}$, $\mathrm{B_1}=\{\OCC^{(1)},\PAY^{(1)}\}$, $\mathrm{C_1}=\emptyset$.}
   \label{fig:moore-tenant-prod}
@@ -1494,7 +1495,7 @@ This abstraction allows the reader to focus on the semantic challenges of monito
   
     \path[->]
       (s_0) edge[loop above] node {$\PAY^{(1)}$} ()
-            edge[bend left=10] node {$\neg\PAY^{(1)}$} (s_1)
+            edge[bend left=10] node {$\overline{\PAY^{(1)}}$} (s_1)
       (s_1) edge[bend left=10] node {$\PAYF^{(1)}$} (s_0)
             edge[bend left=10] node {$\PAY^{(1)}$} (s_2);
   \end{tikzpicture}}
@@ -1526,9 +1527,9 @@ This abstraction allows the reader to focus on the semantic challenges of monito
   \end{figure}
   
   \noindent
-  Concretely, substituting the outputs from Fig.~\ref{fig:moore-strategies}, the product word begins as\\
-  $\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
-   (\{\OCC^{(1)},\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\})^\omega$.
+  Concretely, The run of the product $M_1^1 \times M_2^1$ in  Fig.~\ref{fig:moore-strategies}, corresponds to the omega-word\\
+  $\trace{\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
+   (\{\OCC^{(1)},\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\})^\omega}.$
   \end{example}
   
   

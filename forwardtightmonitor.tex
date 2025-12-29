@@ -130,10 +130,10 @@ Definition~\ref{def:lattsat} but refines it with explicit prefix continuity.
     {$\{a^{(1)},a^{(2)}\}\subseteq A$} (qs)
   (q0) edge[bend right=12] node[left,pos=0.45]
     {$\text{otherwise}$} (qv)
-  (qs)  edge node[above] {*} (qps)
-  (qv)  edge node[below] {*} (qpv)
-  (qps) edge[loop right] node {*} (qps)
-  (qpv) edge[loop right] node {*} (qpv);
+  (qs)  edge node[above] {$\Gamma$} (qps)
+  (qv)  edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} (qps)
+  (qpv) edge[loop right] node {$\Gamma$} (qpv);
 \end{tikzpicture}
 \caption{Compact 5-verdict Moore machine for the obligation literal
 $\obl[1]{a}$. The symbol $*$ stand for any $A \subseteq 2^\Sigma$.
@@ -678,10 +678,10 @@ succeed, or the earlier tight failure when any conjunct fails, exactly as the fi
 \path[->]
   (q0) edge[bend left=10] node[above,pos=0.5] {$\PAY^\surd$} (qs)
   (q0) edge[bend right=10] node[left,pos=0.5] {$ \PAY^\times$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{$\obl[1]{\PAY}$.
 Satisfaction occurs when both agents perform $\PAY$.}
@@ -705,10 +705,10 @@ Satisfaction occurs when both agents perform $\PAY$.}
 \path[->]
   (q0) edge[bend left=10] node[above,pos=0.5] {$\PAYF^\surd$} (qs)
   (q0) edge[bend left=10] node[left,pos=0.5] {$\PAYF^\times$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{$\obl[1]{\PAYF}$.
 Satisfaction occurs when both agents perform $\PAYF$.}
@@ -742,10 +742,10 @@ Satisfaction occurs when both agents perform $\PAYF$.}
   (q0) edge[bend right=10] node[left,pos=0.45]  {\scriptsize$\PAY^{\times}$} (qwait)
   (qwait) edge[bend left=8] node[right,pos=0.45] {\scriptsize$\PAYF^{\surd}$} (qs)
   (qwait) edge[bend right=10] node[below,pos=0.45] {\scriptsize$\PAY^{\times}$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{Reparation composition $\tsmc_\repair (\obl[1]{\PAY},\obl[1]{\PAYF})$.
 The monitor activates $\PAYF$ after tight failure of $\PAY$.}
@@ -783,10 +783,10 @@ The monitor activates $\PAYF$ after tight failure of $\PAY$.}
   (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
   (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
   (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
-  (qs) edge node[above] {$*$} (qps)
-  (qv) edge node[below] {$*$} (qpv)
-  (qps) edge[loop right] node {$*$} ()
-  (qpv) edge[loop right] node {$*$} ();
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
 \caption{Conjunctive composition $\tsmc_{\wedge}(C_2,C_3)$, where $C_2=\perm[1]{\OCC}$.}
 \label{fig:c2andc3}
@@ -798,7 +798,7 @@ $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$.
 (a) and (b)~monitors for Literal composing $C_3$  side by side;
 (c)~Reparation composition $C_3$;
 (d)~Conjunctive composition $C_2 \wedge C_3$,
-where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \not\subset A \sor  \{\OCC^{1},\OCC^{1}\} \subseteq A\}$. 
+where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \notin A \sor  \{\OCC^{1},\OCC^{2}\} \subseteq A\}$. 
 $\PAY^\surd:= \{A \mid \PAY^{(1)},\PAY^{(2)}\} \subseteq A $. The case $\PAYF^\surd$ is similarly defined as for $\PAY^\surd$.}
 \label{fig:moore-c3-literals}
 \end{figure*}
@@ -1357,7 +1357,7 @@ W\begin{example}[Open ended contract monitor construction]
 
 We illustrate the constructions for the guarded open-ended contract
 \(\guard[re]{\repit{C_3}}\) where
-\(re = *^{+};\{\notifterm^{(1)}\}\) and
+\(re = \Gamma^{+}\cdot\{\notifterm^{(1)}\}\) and
 \(C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}\).
 The construction proceeds in three steps:
 the unbounded-repetition monitor for \(C_3\),
@@ -1385,13 +1385,13 @@ violation.
 
 \medskip
 \noindent\textbf{(b) \(\tsmc_{re}(re)\) for
-\(re = *^{+};\{\notifterm^{(1)}\}\)
+\(re = \Gamma^{+}\cdot\{\notifterm^{(1)}\}\)
 (Subfigure~\ref{fig:guard-}).}
 The monitor has states
 \(s_0/\mathsf{?}\), \(s_1/\mathsf{?}\), \(s^t/\topt\), and \(s^{+}/\topp\).
 
 The regular-expression part reads arbitrary letters:
-\(s_0 \xrightarrow{*} s_1\).
+\(s_0 \xrightarrow{$\Gamma$} s_1\).
 While no termination notice is received, the machine remains in \(s_1\)
 via \(\overline{T} = \Gamma \setminus T\).
 A letter in \(T=\{A\mid \notifterm^{(1)}\in A\}\) produces a tight match
@@ -1477,8 +1477,8 @@ from that point on for the global verdict to be tight or post acceptance.
     (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0) % restart on tight success
     (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
     % Failure sink:
-    (qv)  edge node[left] {$*$} (qpv)
-    (qpv) edge[loop right] node {$*$} ();
+    (qv)  edge node[left] {$\Gamma$} (qpv)
+    (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}
 \caption{Monitor for $\repit{C_3}$.}
 \label{fig:rep-c3_vertical}
@@ -1497,12 +1497,12 @@ from that point on for the global verdict to be tight or post acceptance.
 
 % --- Transitions ---
 \path
-  (s0) edge node[above,pos=0.4] {$*$} (g)
+  (s0) edge node[above,pos=0.4] {$\Gamma$} (g)
   (g) edge[loop below] node[below] {$\overline{T}$} ()
   (g) edge node[above] {$T$} (acc)
-%   (t2) edge node[left,pos=0.5] {$*$} (acc)
-  (acc) edge node[above] {$*$} (ap)
-  (ap) edge[loop above] node {$*$} ();
+%   (t2) edge node[left,pos=0.5] {$\Gamma$} (acc)
+  (acc) edge node[above] {$\Gamma$} (ap)
+  (ap) edge[loop above] node {$\Gamma$} ();
 
 % --- Legend ---
 \node[below=10mm of g,align=center,font=\scriptsize] (leg){
@@ -1548,8 +1548,8 @@ $*$ = any letter in $\Gamma$.
   (Oq0) edge node[left]        {\scriptsize $\PAY^\times$} (Oqw)
   (Oqw) edge[bend left=14] node[below]{\scriptsize $\PAYF^\times$} (Oqv)
  % (Oqw) edge[bend left=12] node[left]{\scriptsize $\PAYF^\surd$} (Oq0)
-  (Oqv) edge              node[left] {$*$} (Oqpv)
-  (Oqpv) edge[loop left]  node {$*$} ();
+  (Oqv) edge              node[left] {$\Gamma$} (Oqpv)
+  (Oqpv) edge[loop left]  node {$\Gamma$} ();
 
 % --- Mode switches: Open -> Imposs (guard hits bott/botp) ---
 \path
@@ -1565,8 +1565,8 @@ $*$ = any letter in $\Gamma$.
 
 % --- Imposs region loops ---
 \path
- % (Iq0t) edge[loop right] node {$*$} ()
-  (Iqwt) edge[loop right] node {$*$} ()
+ % (Iq0t) edge[loop right] node {$\Gamma$} ()
+  (Iqwt) edge[loop right] node {$\Gamma$} ()
   (Oqq00) edge[loop right] node {\scriptsize$\PAY^\surd \wedge \overline{T}$} ();
 
 \end{tikzpicture}

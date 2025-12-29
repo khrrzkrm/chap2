@@ -1,0 +1,310 @@
+\usepackage{mathptmx}
+\usepackage{soul}\setuldepth{article}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric,fit,calc}
+\usetikzlibrary{mindmap,trees,shadows}
+\usepackage{bussproofs}
+\usepackage{amsmath}
+\newcommand{\mathcall}[1]{\text{\usefont{OMS}{cmsy}{m}{n}#1}}
+\usepackage{subcaption}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{tabularx}
+\usepackage{etaremune}
+%\usepackage{pdflscape}
+\usepackage{bussproofs}
+\usepackage{bm}
+\usepackage{apxproof}
+\usepackage{mathtools}
+\usepackage{slashed}
+\usepackage{stmaryrd}
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{bussproofs}
+\usepackage{paralist}
+\usepackage{float}
+\usepackage{pdflscape}
+\usepackage{nicematrix}
+\usepackage{mathpartir}
+\usepackage[inference]{semantic}
+\usepackage{stackengine}
+%\usepackage{algpseudocode}
+%\usepackage[disable]{todonotes}
+\usepackage{todonotes}
+\usepackage{placeins}
+\usepackage{caption}
+\usepackage{array}
+\usepackage{xcolor}
+\DeclareMathOperator{\Pts}{Pts}
+\DeclareMathOperator{\tail}{tail}
+\usetikzlibrary{patterns.meta}
+
+% Optional helpers (nice shorthands)
+\newcommand{\Ptsle}[2]{\Pts_{\le #1}\!\left(#2\right)}   % \Ptsle{k}{\is}
+\newcommand{\tailgt}[2]{\tail_{>#1}\!\left(#2\right)}    % \tailgt{k}{\is}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\definecolor{lightgreen}{rgb}{0.9,1,0.9}
+\newcommand{\ltodo}[1]{\todo[inline,color=lightgreen]{#1}}
+\usepackage{amsthm}
+% \algnewcommand\algorithmicforeach{\textbf{for each}}
+% \algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0} % Define custom dark green
+%\theoremstyle{thmstyleone}%
+% \theoremstyle{plain}
+
+%  \newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+
+% \newtheorem{proposition}[theorem]{Proposition}% 
+% %%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+% \theoremstyle{thmstyletwo}%
+% \newtheorem{example}{Example}%
+% \newtheorem{remark}{Remark}
+% \newtheorem{observation}{Observation}%
+% \newtheorem{proofcase}{Case}[theorem]
+% \newtheorem{case}{Case}
+
+% \theoremstyle{thmstylethree}%
+% \newtheorem{definition}{Definition}%
+% \newtheoremrep{lemma}{Lemma}[section]
+% \newtheorem{conjecture}{Conjecture}
+% \newtheoremrep{theorem}{Theorem}
+
+\setlength{\marginparwidth}{2.3cm}
+\newcommand{\conceptInOneWord}[1]{\marginpar{\scriptsize #1}}
+
+
+\newcommand{\tool}[1]{\ensuremath{\textsl{#1}}\xspace}
+\newcommand{\monadop}[3]{\tool{#1}^{#2}(\mtext{#3})}
+\newcommand{\dyadop}[5]{\tool{#1}^{#2}(#3\mid^{#4} #5)}
+\newcommand{\dyadopa}[5]{\tool{#1}^{#2}(#3~\|^{#4} #5)}
+\newcommand{\ob}[2]{\monadop{O}{#1}{#2}}
+\newcommand{\forb}[2]{\monadop{F}{#1}{#2}}
+
+\newcommand{\timedword}{timed word\xspace}
+\newcommand{\timedwords}{timed words\xspace}
+
+\newcommand{\LUCO}{\ensuremath{\mathrm{LUCO}}\xspace}
+\newcommand{\LAP}{\ensuremath{\mathrm{LAP}}\xspace}
+
+\newcommand{\dop}{\tool{dop}}
+\newcommand{\domISnN}{\ensuremath{\mathcal{T}^*}}
+\newcommand{\domIS}{\ensuremath{\mathcal{T}}}
+\newcommand{\domtr}{\ensuremath{\mathbb{T}}}
+\newcommand{\mt}[1]{$#1$}
+%duty relation
+\newcommand{\dutysat}{\ensuremath{\vDash }\xspace}
+\newcommand{\dutyviol}{\ensuremath{\nvDash }\xspace}
+\newcommand{\dutyequiv}{\ensuremath{\equiv }\xspace}
+\newcommand{\dutymodel}{\ensuremath{\vdash }\xspace}
+\newcommand{\new}[1]{\textcolor{blue}{#1}}
+\newcommand{\mtext}[1]{\ensuremath{\mathsf{#1}}}
+\newcommand{\boxalignfigure}[3]{%
+  \begin{figure}[htbp] % Define a figure environment
+    \centering
+     % Adjust padding between box and content
+    \fbox{%
+      \vbox{% Use \vbox to reduce vertical space
+ % Adjust this value to control space before the first line
+        \hbox{%
+          \begin{minipage}{\textwidth}
+            #1 % Insert the align content
+          \end{minipage}%
+        }%
+      }%
+    }
+    \caption{#2} % Insert the caption provided as the second argument
+    \label{#3} % Insert the label provided as the third argument
+  \end{figure}
+}
+%right relation
+\newcommand{\rightsat}{\ensuremath{\vDash_R}\xspace}
+%pointed violation
+%\newcommand{\dutyviol}{\ensuremath{\nvDash_D}\xspace}
+%duty violation
+\newcommand{\minviol}{\vDash_D^{\tool{viol}}}
+%pointed satisfaction
+\newcommand{\minsat}{\vDash_D^{\tool{sat}}}
+\newcommand{\pnf}{\tool{PNF}}
+\newcommand{\dpnf}{\tool{DPNF}}
+\newcommand{\dpnfn}[1]{\dpnf(k,#1))}
+\newcommand{\cnf}{\tool{CNF}}
+\newcommand{\dnf}{\tool{DNF}}
+\newcommand{\CF}{\mathcall{CF}}
+\newcommand{\card}{\tool{card}}
+\newcommand{\expf}{\iota}
+%if mathmode
+\newcommand{\ift}{\text{if \xspace}}
+%then mathmode
+\newcommand{\thent}{\text{ then \xspace}}
+%else mathmode
+\newcommand{\elset}{\text{ else \xspace}}
+%generic monad obligation 
+\newcommand{\monadob}{\ensuremath{\monadop{O}{\is}{a}}}
+%generic monad prohibition 
+\newcommand{\monadf}{\ensuremath{\monadop{F}{\is}{a}}}
+%generic monad strict permission
+\newcommand{\monadsp}{\ensuremath{\monadop{SP}{\is}{a}}}
+%generic monad obligation permission
+\newcommand{\monadp}{\ensuremath{\monadop{P}{\is}{a}}}
+%generic absolute dyadic obligation 
+\newcommand{\abdyadob}{\ensuremath{\dyadopa{O}{\is}{a}{R}{b}}}
+%generic absolute dyadic prohibition
+\newcommand{\abdyadf}{\ensuremath{\dyadopa{F}{\is}{a}{R}{b}}}
+%generic absolute dyadic strict obligation
+\newcommand{\abdyadsp}{\ensuremath{\dyadopa{SP}{\is}{a}{R}{b}}}
+%generic absolute dyadic permission
+\newcommand{\abdyadp}{\ensuremath{\dyadopa{P}{\is}{a}{R}{b}}}
+
+
+\newcommand{\timedevents}{\ensuremath{\Sigma \times \mathbb{N}}}
+\newcommand{\emptytrace}{\ensuremath{\trace{-}}}
+
+%generic relative dyadic obligation 
+\newcommand{\dyadob}{\ensuremath{\dyadop{O}{\is}{a}{R}{b}}}
+%generic relative dyadic prohibition
+\newcommand{\dyadf}{\ensuremath{\dyadop{F}{\is}{a}{R}{b}}}
+%generic relative dyadic strict obligation
+\newcommand{\dyadsp}{\ensuremath{\dyadop{SP}{\is}{a}{R}{b}}}
+%generic relative dyadic permission
+\newcommand{\dyadp}{\ensuremath{\dyadop{P}{\is}{a}{R}{b}}}
+\newcommand{\phid}{\ensuremath{\phi_d}}
+\newcommand{\phir}{\ensuremath{\phi_r}}
+
+\newcommand{\DOP}[1]{\ensuremath{\norm{DOP}}_#1}
+\newcommand{\nc}{\norm{NC}}
+\newcommand{\ns}{\norm{NS}}
+\newcommand{\NS}{\mathcal{NS}}
+\newcommand{\size}[1]{\vert #1\vert}
+\newcommand{\n}{\norm{N}}
+
+
+
+\newcommand{\Namb}{\tool{CFR}}
+
+\newcommand{\defn}{\emph}
+\newcommand{\oplusl}{\vec{\oplus}}
+\newcommand{\tmin}{t_{min}}
+\newcommand{\tmini}{t^i_{min}}
+\newcommand{\tmax}{t_{max}}
+\newcommand{\tmaxi}{t^i_{max}}
+\newcommand{\occisarg}[2]{\ensuremath{\mathsf{tp}(w,#1,#2)}}
+\newcommand{\occisa}{\ensuremath{\mathsf{tp}(w,\is,a)}}
+\newcommand{\mtp}{\ensuremath{\mathsf{mtp}}}
+\newcommand{\cl}{\ensuremath{\mathsf{cl}}}
+\newcommand{\mtpa}{\ensuremath{\mathsf{mtp}(w,\is,a)}}
+\newcommand{\mtpb}{\ensuremath{\mathsf{mtp}(w,\is,b)}}
+\newcommand{\occis}{\ensuremath{\mathsf{tp}}}
+\newcommand{\occisb}{\ensuremath{\mathsf{tp}(w,\is,b)}}
+\newcommand{\pref}{\ensuremath{\mathsf{pre}}}
+\newcommand{\suff}{\ensuremath{\mathsf{suf}}}
+\newcommand{\ntd}{\ensuremath{\mathsf{NTD}}}
+\newcommand{\synth}{\ensuremath{\mathsf{synthetize}}}
+\newcommand{\tcst}{\ensuremath{\mathsf{Tcstr}}}
+\newcommand{\psts}{\ensuremath{\mathsf{psts}}}
+\newcommand{\maxpush}{\ensuremath{\union^{m}}}
+\newcommand{\cst}{\ensuremath{\mathsf{cstr}}}
+\newcommand{\checksat}{\ensuremath{\mathsf{checksat}}\xspace}
+\newcommand{\cstp}{\ensuremath{\mathsf{CstrC}}}
+\newcommand{\remin}{\ensuremath{\mathsf{rem}}}
+%
+\newcommand{\DC}{\ensuremath{\mathsf{DC}}\xspace}
+\newcommand{\SR}{\ensuremath{\mathsf{SR}}\xspace}
+\newcommand{\MA}{\ensuremath{\mathsf{MA}}\xspace}
+\newcommand{\MC}{\ensuremath{\mathsf{MC}}\xspace}
+%
+
+\newcommand{\Undef}{{\ensuremath{\mathsf{undefined}}\xspace}}
+
+\newcommand{\Disjoint}{{\ensuremath{\mathsf{Disjoint}}\xspace}}
+
+\newcommand{\action}{{\ensuremath{\mathsf{action}}\xspace}}
+
+\newcommand{\timestamp}{{\ensuremath{\mathsf{timestamp}}\xspace}}
+\usepackage{adjustbox}
+\newcommand{\register}{{\ensuremath{\mathsf{register}}\xspace}}
+\newcommand{\pickU}{{\ensuremath{\mathsf{pick\_up}}\xspace}}
+\newcommand{\delAtGate}{\ensuremath{\mathsf{dag}}\xspace}
+\newcommand{\delAtPark}{\ensuremath{\mathsf{dap}}\xspace}
+\newcommand{\UC}{\ensuremath{\mathsf{UC}}\xspace}
+\newcommand{\opx}{\ensuremath{~\mathsf{op}}~}
+\newcommand{\bad}{\ensuremath{\mathsf{Mbad}}}
+
+\newcommand{\occisam}{\ensuremath{w_{min}(\is,a)}}
+\newcommand{\inset}{\bigvee_{I \in \is} I}
+\newcommand{\gpre}{\ensuremath{\mathsf{gpre}(w,\nc) \xspace}\xspace}
+\newcommand{\bpre}{\ensuremath{\mathsf{bpre}(w,\nc) \xspace}\xspace}
+\newcommand{\gprearg}[1]{\ensuremath{\mathsf{gpre}(w,#1) \xspace}}
+\newcommand{\bprearg}[1]{\ensuremath{\mathsf{bpre}(w,#1) \xspace}}
+\newcommand{\uamb}{\ensuremath{\mathsf{U-amb} \xspace}}
+\newcommand{\pamb}{\ensuremath{\mathsf{P-amb} \xspace}}
+\newcommand{\tamb}{\ensuremath{\mathsf{T-amb} \xspace}}
+\newcommand{\cd}{\ensuremath{\mathsf{C_\delta} \xspace}}
+\newcommand{\sat}{\ensuremath{\mathsf{sat} \xspace}}
+\newcommand{\trace}[1]{\ensuremath{\langle #1 \rangle \xspace}}
+\newcommand{\unsat}{\ensuremath{\mathsf{unsat} \xspace} }
+\newcommand{\acta}{\ensuremath{\mathsf{a} \xspace} }
+\newcommand{\actx}{\ensuremath{\mathsf{x} \xspace} }
+\newcommand{\actb}{\ensuremath{\mathsf{b} \xspace} }
+\newcommand{\mintau}{\tau_{min}}
+
+%Logics
+\newcommand{\logic}[1]{\ensuremath{\mathsf{#1}}\xspace}
+\newcommand{\TDDL}{\logic{MTNL}}
+\newcommand{\LTL}{\logic{LTL}}
+\newcommand{\CTL}{\logic{CTL}}
+\newcommand{\DL}{\logic{DL}}
+\newcommand{\STIT}{\logic{STIT}}
+\newcommand{\TDDLfm}{\logic{\mu MTNL}}
+\newcommand{\TDDLm}{\ensuremath{\logic{MTNL^{m}}~}}
+\newcommand{\IO}{\logic{I/O Logic}}
+\newcommand{\DDL}{{\ensuremath{\mathsf{DDL}}}\xspace}
+\newcommand{\CTD}{{\ensuremath{\mathsf{CTD}}}\xspace} 
+%norms
+\newcommand{\dutyclass}[1]{\llbracket #1 \rrbracket}
+\newcommand{\dutyclassmin}[1]{\llbracket #1 \rrbracket_\eta}
+\newcommand{\dutyclassminb}[1]{\overline{\llbracket #1 \rrbracket}_\eta}
+\newcommand{\dutyclassts}[1]{\llbracket #1 \rrbracket_D^{sat}}
+\newcommand{\dutyclasstv}[1]{\llbracket #1 \rrbracket_D^{viol}}
+\newcommand{\dutyclassb}[1]{\overline{\llbracket #1 \rrbracket}_D}
+\newcommand{\envclass}[1]{\llbracket #1 \rrbracket_{env}}
+\newcommand{\rightclass}[1]{
+	\llbracket #1 \rrbracket_R}
+\newcommand{\is}{\ensuremath{\mathfrak{I}}}
+\newcommand{\norm}[1]{\ensuremath{\mathtt{#1}}}
+\newcommand{\nd}{\text{ and }}
+\newcommand{\sor}{\text{ or }}
+%\newcommand{\ob}{\ensuremath{\tool{O}}}
+\newcommand{\pe}{\ensuremath{\tool{P}}}
+\newcommand{\core}{\mathrm{core}}
+\newcommand{\pr}{\ensuremath{\tool{F}}}
+\newcommand{\opi}{\ensuremath{\tool{O}_\pi}}
+\newcommand{\oar}{\ensuremath{\tool{O}_r}}
+\newcommand{\popi}{\ensuremath{\tool{PO}_\pi}}
+\newcommand{\pstar}{\ensuremath{\tool{P}_*}}
+\newcommand{\pst}{\ensuremath{\tool{O,P}}}
+\newcommand{\seqe}{ ~;\!\!;}
+\newcommand{\seqc}{ ~;}
+\newcommand{\dts}{\logic{DTS}}
+%\newcommand{\rtddl}{\tool{DTDDL}}
+\newcommand{\rtddl}{\tool{TDDL}}
+\newcommand{\satframe}[1]{\|#1\|_{sat}}
+\newcommand{\projection}[1]{\Theta(#1)}
+
+\newcommand{\subin}{~\underline{\in}~}
+\newcommand{\nsubin}{~\underline{\not\in}~}
+\newcommand{\uniw}{\ensuremath{2^\mathbb{I}}}
+
+\newcommand{\pt}{\ensuremath{\mathsf{pt}}}
+
+%\newcommand{\or}{\text{ or }}
+
+%\newcommand{\bs}{\ensuremath{\backslash}}
+\newcommand{\modif}[1]{{#1}\xspace}
+
+\newcommand{\eg}{\textit{e.g.}\xspace}
+\newcommand{\ie}{\textit{i.e.}\xspace}
+%\newcommand{\etc}{\textit{etc.}\xspace}
+\newcommand{\cf}{\textit{cf.}\xspace}
+

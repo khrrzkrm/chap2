@@ -1,169 +1,148 @@
-\contentsline {section}{\numberline {1}Motivations}{3}{section.1}%
+\contentsline {section}{\numberline {1}Overview}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Motivation}{3}{subsection.1.1}%
 \contentsline {paragraph}{Interactions and collaboration.}{3}{section*.1}%
-\contentsline {paragraph}{Infinite normative interactions.}{3}{section*.2}%
-\contentsline {paragraph}{The Challenge of Blame.}{3}{section*.3}%
-\contentsline {paragraph}{Research questions.}{3}{section*.4}%
-\contentsline {section}{\numberline {2}Motivating Example}{4}{section.2}%
-\contentsline {section}{\numberline {3}Preliminaries and State of the Art}{6}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Traces and Their Synchronization Mechanisms}{6}{subsection.3.1}%
-\contentsline {paragraph}{Runs.}{6}{section*.9}%
-\contentsline {paragraph}{Executions.}{6}{section*.10}%
-\contentsline {paragraph}{Behaviours.}{7}{section*.11}%
-\contentsline {paragraph}{Plans.}{7}{section*.12}%
-\contentsline {paragraph}{Observations.}{8}{section*.13}%
-\contentsline {subsubsection}{\numberline {3.1.1}Abstract Trace Theory}{8}{subsubsection.3.1.1}%
-\contentsline {paragraph}{Informal overview.}{8}{section*.15}%
-\contentsline {paragraph}{Events and event domains.}{8}{section*.16}%
-\contentsline {paragraph}{Trace length.}{9}{section*.18}%
-\contentsline {paragraph}{Position lookup.}{9}{section*.19}%
-\contentsline {paragraph}{Event precedence axiom.}{9}{section*.20}%
-\contentsline {paragraph}{Prefix notations.}{10}{section*.21}%
-\contentsline {paragraph}{Suffix notation.}{10}{section*.22}%
-\contentsline {paragraph}{Informal view on continuous behavior.}{10}{section*.23}%
-\contentsline {section}{\numberline {4}Discrete Trace Taxonomy}{11}{section.4}%
-\contentsline {paragraph}{Action Traces}{11}{section*.24}%
-\contentsline {paragraph}{State Traces}{11}{section*.25}%
-\contentsline {paragraph}{Hybrid State--Action Traces}{11}{section*.26}%
-\contentsline {subsection}{\numberline {4.1}Comparison of Trace Types}{11}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}Metric-Timed Action Traces}{12}{subsubsection.4.1.1}%
-\contentsline {paragraph}{Motivation and usage.}{12}{section*.27}%
-\contentsline {paragraph}{Event domain.}{12}{section*.28}%
-\contentsline {paragraph}{Event lookup using \(\rho \).}{13}{section*.29}%
-\contentsline {paragraph}{Timed distances.}{13}{section*.30}%
-\contentsline {subsubsection}{\numberline {4.1.2}Logical-Time Action Traces}{13}{subsubsection.4.1.2}%
-\contentsline {paragraph}{Motivation and usage.}{13}{section*.31}%
-\contentsline {paragraph}{Event domain.}{14}{section*.32}%
-\contentsline {paragraph}{Formal definition.}{14}{section*.33}%
-\contentsline {paragraph}{Timed distance.}{14}{section*.34}%
-\contentsline {paragraph}{Synchronization.}{14}{section*.35}%
-\contentsline {subsubsection}{\numberline {4.1.3}Synchronous-Time Action Traces}{14}{subsubsection.4.1.3}%
-\contentsline {paragraph}{Motivation and usage.}{14}{section*.36}%
-\contentsline {paragraph}{Event domain.}{15}{section*.37}%
-\contentsline {paragraph}{Formal definition.}{15}{section*.38}%
-\contentsline {paragraph}{Timed distance.}{15}{section*.39}%
-\contentsline {paragraph}{Synchronization.}{15}{section*.40}%
-\contentsline {subsection}{\numberline {4.2}Model Based Logics}{16}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}Regular Languages}{16}{subsubsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.3}\ensuremath {\omega }-Regular Languages}{16}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Formal tools for trace verification}{16}{subsection.4.4}%
-\contentsline {paragraph}{Model checking versus monitoring.}{16}{section*.41}%
-\contentsline {paragraph}{Nondeterministic finite automata.}{16}{section*.42}%
-\contentsline {paragraph}{$\epsilon $-\ensuremath {\mathsf {NFA}}\xspace .}{17}{section*.43}%
-\contentsline {paragraph}{Deterministic finite automata.}{17}{section*.44}%
-\contentsline {subsection}{\numberline {4.5}Moore Machines}{17}{subsection.4.5}%
-\contentsline {section}{\numberline {5}Trace Synchronization in Multi-Agent Models}{17}{section.5}%
-\contentsline {paragraph}{Why synchronization?}{17}{section*.45}%
-\contentsline {paragraph}{Time assumptions and word types.}{18}{section*.46}%
-\contentsline {paragraph}{Motivation.}{18}{section*.47}%
-\contentsline {paragraph}{Method and structure.}{18}{section*.48}%
-\contentsline {subsection}{\numberline {5.1}The State of the Art Action-Centric Trace Models}{19}{subsection.5.1}%
-\contentsline {subsubsection}{\numberline {5.1.1}Logical-Time Words}{19}{subsubsection.5.1.1}%
-\contentsline {subsubsection}{\numberline {5.1.2}Metric-Timed Words}{19}{subsubsection.5.1.2}%
-\contentsline {subsubsection}{\numberline {5.1.3}Synchronous-Time Words}{20}{subsubsection.5.1.3}%
-\contentsline {subsubsection}{\numberline {5.1.4}Connecting the Models}{21}{subsubsection.5.1.4}%
-\contentsline {paragraph}{From metric time to logical time.}{21}{section*.49}%
-\contentsline {paragraph}{From metric time to synchronous time.}{22}{section*.50}%
-\contentsline {paragraph}{On non-invertibility.}{23}{section*.51}%
-\contentsline {paragraph}{Takeaway.}{24}{section*.52}%
-\contentsline {subsection}{\numberline {5.2}State of the Art Synchronization Operators}{24}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Asynchrony Operator on Logical Time}{24}{subsubsection.5.2.1}%
-\contentsline {paragraph}{Notes.}{25}{section*.53}%
-\contentsline {subsubsection}{\numberline {5.2.2}Synchronous (Lockstep) Operator on Synchronous Time}{25}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}Synchronous Operator With Handshake Actions}{25}{subsubsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.3}First Contribution: Attempted/Successful Abstraction}{27}{subsection.5.3}%
-\contentsline {subsubsection}{\numberline {5.3.1}What Do We Want to Model?}{27}{subsubsection.5.3.1}%
-\contentsline {subsubsection}{\numberline {5.3.2}From Timed Words Over Actions to Periodic Synchronous Words Over Sets of Actions}{27}{subsubsection.5.3.2}%
-\contentsline {subsubsection}{\numberline {5.3.3}The Abstraction of Attempted/Declined Interactions Over Synchronized Alphabets}{29}{subsubsection.5.3.3}%
-\contentsline {paragraph}{Distinguishing enabling from Blocking actions}{29}{section*.54}%
-\contentsline {paragraph}{Transformation sketch}{30}{section*.55}%
-\contentsline {subsubsection}{\numberline {5.3.4}Successful Action Computation From Two Agents' Interaction}{31}{subsubsection.5.3.4}%
-\contentsline {subsection}{\numberline {5.4}Second Contribution: Modeling Agent Interaction Strategies}{32}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}Models for Interaction Strategies}{32}{subsubsection.5.4.1}%
-\contentsline {subsubsection}{\numberline {5.4.2}Interactive strategy computation}{33}{subsubsection.5.4.2}%
-\contentsline {section}{\numberline {6}The Two-Agents Collaborative Normative Logic \ensuremath {\mathsf {TACNL}}\xspace \xspace }{36}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Syntax of \ensuremath {\mathsf {TACNL}}\xspace \xspace \ }{36}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Illustrating the encoding in \ensuremath {\mathsf {TACNL}}\xspace \xspace for the motivating example}{37}{subsection.6.2}%
-\contentsline {section}{\numberline {7}The notion of tight semantics:}{39}{section.7}%
-\contentsline {subsection}{\numberline {7.1}The need of tight semantics}{39}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Regular Language-engineering for tight behavior}{40}{subsection.7.2}%
-\contentsline {paragraph}{Why the subtraction $\operatorname {\mathsf {Min}}\!\left (\operatorname {\mathsf {BPl}}\!\left (L\right )\right )\setminus \operatorname {\mathsf {IAL}}\!\left (L\right )$?}{41}{section*.60}%
-\contentsline {paragraph}{Deconstructing regular language for tight behavior}{41}{section*.61}%
-\contentsline {paragraph}{Five semantic regions}{42}{section*.63}%
-\contentsline {subsubsection}{\numberline {7.2.1}Tight five-valued semantics}{42}{subsubsection.7.2.1}%
-\contentsline {subsubsection}{\numberline {7.2.2}From Language automaton to Tight monitor construction}{44}{subsubsection.7.2.2}%
-\contentsline {subsection}{\numberline {7.3}Illustration through Regular expressions from \ensuremath {\mathsf {TACNL}}\xspace \xspace }{47}{subsection.7.3}%
-\contentsline {subsubsection}{\numberline {7.3.1}Semantics for regular expression}{47}{subsubsection.7.3.1}%
-\contentsline {subsubsection}{\numberline {7.3.2}Automata construction matching the denotational semantics}{48}{subsubsection.7.3.2}%
-\contentsline {subsubsection}{\numberline {7.3.3}From Language automaton to Tight monitor construction}{50}{subsubsection.7.3.3}%
-\contentsline {section}{\numberline {8}Tight Forward Reasoning on Contract Compliance}{51}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Denotational Semantics for Forward-Looking Tight Contract Satisfaction}{51}{subsection.8.1}%
-\contentsline {paragraph}{Core tight judgements.}{51}{section*.74}%
-\contentsline {paragraph}{Derived judgements.}{52}{section*.75}%
-\contentsline {paragraph}{Collapsed two-valued judgements.}{52}{section*.76}%
-\contentsline {subsubsection}{\numberline {8.1.1}Literal Tight Semantics}{52}{subsubsection.8.1.1}%
-\contentsline {subsubsection}{\numberline {8.1.2}Binary Contract Operators Tight Semantics}{53}{subsubsection.8.1.2}%
-\contentsline {paragraph}{Semantics summary.}{54}{section*.77}%
-\contentsline {paragraph}{Tight satisfaction (longest prefix).}{54}{section*.78}%
-\contentsline {paragraph}{Tight satisfaction (shortest prefix).}{54}{section*.79}%
-\contentsline {paragraph}{Tight violation.}{55}{section*.80}%
-\contentsline {subsubsection}{\numberline {8.1.3}Repetition Contracts Tight Semantics}{55}{subsubsection.8.1.3}%
-\contentsline {paragraph}{Intuition.}{55}{section*.81}%
-\contentsline {subsubsection}{\numberline {8.1.4}Contracts-Regular Expression Binary Operator Semantics}{55}{subsubsection.8.1.4}%
-\contentsline {paragraph}{(a) Triggered contract.}{56}{section*.82}%
-\contentsline {paragraph}{(b) Guarded repetition.}{57}{section*.83}%
-\contentsline {subsubsection}{\numberline {8.1.5}Coherence of the Forward-Looking Contract Satisfaction Semantics}{57}{subsubsection.8.1.5}%
-\contentsline {paragraph}{Conjunction $C\wedge C'$.}{58}{section*.84}%
-\contentsline {paragraph}{Sequence $C;C'$.}{58}{section*.85}%
-\contentsline {paragraph}{Reparation $C\blacktriangleright C'$.}{58}{section*.86}%
-\contentsline {paragraph}{Finite repetition $C^n$.}{58}{section*.87}%
-\contentsline {paragraph}{Unbounded repetition $\mathbf {Rep}(C)$.}{58}{section*.88}%
-\contentsline {paragraph}{Triggered $\langle re\rangle C$.}{59}{section*.89}%
-\contentsline {paragraph}{Guarded $[re]\,C$.}{59}{section*.90}%
-\contentsline {subsection}{\numberline {8.2}Monitor Construction for Tight Contract Satisfaction}{59}{subsection.8.2}%
-\contentsline {subsubsection}{\numberline {8.2.1}Construction for Literal Contracts}{60}{subsubsection.8.2.1}%
-\contentsline {paragraph}{From Tight Semantics to 5-Valued Monitoring.}{60}{section*.91}%
-\contentsline {subsubsection}{\numberline {8.2.2}Construction for Binary Contract Operators}{61}{subsubsection.8.2.2}%
-\contentsline {subsubsection}{\numberline {8.2.3}Construction for Binary Regular Expression-Contracts}{69}{subsubsection.8.2.3}%
-\contentsline {paragraph}{Intuition.}{70}{section*.94}%
-\contentsline {paragraph}{Intuition.}{72}{section*.95}%
-\contentsline {subsubsection}{\numberline {8.2.4}Construction for repetition contracts}{73}{subsubsection.8.2.4}%
-\contentsline {subsection}{\numberline {8.3}Forward-Looking Blaming Semantics}{77}{subsection.8.3}%
-\contentsline {subsubsection}{\numberline {8.3.1}Blame Rules for Literals}{78}{subsubsection.8.3.1}%
-\contentsline {paragraph}{Obligation \(\obl [p]{a}\).}{78}{section*.97}%
-\contentsline {paragraph}{Prohibition \(\frb [p]{a}\).}{78}{section*.98}%
-\contentsline {paragraph}{Power \(\perm [p]{a}\).}{78}{section*.99}%
-\contentsline {paragraph}{Units: Valid ($\top $) and invalid ($\bot $).}{79}{section*.100}%
-\contentsline {paragraph}{Post violation (prefix closure of blame).}{79}{section*.101}%
-\contentsline {subsubsection}{\numberline {8.3.2}Blame Propagation in Contracts}{79}{subsubsection.8.3.2}%
-\contentsline {paragraph}{Conjunction.}{79}{section*.102}%
-\contentsline {paragraph}{Sequence.}{80}{section*.103}%
-\contentsline {paragraph}{Reparation.}{80}{section*.104}%
-\contentsline {subsection}{\numberline {8.4}From Tight Contract Satisfaction Monitor to tight Blame Monitor}{81}{subsection.8.4}%
-\contentsline {paragraph}{Lifting contract verdicts to blame verdicts.}{82}{section*.105}%
-\contentsline {paragraph}{Base Case: Literals ($\ell $).}{83}{section*.106}%
-\contentsline {paragraph}{Inductive Step: Conjunction ($C_1 \wedge C_2$).}{83}{section*.107}%
-\contentsline {paragraph}{Inductive Step: Sequence ($C_1 ; C_2$).}{84}{section*.108}%
-\contentsline {paragraph}{Inductive Step: Reparation ($C_1 \blacktriangleright C_2$).}{84}{section*.109}%
-\contentsline {paragraph}{Conclusion.}{84}{section*.110}%
-\contentsline {paragraph}{Base Case: Literals.}{84}{section*.111}%
-\contentsline {paragraph}{Inductive Step: Conjunction.}{85}{section*.112}%
-\contentsline {paragraph}{Inductive Step: Sequence.}{85}{section*.113}%
-\contentsline {paragraph}{Inductive Step: Reparation.}{85}{section*.114}%
-\contentsline {subsection}{\numberline {8.5}Conclusion and Limitation}{86}{subsection.8.5}%
-\contentsline {section}{\numberline {9}Quantitative Violation Semantics}{88}{section.9}%
-\contentsline {paragraph}{Motivation for Quantitative Semantics.}{88}{section*.118}%
-\contentsline {paragraph}{Determining the Scope of Quantification.}{88}{section*.119}%
-\contentsline {paragraph}{Section Plan.}{89}{section*.120}%
-\contentsline {subsection}{\numberline {9.1}Contract Progress Monitor}{89}{subsection.9.1}%
-\contentsline {paragraph}{Literals.}{90}{section*.121}%
-\contentsline {paragraph}{Conjunction.}{90}{section*.122}%
-\contentsline {paragraph}{Sequence.}{90}{section*.123}%
-\contentsline {paragraph}{Reparation.}{90}{section*.124}%
-\contentsline {paragraph}{Repetition.}{90}{section*.125}%
-\contentsline {paragraph}{Guarded Contract ($\guard [re]{C}$).}{90}{section*.126}%
-\contentsline {paragraph}{Triggered Contract ($\trig [re]{C}$).}{91}{section*.127}%
-\contentsline {paragraph}{Atomic regular expressions}{91}{section*.128}%
-\contentsline {paragraph}{Concatenation}{91}{section*.129}%
-\contentsline {paragraph}{Union}{91}{section*.130}%
-\contentsline {paragraph}{n-repition}{91}{section*.131}%
-\contentsline {paragraph}{Operator $+$}{91}{section*.132}%
+\contentsline {paragraph}{Open-ended normative interactions.}{3}{section*.2}%
+\contentsline {paragraph}{Blame and accountability.}{3}{section*.3}%
+\contentsline {paragraph}{Research questions.}{4}{section*.4}%
+\contentsline {subsection}{\numberline {1.2}Methodology}{4}{subsection.1.2}%
+\contentsline {paragraph}{Phase 1: Semantic Abstraction.}{5}{section*.5}%
+\contentsline {paragraph}{Phase 2: Denotational Specification.}{5}{section*.6}%
+\contentsline {paragraph}{Phase 3: Structural Synthesis.}{5}{section*.7}%
+\contentsline {paragraph}{Phase 4: Formal Verification.}{5}{section*.8}%
+\contentsline {subsection}{\numberline {1.3}Contributions}{5}{subsection.1.3}%
+\contentsline {paragraph}{Organization.}{6}{section*.9}%
+\contentsline {section}{\numberline {2}Motivating Example}{7}{section.2}%
+\contentsline {paragraph}{Scenario 1: Obstruction (The ``Handshake'' Problem).}{8}{section*.11}%
+\contentsline {paragraph}{Scenario 2: Violation and Reparation (The CTD Chain).}{8}{section*.12}%
+\contentsline {paragraph}{Scenario 3: Termination and Temporal Reconfiguration.}{8}{section*.13}%
+\contentsline {paragraph}{1. The ``Handshake'' Semantics (Attempts vs.\ Outcomes).}{9}{section*.15}%
+\contentsline {paragraph}{2. Contrary-to-Duty Structures (Reparation).}{9}{section*.16}%
+\contentsline {paragraph}{3. Reactive Triggers and Monitoring Horizons.}{9}{section*.17}%
+\contentsline {paragraph}{4. Hohfeldian Powers and Structural Change.}{9}{section*.18}%
+\contentsline {section}{\numberline {3}Trace Synchronization in Multi-Agent Models}{10}{section.3}%
+\contentsline {paragraph}{Why synchronization?}{10}{section*.20}%
+\contentsline {paragraph}{Time assumptions and word types.}{10}{section*.21}%
+\contentsline {paragraph}{Motivation.}{10}{section*.22}%
+\contentsline {paragraph}{Method and structure.}{11}{section*.23}%
+\contentsline {subsection}{\numberline {3.1}The State of the Art Action-Centric Trace Models}{11}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Logical-Time Words}{11}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Metric-Timed Words}{12}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Synchronous-Time Words}{13}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Connecting the Models}{14}{subsubsection.3.1.4}%
+\contentsline {paragraph}{From metric time to logical time.}{14}{section*.24}%
+\contentsline {paragraph}{From metric time to synchronous time.}{15}{section*.25}%
+\contentsline {paragraph}{On non-invertibility.}{16}{section*.26}%
+\contentsline {paragraph}{Takeaway.}{16}{section*.27}%
+\contentsline {subsection}{\numberline {3.2}State of the Art Synchronization Operators}{16}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Asynchrony Operator on Logical Time}{17}{subsubsection.3.2.1}%
+\contentsline {paragraph}{Notes.}{17}{section*.28}%
+\contentsline {subsubsection}{\numberline {3.2.2}Synchronous (Lockstep) Operator on Synchronous Time}{17}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Synchronous Operator With Handshake Actions}{18}{subsubsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}First Contribution: Attempted/Successful Abstraction}{19}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}What Do We Want to Model?}{19}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}From Timed Words Over Actions to Periodic Synchronous Words Over Sets of Actions}{20}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}The Abstraction of Attempted and Declined Interactions Over Synchronized Alphabets}{21}{subsubsection.3.3.3}%
+\contentsline {paragraph}{Distinguishing enabling from Blocking actions}{22}{section*.29}%
+\contentsline {paragraph}{Transformation sketch}{22}{section*.30}%
+\contentsline {subsubsection}{\numberline {3.3.4}Successful Action Computation From Two Agents' Interaction}{23}{subsubsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.4}Second Contribution: Modeling Agent Interaction Strategies}{24}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Models for Interaction Strategies}{25}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Interactive Strategy Computation}{26}{subsubsection.3.4.2}%
+\contentsline {section}{\numberline {4}The Two-Agents Collaborative Normative Logic \ensuremath {\ensuremath {\mathsf {TACNL}}\xspace } \xspace }{30}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Syntax of \ensuremath {\ensuremath {\mathsf {TACNL}}\xspace } \xspace }{30}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Illustrating the Encoding in \ensuremath {\ensuremath {\mathsf {TACNL}}\xspace } \xspace for the Motivating Example}{31}{subsection.4.2}%
+\contentsline {section}{\numberline {5}The Notion of Tight Semantics}{32}{section.5}%
+\contentsline {subsection}{\numberline {5.1}The Need for Tight Semantics}{32}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}From Language Membership to Tight Prefix}{33}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Topological Boundaries}{34}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}The Priority of Acceptance}{34}{subsubsection.5.2.2}%
+\contentsline {paragraph}{Deconstructing regular language for tight behavior}{35}{section*.35}%
+\contentsline {paragraph}{Five semantic regions}{36}{section*.37}%
+\contentsline {subsubsection}{\numberline {5.2.3}Tight Five-Valued Semantics}{36}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}From Language Automaton to Tight Monitor Construction}{37}{subsubsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.3}Illustration Through Regular Expressions from \ensuremath {\ensuremath {\mathsf {TACNL}}\xspace } \xspace }{41}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Semantics for Regular Expressions}{41}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}Automata Construction Matching the Denotational Semantics}{42}{subsubsection.5.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.3}From Language Automaton to Tight Monitor Construction}{43}{subsubsection.5.3.3}%
+\contentsline {section}{\numberline {6}Tight Forward Reasoning on Contract Compliance}{44}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Denotational Semantics for Forward-Looking Tight Contract Satisfaction}{44}{subsection.6.1}%
+\contentsline {paragraph}{Core tight judgements.}{44}{section*.48}%
+\contentsline {paragraph}{Derived judgements.}{45}{section*.49}%
+\contentsline {paragraph}{Collapsed two-valued judgements.}{45}{section*.50}%
+\contentsline {paragraph}{Semantics summary.}{47}{section*.53}%
+\contentsline {paragraph}{Tight satisfaction (the longest prefix).}{48}{section*.54}%
+\contentsline {paragraph}{Tight satisfaction (the shortest prefix).}{48}{section*.55}%
+\contentsline {paragraph}{Tight violation.}{48}{section*.56}%
+\contentsline {paragraph}{Intuition.}{49}{section*.58}%
+\contentsline {paragraph}{(a) Triggered contract.}{50}{section*.60}%
+\contentsline {paragraph}{(b) Guarded repetition.}{50}{section*.61}%
+\contentsline {paragraph}{Conjunction $C\wedge C'$.}{51}{section*.63}%
+\contentsline {paragraph}{Sequence $C;C'$.}{51}{section*.64}%
+\contentsline {paragraph}{Reparation $C\blacktriangleright C'$.}{52}{section*.65}%
+\contentsline {paragraph}{Finite repetition $C^n$.}{52}{section*.66}%
+\contentsline {paragraph}{Unbounded repetition $\mathbf {Rep}(C)$.}{52}{section*.67}%
+\contentsline {paragraph}{Triggered $\langle re\rangle C$.}{52}{section*.68}%
+\contentsline {paragraph}{Guarded $[re]\,C$.}{52}{section*.69}%
+\contentsline {subsection}{\numberline {6.2}Monitor Construction for Tight Contract Satisfaction}{53}{subsection.6.2}%
+\contentsline {paragraph}{From Tight Semantics to 5-Valued Monitoring.}{54}{section*.71}%
+\contentsline {paragraph}{Intuition.}{64}{section*.76}%
+\contentsline {paragraph}{Intuition.}{66}{section*.77}%
+\contentsline {subsection}{\numberline {6.3}Forward-Looking Blaming Semantics}{72}{subsection.6.3}%
+\contentsline {paragraph}{Obligation \(\obl [p]{a}\).}{72}{section*.81}%
+\contentsline {paragraph}{Prohibition \(\frb [p]{a}\).}{72}{section*.82}%
+\contentsline {paragraph}{Power \(\perm [p]{a}\).}{73}{section*.83}%
+\contentsline {paragraph}{Units: Valid ($\top $) and invalid ($\bot $).}{73}{section*.84}%
+\contentsline {paragraph}{Post violation (prefix closure of blame).}{73}{section*.85}%
+\contentsline {paragraph}{Conjunction.}{73}{section*.87}%
+\contentsline {paragraph}{Sequence.}{74}{section*.88}%
+\contentsline {paragraph}{Reparation.}{74}{section*.89}%
+\contentsline {subsection}{\numberline {6.4}From Tight Contract Satisfaction Monitor to Tight Blame Monitor}{75}{subsection.6.4}%
+\contentsline {paragraph}{Lifting contract verdicts to blame verdicts.}{76}{section*.90}%
+\contentsline {paragraph}{Base Case: Literals ($\ell $).}{77}{section*.91}%
+\contentsline {paragraph}{Inductive Step: Conjunction ($C_1 \wedge C_2$).}{77}{section*.92}%
+\contentsline {paragraph}{Inductive Step: Sequence ($C_1 ; C_2$).}{78}{section*.93}%
+\contentsline {paragraph}{Inductive Step: Reparation ($C_1 \blacktriangleright C_2$).}{78}{section*.94}%
+\contentsline {paragraph}{Conclusion.}{78}{section*.95}%
+\contentsline {paragraph}{Base Case: Literals.}{78}{section*.96}%
+\contentsline {paragraph}{Inductive Step: Conjunction.}{79}{section*.97}%
+\contentsline {paragraph}{Inductive Step: Sequence.}{79}{section*.98}%
+\contentsline {paragraph}{Inductive Step: Reparation.}{79}{section*.99}%
+\contentsline {subsection}{\numberline {6.5}Conclusion and Limitation}{80}{subsection.6.5}%
+\contentsline {section}{\numberline {7}Quantitative Violation Semantics}{82}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Motivation and Scope}{82}{subsection.7.1}%
+\contentsline {paragraph}{Beyond Boolean Verdicts.}{82}{section*.103}%
+\contentsline {paragraph}{The Challenge of Temporal Scope.}{82}{section*.104}%
+\contentsline {subsection}{\numberline {7.2}Contract Progress Monitor}{83}{subsection.7.2}%
+\contentsline {paragraph}{Literals (State Update).}{83}{section*.105}%
+\contentsline {paragraph}{Conjunction (Parallel Progress).}{83}{section*.106}%
+\contentsline {paragraph}{Sequence (Sequential Handover).}{84}{section*.107}%
+\contentsline {paragraph}{Reparation (Contrary-to-Duty Branching).}{84}{section*.108}%
+\contentsline {paragraph}{Repetition.}{84}{section*.109}%
+\contentsline {paragraph}{Guarded and Triggered Contracts.}{84}{section*.110}%
+\contentsline {paragraph}{Regular Expression Derivatives ($\ensuremath {\mathsf {Prog}}\xspace _{re}$).}{84}{section*.111}%
+\contentsline {subsection}{\numberline {7.3}Quantitative Monitoring of Contract Compliance}{87}{subsection.7.3}%
+\contentsline {paragraph}{Additivity of Concurrency.}{90}{section*.117}%
+\contentsline {paragraph}{Binary Structural Verdict.}{90}{section*.118}%
+\contentsline {paragraph}{Separation of State and Score.}{90}{section*.119}%
+\contentsline {paragraph}{1. Zero Score Implications ($\left \llbracket \pi , C \right \rrbracket _{\text {qviol}} = 0$)}{91}{section*.120}%
+\contentsline {paragraph}{2. Non-Zero Score Implications ($\left \llbracket \pi , C \right \rrbracket _{\text {qviol}} \neq 0$)}{91}{section*.121}%
+\contentsline {paragraph}{Trace $\pi = \ensuremath {\langle A_1 \rangle \xspace }$ with $A_1=\{\ensuremath {\mathsf {PAY\_R}}\xspace ^{(12)}\}$.}{93}{section*.122}%
+\contentsline {paragraph}{Trace $\pi '=\ensuremath {\langle A'_1,A'_2 \rangle \xspace }$ with $A'_1=\{\ensuremath {\mathsf {OCC}}\xspace ^{(1)}\}$ and $A'_2=\{\ensuremath {\mathsf {PAY\_F}}\xspace ^{(12)}\}$.}{93}{section*.124}%
+\contentsline {paragraph}{Trace $\pi =\ensuremath {\langle A_1,A_2 \rangle \xspace }$ with $A_1=\{\ensuremath {\mathsf {PAY\_R}}\xspace ^{(12)}\}$ and $A_2=\{\ensuremath {\mathsf {Notif\_T}}^{(1)}\}$.}{94}{section*.127}%
+\contentsline {paragraph}{Trace $\pi '=\ensuremath {\langle A_1,A_2' \rangle \xspace }$ with $A_2'=\{\ensuremath {\mathsf {OCC}}\xspace ^{(1)}\}$.}{96}{section*.129}%
+\contentsline {paragraph}{Conclusion.}{96}{section*.131}%
+\contentsline {subsection}{\numberline {7.4}Quantitative Violation Monitor Construction}{97}{subsection.7.4}%
+\contentsline {paragraph}{Base case ($n=1$).}{100}{section*.133}%
+\contentsline {paragraph}{Inductive step.}{100}{section*.134}%
+\contentsline {paragraph}{Conclusion of the quantitative monitor construction.}{101}{section*.135}%
+\contentsline {subsection}{\numberline {7.5}Quantitative Blame Semantics}{101}{subsection.7.5}%
+\contentsline {paragraph}{Additivity and accumulation.}{101}{section*.136}%
+\contentsline {paragraph}{Why there is no $(1,1)$ case.}{102}{section*.137}%
+\contentsline {paragraph}{Trace $\pi = \ensuremath {\langle A_1,A_2 \rangle \xspace }$ with $A_1=\{\ensuremath {\mathsf {OCC}}\xspace ^{(1)}\}$ and $A_2=\{\ensuremath {\mathsf {PAY\_F}}\xspace ^{(12)}\}$.}{102}{section*.138}%
+\contentsline {paragraph}{Trace $\pi '=\ensuremath {\langle A_1 \rangle \xspace }$ with $A_1=\{\ensuremath {\mathsf {OCC}}\xspace ^{(1)}\}$.}{103}{section*.139}%
+\contentsline {paragraph}{Base case.}{104}{section*.140}%
+\contentsline {paragraph}{Inductive step.}{104}{section*.141}%
+\contentsline {subsection}{\numberline {7.6}Quantitative Blame Monitor Construction}{105}{subsection.7.6}%
+\contentsline {paragraph}{Monitor interface.}{105}{section*.142}%
+\contentsline {paragraph}{Conformance to the quantitative blame semantics.}{105}{section*.143}%
+\contentsline {subsection}{\numberline {7.7}Conclusion and Limitations}{107}{subsection.7.7}%

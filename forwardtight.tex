@@ -65,7 +65,7 @@ Exactly one of $\pi\ \sat\ C$ or $\pi\ \viol\ C$ holds for every trace~$\pi$ and
 This conservative collapse treats undecided prefixes as \emph{violating}
 (no premature acceptance) while still preserving the tight moment of satisfaction.
 
-\subsubsection{Literal Tight Semantics}
+\subsubsection*{Literal Tight Semantics}
 Literals $\ell$ are decided in a single synchronous step.
 We therefore interpret them on a single event word $\trace{A}$ with $A\in\Gamma$
 (the set of actions that occurred in one period).
@@ -141,7 +141,7 @@ the overall collapsed verdict follows from $\trace{A}$ are post satisfaction or 
 \]
 \end{example}
 
-\subsubsection{Binary Contract Operators Tight Semantics}
+\subsubsection*{Binary Contract Operators Tight Semantics}
 \label{sec:tight-binary}
 Binary contract operators combine two contracts into structured compositions that capture
 parallel, sequential, or conditional behavior.  
@@ -286,7 +286,7 @@ This shows that $(C_2 \wedge C_3)$
 satisfies either immediately when both conjuncts hold, or later when a reparation compensates for a missed rent, while violation arises when both payment and its repair fail.
 \end{example}
 
-\subsubsection{Repetition Contracts Tight Semantics}
+\subsubsection*{Repetition Contracts Tight Semantics}
 \begin{definition}[Repetition Contracts]
 Let $\pi$ be a finite trace over the event alphabet $\Gamma = 2^{\Sigma}$, with $s=\size{\pi}$ and $k \in [0, s-1]$ and $n$ a strictly positif natural number $n \in \mathbb{N}^*$.  
 We refer by $\pi^k$ the suffix $\pi[k,\size{\pi}]$, and by $\pi_k$ to the prefix $\pi[0,k]$.  
@@ -335,7 +335,7 @@ condition indefinitely.
 
 
 
-\subsubsection{Contracts-Regular Expression Binary Operator Semantics}
+\subsubsection*{Contracts-Regular Expression Binary Operator Semantics}
 \label{sec:regex-contract}
 Contracts guarded by regular expressions specify that a normative condition becomes active only after the trace matches a given regular pattern.  
 Such patterns, written $re$, are interpreted over the letter alphabet 
@@ -466,7 +466,7 @@ while the guard still holds, so
 $\pi_{\mathsf{viol}}\ \violt\ C_9$.
 \end{example}
 
-\subsubsection{Coherence of the Forward-Looking Contract Satisfaction Semantics}
+\subsubsection*{Coherence of the Forward-Looking Contract Satisfaction Semantics}
 
 Coherence requires that for any fixed contract and trace, there is never more than one decisive verdict. A trace cannot both tightly satisfy and tightly violate the same contract on different prefixes, since this would yield two incompatible outcomes for a single execution. Forward semantics must therefore
 rule out situations where tight satisfaction appears on one prefix and tight violation appears on another prefix of the same trace. Ensuring this exclusion
@@ -644,7 +644,7 @@ $C$ in \cDL. It is defined inductively on the structure of $C$:
 Where the tight monitor construction for regular expressions $\tsmc(\re)$ is already defined in Definition~\ref{def:tsmc-re}.
 \end{definition}
 
-\subsubsection{Construction for Literal Contracts}
+\subsubsection*{Construction for Literal Contracts}
 \paragraph{From Tight Semantics to 5-Valued Monitoring.}
 The literal clauses above define one-step satisfaction and violation judgements for a single event word $\trace{A}$.
 We lift these clauses into a five-valued Moore machine whose outputs track the evolution of the tight verdicts over prefixes.
@@ -725,7 +725,7 @@ $\topp$ or $\botp$.}
 \end{figure}
 
 
-\subsubsection{Construction for Binary Contract Operators}
+\subsubsection*{Construction for Binary Contract Operators}
 
 For binary contract operators of the form $C\ \textsf{op}\ C'$ with
 $\textsf{op} \in \{\wedge,\ ;\ ,\ \repair\}$, the monitor for the composite contract is obtained by combining the already constructed monitors
@@ -1357,7 +1357,7 @@ $\PAY^\surd:= \{A \mid \PAY^{(1)},\PAY^{(2)}\} \subseteq A $. The case $\PAYF^\s
 \end{figure*}
 \end{example}
 \newpage
-\subsubsection{Construction for Binary Regular Expression-Contracts}
+\subsubsection*{Construction for Binary Regular Expression-Contracts}
 Triggered contracts activate their body $C$ once the triggering pattern $re$
 reaches its first tight match. Before that point, the monitor behaves exactly as the regular-expression monitor for $re$ and emits only $\mathsf{?}$. Once the trigger fires, the monitor switches permanently to the contract monitor $\tsmc(C)$. If the pattern becomes impossible before it fires, the contract is
 vacuously satisfied. The construction follows the same blueprint as sequence and reparation, but applied to the decisive states of the regular expression monitor.
@@ -1699,7 +1699,7 @@ for all traces $\pi$.
 
 
 
-\subsubsection{Construction for repetition contracts}
+\subsubsection*{Construction for repetition contracts}
 
 Repetition contracts describe behaviors that must be satisfied several times in
 sequence. The monitor construction follows the intuition that each repetition runs an independent copy of the monitor for $C$, with the next copy becoming active exactly when the previous one reaches tight success. For finite
@@ -2133,7 +2133,7 @@ By replacing the undifferentiated violation verdicts of the five-valued semantic
 This refined judgement structure allows the monitors constructed in the next section to pinpoint the agents responsible for each contractual breach.
 
 
-\subsubsection{Blame Rules for Literals}
+\subsubsection*{Blame Rules for Literals}
 \begin{definition}[Blame assignment for literals]
 Let $p\in\{1,2\}$ be the main subject of the norm and let $\barp$ denote the other party.
 Let $\trace{A}$ be a single-step word with $A\in\Gamma$. We write $a^{(i)}\in A$ when party $i$ attempts $a$ in this step.
@@ -2214,7 +2214,7 @@ A\in\{\emptyset,\{a^{(2)}\}\}: & \text{no violation} & \text{(no unsupported sub
 \]
 \end{example}
 
-\subsubsection{Blame Propagation in Contracts}
+\subsubsection*{Blame Propagation in Contracts}
 \paragraph{Conjunction.}
 For $S \subseteq\{1, 2\}$ of agent(s), and  two contract $C$ and $C'$ from \cDL and a synchronous trace $\pi$, blame is defined for the conjunction $C \wedge C'$ is defined as:
 \[

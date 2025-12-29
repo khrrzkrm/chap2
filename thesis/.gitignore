@@ -1,0 +1,17 @@
+# LaTeX temp files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.loe
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.tdo
+*.lol
+*.synctex.gz
+# Generated PDF
+thesis.pdf
