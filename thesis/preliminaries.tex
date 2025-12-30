@@ -1,0 +1,501 @@
+\chapter{Preliminaries}
+
+\section{Interval Set over Integers}
+\subsection{Natural Numbers and Extended Natural Numbers}
+
+Let  $\mathbb{N}$ denote the set of all positive integers including zero, i.e.\ \( \mathbb{N}:= \{ 0, 1, 2, 3, \dots \} \) and let \emph{less} ($<$) and  \emph{less or equal} ($\leq$) denote the usual order relations on $\mathbb{N}$.
+%
+We extend \(\mathbb{N}\) by adding the element \(\infty\), denoting infinity, forming the set of extended  natural numbers: % ML@KK: define macros for example for \mathbb{N}^\infty 
+\( \mathbb{N}^\infty = \mathbb{N} \cup \{\infty\} \).
+We define  the order relations for  $\mathbb{N}^\infty$ : $<_\infty$ and  $\leq_\infty$:
+
+            \[
+           \text{For } n,m \in \mathbb{N}^\infty, n <_\infty m \text{ if and only if }
+            \begin{cases} 
+                n \in \mathbb{N} \text{ and } m \in \mathbb{N} \text{ and } n < m,\\
+                n \in \mathbb{N} \text{ and } m = \infty.
+            \end{cases}
+            \]
+            \[
+             \text{For } n,m \in \mathbb{N}^\infty,n \leq_\infty m \text{ if and only if }
+            \begin{cases} 
+                n \in \mathbb{N} \text{ and } m \in \mathbb{N} \text{ and } n \leq m,\\
+                n \in \mathbb{N} \text{ and } m = \infty,\\
+                n = \infty \text{ and } m = \infty.
+            \end{cases}
+            \]
+\subsection{Intervals}
+
+
+\begin{definition}[Interval]
+A \emph{non-empty interval} is a pair $[\tmin,\tmax]$ with $\tmin \in \mathbb{N}$, $\tmax \in \mathbb{N}^\infty$, and $\tmin \leq_\infty \tmax$. The \emph{empty interval}, written $\varnothing$, contains no elements.
+The set of all valid intervals is
+%\[
+defined as $
+\mathbb{I} := \{[\tmin,\tmax] \mid \tmin \leq_\infty \tmax\} \cup \{\varnothing\}.
+$
+%\]
+For $n\in\mathbb{N}$, we write $n\in[\tmin,\tmax]$ iff $\tmin \leq_\infty n \leq_\infty \tmax$. 
+ \end{definition}
+
+ Informally, an non empty interval $[\tmin,\tmax]$  \emph{represents} a contiguous set of numbers, that is:  $\{n \mid n\in[\tmin,\tmax]\}$, and the empty interval $\varnothing$ represents the empty set of natural numbers.
+The \emph{size} of an interval $I$, written $\size{I}$, relates to the cardinality of the set that it represents. Thus, the size for $\varnothing$ is zero and for valid non-empty intervals:
+\[
+\size{[a,b]} :=
+\begin{cases}
+b-a-1 & \text{if } b\!\in\!\mathbb{N},\\
+\infty & \text{if } b=\infty.
+\end{cases}
+\]
+
+  \begin{example} 
+  Consider the following examples of intervals:
+\begin{itemize}
+    \item If \(\tmin := 2\) and \(\tmax := 5\), then \(I := [2, 5] \text{ represents } \{ 2, 3, 4, 5 \}\).
+    \item If \(\tmin := 3\) and \(\tmax := \infty\), then \(I := [3, \infty] \text{ represents }\{ t \in \mathbb{N} \mid t \geq 3 \}\).
+    \item If \(\tmin := 3\) and \(\tmax := 3\), then \(I := [3, 3] \text{ represents } \{ 3\}\).
+     \item If \(\tmin := 3\) and \(\tmax := 0\), then $I:=[3,0]$ is not a valid interval.
+\\
+
+     We transform the timed constraints from the  use case to intervals:
+     \begin{enumerate}
+         \item Let $I_1:=[9,16]$ represent the timed constraint between 9:00 and 16:00 from the Delivery Clause (Table~\ref{tab:contract}).
+         \item Let $I_2:=[8, 24]$ represent the constraint between 8:00 and 24 from the Maintenance Announcement (Table~\ref{tab:ma}).
+         \item Let $I_3:=[10,14]$ represent the constraint between 10:00 and 14:00 from the Safety regulation (Table \ref{tab:contract}).
+     \end{enumerate}
+\end{itemize}
+\end{example}
+
+
+\subsection{Allen's Algebra and Unifiability}
+
+
+Allen's algebra \cite{allen1983maintaining} consists of 13 exhaustive and mutually exclusive relations between \textit{abstract}\footnote{Not inherently tied to a specific numerical domain.} pairs of intervals. To provide an intuition, in Fig.~\ref{fig:ia} we give a visual interpretation of these relations. The different cases are based on the relative comparison of the start and end points of the intervals. In Table \ref{tab:IAdesc} we specify the constraints associated with each case for the domain of intervals $\mathbb{I}$ defined on natural numbers.
+
+
+\begin{figure}[h]
+    \begin{subfigure}{0.22\textwidth}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.5,0) node[left] {} -- (3.75,0);
+            \drawinterval{.5}{1.7}{2.5}{1.7}{$I$}
+            \drawinterval{.5}{.7}{2.5}{.7}{$I'$}
+            \node[] at (2,3) {$I$ equals $I'$ ($eq$)};
+        \end{tikzpicture}
+        %\caption*{$I$ equals $I'$ ($eq$)}
+        \label{subfig:ia:eg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.19\textwidth}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.5,0) node[left] {} -- (4,0);
+            \drawinterval{0}{1.7}{1.4}{1.7}{$I$}
+            \drawinterval{1.9}{.7}{3.35}{.7}{$I'$}
+            \node[] at (2,4) {$I$ before $I'$ ($b$)};
+            \node[] at (2,3) {$I'$ after $I$ ($bi$)};
+        \end{tikzpicture}
+        \label{subfig:ia:b}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}{0.22\textwidth}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.75,0) node[left] {} -- (3.75,0);
+            \drawinterval{0}{1.7}{1.5}{1.7}{$I$}
+            \drawinterval{1.5}{.7}{3}{.7}{$I'$}
+            \node[] at (2,4) {$I$ meets $I'$ ($m$)};
+            \node[] at (2,3) {$I'$ met by $I$ ($mi$)};
+        \end{tikzpicture}
+        \label{subfig:ia:m}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}{0.22\textwidth}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.5,0) node[left] {} -- (3.75,0);
+            \drawinterval{0.5}{1.7}{2.5}{1.7}{$I$}
+            \drawinterval{0}{.7}{3.1}{.7}{$I'$}
+            \node[] at (2,4) {$I$ during $I'$ ($d$)};
+            \node[] at (2,3) {$I'$ contains $I$ ($di$)};
+        \end{tikzpicture}
+        \label{subfig:ia:d}
+    \end{subfigure}
+    \vspace{0.05cm}
+    \quad
+    \hfill 
+    \begin{subfigure}{0.23\textwidth}
+        %\caption*{$I$ starts $I'$ ($s$)\\ $I'$ started by $I$ ($si$)}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.5,0) node[left] {} -- (3.75,0);
+            \drawinterval{0}{1.7}{1.15}{1.7}{$I$}
+            \drawinterval{0}{.7}{3.1}{.7}{$I'$}
+            \node[] at (1.75,-1) {$I$ starts $I'$ ($s$)};
+            \node[] at (1.75,-2) {$I'$ started by $I$ ($si$)};            
+        \end{tikzpicture}
+        \label{subfig:ia:s}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.22\textwidth}
+        %\caption*{$I$ overlaps $I'$ ($o$)\\ $I'$ overlapped by $I$ ($oi$)}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.75,0) node[left] {} -- (3.75,0);
+            \drawinterval{0}{1.7}{1.5}{1.7}{$I$}
+            \drawinterval{1.2}{.7}{2.8}{.7}{$I'$}
+            \node[] at (1.5,-1) {$I$ overlaps $I'$ ($o$)};
+            \node[] at (1.5,-2) {$I'$ overlapped by $I$ ($oi$)};
+        \end{tikzpicture}
+        \label{subfig:ia:o}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.25\textwidth}
+        \centering
+          \begin{tikzpicture}[scale=0.5, yscale=0.80]
+            \draw[->,gray] (-0.5,0) node[left] {} -- (3.75,0);
+            \drawinterval{2.1}{1.7}{3.1}{1.7}{$I$}
+            \drawinterval{0}{.7}{3.1}{.7}{$I'$}
+            \node[] at (1.5,-1) {$I$ finishes $I'$ ($f$)};
+            \node[] at (1.5,-2) {$I'$ finished by $I$ ($fi$)};
+        \end{tikzpicture}
+        %\caption*{$I$ finishes $I'$ ($f$)\\ $I'$ finished by $I$ ($fi$)}
+        \label{subfig:ia:f}
+    \end{subfigure}
+    \hfill
+    \quad
+    \hfill
+    \caption{Visual representation of all base relations from Allen's Interval Algebra (continuous Intervals)}
+    \label{fig:ia}
+\end{figure}
+
+
+
+ We additionally define the \emph{non-unifiable} relation $\overline{U}$: the relation captures that the union of two intervals is not closed under $\mathbb{I}$. This relation is a special case of the \textit{before} relation: $$\overline{U}([a,b],[c,d]) \text{ iff } ([a,b+1] \text{ before } [c,d]) \sor ([c,d+1] \text{ before } [a,b]) .$$
+
+
+\begin{example}
+
+We show below examples illustrating some relations between intervals:
+
+\begin{enumerate}
+    \item \textbf{Before}: \( I := [0, 3] \) and \( I' := [4, 7] \). \\
+    \( I \text{ is before } I' \), since \( I \) ends before \( I' \) starts.
+
+    \item \textbf{Non unifiable}: \( I := [0,2] \) and \( I' := [4, 7] \). \\
+    \( I \text{ is not unifiable with } I' \), since $[0,3]$ precedes $[4,7]$.
+    
+    \item \textbf{After}: \( I := [5, 8] \) and \( I' := [0, 4] \). \\
+    \( I \text{ is after } I' \), since \( I \) starts after \( I' \) ends.
+    
+    \item \textbf{Meets}: \( I := [0, 3] \) and \( I' := [3, 6] \). \\
+    \( I \text{ meets } I' \), since \( I \) ends exactly when \( I' \) starts.
+    
+    \item \textbf{Overlaps}: \( I := [0, 4] \) and \( I' := [3, 6] \). \\
+    \( I \text{ overlaps } I' \), since \( I \) starts before \( I' \) and ends after \( I' \) starts.
+    
+    \item \textbf{Starts}: \( I := [2, 5] \) and \( I' := [2, 8] \). \\
+    \( I \text{ starts } I' \), since \( I \) and \( I' \) have the same start time, but \( I \) ends before \( I' \).
+    
+    \item \textbf{Finishes}: \( I := [4, 7] \) and \( I' := [1, 7] \). \\
+    \( I \text{ finishes } I' \), since \( I \) and \( I' \) have the same end time, but \( I \) starts after \( I' \).
+    
+    \item \textbf{During}: \( I := [3, 6] \) and \( I' := [1, 8] \). \\
+    \( I \text{ is during } I' \), since \( I \) starts after \( I' \) starts and ends before \( I' \) ends.
+    
+    \item \textbf{Contains}: \( I := [0, 7] \) and \( I' := [2, 5] \). \\
+    \( I \text{ contains } I' \), since \( I \) starts before \( I' \) and ends after \( I' \) ends.
+    \item \textbf{Non unifiable}: \( I := [0, 3] \) and \( I' := [5, \infty] \). \\
+    \( \overline{U}(I,I') \), since $3+1 < 5$.
+\end{enumerate}
+\end{example}
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{|l|l|l|}
+    \hline
+        Notation& Interpretation  & Necessary constraints  \\
+        \hline
+        $\boldsymbol{I< I'}$  & $I$ precedes $I'$  & $\max(I) <_\infty \min(I')$\\
+        $\boldsymbol{I' > I}$  & $I'$ precedes $I$  &  \\
+        \hline
+        $\boldsymbol{I = I'}$  & $I$ is equal to $I'$  & $\min(I) = \min(I')$, $\max(I) = \max(I')$ \\
+        & $I'$ is equal to $I$  & \\
+        \hline
+        $\boldsymbol{I~m~I'}$  & $I$ meets $I'$  & $\max(I) =\min(I')$ \\
+        $\boldsymbol{I'~mi~I}$  & $I'$ meets $I$  &  \\
+        \hline
+        $\boldsymbol{I~o~I'}$  & $I$ overlaps with $I'$  & $\min(I) <_\infty \min(I') < \max(I) <_\infty \max(I')$ \\
+        $\boldsymbol{I'~oi~I}$  & $I'$ overlaps with $I$  & \\
+        \hline
+        $\boldsymbol{I~s~I'}$  & $I$ starts $I'$  & $\min(I) = \min(I')$, $\max(I) <_\infty \max(I')$ \\
+        $\boldsymbol{I' si I}$  & $I'$ starts $I$  &  \\
+        \hline
+        $\boldsymbol{I~d~I'}$  & $I$ during $I'$  & $\min(I') <_\infty \min(I)$, $\max(I) <_\infty \max(I')$ \\
+        $\boldsymbol{I'~di~I}$  & $I'$ during $I$  & \\
+        \hline
+        $\boldsymbol{I~f~I'}$  & $I$ finishes $I'$  & $\max(I) = \max(I')$, $\min(I) >_\infty \min(I')$ \\
+        $\boldsymbol{I'~fi~I}$  & $I'$ finishes $I$  &  \\
+        \hline
+    \end{tabular}
+    \caption{Constraint on intervals from $\mathbb{I}$ to satisfy a relation from  Allen's Algebra }
+    \label{tab:IAdesc}
+\end{table}
+
+
+The {intersection} operator: $ \cap:\mathbb{I} \times \mathbb{I}  \to \mathbb{I}$  is defined as follows:
+	\begin{align*}
+		[a,b] \cap [c,d] := 	\left\{
+		\begin{array}{lll}
+			~	\varnothing & \text{iff} &  [a,b] \text{ before } [c,d]\text{ or } [c,d] \text{ before } [a,b] \\
+			~ [max(a, c), min(b,d)] & \text{otherwise}
+		\end{array}
+		\right.
+	\end{align*}
+
+The operators we define now are partially defined as the interval domain not being closed under these operations.
+
+The \emph{union} operator $ \cup:\mathbb{I} \times \mathbb{I}  \rightharpoonup \mathbb{I}$ is partially defined as follows:
+
+ $$[a,b] \cup [c,d] := \begin{cases} 		
+		\text{ undefined }& \text{ iff } \overline{U}([a,b],[c,d]) ,\\
+		[min(a,b,c,d),max(a,b,c,d)] & \text{otherwise.}
+	\end{cases}$$
+
+The partial interval difference operator $\ominus: \mathbb{I} \times \mathbb{I} \rightharpoonup \mathbb{I}$ is the non-commutative, partially defined operation removing all elements from the interval  $I'$ from the interval $I$ in $I \ominus I'$:
+
+$$[a,b] \ominus [c,d] := \begin{cases} 		
+		\text{ undefined }& \text{ iff   } [c,d] \text{ during } [a,b],\\
+		[a,b] & \text{iff   } [a,b] \cap [c,d]= \emptyset,\\
+  \varnothing & \text{iff   } [a,b] \subseteq [c,d],\\
+  [a,c-1] & \text{iff   } [a,b] \text{ meets or overlaps or finished by } [c,d],\\
+  [d+1,b] & \text{iff   } [c,d] \text{ meets or overlaps or starts by } [a,b].\\
+	\end{cases}$$
+
+\begin{example}
+
+Let us consider some examples concerning the operator $\ominus$:
+
+    \begin{itemize}
+    \item $
+    [2, 8] \ominus [4, 6] = \text{undefined} \quad \text{(during)}$
+    
+    \item $
+    [0, 3] \ominus [5, 7] = [0, 3] \quad \text{(empty intersection)}$
+    \item $
+    [2, 5] \ominus [1, 6] = \varnothing \quad \text{(subset)}
+    $  
+    \item $[1, 5] \ominus [3, 7] = [1, 2] \quad \text{(overlaps on left)}$
+    \item $[0, 5] \ominus [3, \infty] = [0, 2] \quad \text{(overlaps left with infinity)}$
+    \item $[4, 8] \ominus [1, 5] = [6, 8] \quad \text{(overlaps on right)}$
+    \item $[3, \infty] \ominus [0, 5] = [6, \infty] \quad \text{(overlaps right with infinity)}$
+\end{itemize}
+
+
+We use now the difference operator on the three-time intervals from our use case:
+$I_1 \ominus I_2 = [9,16]\ominus [12,\infty]= [9,11]$. 
+On the other hand,
+$I_1 \ominus I_3 = [9,16] \ominus [10,14]$ is undefined as $[10,14]$ during $[9,16]$.
+
+\end{example}
+
+\subsection{Interval Sets}
+As demonstrated in the previous subsection, the interval domain $\mathbb{I}$ is not closed under union and difference operations. To address this limitation, we introduce the concept of interval sets.
+An \emph{interval set}, denoted as $\is$, is a finite set of intervals equipped with a condition to ensure minimal representation.
+This condition is called the \emph{canonical form}, which ensures that the interval set contains the smallest number of non-overlapping and non-adjacent intervals necessary to represent a given set of time points.
+
+
+\begin{definition}[Canonical Interval Set]\label{def:canonis}
+An \defn{interval set} $\is$ is said to be in \emph{canonical form} if no two intervals in $\is$ are unifiable. Formally:
+\[
+\forall \{I, I'\} \subseteq \is: \overline{U}(I, I').
+\]
+where $\overline{U}(I, I')$ denotes that $I$ and $I'$ are not unifiable (i.e., $I \cup I'$ is not an interval from $\mathbb{I}$).
+
+For the remainder of this paper, we adopt the following notational convention: we use $\is^*$ to refer to interval sets composed exclusively of finite (bounded) intervals. In contrast, we use $\is$ to denote interval sets that may contain infinite intervals, such as those extending to $+\infty$. 
+
+The \emph{size of a set of intervals} $\is$, written $\size{\is}$, is defined as the sum of the sizes of the individual intervals it contains:
+\[
+\size{\is} := \sum_{I \in \is} \size{I}.
+\]
+The \emph{cardinality} of the $\is:=\{I_0,I_1, \dots,I_n\}$, written $\card(\is)$, is the number of element intervals in the set,
+$\size{\is} := n+1$.
+\end{definition}
+
+
+
+
+\begin{example}[Canonical form for interval sets]
+Consider the interval set $\is':= \{ [0, 2], [3, 6] \}$. The two intervals forming this interval set are unifiable as $[0, 2] \cup [3, 6] = [0,6]$. The canonical representation is thus $\is := \{ [0, 6] \}$.
+
+Consider the interval set $\is:= \{ [0, 2], [5, 7], [10, \infty] \}$.\\ The pair $[0, 2]$ and $[5, 7]$ satisfy $\overline{U}([0, 2], [5, 7])$.\\ Similarly, $[5, 7]$ and $[10, \infty]$ satisfy $\overline{U}([5, 7], [10, \infty])$.\\ Finally, $[0, 2]$ and $[10, \infty]$ also satisfy $\overline{U}([0, 2], [10, \infty])$.
+\end{example}
+
+These representations enable a symbolic encoding of timed constraints, such as those described in our use case. For instance, the obligations from \MA, as shown in Table~\ref{tab:contract}, that an action is permitted \textit{between 02:00 and 04:00, and between 08:00 and 24:00}—can be expressed as the canonical interval set:
+\[
+\is_3 := \{ [2,4], [8,24] \}.
+\]
+Similarly, constraints from \DC and \SR can each be represented using singleton interval sets. The constraint \textit{between 09:00 and 16:00}, for example, corresponds to:
+\[
+\is_1 := \{ [9,16] \},
+\]
+while \textit{between 10:00 and 14:00} is represented as:
+\[
+\is_2 := \{ [10,14] \}.
+\]
+We adopt this interval-set representation as a uniform basis for the symbolic manipulation of temporal constraints within the logical framework developed in the following sections.
+
+\begin{definition}[Expansion Factor of an Interval Set]
+\label{def:expansion-factor}
+Let \(\is\) be a finite set of intervals. The \defn{expansion factor} \(\expf(\is)\) of \(\is\) is defined as the ratio between the total number of discrete points covered by the intervals in \(\is\) and the number of intervals in \(\is\), i.e.,
+\[
+\expf(\is) := \frac{\size{\is}}{\card(\is)}\quad,
+\]
+where \(\size{\is}\) is the sum of the sizes (number of points) of the intervals in \(\is\), and \(\card(\is)\) is the number of intervals in \(\is\).
+\end{definition}
+
+\begin{example}[Minimal Expansion Factor]
+Consider the interval set
+\[
+\is_1 = \{ [3,3], [5,5], [10,10] \}.
+\]
+The cardinality is $\card(\is_1) = 3$, and the size is
+\[
+\size{\is_1} = (3 - 3 + 1) + (5 - 5 + 1) + (10 - 10 + 1) = 1 + 1 + 1 = 3.
+\]
+Therefore, the expansion factor is
+\[
+\expf(\is_1) = \frac{3}{3} = 1,
+\]
+
+\end{example}
+
+\begin{example}[Large Expansion Factor]
+Consider now the interval set
+\[
+\is_2 = \{ [1,1000], [1050,1050], [2000,2000] \},
+\]
+which consists of one large interval and two punctual intervals. Here,
+\[
+\card(\is_2) = 3,
+\]
+and
+\[
+\size{\is_2} = (1000 - 1 + 1) + (1050 - 1050 + 1) + (2000 - 2000 + 1) = 1000 + 1 + 1 = 1002.
+\]
+Thus, the expansion factor is
+\[
+\expf(\is_2) = \frac{1002}{3} = 334,
+\]
+Showing a large blow-up, mainly caused by the large intervals.
+\end{example}
+
+\subsection{Arithmetic of Interval Sets}\label{isarithmetic}
+    \paragraph{Sub-element} An interval $I$ is a \emph{sub-element} of $\mathfrak{I}$ (written $I \subin \mathfrak{I}$) if it is included in one of the elements of the set of intervals. We write:
+    $ I \subin \mathfrak{I} \text{ iff } \exists I' \in \mathfrak{I} : I \subseteq I' $. We abuse the notation for time points $t  \in \mathbb{N}$ and write $t \subin \mathfrak{I}$ iff $[t,t] \subin \mathfrak{I}$.
+
+    \paragraph{Inclusion} We say $\mathfrak{I}$ is \emph{included} in $\mathfrak{I}'$ and write:
+     $\mathfrak{I} \subset \mathfrak{I}' \text{ iff } \forall I \in \mathfrak{I} ~\exists I' \in \mathfrak{I}': I \subset I'$.
+
+    \begin{example} Given $\mathfrak{I}:= \{ [1, 4], [6, 9] \}$:
+    \begin{itemize}
+        \item The interval $[2, 3] \subin \mathfrak{I}$ because $[2, 3] \subseteq [1, 4] \in \mathfrak{I}$.
+        \item The time point $7 \subin \mathfrak{I}$ because $[7, 7] \subseteq [6, 9] \in \mathfrak{I}$.
+    \end{itemize}
+%    \end{example}
+
+    Let $\mathfrak{I'} = \{ [0, 4], [6, \infty] \}$. Then $\mathfrak{I} \subseteq \mathfrak{I'}$ since
+    \begin{itemize}
+        \item $[1, 4] \subseteq [0, 4] \in \mathfrak{I'}$,
+        \item $[6, 9] \subseteq [6, \infty] \in \mathfrak{I'}$.
+    \end{itemize}
+    
+    For the sets of intervals $\is_1:= \{[9,16]\}$ and $\is_3:=\{[2,4],[8,24]\}$ from 
+    our use case we have: $\is_1 \subset \is_3$.
+    \end{example}
+
+    \paragraph{Intersection} The intersection of two sets of intervals $\mathfrak{I}$ and $\mathfrak{I}'$ is the set of intervals containing all the intervals present in both interval sets. The operator is commutative and is defined as:
+    $$
+    \mathfrak{I} \cap \mathfrak{I}' :=\begin{cases}
+     \emptyset& \text{if } \forall I\in \mathfrak{I}, \forall I'\in \mathfrak{I}': I \cap I'=\varnothing,\\
+     \{ I \cap I' \mid I \in \mathfrak{I}, I' \in \mathfrak{I}', I \cap I' \neq \varnothing \} & \text{otherwise}.
+    \end{cases}
+    $$
+
+    \begin{example} Consider the following examples:
+    \begin{itemize}
+        \item If $\mathfrak{I}:= \{ [1, 5], [8, 10], [19,\infty] \}$ and $\mathfrak{I}':= \{ [3, 7], [9, 12] \}$, we have $\mathfrak{I}\cap \mathfrak{I}' = \{ [3, 5], [9, 10] \}$,\\ as $[1, 5] \cap [3, 7] = [3, 5]$ and $[8, 10] \cap [9, 12] = [9, 10]$.
+        \item If $\mathfrak{I} := \{ [1, 5], [8, 10] \}$ and $\mathfrak{I}':= \{ [6, 7], [12, \infty] \}$ then $\mathfrak{I}\cap \mathfrak{I}' = \emptyset$ (as none of the intervals from $\mathfrak{I}$ intersect with any interval from $\mathfrak{I}'$).
+    \end{itemize}
+
+    For the intervals $\is_1$, $\is_2$, and $\is_3$ related respectively to $\DC$, $\SR$, and $\MA$ from 
+    the use case:
+    \begin{itemize}
+        \item $\is_1 \cap \is_2= \{[9,16]\} \cap \{[10,14]\}= \{[10,14]\}$.
+        \item $\is_1 \cap \is_3 = \{[9,16]\} \cap \{[2,4],[8, 24]\}= \{[9,16]\}$.
+    \end{itemize}
+\end{example}
+
+
+ \subsubsection{Union}
+The union of two interval sets $\is$ and $\is'$ is recursively computed by the successive union of each interval $I_i \in \is'$ with $\is$:
+
+\[
+\is \cup \is' := \left\{ \left( \left(\is \cup I_1) \cdots \right) \cup I_n \right) \ \middle|\ I_1, \dots, I_n \in \is' \right\}.
+\]
+
+
+The union of an interval set $\is$ with a single interval $I$ is given by:
+\[
+\is \cup I := \left\{ \left( \bigcup_{I_i \in U(I, \is)} (I \cup I_i) \right) \right\} \circ \overline{U}(I, \is),
+\]
+
+where $\circ$ denotes set concatenation, and the subset of unifiable and non unifiable interval with $I$ from $\is$ are defined as:
+\begin{align*}
+\overline{U}(I, \is) &:= \{ I_i \in \is \mid \overline{U}(I, I_i) \}, \\
+U(I, \is) &:= \{ I_i \in \is \mid I_i \notin \overline{U}(I, \is) \}.
+\end{align*}
+
+\begin{example} Let \(\is := \{ [1, 5], [9, 11] \}\) and \(\is' := \{ [3, 7], [9, 12] \}\):
+\begin{align*}
+\is \cup \is' &= \big(\{ [1, 5], [9, 11] \}\cup [1,7]\big) \cup [9,12] &\text(unrolling)\\
+&= \big( \{ [1,5] \cup [3,7]\} \circ\{ [9,11]\}\big) \cup [9,12]  & (\text{as~}  \overline{U}([9,11], [3,7]))\\
+&=\{[1,7],[9,11]\} \cup [9,12] & \text{(simplification)}\\
+&= \{ [9,11] \cup [9,12] \} \circ \{[1,7]\}  & (\text{as~}\overline{U}([9,12], [1,7]))\\
+&= \{[1,7],[9,12]\}
+\end{align*}
+\end{example}
+
+\subsubsection{Difference (Reduction)}\label{differenceop}
+
+The \emph{difference} of an interval set $\is$ by an interval set $\is'$, denoted $\is \ominus \is'$, is the set of intervals in $\is$ excluding those that overlap with $\is'$:
+
+$$\is \ominus \is' := \bigcup_{I_i \in \is}(I \ominus \is') \text{ with } I \ominus \mathfrak{I'}= \bigcap_{I_i \in \is'}(I \ominus I_i).$$
+Where the \emph{redefined} reduction of two intervals is now computed as \emph{set of intervals} instead of intervals as defined in the arithmetic of intervals: $\ominus: \mathbb{I} \times \mathbb{I} \to 2^\mathbb{I}$ is defined as :
+	$$[a,b] \ominus [c,d] := \begin{cases} 		
+		\{[a,c-1], [d+1,b]\}& \text{ iff   } [c,d] \text{ during } [a,b],\\
+		\{[a,b]\} & \text{iff   } [a,b] \cap [c,d]= \varnothing,\\
+  \emptyset & \text{iff   } [a,b] \subseteq [c,d],\\
+  \{[a,c-1]\} & \text{iff   } [a,b] \text{ meets or overlaps or finished by} [c,d],\\
+  \{[d+1,b]\} & \text{iff   } [c,d] \text{ meets or overlaps or starts by} [a,b].\\
+	\end{cases}$$
+    
+\begin{remark}
+An alternative definition could be $I \ominus I' := \{I_i \mid I_i \subseteq I \text{ and } I_i \not\subseteq I'\}.$ 
+\end{remark}
+
+\begin{example} Let $\is = \{ [1, 10] \}$ and $\is' = \{ [3, 5],\ [7, 8] \}$:
+
+\begin{itemize}
+    \item $[1, 10] \ominus [3, 5]= \{[1,2], [6,10]\}$.
+    \item $[1, 10] \ominus [7, 8]= \{[1,6], [9,10]\}$.
+\end{itemize}
+\end{example}
+
+Thus, $\is \ominus \is' = \{ [1, 2],\ [6, 6],\ [9, 10] \}$.
+
+From the intervals $\is_1, \is_2, \is_3$ related to our three normative systems from the use case, we have:
+\begin{itemize}
+    \item $\is_1 \ominus \is_2= \{[9,16]\} \ominus \{[10,14]\}= \{[9,9],[15,16]\}.$
+    \item $\is_1 \ominus \is_3 = \{[9,16]\} \ominus \{[2,4],[8, 24]\}= \emptyset. $
+\end{itemize}

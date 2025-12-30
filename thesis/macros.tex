@@ -3,7 +3,7 @@
 
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric,fit,calc}
-\usetikzlibrary{mindmap,trees,shadows}
+\usetikzlibrary{mindmap,trees,shadows,patterns.meta,tikzmark}
 \usepackage{bussproofs}
 \usepackage{amsmath}
 \newcommand{\mathcall}[1]{\text{\usefont{OMS}{cmsy}{m}{n}#1}}
@@ -40,6 +40,18 @@
 \DeclareMathOperator{\Pts}{Pts}
 \DeclareMathOperator{\tail}{tail}
 \usetikzlibrary{patterns.meta}
+
+\newcommand{\drawinterval}[6][black]{
+  \draw[#1] (#2,#3) -- (#4,#5) node[midway,above] {#6} 
+    node[circle,fill,inner sep=1.1pt] at (#2,#3) {} 
+    node[circle,fill,inner sep=1.1pt] at (#4,#5) {};
+  % Add vertical dotted line
+  \draw[dotted] (#4,#5) -- (#4,0);
+  \draw[dotted] (#2,#3) -- (#2,0);
+  % Add small circle at the intersection point
+  \fill (#4,0) circle (1.7pt);
+  \fill (#2,0) circle (1.7pt);
+}
 
 % Optional helpers (nice shorthands)
 \newcommand{\Ptsle}[2]{\Pts_{\le #1}\!\left(#2\right)}   % \Ptsle{k}{\is}
