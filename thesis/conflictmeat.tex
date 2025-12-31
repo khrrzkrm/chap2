@@ -1128,7 +1128,7 @@ Table~\ref{table:ontic-triple-conflict} summarizes the transformation pipelineâ€
 The final formula is roughly $20\times$ larger than the original.
 
 Intuitively, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.  
-To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4\!\cdot\!3\!\cdot\!2=24$ product termsâ€”a substantial disjunction.
+To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4\!\cdot\!3\!\cdot\!2=24$ product terms.
 
 \begin{table}[h]
 \centering
@@ -1172,7 +1172,7 @@ $\phi := \ob{\{[0,3]\}}{\mathsf{a}} \sqcap \ob{\{[0,3]\}}{\mathsf{b}} \sqcap \ob
 \end{table}
 \end{example}
 
-Although this worst case is large, conflict-free formulas often admit concise equivalents by \emph{merging} punctual literals over the same action.  
+Although this example illustrates worst case blow-ups, conflict-free formulas often admit concise equivalents by \emph{merging} punctual literals over the same action.  
 Disjunctions of punctual obligations can be compacted via \textbf{ObDis}, and conjunctions of punctual prohibitions via \textbf{FConj}.
 
 \begin{example}
