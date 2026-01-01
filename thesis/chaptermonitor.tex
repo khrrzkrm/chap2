@@ -281,7 +281,7 @@ The subsequent section introduces a formal model of interaction. We define the c
   \section{Abstractions for Collaborative Interaction}
    \label{sec:multiagent-sync}
   
-This section builds on the trace models and synchronization operators introduced in \texttt{traces.tex}. We keep periodic synchronized set traces as the underlying execution model and define an interaction layer that (i) distinguishes agent-local attempts from jointly successful outcomes and (ii) prepares the ground for strategy analysis and, later, normative evaluation.
+This section builds on the trace models and synchronization operators introduced in the preliminaries,\ref{traces}. We keep periodic synchronized set traces as the underlying execution model and define an interaction layer that (i) distinguishes agent-local attempts from jointly successful outcomes and (ii) prepares the ground for strategy analysis and, later, normative evaluation.
   
 The choice of synchronization is not cosmetic. It clarifies what constitutes feasible joint behavior, which, in turn, drives semantic validity, strategy quantification, and downstream analysis of compliance, responsibility, or blame.
   
@@ -326,54 +326,65 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \noindent These performance aspects are common in normative / contract settings but are underexplored by classical synchronization operators (interleaving, lockstep, handshake), which specify \emph{how} events align rather than whether agents \emph{refrain} from harmful actions or \emph{contribute} enabling ones.
   
   \subsection{From Metric-Timed Words to Periodic Synchronized Set Traces}
+
+  In this subsection, we make the abstraction process explicit by progressively encoding concrete interaction behavior into increasingly structured trace models. We start from raw timed observations, refine them into agent-local metric-timed traces, and then abstract them into synchronized, period-based set traces aligned with the contractual calendar.
+  The purpose of this stepwise construction is methodological: each abstraction simplifies the representation while preserving the behavioral distinctions that matter for normative analysis, such as attempts, obstruction, and successful collaboration.
+   In particular, the abstraction does not hide or reinterpret any behavior exhibited in the concrete execution, but instead re-expresses it at a granularity suitable for contractual reasoning.
+   The start of the running illustration is Example~\ref{ex:timed-words-only} below illustrates this process starting from the rental contract use case, showing how observed interactions over four months are faithfully represented before any synchronization or success computation is applied.
   
-  \begin{example}[Timed words only (agents Tenant$(1)$ and Landlord$(2)$)]
-  \label{ex:timed-words-only}
-  \[
-  \begin{aligned}
-  \Sig{1}&=\{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ}\, \textsf{stop\_occupy}\},\\
-  \Sig{2}&=\{\,\textsf{ack\_pay},\ \textsf{grant\_occ},\ \textsf{ref\_pay},\ \textsf{change\_lock}\,\}.
-  \end{aligned}
-  \]
+   
+
+   \begin{example}[Metric-timed traces from observation over a four-month rental interaction]
+    \label{ex:timed-words-only}
+    We return to the rental agreement introduced in Example~\ref{ME}, where a tenant (agent~1) and a landlord (agent~2) have signed a monthly contract regulating rent payment and occupancy.
+    We observe their concrete behavior over a period of four months, corresponding to days $t\in\{0,\dots,120\}$.
+    
+    During this observation window, The but pays rent
+    on day~5 (\textsf{pay\_rent}) but still does not occupy the flat, the landlord acknowledged on day~6 (\textsf{ack\_pay}). In the second month, the tenant
+    begins occupying the flat (\textsf{start\_occ}) on day~35 after the start of the contract; the landlord posts an administrative
+    acknowledgement on day~37 (\textsf{ack\_pay}) without a new rent event that month. In month~3,
+    The tenant continues to occupy, but this month the tenant does not pay; the landlord takes no action. In the fourth month, the
+    tenant pays a late fee on day~95 (\textsf{pay\_rent\_f}); the landlord refuses that payment the
+    same day (\textsf{ref\_pay}) and changes the lock on day~96 (\textsf{change\_lock}).
+    
+    From the concrete observations, we identify the following agent-local action alphabets:
+    \[
+      \begin{aligned}
+      \Sigma_1 &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ},\ \textsf{stop\_occupy}\,\},\\
+      \Sigma_2 &= \{\,\textsf{ack\_pay},\ \textsf{grant\_occ},\ \textsf{ref\_pay},\ \textsf{change\_lock}\,\}.
+      \end{aligned}
+    \]
+    
+    The observed behavior of each agent is encoded as a metric-timed trace, where each event is paired with its occurrence time:
+    \[
+    \begin{aligned}
+    \taumt_{1}
+    &=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent\_f},95)},\\
+    \taumt_{2}
+    &=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\ (\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
+    \end{aligned}
+    \]
+    These timed words constitute the most concrete representation of the interaction and serve as the starting point for the abstraction pipeline developed in this section.
+    \end{example}
   
-  \noindent\textit{Scenario (Four-Month Interaction).}
-  Over four months (days $t\in\{0,\dots,120\}$), the landlord grants occupancy on day~1
-  (\textsf{grant\_occ}). The tenant does not move in during the first month, but pays rent
-  on day~5 (\textsf{pay\_rent}), acknowledged on day~6 (\textsf{ack\_pay}). In the second month, the tenant
-  begins occupying the flat (\textsf{start\_occ}) on day~35 after the start of the contract; the landlord posts an administrative
-  acknowledgement on day~37 (\textsf{ack\_pay}) without a new rent event that month. In month~3,
-  The tenant continues to occupy, but this month the tenant does not pay; the landlord takes no action. In the fourth month, the
-  tenant pays a late fee on day~95 (\textsf{pay\_rent\_f}); the landlord refuses that payment the
-  same day (\textsf{ref\_pay}) and changes the lock on day~96 (\textsf{change\_lock}).
-  
-  \medskip
-  \noindent\defn{Metric-timed words.}
-  
-  \[
-  \begin{aligned}
-  \taumt_{1}&=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent\_f},95)},\\
-  \taumt_{2}&=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\\
-             &\hspace{3.4em}(\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
-  \end{aligned}
-  \]
-  \end{example}
-  
-  \noindent\textbf{From days to months: Why periodize?}
+  From these metric-timed traces, the behavior in each month is precise at a day level and could be abstracted in a monthly view In the first month, rent is paid and accepted, and occupancy is granted but not yet exercised. In the second month, occupancy begins and payment is acknowledged without conflict.
+  In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive. 
+  In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, followed by an active obstruction of occupancy through a lock change.
+  While this description is clear at the level of concrete events, it is not yet aligned with the contractual semantics, which operate on monthly obligations and joint outcomes rather than individual timestamps. This motivates the next step: synchronizing the agent-local traces into a common period-based structure that supports collaboration, interference, and normative evaluation.
   Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
   the timeline into month windows $\Ik{0},\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
   within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
   
   \begin{definition}[Periodic synchronized set trace]
-  A \defn{periodic synchronized set trace} for agent $i$ over alphabet $\Sig{i}$ is a (finite or infinite)
-  sequence of per-period action sets
+  A \defn{periodic synchronized set trace} over an alphabet $\Sigma^i$ for agent $i$ over a global clock with a fixed Period is sequence of sets of actions, i.e 
   \[
-  \pi_i \;=\; \trace{\Aik{i}{0},\ \Aik{i}{1},\ \Aik{i}{2},\ \dots}\ \in\ \wordsets{\Sig{i}}^{*}\ \ (\text{or }\wordsets{\Sig{i}}^{\omega}).
+  \pi_i \;=\; \trace{\Aik{i}{0},\ \Aik{i}{1},\ \Aik{i}{2},\ \dots}\ \in\ \wordsets{\Sig{i}}^{\infty}.
   \]
   Each $\Aik{i}{k}\subseteq \Sig{i}$ represents the set of actions attributed to agent $i$ during the the period $k$
   (empties allowed).
   \end{definition}
   
-  \begin{lemma}[Conversion from metric time to periodic synchronized trace]
+  \begin{lemma}[Conversion from metric-time to periodic synchronized trace]
   \label{lem:agg-to-periodic}
   Let \(\taumt_i\in(\Sigma_i\times\mathbb{N})^{*}\) be a (finite) timed word for agent \(i\), and let
   \((I_k)_{k\in\mathbb{N}}\) be a partition of \(\mathbb{N}\) into disjoint, totally ordered \emph{period windows}
@@ -426,6 +437,8 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   $\textsf{pay\_rent\_f}\in \Aik{1}{3}$ (witness times $35<95$), and similarly for agent~2.
   \end{example}
   
+
+  \todo{stoped here}
   % Normalized capitalization for subsubsection
   \subsubsection{Abstraction to a Collaboration Alphabet}
   The second aspect of the abstraction is the notion of interaction alphabets. The action alphabets of both agents are merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, the absence of an action from the event signifies that the agent either did not perform it or actively performed another action to prevent its success. This abstraction is demonstrated using the running example, showing that it maintains the same meaning while reducing the number of action types. An operator is then introduced to compute the successful interaction at each period of the synchronized trace. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
