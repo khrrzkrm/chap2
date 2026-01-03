@@ -22,7 +22,7 @@ In contrast, many norms require that a desired outcome be realized only through 
 
 For instance, a tenant may attempt to pay rent, but the payment may succeed only if the landlord provides a payment channel or accepts the transfer.
 
-Similarly, occupancy is meaningful only if one party grants access while the other actually occupies.
+Similarly, occupancy is meaningful only if one party grants access while the other actually attempts to occupy.
 
 A robust model must therefore distinguish between (i) attempts made by each agent and (ii) successful collaboration that results from a compatible combination of these attempts.
 
@@ -50,7 +50,7 @@ It is necessary to identify who is responsible for the violation and to provide 
 
 This requirement is equally important in contractual disputes and regulatory contexts, where enforcement decisions depend on explicit accounts of causation and justification.
 
-In bilateral scenarios such as landlord–tenant disputes, courts typically reconstruct a timeline to determine which party obstructed the other: for example, whether the tenant failed to pay while entitled to possession, whether the landlord denied access without adhering to legal procedures (such as notice, deadlines, or court orders), or whether the landlord's denial of access justified rent withholding or reduction. Frequently, both parties contribute to escalation, and resolution depends on allocating remedies proportionate to the harms caused at each stage, including restoring access, ordering payment of arrears, granting rent reductions for unusable periods, awarding damages for proven losses, and verifying compliance with termination and eviction procedures. In addition to qualitative attribution, practical compliance analysis requires a quantitative assessment of the extent of non-compliance, such as the number of months' rent unpaid, frequency of denied access, or missed repair obligations. A blame concept suitable for compliance tools must therefore be formally defined, operationally verifiable, and robust under incremental observation. This chapter develops such a notion, implements executable monitors, and extends the framework with quantitative measures that surpass the traditional first-failure perspective.
+In bilateral scenarios such as landlord–tenant disputes, courts typically reconstruct a timeline to determine which party obstructed the other: for example, whether the tenant failed to pay while entitled to possession, whether the landlord denied access without adhering to legal procedures (such as notice, deadlines, or court orders), or whether the landlord's denial of access justified rent withholding or reduction. In many real-life scenarios, both parties contribute to escalation, and resolution depends on allocating remedies proportionate to the harms caused at each stage, including restoring access, ordering payment of arrears, granting rent reductions for unusable periods, awarding damages for proven losses, and verifying compliance with termination and eviction (expulsion) procedures. In addition to qualitative attribution, practical compliance analysis requires a quantitative assessment of the extent of non-compliance, such as the number of months' rent unpaid, frequency of denied access, or missed repair obligations. A blame concept suitable for compliance tools must therefore be formally defined, operationally verifiable, and robust under incremental observation. This chapter develops such a notion, implements executable monitors, and extends the framework with quantitative measures that surpass the traditional first-failure perspective.
 
 
 
@@ -88,15 +88,15 @@ This allows us to reason formally about causal concepts like obstruction and int
 
 \paragraph{Phase 2: Denotational Specification.}
 We adopt a \emph{semantics-first} strategy.
-Rather than defining the logic via its execution (e.g., how an automaton processes it), we first define its abstract truth conditions.
+Rather than defining the logic in terms of its execution (e.g., how an automaton processes it), we first define its abstract truth conditions.
 Our approach prioritizes \emph{tightness}, the ability to render progressive and precise verdicts on finite prefixes and distinguish exact (tight) prefixes for violation/satisfaction from their equivalent post continuation.
-We start with a binary compliance semantics, refine it into a blame assignment model, and finally extend it to a quantitative domain.
+We start with binary compliance semantics, refine it into a blame-assignment model, and finally extend it to the quantitative domain.
 This layering ensures that complex accountability metrics remain consistent with the fundamental notion of compliance.
 
 \paragraph{Phase 3: Structural Synthesis.}
 To bridge theory and practice, we employ \emph{automata-theoretic synthesis}.
 We treat the logic as a blueprint for generating deterministic Moore machines.
-Our methodology relies on structural induction: we define an operational transformation for every logical operator, ensuring that the structure of the monitor mirrors the structure of the contract.
+Our methodology relies on structural induction: we define an operational transformation for each logical operator, ensuring that the monitor's structure mirrors the contract's.
 
 \paragraph{Phase 4: Formal Verification.}
 Finally, we validate the pipeline through \emph{conformance proofs}.
@@ -115,7 +115,7 @@ The specific theoretical and technical contributions are:
 \item \textbf{Attempt-Based Interaction Model.}
 We introduce a formal algebra that distinguishes between an agent's \emph{attempt} and the \emph{interaction outcome}.
 Unlike standard models that conflate ``failure to act'' with ``blocked action,'' our model treats non-interference as a first-class semantic property.
-This enables the formal verification of ``active participation''—determining if an agent did everything in their power to fulfill a duty.
+This enables the formal verification of ``active participation'', determining whether an agent did everything in their power to fulfill a duty.
 
 \item \textbf{The Two-Agents Collaborative Normative Logic (\cDL).}
 We formalize \cDL, a logic tailored for bilateral, periodic contracts over atomic actions.
@@ -153,8 +153,6 @@ We prove that our blame semantics is a consistency-preserving refinement of the 
 We first ground the problem in a rental-agreement example and extract the modeling requirements.
 
 We then develop the trace and synchronization layer for collaborative interaction, introduce \cDL, and finally present the monitor-based semantics, blame attribution, and quantitative extensions.
-
-
 
 
   \section{Use Case: Flat Rental Contract}
@@ -278,269 +276,300 @@ We then develop the trace and synchronization layer for collaborative interactio
   
 The subsequent section introduces a formal model of interaction. We define the collaborative outcome as a trace derived from the synchronization of two independent traces, each capturing the behavior of a distinct agent.
   
-  \section{Abstractions for Collaborative Interaction}
-   \label{sec:multiagent-sync}
-  
-This section builds on the trace models and synchronization operators introduced in the preliminaries,\ref{traces}. We keep periodic synchronized set traces as the underlying execution model and define an interaction layer that (i) distinguishes agent-local attempts from jointly successful outcomes and (ii) prepares the ground for strategy analysis and, later, normative evaluation.
-  
+\section{Abstractions for Collaborative Interaction}
+\label{sec:multiagent-sync}
+
+This section builds on the trace models and synchronization operators introduced in \ref{traces}. We keep periodic synchronized set traces as the underlying execution model and define an interaction layer that (i) distinguishes agent-local attempts from jointly successful outcomes and (ii) prepares the ground for strategy analysis and, later, normative evaluation.
+
 The choice of synchronization is not cosmetic. It clarifies what constitutes feasible joint behavior, which, in turn, drives semantic validity, strategy quantification, and downstream analysis of compliance, responsibility, or blame.
-  
+
 % 
 %   Synchronization disciplines adopt different assumptions about time. Interleaving and handshake reason about order without a global clock. Lockstep assumes a single round clock. Timed models use absolute time stamps. We work with two agents \(\agt=\{1,2\}\), discrete time \(\mathbb{N}\), and per-agent alphabets \(\Sigma_i\).  
-  
-  
 
-  We introduce the attempted/successful abstraction, suited for capturing interference and collaboration between agents in the context of collaborative normative specifications, and discuss how it resembles and differs from existing synchronization techniques in the literature.
-    This contribution is not cosmetic: it determines which joint behaviors are feasible and, therefore, what formulas are satisfied, and how knowledge and responsibility are assessed.
-  
-  
+
+
+We introduce the attempted/successful abstraction, suited for capturing interference and collaboration between agents in the context of collaborative normative specifications, and discuss how it resembles and differs from existing synchronization techniques in the literature.
+ This contribution is not cosmetic: it determines which joint behaviors are feasible, what formulas are satisfied, and how knowledge and responsibility are assessed.
+
+
 \paragraph{Method and structure.}
 
- To reason about \emph{attempted, prevented, and successful collaboration}, we introduce our contribution of attempted/successful
-  abstraction on periodic, agent-tagged set traces o collaborative alphabets: (i) \emph{attempted} collaboration is captured by
-  per-agent enabler sets (active participation) in a period; (ii) \emph{prevented} collaboration arises
-  from blocker (non-interference violations); and (iii) \emph{successful} collaboration is defined by
-  the operator \(\mathrm{Succ}\), the point-wise intersection of the two agents’ untagged suggested sets
-  (equivalently, the set-theoretic image of lockstep-with-handshakes on the collaboration alphabet).
-  
-  
+To reason about \emph{attempted, prevented, and successful collaboration}, we introduce our contribution of attempted/successful
+abstraction on periodic, agent-tagged set traces of collaborative alphabets: (i) \emph{attempted} collaboration is captured by
+per-agent enabler sets (active participation) in a period; (ii) \emph{prevented} collaboration arises
+from blocker (non-interference violations); and (iii) \emph{successful} collaboration is defined by
+the operator \(\mathrm{Succ}\), the point-wise intersection of the two agents’ untagged suggested sets
+(equivalently, the set-theoretic image of lockstep-with-handshakes on the collaboration alphabet).
+
+\subsubsection{Modeling Requirements}
+\label{subsec:what-to-model}
+
+The aim is to capture two complementary facets of collaboration between agents that standard system-centric models overlook, as illustrated in Example~\ref{ME}:
+
+\begin{itemize}
+ \item \textbf{Negative performance (non-interference).}
+ One agent must \emph{refrain} from actions that would block the other from achieving a legitimate objective.
+ In a tenant--landlord scenario, the landlord should not perform blocking actions such as
+ \(\textsf{cut\_power}\), \(\textsf{change\_lock}\), or \(\textsf{enter\_flat}\), which would hinder the tenant’s ability to \(\textsf{occupy}\) the flat.
+
+ \item \textbf{Active participation (positive performance).}
+An agent must \emph{contribute} and perform actions that make the objective of the counterpart achievable within the agreed period.
+ For example, the landlord should provide/confirm \(\textsf{account\_info}\), \(\textsf{ack\_pay}\), and \(\textsf{grant\_occ}\) upon settlement; symmetrically, the tenant should \(\textsf{pay\_rent}\) and not \(\textsf{return\_payment}\).
+\end{itemize}
+
+\noindent These performance aspects are common in normative / contract settings but are underexplored by classical synchronization operators (interleaving, lockstep, handshake), which specify \emph{how} events align rather than whether agents \emph{refrain} from harmful actions or \emph{contribute} enabling ones.
+
+\subsection{From Metric-Timed to Collaborative Periodic Synchronized Set Traces}
+
+In this subsection, we make the abstraction process explicit by structuring it into a 2-steps transformation. We start from raw timed observations that record what each agent did and when. 
+These observations are first organized into agent-local metric-timed traces, preserving responsibility and temporal order. 
+We then impose the contractual granularity by aggregating behavior into period-based set traces aligned with the contract calendar. 
+Finally, concrete actions are abstracted into collaborative objectives, yielding a representation in which attempts, obstruction, and potential joint success can be analyzed independently. Each step reduces representational detail while preserving all distinctions that are normatively relevant.
+No behavior is discarded or reinterpreted; it is only lifted to a level suitable for contractual reasoning. Example~\ref{ex:timed-words-only} serves as the starting point of this pipeline, grounding the abstractions in a concrete four-month execution before any synchronization or success computation is applied.
+
+
+
+\begin{example}{Four-month rental dispute as metric-timed traces}
+ \label{ex:timed-words-only}
+ We return to the rental agreement introduced in Example~\ref{ME}, in which a tenant (agent~1) and a landlord (agent~2) have signed a monthly contract governing rent payments and occupancy.
+ We observe their concrete behavior over a period of four months, corresponding to days $t\in\{0,\dots,120\}$.
+ 
+ During the first month of observation, the tenant transfers the rent on day~5 (\textsf{pay\_rent}), yet does not move into the flat. One day later, on day~6, the landlord formally acknowledges receipt of the payment (\textsf{ack\_pay}).
+
+In the second month, the interaction becomes more active. On day~35, the tenant begins occupying the flat (\textsf{start\_occ}) and then makes the rent payment the next day. The landlord responds by issuing an administrative acknowledgement on day~37 (\textsf{ack\_pay}).
+
+In the third month, the dispute begins: the tenant continues to occupy the flat but makes no rent payments, while the landlord remains passive and takes no observable action.
+
+In the fourth month, the tenant attempts to address the earlier non-payment by transferring a late fee on day~95 (\textsf{pay\_rent\_f}). This attempt is immediately rejected by the landlord on the same day (\textsf{ref\_pay}). On the following day, day~96, the landlord escalates the situation by changing the lock, thereby actively preventing continued occupancy (\textsf{change\_lock}).
+ From the concrete observations, we identify the following agent-local action alphabets:
+ \[
+   \begin{aligned}
+   \Sigma_1 &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ},\ \textsf{stop\_occupy}\,\},\\
+   \Sigma_2 &= \{\,\textsf{ack\_pay},\ \textsf{grant\_occ},\ \textsf{ref\_pay},\ \textsf{change\_lock}\,\}.
+   \end{aligned}
+ \]
+ 
+ The observed behavior of each agent is encoded as a metric-timed trace, where each event is paired with its occurrence time:
+ \[
+ \begin{aligned}
+ \taumt_{1}
+ &=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent},36)\, (\textsf{pay\_rent\_f},95)},\\
+ \taumt_{2}
+ &=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\ (\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
+ \end{aligned}
+ \]
+ These timed words constitute the most concrete representation of the interaction and serve as the starting point for the abstraction pipeline developed in this section.
+ \end{example}
+
+From these metric-timed traces, the behavior in each month is precise at a day level and could be abstracted in a monthly view. In the first month, rent is paid and accepted, and occupancy is granted but not yet exercised. In the second month, occupancy begins, and payment is acknowledged without conflict.
+In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive. 
+In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, and then engages in active obstruction of occupancy by changing the lock.
+While this description is clear at the level of concrete events, it is not yet aligned with the contractual semantics, which operate on monthly obligations and joint outcomes rather than individual timestamps. This motivates the next step: synchronizing the agent-local traces into a common period-based structure that supports collaboration, interference, and normative evaluation.
+\subsubsection{Step 1: Abstraction into Periodic Synchronized Set trace}
+Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
+the timeline into month windows $\Ik{0},\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
+within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
+
+\begin{definition}[Periodic synchronized set trace]
+A \defn{periodic synchronized set trace} over an alphabet $\Sigma^i$ for agent $i$ over a global clock with a fixed Period is a sequence of sets of actions, i.e 
+\[
+\pi_i \;=\; \trace{\Aik{i}{0},\ \Aik{i}{1},\ \Aik{i}{2},\ \dots}\ \in\ \wordsets{\Sig{i}}^{\infty}.
+\]
+Each $\Aik{i}{k}\subseteq \Sig{i}$ represents the set of actions attributed to agent $i$ during the the period $k$
+(empties allowed).
+\end{definition}
+
+\begin{definition}[Aggregation to periodic synchronized set trace]
+Let $x \in \mathbb{N}$ be a fixed period length.
+Define the aggregation function
+\[
+\AGGI_{x} : (\Sigma \times \mathbb{N})^{*} \longrightarrow (2^{\Sigma})^{*}
+\]
+as follows.
+
+Given a finite metric-timed trace
+\[
+\taumt = \trace{(a_0,t_0),\dots,(a_n,t_n)}
+\quad\text{with } a_j \in \Sigma,\ t_j \in \mathbb{N},
+\]
+we partition time into period windows
+\[
+I_k := [kx,(k+1)x-1] \quad (k \in \mathbb{N}).
+\]
+The aggregated periodic synchronized set trace
+\[
+\AGGI_x(\taumt) := \pi = \trace{A_0,\dots,A_K}
+\]
+is defined by
+\[
+A_k := \{\, a \in \Sigma \mid \exists\, t \in I_k:\ (a,t) \in \taumt \,\},
+\]
+where
+\[
+K := \max\{\, k \mid I_k \cap \{t_0,\dots,t_n\} \neq \emptyset \,\}.
+\]
+\end{definition}
+\begin{proof}
+By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
+$t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
+Since $k < \ell$ implies $I_k < I_{\ell}$ by construction of the period windows,
+we obtain $t_a < t_b$.
+\end{proof}
+
+
+\begin{lemma}[Order preservation under aggregation]
+\label{lem:agg-to-periodic}
+Let $\taumt_i \in (\Sigma_i \times \mathbb{N})^{*}$ be a finite metric-timed trace and let $x \in \mathbb{N}$.
+Let
+\[
+\pi_i := \AGGI_x(\taumt_i) = \trace{A^{(i)}_0,\dots,A^{(i)}_K}.
+\]
+Then aggregation preserves inter-period order in the following sense:
+\[
+\forall k < \ell\ \forall a \in A^{(i)}_k\ \forall b \in A^{(i)}_{\ell}\;
+\exists\, t_a \in I_k,\ t_b \in I_{\ell}:
+(a,t_a) \in \taumt_i,\ (b,t_b) \in \taumt_i,\ \text{and } t_a < t_b.
+\]
+\end{lemma}
+
+\begin{proof}
+ By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
+ $t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
+ Since $k < \ell$ implies $I_k < I_{\ell}$ by construction of the period windows,
+ we obtain $t_a < t_b$.
+ \end{proof}
+
+Nevertheless, aggregation has a cost, as it loses intra-period order, action multiplicity, and exact timestamps. Therefore, selecting the appropriate period normalization is crucial.
+
+\begin{example}[Transforming timed words into periodic set traces, continued from Example. \ref{ex:timed-words-only}]
+\label{ex:agg-30-locked}
+By fixing the period to 30, we can decompose the 120 days into 4 horizons:
+\[
+\Ik{0}=[0,30],\qquad \Ik{1}=[31,60],\qquad \Ik{2}=[61,90],\qquad \Ik{3}=[91,120].
+\]
+The two timed traces $\taumt_1$ and $\taumt_2$ are transformed using the function $\AGGI_{30}$ transformation respectively into:
+\[
+\begin{aligned}
+\pi_1&=\trace{%
+\underbrace{\{\textsf{pay\_rent}\}}_{\Ik{0}},\
+\underbrace{\{\textsf{start\_occ, \textsf{pay\_rent}}\}}_{\Ik{1}},\
+\underbrace{\emptyset}_{\Ik{2}},\
+\underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{3}}},\\[2pt]
+\pi_2&=\trace{%
+\underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{0}},\
+\underbrace{\{\textsf{ack\_pay}\}}_{\Ik{1}},\
+\underbrace{\emptyset}_{\Ik{2}},
+\underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{3}}}.
+\end{aligned}
+\]
+By Lemma~\ref{lem:agg-to-periodic}, for agent~1 the element $\textsf{start\_occ}\in \Aik{1}{1}$ precedes
+$\textsf{pay\_rent\_f}\in \Aik{1}{3}$ (witness times $35<95$), and similarly for agent~2.
+\end{example}
+
+\subsubsection{Step 2: Abstraction to a Collaboration Alphabet}
+The second aspect of the abstraction is the notion of interaction alphabets. The action alphabets of both agents are merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, the absence of an action in the event at Set $I_k$ indicates that the agent either did not perform it or actively performed a blocking action to prevent it. This abstraction is demonstrated using the running example, showing that it maintains the same meaning while reducing the number of action types. An operator is then introduced to compute the successful interaction at each period of the synchronized trace. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
+
+We consider three collaborative objectives that are identified in the Example.\ref{ME}:
+\(\PAY\) (rent payment), \(\PAYF\) (penalty/late-fee payment), and \(\OCC\) (tenant’s occupancy).
+We write \(\Sigma_C=\{\PAY,\PAYF,\OCC\}\).
+
+In the next step, we need to define how the actions of the agents, namely $\Sigma_1$ and $\Sigma_2$, relate to collaborative action over $\Sigma_C$, more specifically, whether they are enabler or interference actions. We do not take the union \(\Sigma_1\cup\Sigma_2\) as a synchronization operator discussed in the \ref {operators}. Instead, we define a many-to-one \emph{abstraction} from concrete per-agent actions to the collaboration alphabet \(\Sigma_C\).
+On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. A chargeback \textsf{return\_payment} and \textsf{return\_payment\_f}  is blocking: it nullifies the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
+
+
+\paragraph{Distinguishing enabling from Blocking actions} For each agent \(i\in\{1,2\}\) we partition the alphabet into
+\(\SigA{i}\) (actions that constitute \emph{active participation}, i.e., enablers)
+and \(\SigI{i}\) (actions that constitute \emph{negative performance}, i.e., blockers), with
+\(\Sig{i}=\SigA{i}\cup\SigI{i}\), assuming that they are disjoint. In our running example:
+\[
+\begin{aligned}
+\SigA{1} &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ}\,\},\\
+\SigI{1} &= \{\,\textsf{refuse\_inspection}\,\}.\\[4pt]
+\SigA{2} &= \{\,\textsf{ack\_pay},\ \textsf{grant\_occ}\,\},\\
+\SigI{2} &= \{\,\textsf{ref\_pay},\ \textsf{change\_lock},\ \textsf{ref\_pay\_f} ,\ \textsf{enter\_flat}\,\}.
+\end{aligned}
+\]
+with:
+\[
+\Sig{1}=\SigA{1}\uplus\SigI{1},\qquad
+\Sig{2}=\SigA{2}\uplus\SigI{2},\qquad
+\Sigma=\Sig{1}\cup\Sig{2}.
+\]
+
+For brevity, below we write the \emph{enabler} and \emph{blocker} sets as
+\[
+E_i:=\SigA{i}\quad\text{and}\quad B_i:=\SigI{i}\qquad(i\in\{1,2\}).
+\]
+Presence of \(a\in E_i\) in period \(k\) signals that agent \(i\) took a
+\emph{positively contributing} action; presence of \(b\in B_i\) signals a
+\emph{defeating} (interfering) action. The absence of a symbol indicates it was not suggested/endorsed during that period.
+
+
+\paragraph{Transformation sketch} After defining this relation, we can transform any periodic synchronous word  $\pi_1$ over $\Sigma_1$ and $\pi_2$ over  $\Sigma_2$ to a corresponding word over $\Sigma_C$, written $\pi_i^C$:
+\begin{itemize}
+\item If an action $a$ is on event $A$ from $\pi_i$ and that action is in $E_i$, then this action is transformed to its equivalent collaborative action and inserted on the resulting word $\pi_i^C$.
+\item If an action $a$ is on event $A$ from $\pi_i$ and that action is in $B_i$, then this action is not transformed and not inserted on the resulting word $\pi_i^C$.
+\end{itemize}
+And additionally, we do not add any collaborative action not present in an event on the equivalent event in $\pi_i^C$ unless it is a continuous collaboration with implicit collaboration, as $\textsf{start\_occ}$ signals the start of occupying the flat, so it is kept inserted in the following events in the timed word of the tenant and landlord as long as tenant does not leave nor the landlord blocks actively the occupation.
+
+
+
+\begin{example}[Transforming the periodic synchronized words over $\Sigma_1,\Sigma_2 $ to periodic synchronized words over $\Sigma_C$ ]\label{ex:collab}
+Using the traces from Example~\ref{ex:agg-30-locked},
+\[
+\begin{aligned}
+\pi_1&=\trace{%
+\underbrace{\{\textsf{pay\_rent}\}}_{\Ik{0}},\ 
+\underbrace{\{\textsf{start\_occ}, \textsf{pay\_rent} \}}_{\Ik{1}},\ 
+\underbrace{\emptyset}_{\Ik{2}},\ 
+\underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{3}}
+},\\[2pt]
+\pi_2&=\trace{%
+\underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{0}},\ 
+\underbrace{\{\textsf{ack\_pay}\}}_{\Ik{1}},\ 
+\underbrace{\emptyset}_{\Ik{2}},\ 
+\underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{3}}
+}.
+\end{aligned}
+\]
+With \(E_1(\PAY)=\{\textsf{pay\_rent}\}\),\(E_1(\PAYF)=\{\textsf{pay\_rent\_f}\}\)
+\(E_2(\PAY)=\{\textsf{ack\_pay}\}\),
+\(B_2(\PAY)=\{\textsf{ref\_pay}\}\),
+\(E_1(\OCC)=\{\textsf{start\_occ}\}\),
+\(E_2(\OCC)=\{\textsf{grant\_occ}\}\),
+\(B_2(\OCC)=\{\textsf{change\_lock}\}\),
+Consequently, the collaboration alphabet is:
+\[
+\Sigma_C=\{\PAY,\ \PAYF,\ \OCC\}.
+\]
+The corresponding collaboration-trace abstractions of $\pi_1$ and $\pi_2$ are $\pi_1^C$ and $\pi_2^C$:
+\[
+\begin{aligned}
+\pi_1^{C}&=\trace{%
+\underbrace{\{\pay{1}\}}_{\Ik{0}},\ 
+\underbrace{\{\occ{1},\ \pay{1}\}}_{\Ik{1}},\ 
+\underbrace{\{\occ{1}\}}_{\Ik{2}},\ 
+\underbrace{\{\payf{1}\}}_{\Ik{3}}
+},\\[2pt]
+\pi_2^{C}&=\trace{%
+\underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{0}},\ 
+\underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{1}},\ 
+\underbrace{\{\occ{2}\}}_{\Ik{2}},\ 
+\underbrace{\emptyset}_{\Ik{3}}
+}.
+\end{aligned}
+\]
+Reading: in month \(\Ik{0}\), agent~1 positively contributes to $\PAY$, and agent~2 allows $\OCC$\ and accepts $\PAY$.
+In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contributes to $\PAY$ and allows the occupation $\OCC$. In \(\Ik{2}\), agent~1 keeps $\OCC$ but does not pay, and the landlord keeps allowing $\OCC$. In \(\Ik{3}\), the landlord blocks both $\PAY$ and denies $\OCC$, although the tenant wants to keep occupying the flat and pays.
+\end{example}
 
   
-  \subsection{Agent-Level Attempts and Joint Outcomes}
-  \subsubsection{Modeling Requirements}
-  \label{subsec:what-to-model}
   
-  The aim is to capture two complementary facets of collaboration between agents that standard system-centric models overlook, as illustrated in Example~\ref{ME}:
+  \subsubsection{Optional Step: Successful Collaboration Trace}
   
-  \begin{itemize}
-    \item \textbf{Negative performance (non-interference).}
-    One agent must \emph{refrain} from actions that would prevent the other from achieving a legitimate objective.
-    In a tenant--landlord scenario, the landlord should not perform blocking actions such as
-    \(\textsf{cut\_power}\), \(\textsf{change\_lock}\), or \(\textsf{enter\_flat}\), which would hinder the tenant’s ability to \(\textsf{occupy}\) the flat.
-  
-    \item \textbf{Active participation (positive performance).}
-  An agent must \emph{contribute} and perform actions that make the objective of the counterpart achievable within the agreed period.
-    For example, the landlord should provide/confirm \(\textsf{account\_info}\), \(\textsf{ack\_pay}\), and \(\textsf{grant\_occ}\) upon settlement; symmetrically, the tenant should \(\textsf{pay\_rent}\) and not \(\textsf{return\_payment}\).
-  \end{itemize}
-  
-  \noindent These performance aspects are common in normative / contract settings but are underexplored by classical synchronization operators (interleaving, lockstep, handshake), which specify \emph{how} events align rather than whether agents \emph{refrain} from harmful actions or \emph{contribute} enabling ones.
-  
-  \subsection{From Metric-Timed Words to Periodic Synchronized Set Traces}
-
-  In this subsection, we make the abstraction process explicit by progressively encoding concrete interaction behavior into increasingly structured trace models. We start from raw timed observations, refine them into agent-local metric-timed traces, and then abstract them into synchronized, period-based set traces aligned with the contractual calendar.
-  The purpose of this stepwise construction is methodological: each abstraction simplifies the representation while preserving the behavioral distinctions that matter for normative analysis, such as attempts, obstruction, and successful collaboration.
-   In particular, the abstraction does not hide or reinterpret any behavior exhibited in the concrete execution, but instead re-expresses it at a granularity suitable for contractual reasoning.
-   The start of the running illustration is Example~\ref{ex:timed-words-only} below illustrates this process starting from the rental contract use case, showing how observed interactions over four months are faithfully represented before any synchronization or success computation is applied.
-  
-   
-
-   \begin{example}[Metric-timed traces from observation over a four-month rental interaction]
-    \label{ex:timed-words-only}
-    We return to the rental agreement introduced in Example~\ref{ME}, where a tenant (agent~1) and a landlord (agent~2) have signed a monthly contract regulating rent payment and occupancy.
-    We observe their concrete behavior over a period of four months, corresponding to days $t\in\{0,\dots,120\}$.
-    
-    During this observation window, The but pays rent
-    on day~5 (\textsf{pay\_rent}) but still does not occupy the flat, the landlord acknowledged on day~6 (\textsf{ack\_pay}). In the second month, the tenant
-    begins occupying the flat (\textsf{start\_occ}) on day~35 after the start of the contract; the landlord posts an administrative
-    acknowledgement on day~37 (\textsf{ack\_pay}) without a new rent event that month. In month~3,
-    The tenant continues to occupy, but this month the tenant does not pay; the landlord takes no action. In the fourth month, the
-    tenant pays a late fee on day~95 (\textsf{pay\_rent\_f}); the landlord refuses that payment the
-    same day (\textsf{ref\_pay}) and changes the lock on day~96 (\textsf{change\_lock}).
-    
-    From the concrete observations, we identify the following agent-local action alphabets:
-    \[
-      \begin{aligned}
-      \Sigma_1 &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ},\ \textsf{stop\_occupy}\,\},\\
-      \Sigma_2 &= \{\,\textsf{ack\_pay},\ \textsf{grant\_occ},\ \textsf{ref\_pay},\ \textsf{change\_lock}\,\}.
-      \end{aligned}
-    \]
-    
-    The observed behavior of each agent is encoded as a metric-timed trace, where each event is paired with its occurrence time:
-    \[
-    \begin{aligned}
-    \taumt_{1}
-    &=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent\_f},95)},\\
-    \taumt_{2}
-    &=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\ (\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
-    \end{aligned}
-    \]
-    These timed words constitute the most concrete representation of the interaction and serve as the starting point for the abstraction pipeline developed in this section.
-    \end{example}
-  
-  From these metric-timed traces, the behavior in each month is precise at a day level and could be abstracted in a monthly view In the first month, rent is paid and accepted, and occupancy is granted but not yet exercised. In the second month, occupancy begins and payment is acknowledged without conflict.
-  In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive. 
-  In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, followed by an active obstruction of occupancy through a lock change.
-  While this description is clear at the level of concrete events, it is not yet aligned with the contractual semantics, which operate on monthly obligations and joint outcomes rather than individual timestamps. This motivates the next step: synchronizing the agent-local traces into a common period-based structure that supports collaboration, interference, and normative evaluation.
-  Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
-  the timeline into month windows $\Ik{0},\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
-  within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
-  
-  \begin{definition}[Periodic synchronized set trace]
-  A \defn{periodic synchronized set trace} over an alphabet $\Sigma^i$ for agent $i$ over a global clock with a fixed Period is sequence of sets of actions, i.e 
-  \[
-  \pi_i \;=\; \trace{\Aik{i}{0},\ \Aik{i}{1},\ \Aik{i}{2},\ \dots}\ \in\ \wordsets{\Sig{i}}^{\infty}.
-  \]
-  Each $\Aik{i}{k}\subseteq \Sig{i}$ represents the set of actions attributed to agent $i$ during the the period $k$
-  (empties allowed).
-  \end{definition}
-  
-  \begin{lemma}[Conversion from metric-time to periodic synchronized trace]
-  \label{lem:agg-to-periodic}
-  Let \(\taumt_i\in(\Sigma_i\times\mathbb{N})^{*}\) be a (finite) timed word for agent \(i\), and let
-  \((I_k)_{k\in\mathbb{N}}\) be a partition of \(\mathbb{N}\) into disjoint, totally ordered \emph{period windows}
-  (e.g., ongoing months) such that
-  \[
-  k<\ell,\ t\in I_k,\ s\in I_{\ell}\ \Rightarrow\ t<s.
-  \]
-  Then there exists a periodic synchronized timed trace \(\pi_i=\trace{A^{(i)}_0,\dots,A^{(i)}_K}\in(2^{\Sigma_i})^{*}\) defined by
-  \[
-  A^{(i)}_k \;:=\; \{\, a\in\Sigma_i \mid \exists\, t\in I_k:\ (a,t)\in \taumt_i \,\}.
-  \]
-  Moreover, the aggregation \emph{preserves inter-period order}:
-  \[
-  \forall k\ \forall a\in A^{(i)}_k\ \forall b\in A^{(i)}_{k+1}\;\;
-  \exists\, t_a\in I_k,\ t_b\in I_{k+1}:
-  \ (a,t_a)\in\taumt_i,\ (b,t_b)\in\taumt_i,\ \text{and } t_a<t_b.
-  \]
-  \end{lemma}
-  
-  \begin{proof}
-  By definition of $\AggI$. Given $a\in \Aik{i}{k}$ and $b\in \Aik{i}{\ell}$ with $k<\ell$, choose witnesses
-  $t_a\in \Ik{k}$ and $t_b\in \Ik{\ell}$; the window order yields $t_a<t_b$.
-  \end{proof}
-  
-  Nevertheless, aggregation has a cost, as it loses intra-period order, action multiplicity, and exact timestamps. Therefore, selecting the appropriate period normalization is crucial.
-  
-  \begin{example}[Transforming timed words into periodic set traces, continued from Example. \ref{ex:timed-words-only}]
-  \label{ex:agg-30-locked}
-  By fixing the period to 30, we can decompose the 120 days into 4 horizons:
-  
-  \[
-  \Ik{0}=[0,30],\qquad \Ik{1}=[31,60],\qquad \Ik{2}=[61,90],\qquad \Ik{3}=[91,120].
-  \]
-  The two timed traces $\taumt_1$ and $\taumt_2$ could be transformed into:
-  \[
-  \begin{aligned}
-  \pi_1&=\trace{%
-  \underbrace{\{\textsf{pay\_rent}\}}_{\Ik{0}},\
-  \underbrace{\{\textsf{start\_occ}\}}_{\Ik{1}},\
-  \underbrace{\emptyset}_{\Ik{2}},\
-  \underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{3}}},\\[2pt]
-  \pi_2&=\trace{%
-  \underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{0}},\
-  \underbrace{\{\textsf{ack\_pay}\}}_{\Ik{1}},\
-  \underbrace{\emptyset}_{\Ik{2}},
-  \underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{3}}}.
-  \end{aligned}
-  \]
-  By Lemma~\ref{lem:agg-to-periodic}, for agent~1 the element $\textsf{start\_occ}\in \Aik{1}{1}$ precedes
-  $\textsf{pay\_rent\_f}\in \Aik{1}{3}$ (witness times $35<95$), and similarly for agent~2.
-  \end{example}
-  
-
-  \todo{stoped here}
-  % Normalized capitalization for subsubsection
-  \subsubsection{Abstraction to a Collaboration Alphabet}
-  The second aspect of the abstraction is the notion of interaction alphabets. The action alphabets of both agents are merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, the absence of an action from the event signifies that the agent either did not perform it or actively performed another action to prevent its success. This abstraction is demonstrated using the running example, showing that it maintains the same meaning while reducing the number of action types. An operator is then introduced to compute the successful interaction at each period of the synchronized trace. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
-  
-  We consider three collaborative objectives that are identified in the Example.\ref{ME}:
-  \(\PAY\) (rent payment), \(\PAYF\) (penalty/late-fee payment), and \(\OCC\) (tenant’s occupancy).
-  We write \(\Sigma_C=\{\PAY,\PAYF,\OCC\}\).
-  
-  In the next step, we need to define how the actions of the agents, namely $\Sigma_1$ and $\Sigma_2$, relate to collaborative action over $\Sigma_C$, more specifically, whether they are enabler or interference actions. We do not take the union \(\Sigma_1\cup\Sigma_2\) as a synchronization operator discussed in the Subsection~\ref {operators}. Instead, we define a many-to-one \emph{abstraction} from concrete per-agent actions to the collaboration alphabet \(\Sigma_C\).
-   On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. A chargeback \textsf{return\_payment} and \textsf{return\_payment\_f}  is blocking: it nullifies the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
-  
-  
-  \paragraph{Distinguishing enabling from Blocking actions} For each agent \(i\in\{1,2\}\) we partition the alphabet into
-  \(\SigA{i}\) (actions that constitute \emph{active participation}, i.e., enablers)
-  and \(\SigI{i}\) (actions that constitute \emph{negative performance}, i.e., blockers), with
-  \(\Sig{i}=\SigA{i}\uplus\SigI{i}\) (disjoint union). In our running example:
-  
-  \[
-  \begin{aligned}
-  \SigA{1} &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ}\,\},\\
-  \SigI{1} &= \{\,\textsf{refuse\_inspection}\,\}.\\[4pt]
-  \SigA{2} &= \{\,\textsf{ack\_pay},\ \textsf{grant\_occ}\,\},\\
-  \SigI{2} &= \{\,\textsf{ref\_pay},\ \textsf{change\_lock},\ \textsf{ref\_pay\_f} ,\ \textsf{enter\_flat}\,\}.
-  \end{aligned}
-  \]
-  
-  \[
-  \Sig{1}=\SigA{1}\uplus\SigI{1},\qquad
-  \Sig{2}=\SigA{2}\uplus\SigI{2},\qquad
-  \Sigma=\Sig{1}\cup\Sig{2}.
-  \]
-  
-  For brevity, below we write the \emph{enabler} and \emph{blocker} sets as
-  \[
-  E_i:=\SigA{i}\quad\text{and}\quad B_i:=\SigI{i}\qquad(i\in\{1,2\}).
-  \]
-  Presence of \(a\in E_i\) in period \(k\) signals that agent \(i\) took a
-  \emph{positively contributing} action; presence of \(b\in B_i\) signals a
-  \emph{defeating} (interfering) action. The absence of a symbol indicates it was not suggested/endorsed during that period.
-  
-  
-  \paragraph{Transformation sketch} After defining this relation, we can transform any periodic synchronous word  $\pi_1$ over $\Sigma_1$ and $\pi_2$ over  $\Sigma_2$ to a corresponding word over $\Sigma_C$, written $\pi_i^C$:
-  \begin{itemize}
-  \item If an action $a$ is on event $A$ from $\pi_i$ and that action is in $E_i$, then this action is transformed to its equivalent collaborative action and inserted on the resulting word $\pi_i^C$.
-  \item If an action $a$ is on event $A$ from $\pi_i$ and that action is in $B_i$, then this action is not transformed and not inserted on the resulting word $\pi_i^C$.
-  \end{itemize}
-  And additionally, we do not add any collaborative action not present in an event on the equivalent event in $\pi_i^C$ unless it is a continuous collaboration with implicit collaboration, as $\textsf{start\_occ}$ signals the start of occupying the flat, so it is kept inserted in the following events in the timed word of the tenant and landlord as long as tenant does not leave nor the landlord blocks actively the occupation.
-  
-  
-  
-  \begin{example}[Transforming the periodic synchronized words over $\Sigma_1,\Sigma_2 $ to periodic synchronized words over $\Sigma_C$ ]\label{ex:collab}
-  Using the traces from Example~\ref{ex:agg-30-locked},
-  \[
-  \begin{aligned}
-  \pi_1&=\trace{%
-  \underbrace{\{\textsf{pay\_rent}\}}_{\Ik{0}},\ 
-  \underbrace{\{\textsf{start\_occ}, \textsf{pay\_rent} \}}_{\Ik{1}},\ 
-  \underbrace{\emptyset}_{\Ik{2}},\ 
-  \underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{3}}
-  },\\[2pt]
-  \pi_2&=\trace{%
-  \underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{0}},\ 
-  \underbrace{\{\textsf{ack\_pay}\}}_{\Ik{1}},\ 
-  \underbrace{\emptyset}_{\Ik{2}},\ 
-  \underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{3}}
-  }.
-  \end{aligned}
-  \]
-  With \(E_1(\PAY)=\{\textsf{pay\_rent}\}\),\(E_1(\PAYF)=\{\textsf{pay\_rent\_f}\}\)
-  \(E_2(\PAY)=\{\textsf{ack\_pay}\}\),
-  \(B_2(\PAY)=\{\textsf{ref\_pay}\}\),
-  \(E_1(\OCC)=\{\textsf{start\_occ}\}\),
-  \(E_2(\OCC)=\{\textsf{grant\_occ}\}\),
-  \(B_2(\OCC)=\{\textsf{change\_lock}\}\),
-  Consequently, the collaboration alphabet is:
-  \[
-  \Sigma_C=\{\PAY,\ \PAYF,\ \OCC\}.
-  \]
-  The corresponding collaboration-trace abstractions of $\pi_1$ and $\pi_2$ are $\pi_1^C$ and $\pi_2^C$:
-  \[
-  \begin{aligned}
-  \pi_1^{C}&=\trace{%
-  \underbrace{\{\pay{1}\}}_{\Ik{0}},\ 
-  \underbrace{\{\occ{1},\ \pay{1}\}}_{\Ik{1}},\ 
-  \underbrace{\{\occ{1}\}}_{\Ik{2}},\ 
-  \underbrace{\{\payf{1}\}}_{\Ik{3}}
-  },\\[2pt]
-  \pi_2^{C}&=\trace{%
-  \underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{0}},\ 
-  \underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{1}},\ 
-  \underbrace{\{\occ{2}\}}_{\Ik{2}},\ 
-  \underbrace{\emptyset}_{\Ik{3}}
-  }.
-  \end{aligned}
-  \]
-  Reading: in month \(\Ik{0}\), agent~1 positively contributes to $\PAY$, and agent~2 allows $\OCC$\ and accepts $\PAY$.
-  In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contributes to $\PAY$ and allows the occupation $\OCC$. In \(\Ik{2}\), agent~1 keeps $\OCC$ but does not pay, and the landlord keeps allowing $\OCC$. In \(\Ik{3}\), the landlord blocks both $\PAY$ and denies $\OCC$, although the tenant wants to keep occupying the flat and pays.
-  \end{example}
-  
-  
-  \subsubsection{Successful Collaboration via the \texorpdfstring{$\mathrm{Succ}$}{Succ} Operator}
-  
+   The abstraction introduced so far separates agent-local attempts and interference while preserving all information required for responsibility analysis.
+    In some situations, however, it is useful to additionally extract the \emph{jointly successful} outcomes that emerge when both agents contribute compatibly within the same contractual period.
+     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired from Definition.~\ref{Lockstep with handshakes}: a collaborative action is realized at a given period if and only if both agents propose it in that period. Technically, this is captured by erasing agent tags and intersecting the per-period action sets. Unlike earlier abstraction steps, this operator is not used as the primary semantic basis of the framework, since it intentionally discards information about obstruction and responsibility. Instead, it serves as a derived view that characterizes successful collaboration in isolation, making precise the connection between our attempt-based abstraction and classical handshake-based synchronization models.
   
   \begin{definition}[Successful collaboration operator]
   Let  $\Sigma$ be an alphabet and let $\Sigma^{(1)}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
@@ -550,7 +579,7 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \mathrm{Succ}(\pi_1,\pi_2)[k]
   \ := \unlab\!\big(\pi_1[k]\big) \cap\ \unlab\!\big(\pi_2[k]\big).
   \]
-  where $\unlab$ is the function removing the agent identifier tag from an event.
+  where the function $\unlab$ is removing any of the agent identifiers tag from an event, \eg  $\unlab(\{\OCC^{2}\})=\{\OCC\}$ .
   \end{definition}
   \begin{example}[Successful collaboration ]
   From the two transformed traces  $\pi_1^{C}$ and $\pi_2^{C}$ from the Example.\ref{ex:collab}
@@ -561,8 +590,7 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
     \tikzset{
       event/.style={
         draw,
-        rectangle,
-        text width=26mm,     % fixed width for all nodes
+        rectangle,    % fixed width for all nodes
         minimum height=9mm,  % fixed height for all nodes
         align=center,
         font=\small
@@ -571,21 +599,21 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   
     % top row: agent 1 (tagged)
     \node[event] at (1,0)   (t1) {$\{\pay{1}\}$};
-    \node[event] at (2,0)   (t2) {$\{\occ{1},\pay{1}\}$};
-    \node[event] at (3,0)   (t3) {$\{\occ{1}\}$};
-    \node[event] at (4,0)   (t4) {$\{\payf{1}\}$};
+    \node[event] at (2.5,0)   (t2) {$\{\occ{1},\pay{1}\}$};
+    \node[event] at (3.7,0)   (t3) {$\{\occ{1}\}$};
+    \node[event] at (4.5,0)   (t4) {$\{\payf{1}\}$};
   
     % middle row: agent 2 (tagged)
     \node[event] at (1,-1)  (l1) {$\{\occ{2},\pay{2}\}$};
-    \node[event] at (2,-1)  (l2) {$\{\occ{2},\pay{2}\}$};
-    \node[event] at (3,-1)  (l3) {$\{\occ{2}\}$};
-    \node[event] at (4,-1)  (l4) {$\emptyset$};
+    \node[event] at (2.5,-1)  (l2) {$\{\occ{2},\pay{2}\}$};
+    \node[event] at (3.7,-1)  (l3) {$\{\occ{2}\}$};
+    \node[event] at (4.5,-1)  (l4) {$\emptyset$};
   
     % bottom row: success = unlabel + intersection
     \node[event] at (1,-2) (h1) {$\{\PAY\}$};
-    \node[event] at (2,-2) (h2) {$\{\OCC,\PAY\}$};
-    \node[event] at (3,-2) (h3) {$\{\OCC\}$};
-    \node[event] at (4,-2) (h4) {$\emptyset$};
+    \node[event] at (2.5,-2) (h2) {$\{\OCC,\PAY\}$};
+    \node[event] at (3.7,-2) (h3) {$\{\OCC\}$};
+    \node[event] at (4.5,-2) (h4) {$\emptyset$};
   
     % time/progression connectors
     \path[shorten >=0pt]
@@ -623,7 +651,7 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \(\PAY\), \(\PAYF\), \(\OCC\) can only appear at a period when both agents
   present the same letter. Concretely, if we view each period’s set
   \(A^{(i)}_k\) as the multiset of letters occurring “at that round” and apply
-  \(\parallel_{\mathrm{hs}}^{A}\) round wise, then after collapsing paired
+  \(\parallel_{\mathrm{hs}}^{A}\) round-wise, then after collapsing paired
   handshakes to a single shared symbol (via \(\mathsf{coll}_A\)) and unlabeling,
   We obtain exactly the success:
   \[
@@ -634,11 +662,14 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   i.e., \(\mathrm{Succ}\) is the set-theoretic intersection semantics of
   lockstep-plus-handshakes on the collaboration alphabet.    
   \end{remark}
-  
+  However, this abstraction masks the specific source of interference, effectively hiding the agent responsible for the failure. As our framework aims to explicitly assign blame, we introduce this operator primarily as an optional view to characterize joint success.
+  We now move to reasoning about strategies from agents, where each agent makes a plan based on the other agent's past behavior.
   \subsection{Interaction Strategies as Moore Machines}
   Instead of reconstructing compliance post hoc from past events, the approach models how agents intend to behave in the future. Agents may wish to run their intended strategies against the contract to determine compliance, prevent future violations, and identify how other parties may potentially obstruct or exploit the contract.
   
-  Because collaborative success depends on both parties, each agent devises a strategy conditioned on the observed behavior of the other. For example, the landlord may plan differently depending on whether the tenant pays, while the tenant may stop paying if the landlord prevents continued occupancy or fails to repair reported damages.
+  
+
+
   
   
   
@@ -762,13 +793,15 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   $\Sigma_C^{(2)}:=\{a^{(2)}\mid a\in\Sigma_C\}$ be the tagged disjoint copies.
   Both machines use $S=\{s_0,s_1,s_2\}$ with initial state $s_0$.
   Transitions are guarded by the current letters of the agent \emph{other} (seen as a set).
+
+  The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encodings in \ref{fig:moore-tenant} and \ref{fig:moore-landlord}, respectively.
   
   \begin{figure}[h]
   \centering
   \begin{subfigure}[t]{0.70\textwidth}
   \centering
   \scalebox{0.9}{
-  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto]
+  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
     % Tenant machine M_1^1
     \node[state,initial] (s_0) {$s_0/\mathrm{A_1}$};
     \node[state,right=of s_0] (s_1) {$s_1/\mathrm{B_1}$};
@@ -786,7 +819,7 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \begin{subfigure}[t]{0.70\textwidth}
   \centering
   \scalebox{0.9}{
-  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto]
+  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
     % Landlord machine M_2^1
     \node[state,initial] (s_0) {$s_0/\mathrm{A_2}$};
     \node[state,right=of s_0] (s_1) {$s_1/\mathrm{A_2}$};
@@ -803,11 +836,11 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \end{subfigure}
   
   \caption{Moore machines for the tenant and landlord representing their strategies over tagged $\Sigma_C$.
-  In the transition, the $\lnot \PAY^{i}$ in the Moore machine $M_j$ is a shorthand for any input from $M_i$ not containing $\PAY^{i}$, similarly $\PAY^{i}$ is a shorthand for any input from $M_i$ containing $\PAY^{i}$}
+  In the transition, the $\overline{\PAY^{1}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{1}$, similarly $\PAY^{1}$ is a shorthand for any input set containing $\PAY^{1}$}. 
   \label{fig:moore-strategies}
   \end{figure}
   
-  \noindent\textit{Formalization (matching Fig.~\ref{fig:moore-strategies}).}
+  \noindent\textit{Formalization (matchingref{fig:moore-strategies}).}
   \[
   \begin{aligned}
   M_1^1&=(S,s_0,\ \Sigma_I^{(1)},\Sigma_O^{(1)},\ \delta_1,\lambda_1),
@@ -921,13 +954,14 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   The initial state corresponds to $(s^0_1,s^0_2)$; subsequent states reflect how both machines
   progress under synchronous feedback. Once a stable pair of states is reached, the product
   loops, generating the same joint output forever.
-  
+
+  The individual Moore machines underlying the product construction are recalled in \ref{fig:moore-tenant-prod} and \ref{fig:moore-landlord-prod}, while their synchronous product is summarized in \ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
   \begin{figure}[h]
   \centering
   \begin{subfigure}[t]{0.70\textwidth}
   \centering
   \scalebox{0.9}{
-  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto]
+  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto,]
     % Tenant machine M_1^1
     \node[state,initial] (s_0) {$s_0^1/\mathrm{A_1}$};
     \node[state,right=of s_0] (s_1) {$s_1^1/\mathrm{B_1}$};
@@ -945,7 +979,7 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \begin{subfigure}[t]{0.70\textwidth}
   \centering
   \scalebox{0.9}{
-  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto]
+  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
     % Landlord machine M_2^1
     \node[state,initial] (s_0) {$s_0^2/\mathrm{A_2}$};
     \node[state,right=of s_0] (s_1) {$s_1^2/\mathrm{A_2}$};
@@ -963,7 +997,7 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \vspace{0.5cm}
   \begin{subfigure}[t]{0.70\textwidth}
   \centering
-  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto,
+  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto,
     every state/.style={inner sep=6pt,font=\scriptsize}]
     % States show pairs of original machine states
     \node[state,initial] (s0) {$(s_0^1,s_0^2)$};
@@ -985,167 +1019,180 @@ The choice of synchronization is not cosmetic. It clarifies what constitutes fea
   \end{figure}
   
   \noindent
-  Concretely, The run of the product $M_1^1 \times M_2^1$ in  Fig.~\ref{fig:moore-strategies}, corresponds to the omega-word\\
+  Concretely, The run of the product $M_1^1 \times M_2^1$ in  \ref{fig:product-sketch}, corresponds to the omega-word\\
   $\trace{\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
    (\{\OCC^{(1)},\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\})^\omega}.$
   \end{example}
+  This section establishes a disciplined abstraction pipeline that bridges concrete executions and normative reasoning. Starting from raw metric-timed observations, we progressively lifted behavior into agent-local periodic traces and then into a collaboration-oriented representation aligned with the contractual calendar.
+   The resulting model makes attempts, interference, and potential joint outcomes explicit without introducing interpretative assumptions or discarding observable behavior. Also, the modelization of strategies makes explicit how agents reason prospectively about each other’s behavior, enabling the analysis of compliance not only as an ex post property of traces (after the interaction has occurred), but as an ex ante property of interacting plans (before actions are taken, at the level of intended behavior).
+  Crucially, this abstraction separates what agents did from what jointly succeeded, preserving exactly the distinctions required for responsibility and blame attribution. The collaborative periodic trace thus serves as the semantic interface between concrete interaction data and the normative machinery introduced next.
+  \todo{fix subfigure}
   
+  \section{The Two-Agents Collaborative Normative Logic \cDL}
+  The abstraction developed in the previous section provides the execution model on which normative reasoning will be grounded. 
+  Having isolated agent-local attempts, interference, and collaborative outcomes at the level of contractual periods, we are now in a position to define a logic whose semantics are directly tied to this structure. 
+  The Two-Agents Collaborative Normative Logic (\cDL) is designed to speak about obligations, permissions, reparations, and powers over collaborative objectives, rather than low-level events.
+   Its formulas are interpreted over the collaborative periodic traces constructed earlier, ensuring that normative evaluation is sensitive to attempts and obstruction rather than mere success or failure.
+    In this way, \cDL does not abstract away interaction, but instead builds on the interaction model to provide precise, blame-aware contractual semantics.
+
+  \subsection{Syntax of \cDL}
   
+  In \ref{fig:cdl-syntax}, the syntax of \cDL\ is organized into three blocks: regular expressions, literals, and contracts.
+  \medskip
+  \noindent\textbf{Regular expressions (\emph{re}).}
+  This block specifies \emph{when} clauses apply by describing patterns over monthly positions.
+  An \emph{atom} is a tagged action-set \(A \subseteq \Sigma\) stating what the two parties did in a month.
+  Complex expressions are formed with \emph{union} \((re \mid re)\), \emph{concatenation} \((re \cdot re)\) for next-month sequencing,
+  \emph{power} \(re^n\) (exactly \(n\) repetitions), and \emph{Kleene plus} \(re^+\) (one or more repetitions).
+  The \emph{wildcard} \(\Gamma\) is the union of all $A \subseteq \Sigma$ used to skip a position, and \(\emptyset\) denotes the \emph{empty set of actions}.
+  These constructs enable patterns such as “a repair is requested this month” (an atom), “after any number of months if Agent $1$ asks for termination (\(\Gamma \cdot\)), or “three consecutive months” \((re)^3\).
+  \begin{figure}[H]
+  \centering
+  \fbox{%
+  \begin{minipage}{0.96\textwidth}
+  \captionof{figure}{Syntax of \cDL}
+  \label{fig:cdl-syntax}
+  \small
+  Given a collaboration alphabet $\Sigma_C$ and let
+  $\Sigma := \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$ be the tagged action alphabet.
+  With:
+  $a \in \Sigma_C$ (collaboration action),\;
+  $p \in \{1,2\}$ (party).\;
+  $A \in 2^\Sigma$ (party tagged action set),\;
+  $n \in \mathbb{N^*}$ (non-zero natural number).\;
+  The syntax of \cdl is defined inductively via the following grammar:
   
-%   \section{The Two-Agents Collaborative Normative Logic \cDL}
-%   \subsection{Syntax of \cDL}
-%   As summarized in Fig.~\ref{fig:cdl-syntax}, the syntax of \cDL\ is organized into three blocks: regular expressions, literals, and contracts.
+  \medskip
+  \[
+  \begin{alignedat}{3}
+  \textbf{Regular expressions}\quad
+  \re\ &::=&\ \mathsf{A}                                      && \hfill[\text{tagged action set}] \\
+     &\mid&\ \Gamma                             && \hfill[\text{wildcard}] \\
+     &\mid&\ \varepsilon                             && \hfill[\text{empty word}] \\
+     &\mid&\ \emptyset                              &&  \hfill\quad\qquad [\text{empty set of actions}] \\
+     &\mid&\ (\re \mid \re)                           && \hfill[\text{union}] \\
+     &\mid&\ \re \cdot \re                           && \hfill[\text{concatenation}] \\
+     &\mid&\ \re^{n}                                  && \hfill[\text{n-repetition}] \\
+     &\mid&\ \re^{+}                                  && \hfill[\text{Kleene plus}] \\[6pt]
+  %
+  \textbf{Literals}\quad
+  \ell\ &::=&\ \obl[p]{a}                           && \hfill[\text{obligation}] \\
+       &\mid&\ \frb[p]{a}                           && \hfill[\text{prohibition}] \\
+       &\mid&\ \perm[p]{a}                          && \hfill[\text{permission}] \\
+       &\mid&\ \top                                 && \hfill[\text{valid}] \\
+       &\mid&\ \bot                                 && \hfill[\text{invalid}] \\[6pt]
+  %
+  \textbf{Contracts}\quad
+  C\ &::=&\ \ell                                    && \hfill[\text{literal}] \\
+    &\mid&\ C \wedge C                              && \hfill[\text{conjunction}] \\
+    &\mid&\ C ; C                                   && \hfill[\text{sequence}] \\
+    &\mid&\ C \repair C                             && \hfill[\text{reparation}] \\
+    &\mid&\ \trig[re]{C}                   && \hfill[\text{triggered}] \\
+    &\mid&\ \guard[re]{C}                           && \hfill[\text{guarded}] \\
+    &\mid&\ C^n                                     && \hfill[\text{n-repetition}]\\
+    &\mid&\ \repit{C}                               && \hfill[\text{infinite-repetition}]
+  \end{alignedat}
+  \]
+  \end{minipage}}
+  \end{figure}
   
-%   \begin{figure}[h]
-%   \centering
-%   \fbox{%
-%   \begin{minipage}{0.96\textwidth}
-%   \captionof{figure}{Syntax of \cDL}
-%   \label{fig:cdl-syntax}
-%   \small
-%   Given a collaboration alphabet $\Sigma_C$ and let
-%   $\Sigma := \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$ be the tagged action alphabet.
-%   With:
-%   $a \in \Sigma_C$ (collaboration action),\;
-%   $p \in \{1,2\}$ (party).\;
-%   $A \in 2^\Sigma$ (party tagged action set),\;
-%   $n \in \mathbb{N^*}$ (non-zero natural number).\;
-%   The syntax of \cdl is defined inductively via the following grammar:
+  \medskip
+  \noindent\textbf{Literals (\emph{\(\ell\)}).}
+  This block provides the primitive deontic statements for a single month:
+  \emph{obligation} \(\obl[p]{a}\), \emph{prohibition} \(\frb[p]{a}\), and \emph{power} \(\perm[p]{a}\),
+  plus the constants \emph{valid} \(\top\) and \emph{invalid} \(\bot\).
+  Here \(p \in \{1,2\}\) identifies the party (tenant or landlord) and \(a \in \Sigma_C\) is a collaboration action.
+  Intuitively, literals say \emph{what} is required/forbidden/allowed of \emph{whom}, independently of timing.
   
-%   \medskip
-%   \[
-%   \begin{alignedat}{3}
-%   \textbf{Regular expressions}\quad
-%   \re\ &::=&\ \mathsf{A}                                      && \hfill[\text{tagged action set}] \\
-%      &\mid&\ \Gamma                             && \hfill[\text{trump card}] \\
-%      &\mid&\ \varepsilon                             && \hfill[\text{empty word}] \\
-%      &\mid&\ \emptyset                              &&  \hfill\quad\qquad [\text{empty set of actions}] \\
-%      &\mid&\ (\re \mid \re)                           && \hfill[\text{union}] \\
-%      &\mid&\ \re \cdot \re                           && \hfill[\text{concatenation}] \\
-%      &\mid&\ \re^{n}                                  && \hfill[\text{n-repetition}] \\
-%      &\mid&\ \re^{+}                                  && \hfill[\text{Kleene plus}] \\[6pt]
-%   %
-%   \textbf{Literals}\quad
-%   \ell\ &::=&\ \obl[p]{a}                           && \hfill[\text{obligation}] \\
-%        &\mid&\ \frb[p]{a}                           && \hfill[\text{prohibition}] \\
-%        &\mid&\ \perm[p]{a}                          && \hfill[\text{permission}] \\
-%        &\mid&\ \top                                 && \hfill[\text{valid}] \\
-%        &\mid&\ \bot                                 && \hfill[\text{invalid}] \\[6pt]
-%   %
-%   \textbf{Contracts}\quad
-%   C\ &::=&\ \ell                                    && \hfill[\text{literal}] \\
-%     &\mid&\ C \wedge C                              && \hfill[\text{conjunction}] \\
-%     &\mid&\ C ; C                                   && \hfill[\text{sequence}] \\
-%     &\mid&\ C \repair C                             && \hfill[\text{reparation}] \\
-%     &\mid&\ \trig[re]{C}                   && \hfill[\text{triggered}] \\
-%     &\mid&\ \guard[re]{C}                           && \hfill[\text{guarded}] \\
-%     &\mid&\ C^n                                     && \hfill[\text{n-repetition}]\\
-%     &\mid&\ \repit{C}                               && \hfill[\text{infinite-repetition}]
-%   \end{alignedat}
-%   \]
-%   \end{minipage}}
-%   \end{figure}
+  \medskip
+  \noindent\textbf{Contracts (\emph{C}).}
+  This block composes literals into full specifications using:
+  \emph{conjunction} \((C \wedge C)\) to combine requirements in the same time position;
+  \emph{sequence} \((C;C)\) for next-time progression;
+  \emph{reparation} \((C \repair C')\) for contrary-to-duty fall-backs saying you are requested to perform $C$, if you fail you must conform to $C'$ in the next time position;
+  \emph{triggered} clauses \(\trig[re]{C}\) that activate \(C\) when a pattern \(re\) occurs;
+  \emph{guarded} clauses \(\guard[re]{C}\) that encapsulate conditions under which conforming to a contract is no longer necessary; 
+  \emph{n-repition} clauses inforces the repition of the enforcement of a contract $n$ times, with $n \in \mathbb{N^*}$; and finally, \emph{repetition} \(\repit{C}\) for the infinite repetition of the enforcement of a contract.
+  Together, these constructs could be used to capture the clauses of a contract, the conditions under which they are activated or terminated, and how the clauses relate to each other regarding reparations or the timing of their application. More specifically, the combination of repetition and a guarded contract can capture the notion of open-ended contracts.
+   In the following example, we illustrate how we could capture our motivating example.
+  \subsection{Illustrating the Encoding in \cDL for the Motivating Example}
+  \begin{example}[Encoding the rental clauses in \cDL]
+  \label{ex:contract-encoding}
+  We now illustrate how the rental agreement introduced in Example~\ref{ME} 
+  can be systematically encoded in the \cDL\ syntax (see Fig.~\ref{fig:cdl-syntax}).  
+  We define the collaboration alphabet that captures all joint actions relevant to the contract:
+  \[
+  \Sigma_C = \{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \notifterm,\ \REPAIR\}.
+  \]
+  Each element corresponds to a collaborative outcome:
+  \PAY\ (rent payment), \PAYF\ (late fee payment), \OCC\ (occupancy), 
+  \notifrepair\ (tenant’s repair request), \notifterm\ (termination notice), 
+  and \REPAIR\ (landlord performing repair).
   
+  \medskip
+  The encoding proceeds clause by clause, following the contract structure:
   
-   
-%   \medskip
-%   \noindent\textbf{Regular expressions (\emph{re}).}
-%   This block specifies \emph{when} clauses apply by describing patterns over monthly positions.
-%   An \emph{atom} is a tagged action-set \(A \subseteq \Sigma\) stating what the two parties did in a month.
-%   Complex expressions are formed with \emph{union} \((re \mid re)\), \emph{concatenation} \((re \cdot re)\) for next-month sequencing,
-%   \emph{power} \(re^n\) (exactly \(n\) repetitions), and \emph{Kleene plus} \(re^+\) (one or more repetitions).
-%   The \emph{wildcard} \(\Gamma\) is the union of all $A \subseteq \Sigma$ used to skip a position, and \(\emptyset\) denotes the \emph{empty set of actions}.
-%   These constructs enable patterns such as “a repair is requested this month” (an atom), “after any number of months if Agent $1$ asks for termination (\(\Gamma \cdot\)), or “three consecutive months” \((re)^3\).
+  \begin{itemize}
+    \item \textbf{C1 (Tenant pays rent):}  
+    The tenant is obliged to pay the rent each month.  
+    \[
+    C_1 := \obl[1]{\PAY}.
+    \]
   
-%   \medskip
-%   \noindent\textbf{Literals (\emph{\(\ell\)}).}
-%   This block provides the primitive deontic statements for a single month:
-%   \emph{obligation} \(\obl[p]{a}\), \emph{prohibition} \(\frb[p]{a}\), and \emph{power} \(\perm[p]{a}\),
-%   plus the constants \emph{valid} \(\top\) and \emph{invalid} \(\bot\).
-%   Here \(p \in \{1,2\}\) identifies the party (tenant or landlord) and \(a \in \Sigma_C\) is a collaboration action.
-%   Intuitively, literals say \emph{what} is required/forbidden/allowed of \emph{whom}, independently of timing.
+    \item \textbf{C2 (Landlord guarantees occupancy):}  
+    The tenant gets the power to occupy the flat. 
+    Thus, the landlord is required not to interfere with the tenant’s occupancy, 
+    encoded as a permission to allow the collaborative outcome \OCC.  
+    \[
+    C_2 := \perm[1]{\OCC}.
+    \]
   
-%   \medskip
-%   \noindent\textbf{Contracts (\emph{C}).}
-%   This block composes literals into full specifications using:
-%   \emph{conjunction} \((C \wedge C)\) to combine requirements in the same time position;
-%   \emph{sequence} \((C;C)\) for next-time progression;
-%   \emph{reparation} \((C \repair C')\) for contrary-to-duty fall-backs saying you are requested to perform $C$, if you fail you must conform to $C'$ in the next time position;
-%   \emph{triggered} clauses \(\trig[re]{C}\) that activate \(C\) when a pattern \(re\) occurs;
-%   \emph{guarded} clauses \(\guard[re]{C}\) that encapsulate conditions under which conforming to a contract is no longer necessary; and
-%   \emph{repetition} \(\repit{C}\) for repetitive occurrence of a contract.
-%   Together, these constructs could be used to capture the clauses of a contract, the conditions under which they are activated or terminated, and how the clauses relate to each other regarding reparations or the timing of their application. More specifically, the combination of repetition and a guarded contract can capture the notion of open-ended contracts.
-%    In the following example, we illustrate how we could capture our motivating example:
-%   \subsection{Illustrating the Encoding in \cDL for the Motivating Example}
-%   \begin{example}[Encoding the rental clauses in \cDL]
-%   \label{ex:contract-encoding}
-%   We now illustrate how the rental agreement introduced in Example~\ref{ME} 
-%   can be systematically encoded in the \cDL\ syntax (see Fig.~\ref{fig:cdl-syntax}).  
-%   We define the collaboration alphabet that captures all joint actions relevant to the contract:
-%   \[
-%   \Sigma_C = \{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \notifterm,\ \REPAIR\}.
-%   \]
-%   Each element corresponds to a collaborative outcome:
-%   \PAY\ (rent payment), \PAYF\ (late fee payment), \OCC\ (occupancy), 
-%   \notifrepair\ (tenant’s repair request), \notifterm\ (termination notice), 
-%   and \REPAIR\ (landlord performing repair).
+    \item \textbf{C3 (Late-payment reparation):}  
+    Clause C3 introduces a contrary-to-duty (CTD) structure: if the tenant fails to fulfill the primary obligation (C1), a compensatory obligation to pay the late fee arises.  
+    This relationship is encoded as a reparation construct:
+    \[
+    C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
+    \]
   
-%   \medskip
-%   The encoding proceeds clause by clause, following the contract structure:
+    \item \textbf{C4 (Triggered repair request):}  
+    The tenant’s request for repairs activates the landlord’s duty to perform them within the following month.  
+    This is expressed using a triggered clause:
+    \[
+    C_4 := 
+    \trig[\{\notifrepair^{(1)}\}]{\obl[2]{\REPAIR}}.
+    \]
   
-%   \begin{itemize}
-%     \item \textbf{C1 (Tenant pays rent):}  
-%     The tenant is obliged to pay the rent each month.  
-%     \[
-%     C_1 := \obl[1]{\PAY}.
-%     \]
+    \item \textbf{C5 (Termination and continuation):}  
+    The tenant may terminate the contract unilaterally by issuing a termination notice.  
+    After this notice, the contract’s active obligations (rent, occupancy, repairs) 
+    persist for three additional months before ending.  
+    This behavior is captured with a guarded contract:
+    \[
+    C_5 := \guard[\,\Gamma^+ \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}\,] (\ C_3\ \wedge\ C_2\ \wedge\ C_4\ ).
+    \]
+  \end{itemize}
   
-%     \item \textbf{C2 (Landlord guarantees occupancy):}  
-%     The tenant gets the power to occupy the flat. 
-%     Thus, the landlord is required not to interfere with the tenant’s occupancy, 
-%     encoded as a permission to allow the collaborative outcome \OCC.  
-%     \[
-%     C_2 := \perm[1]{\OCC}.
-%     \]
+  \medskip
+  This step-by-step encoding shows how \cDL\ integrates temporal regular patterns, deontic modalities, 
+  and event-triggered obligations in a single formalism.  
+  Clauses (C1–C5) together specify a full-cycle contract where collaborative actions such as payment, occupancy, repair, and termination are modeled as 
+  conditional and time-bounded obligations between the two agents.
+  \end{example}
   
-%     \item \textbf{C3 (Late-payment reparation):}  
-%     Clause C3 introduces a contrary-to-duty (CTD) structure: if the tenant fails to fulfill the primary obligation (C1), a compensatory obligation to pay the late fee arises.  
-%     This relationship is encoded as a reparation construct:
-%     \[
-%     C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
-%     \]
-  
-%     \item \textbf{C4 (Triggered repair request):}  
-%     The tenant’s request for repairs activates the landlord’s duty to perform them within the following month.  
-%     This is expressed using a triggered clause:
-%     \[
-%     C_4 := 
-%     \trig[\{\notifrepair^{(1)}\}]{\obl[2]{\REPAIR}}.
-%     \]
-  
-%     \item \textbf{C5 (Termination and continuation):}  
-%     The tenant may terminate the contract unilaterally by issuing a termination notice.  
-%     After this notice, the contract’s active obligations (rent, occupancy, repairs) 
-%     persist for three additional months before ending.  
-%     This behavior is captured with a guarded contract:
-%     \[
-%     C_5 := \guard[\,\Gamma^+ \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}\,] (\ C_3\ \wedge\ C_2\ \wedge\ C_4\ ).
-%     \]
-%   \end{itemize}
-  
-%   \medskip
-%   This step-by-step encoding shows how \cDL\ integrates temporal regular patterns, deontic modalities, 
-%   and event-triggered obligations in a single formalism.  
-%   Clauses (C1–C5) together specify a full-cycle contract where collaborative actions such as payment, occupancy, repair, and termination are modeled as 
-%   conditional and time-bounded obligations between the two agents.
-%   \end{example}
-  
-  
-%   We move now to the first semantic definition for this logic, where we just care about whether a contract was satisfied.
+  The syntax above fixes \emph{what} can be expressed in \cDL.
+Regular-expression guards determine \emph{when} a clause becomes relevant, while deontic literals determine \emph{which} collaborative objective is required, forbidden, or allowed, and by which party.
+The encoding example shows that typical rental clauses can be represented compositionally using sequencing, reparation, triggering, and guarding.
+
+What remains is to define \emph{how} such contracts are evaluated on traces.
+In \cDL, parts of a contract are \emph{relative} to the prior satisfaction or violation of other parts of the same contract.
+In particular, reparations, guarded clauses, and termination conditions depend on identifying the exact prefix at which a primary obligation is first fulfilled or first breached.
+As a consequence, contract evaluation requires an exact and deterministic decomposition of traces into phases occurring before and after a decisive instant.
+
+The next section introduces a non-classical, prefix-based semantic discipline that enforces such a decomposition.
+By isolating unique satisfaction and violation frontiers, this semantics ensures a single, well-defined progression of contractual states, which is essential for the correct interpretation of triggers, reparations, and contractual termination.
 
 
-
-%\input{tightmotivation.tex}
+\input{tightmotivation.tex}
 
 
 %\input{forwardtight.tex}

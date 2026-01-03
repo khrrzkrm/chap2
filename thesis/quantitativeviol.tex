@@ -1,0 +1,397 @@
+\section{Quantitative Violation Semantics}
+
+\subsection{Motivation and Scope}
+
+\paragraph{Beyond Boolean Verdicts.}
+The basic restriction of the forward-looking tight satisfaction semantics, as defined in the previous section, resides in its binary and prefix-closed nature.
+In that framework, the monitoring process halts definitively at the first tight violation.
+Despite being computationally efficient for stopping compliance systems (e.g., an access control system that is failing), this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
+It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time—a critical requirement for comprehensive legal responsibility.
+To tackle this limitation, it is necessary to transition from a boolean verdict to a \emph{quantitative semantics}, changing the emphasis from the question ``Did a violation occur?'' to ``How many violations occurred, and what was their magnitude?''
+
+
+\paragraph{The Challenge of Temporal Scope.}
+A prerequisite for counting violations is defining the temporal window over which the contract is evaluated.
+In contrast to traditional model checking, which commonly analyzes systems that are supposed to run forever, contract monitoring operates on finite, evolving prefixes.
+We identify two primary strategies for defining this scope:
+
+\begin{enumerate}
+    \item \textbf{Static Pre-computation:} One might attempt to calculate a fixed duration $T$ for a contract $C$.
+    However, contracts containing unbounded repetitions ($\repit{C}$) or input-dependent regular expressions (guards/triggers) do not have a statically determinable length.
+   
+    \item \textbf{Dynamic On-the-Fly Detection:} The alternative is to determine the contract's status dynamically at every step.
+    Here, the monitor continuously computes a \emph{residual contract}—a formula representing what remains to be fulfilled given the history of events.
+   
+\end{enumerate}
+
+This work adopts the \textbf{Dynamic On-the-Fly} approach.
+This requires a structural tracking mechanism, which we formalize as the \emph{Contract Progress Monitor} (CPM).
+The CPM acts as a derivative function: given a contract $C$ and an incoming event, it computes the contract $C'$ that must be enforced in the next time step.
+Isolating the state of the contract (via the CPM) from the evaluation of compliance (via a scoring function) enables a modular framework that can track active duties, handle contrary-to-duty (CTD) transitions, and attribute blame with precision over time. The scoring function is critical in this framework, as it provides a quantitative evaluation of compliance. This approach not only determines whether obligations have been met, but also assesses the degree of compliance or non-compliance. The interaction with the CPM measures the magnitude of violations, presenting an in-depth and nuanced view of contractual adherence that improves accountability and enforcement precision.
+
+
+\subsection{Contract Progress Monitor}
+
+The core of our measurement framework is the \emph{progression function}, $\Prog$.
+Conceptually similar to the Brzozowski derivative~\cite{brzozowski1964derivatives} for regular expressions, $\Prog$ consumes the current event and the current contract to produce the \emph{residual contract} for the subsequent step.
+
+\begin{definition}[Contract Progression Function]
+Let $\Gamma = 2^\Sigma$ be the event alphabet.
+We extend the set of contracts $\mathcal{C}$ with a distinguished symbol $\emptc$, representing a \emph{discharged contract} (one that implies no further obligations).
+
+The progression function $\Prog: \Gamma^* \times \cDL \to \cDL \cup \{\emptc\}$ is defined recursively.
+For the empty trace $\epsilon$, $\Prog(\epsilon, C) := C$.
+For a single event step $\trace{A}$ with $A \in \Gamma$, the function is defined on the structure of $C$ as follows.
+
+\paragraph{Literals (State Update).}
+For any literal $\ell$ (obligation, permission, or prohibition):
+\[
+\Prog(\trace{A}, \ell) := \emptc
+\]
+\emph{Rationale:} Structurally, a literal applies to a single time step.
+Once the $A$ step occurs, the literal is consumed.
+Whether $A$ satisfied or violated $\ell$ is immaterial to the \emph{progression} (the duty is passed); the violation is recorded separately by the quantitative scoring function defined later.
+
+
+\paragraph{Conjunction (Parallel Progress).}
+\[
+\Prog(\trace{A}, C_1 \wedge C_2) := \Prog(\trace{A}, C_1) \wedge \Prog(\trace{A}, C_2)
+\]
+We assume the symbolic identity where $\emptc$ is the neutral element for conjunction: $\emptc \wedge C' \equiv C'$.
+
+
+\paragraph{Sequence (Sequential Handover).}
+For a sequence $C_1 ; C_2$, progression determines if the current step concludes $C_1$:
+\[
+\Prog(\trace{A}, C_1 ; C_2) := 
+\begin{cases}
+  \Prog(\trace{A}, C_1) ; C_2 & \text{if } \Prog(\trace{A}, C_1) \neq \emptc, \\
+  \Prog(\trace{A}, C_2) & \text{if } \Prog(\trace{A}, C_1) = \emptc.
+\end{cases}
+\]
+If $C_1$ is discharged by step $A$ (i.e., its residual is $\emptc$), the monitor immediately activates the first step of the next portion $C_2$.
+
+
+\paragraph{Reparation (Contrary-to-Duty Branching).}
+The reparation construct is unique because its structural progression depends on the satisfaction of the primary obligation.
+This is the only case where $\Prog$ relies on the tight satisfaction relation ($\satt, \violt, \presat$) to determine the path:
+\[
+\Prog(\trace{A}, C_1 \repair C_2) := 
+\begin{cases}
+  \Prog(\trace{A}, C_1) \repair C_2 & \text{if } \trace{A} \presat C_1 \text{ (Pending)}, \\
+  \Prog(\trace{A}, C_2) & \text{if } \trace{A} \violt C_1 \text{ (Violation $\to$ Repair)}, \\
+  \emptc & \text{if } \trace{A} \satt C_1 \text{ (Satisfaction $\to$ Discharge)}.
+\end{cases}
+\]
+If a violation occurs ($\trace{A} \violt C_1$), the primary contract is discarded, and the secondary contract $C_2$ is activated immediately for the \emph{next} step.
+
+
+\paragraph{Repetition.}
+Repetition unrolls the contract one step at a time:
+\[
+\Prog(\trace{A}, \repit{C}) := \Prog(\trace{A}, C) ; \repit{C}
+\]
+
+
+\paragraph{Guarded and Triggered Contracts.}
+These constructs rely on regular expression matching.
+\[
+\Prog(\trace{A}, \guard[re]{C}) :=
+\begin{cases}
+  \emptc & \text{if } \trace{A} \satt \guard[re]{C} \text{ (Guard satisfies, release)}, \\
+  \guard[\Prog_{re}(\trace{A}, re)]{\Prog(\trace{A}, C)} & \text{otherwise (Guard persists)}.
+\end{cases}
+\]
+\[
+\Prog(\trace{A}, \trig[re]{C}) :=
+\begin{cases}
+  \emptc & \text{if } \trace{A} \violt re \text{ (Trigger failed permanently)}, \\
+  C & \text{if } \trace{A} \satt re \text{ (Trigger fires)}, \\
+  \trig[\Prog_{re}(\trace{A}, re)]{C} & \text{if } \trace{A} \presat re \text{ (Trigger pending)}.
+\end{cases}
+\]
+
+
+\paragraph{Regular Expression Derivatives ($\Prog_{re}$).}
+The helper function $\Prog_{re}$ computes the standard derivative~\cite{brzozowski1964derivatives} of the regular expression.
+For atomic sets $A'$ and step $A$, $\Prog_{re}(\trace{A}, A') = \epsilon$ if matches, else failure.
+For operations like union ($\mid$) and Kleene plus ($^+$), the derivatives follow standard automata-theoretic constructions.
+
+
+\end{definition}
+
+\begin{lemma}[Termination]
+For each finite prefix $\pi$, $\Prog(\pi, C)$ terminates in at most $|\pi|$ recursive steps.
+
+\end{lemma}
+To illustrate the CPM, the evolution of the residual contract under different traces is examined. The evaluation initiates with the fundamental building block of normative enforcement: the reparation.
+
+\begin{example}[Progression of Reparation]
+\label{ex:prog-repit}
+Consider the basic rental reparation clause:
+\[ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}. \]
+
+\noindent\textbf{Scenario 1: Compliance.}
+In the first trace $\pi$, the tenant pays rent in Month 1 ($\PAY \in A_1$). Since $\trace{A_1} \satt \obl[1]{\PAY}$, the condition for discharge is met. The reparation structure collapses to $\emptc$, meaning no further obligations exist for Month 2.
+
+    \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
+    \begin{tikzpicture}[y=1.6cm,x=3.0cm]
+    
+      \tikzset{
+        cell/.style={
+          draw, rectangle, text width=26mm,
+          minimum height=7mm, align=center, font=\small
+        }
+      }
+    
+      % Labels
+      \node at (0,0)   {Month $i$};
+      \node at (0,-1)  {Event at i $A_i$};
+      \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+      % Row 1: time
+      \node[cell] at (1,0) (t1) {$1$};
+      \node[cell] at (2,0) (t2) {$2$};
+      % Row 2: events
+      \node[cell] at (1,-1) (e1) {$\{\PAY^{(12)}\}$};
+      \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+      % Row 3: residuals
+      \node[cell] at (1,-2) (r1) {\emptc};
+      \node[cell] at (2,-2) (r2) {\emptc};
+      % Arrows
+      \draw (t1)--(t2);
+      \draw (e1)--(e2);
+      \draw (r1)--(r2);
+      % Vertical alignment
+      \draw[dotted](t1.south)--(e1.north);
+      \draw[dotted](e1.south)--(r1.north);
+    
+      \draw[dotted](t2.south)--(e2.north);
+      \draw[dotted](e2.south)--(r2.north);
+    \end{tikzpicture}
+    }}
+    {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which no reparation is not required}
+    {example:prog-repair1}
+    {\vspace{8pt}}{\vspace{-12pt}}
+
+\medskip
+\noindent\textbf{Scenario 2: Violation and Repair.}
+In trace $\pi'$, the tenant fails to pay in Month 1 ($\PAY \notin A'_1$). Here, $\trace{A'_1} \violt \obl[1]{\PAY}$. Consequently, the CPM activates the repair branch. The residual for Month 2 becomes $\obl[1]{\PAYF}$, obliging the tenant to pay the fine.
+
+  \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
+  \begin{tikzpicture}[y=1.6cm,x=3.0cm]
+  
+    \tikzset{
+      cell/.style={
+        draw, rectangle, text width=26mm,
+        minimum height=7mm, align=center, font=\small
+      }
+    }
+  
+    % Labels
+    \node at (0,0)   {Month $i$};
+    \node at (0,-1)  {Event at i $A_i$};
+    \node at (0,-2)  {$\Prog(\pi'_{i-1},C)$};
+    % Row 1: time
+    \node[cell] at (1,0) (t1) {$1$};
+    \node[cell] at (2,0) (t2) {$2$};
+    % Row 2: events
+    \node[cell] at (1,-1) (e1) {$\{\OCC^{(1)}\}$};
+    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+    % Row 3: residuals
+    \node[cell] at (1,-2) (r1) {$\obl[1]{\PAYF}$};
+    \node[cell] at (2,-2) (r2) {\emptc};
+    % Arrows
+    \draw (t1)--(t2);
+    \draw (e1)--(e2);
+    \draw (r1)--(r2);
+  
+    % Vertical alignment
+    \draw[dotted](t1.south)--(e1.north);
+    \draw[dotted](e1.south)--(r1.north);
+  
+    \draw[dotted](t2.south)--(e2.north);
+    \draw[dotted](e2.south)--(r2.north);
+  
+  \end{tikzpicture}
+  }}
+  {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which no reparation is not required}
+  {example:prog-repair2}
+  {\vspace{8pt}}{\vspace{-12pt}}
+\end{example}
+
+After establishing the evolution of single-step reparations, the analysis is extended to ongoing contracts. The following example demonstrates how the CPM handles infinite streams with recurring duties, showing how violations in one period persist into subsequent periods.
+
+\begin{example}[Progression of Infinite Repetition]
+Consider the recurring contract $\repit{C_3}$, where the tenant must pay rent (or a fine) every month.
+\[ \repit{C_3} = \repit{ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}}. \]
+
+\noindent\textbf{Trace Analysis.}
+Consider a trace in which the tenant pays in Month 1 but fails to pay in Month 2, instead occupying the property.
+\begin{itemize}
+    \item \textbf{Step 1 ($A_1$):} The tenant pays. The instance of $C_3$ for Month 1 is discharged. Due to the repetition operator, the residual is $\emptc; \repit{C_3} \equiv \repit{C_3}$. The contract effectively ``resets'' for the next month.
+    \item \textbf{Step 2 ($A_2$):} The tenant occupies but does not pay. The instance of $C_3$ for Month 2 violates the condition. Unlike Step 1, the residual does not reset cleanly. Instead, the violated obligation transforms into its reparation $\obl[1]{\PAYF}$, which must be fulfilled in the \emph{next} step (Month 3), alongside the continuing repetition $\repit{C_3}$.
+\end{itemize}
+This results in an accumulation of duties: the fine from Month 2 and the new rent for Month 3.
+
+  \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
+  \begin{tikzpicture}[y=1.6cm,x=3.0cm]
+  
+    \tikzset{
+      cell/.style={
+        draw, rectangle, text width=26mm,
+        minimum height=7mm, align=center, font=\small
+      }
+    }
+  
+    % Labels
+    \node at (0,0)   {Month $i$};
+    \node at (0,-1)  {Event at i $A_i$};
+    \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+    % Row 1: time
+    \node[cell] at (1,0) (t1) {$1$};
+    \node[cell] at (2,0) (t2) {$2$};
+    % Row 2: events
+    \node[cell] at (1,-1) (e1) {$\{\PAY^{(12)}\}$};
+    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+    % Row 3: residuals
+    \node[cell] at (1,-2) (r1) {$\repit{C_3}$};
+    \node[cell] at (2,-2) (r2) {$\obl[1]{\PAYF} ; \repit{C_3}$};
+    % Arrows
+    \draw (t1)--(t2);
+    \draw (e1)--(e2);
+    \draw (r1)--(r2);
+  
+    % Vertical alignment
+    \draw[dotted](t1.south)--(e1.north);
+    \draw[dotted](e1.south)--(r1.north);
+  
+    \draw[dotted](t2.south)--(e2.north);
+    \draw[dotted](e2.south)--(r2.north);
+  
+  \end{tikzpicture}
+  }}
+  {Progression on $\repit{C_3}$ where the obligation is met in the first month but violated in the second.}
+  {example:prog-repitc1}
+  {\vspace{8pt}}{\vspace{-12pt}}
+\end{example}
+
+While repetitions capture simple recurring duties, more complex contracts are often bound by conditions. The following analysis studies how the CPM handles \emph{guarded contracts}, in which the outer structure (the guard) and the inner structure (the obligations) evolve independently until a termination event occurs.
+
+\begin{example}[Progression of Guarded Contracts] 
+A guarded contract that persists until a termination notice ($\notifterm$) is issued is examined.
+\[ \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}} \]
+
+\noindent\textbf{Trace 1: Successful Termination.}
+The tenant pays in Month 1 ($A_1$) and issues a termination notice in Month 2 ($A_2$).
+\begin{itemize}
+    \item At $i=1$, the event $A_1$ satisfies the inner contract $C_3$ (rent paid), but does not satisfy the guard (no notice). The residual is the guarded repetition.
+    \item At $i=2$, the event $A_2$ contains $\notifterm$. This satisfies the guard expression. The CPM immediately reduces the entire contract to $\emptc$, signifying the contract has ended.
+\end{itemize}
+
+  \boxalignfigure{\resizebox{0.85\textwidth}{!}{%
+  \begin{tikzpicture}[y=1.8cm,x=3.8cm]
+  
+    \tikzset{
+      cell/.style={
+        draw, rectangle, text width=34mm,
+        minimum height=8mm, align=center, font=\small
+      }
+    }
+    % Local definition for the residual regex to fit in the box
+    \def\resid{\notifterm \mid \Gamma^+ \cdot \notifterm}
+  
+    % Labels
+    \node at (0,0)   {Month $i$};
+    \node at (0,-1)  {Event at i $A_i$};
+    \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+    % Row 1: time
+    \node[cell] at (1,0) (t1) {$1$};
+    \node[cell] at (2,0) (t2) {$2$};
+    % Row 2: events
+    \node[cell] at (1,-1) (e1) {$\{\PAY^{(1)}, \PAY^{(2)}\}$};
+    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}, \notifterm^{(1)}\}$};
+    % Row 3: residuals
+    % Step 1: Contract satisfied (payment made), Guard not satisfied yet (needs >0 length or specific event).
+    % Residual guard becomes (Notif | Gamma+ . Notif)
+    \node[cell] at (1,-2) (r1) {$\guard[\resid]{\repit{C_3}}$};
+    % Step 2: Guard satisfied by NotifTerm in A2. Contract discharges to epsilon.
+    \node[cell] at (2,-2) (r2) {\emptc};
+    % Arrows
+    \draw (t1)--(t2);
+    \draw (e1)--(e2);
+    \draw (r1)--(r2);
+  
+    % Vertical alignment
+    \draw[dotted](t1.south)--(e1.north);
+    \draw[dotted](e1.south)--(r1.north);
+  
+    \draw[dotted](t2.south)--(e2.north);
+    \draw[dotted](e2.south)--(r2.north);
+  
+  \end{tikzpicture}
+  }}
+  {Progression on guarded contract where the termination notice at step 2 discharges the contract.}
+  {example:prog-guard1}
+  {\vspace{8pt}}{\vspace{-12pt}}
+
+\medskip
+\noindent\textbf{Trace 2: Pending Guard with Internal Violation.}
+In this scenario, the tenant pays in Month 1 but fails to pay in Month 2 (and gives no notice).
+\begin{itemize}
+    \item At $i=2$, the guard is \emph{not} satisfied.
+    \item Simultaneously, the inner contract $\repit{C_3}$ processes the event. Since rent was not paid, the inner contract evolves into a reparation state ($\obl[1]{\PAYF}$).
+    \item The resulting residual is a guarded reparation: $\guard[\dots]{(\obl[1]{\PAYF} ; \repit{C_3})}$.
+\end{itemize}
+This illustrates how the CPM maintains the ``wrapper'' (the guard) while the content inside (the obligations) evolves and accumulates violations independently.
+
+  \boxalignfigure{\resizebox{0.95\textwidth}{!}{%
+  \begin{tikzpicture}[y=1.8cm,x=4.4cm]
+  
+    \tikzset{
+      cell/.style={
+        draw, rectangle, text width=40mm,
+        minimum height=8mm, align=center, font=\small
+      }
+    }
+    \def\resid{\notifterm \mid \Gamma^+ \cdot \notifterm}
+  
+    % Labels
+    \node at (0,0)   {Month $i$};
+    \node at (0,-1)  {Event at i $A_i$};
+    \node at (0,-2)  {$\Prog(\pi'_{i-1},C)$};
+    
+    % Row 1: time
+    \node[cell] at (1,0) (t1) {$1$};
+    \node[cell] at (2,0) (t2) {$2$};
+    
+    % Row 2: events
+    \node[cell] at (1,-1) (e1) {$\{\PAY^{(1)}, \PAY^{(2)}\}$};
+    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+    
+    % Row 3: residuals
+    % Step 1: Manual line break using \\
+    \node[cell] at (1,-2) (r1) {$\lceil \resid \rceil$ \\ $\repit{C_3}$};
+    % Step 2: Manual line break using \\
+    \node[cell] at (2,-2) (r2) {$\lceil \resid \rceil$ \\ $(\obl[1]{\PAYF} ; \repit{C_3})$};
+    % Arrows
+    \draw (t1)--(t2);
+    \draw (e1)--(e2);
+    \draw (r1)--(r2);
+  
+    % Vertical alignment
+    \draw[dotted](t1.south)--(e1.north);
+    \draw[dotted](e1.south)--(r1.north);
+  
+    \draw[dotted](t2.south)--(e2.north);
+    \draw[dotted](e2.south)--(r2.north);
+  
+  \end{tikzpicture}
+  }}
+  {Progression on a guarded contract where the guard is not satisfied, and the inner contract triggers a reparation.}
+  {example:prog-guard2}
+  {\vspace{8pt}}{\vspace{-12pt}}
+  
+\end{example}
+
+
+\input{qviol}

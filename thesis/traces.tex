@@ -363,9 +363,9 @@ The \emph{lockstep} operator combines two synchronous traces by aligning them ro
 
 \subsubsection{Synchronous Operator With Handshake Actions}
 
-In many systems, certain actions can only be executed \emph{jointly} and must occur in \emph{the same round} for both agents. Let $A\subseteq \Sigma_1\cap\Sigma_2$ denote the set of \defn{handshake actions}. The idea is that if one agent performs a handshake action $a\in A$ at some round, then the other agent must also perform $a$ at that exact round. This principle, known from the semantics of Communicating Sequential Processes (CSP), requires handshake actions to be treated as simultaneous, mutually synchronized events.
+In many systems, certain actions can only be executed \emph{jointly} and must occur in \emph{the same round} for both agents. Let $A\subseteq \Sigma_1\cap\Sigma_2$ denote the set of \defn{handshake actions}. The idea is that if one agent performs a handshake action $a\in A$ at some round, then the other agent must also perform $a$ at that exact round. This principle, specified in the synchronous CCS \cite{milner1983calculi}, requires handshake actions to be treated as simultaneous, mutually synchronized events.
 
-\begin{definition}[Lockstep with handshakes on synchronous words]
+\begin{definition}[Lockstep with handshakes on synchronous words]\label{Lockstep with handshakes}
   Let $A\subseteq \Sigma_1\cap\Sigma_2$ be a nonempty set of \emph{handshake actions}.
   The operator \emph{lockstep with handshakes}, written
   \(
