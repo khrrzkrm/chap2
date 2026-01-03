@@ -569,9 +569,9 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   
    The abstraction introduced so far separates agent-local attempts and interference while preserving all information required for responsibility analysis.
     In some situations, however, it is useful to additionally extract the \emph{jointly successful} outcomes that emerge when both agents contribute compatibly within the same contractual period.
-     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired from Definition.~\ref{Lockstep with handshakes}: a collaborative action is realized at a given period if and only if both agents propose it in that period. Technically, this is captured by erasing agent tags and intersecting the per-period action sets. Unlike earlier abstraction steps, this operator is not used as the primary semantic basis of the framework, since it intentionally discards information about obstruction and responsibility. Instead, it serves as a derived view that characterizes successful collaboration in isolation, making precise the connection between our attempt-based abstraction and classical handshake-based synchronization models.
+     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired from Definition~\ref{def:collapsed-hs}: a collaborative action is realized at a given period if and only if both agents propose it in that period. Technically, this is captured by erasing agent tags and intersecting the per-period action sets. Unlike earlier abstraction steps, this operator is not used as the primary semantic basis of the framework, since it intentionally discards information about obstruction and responsibility. Instead, it serves as a derived view that characterizes successful collaboration in isolation, making precise the connection between our attempt-based abstraction and classical handshake-based synchronization models.
   
-  \begin{definition}[Successful collaboration operator]
+  \begin{definition}[Successful collaboration operator]\label{successcomb}
   Let  $\Sigma$ be an alphabet and let $\Sigma^{(1)}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
   $\Sigma^{(2)}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
   The \emph{successful collaboration operator}, written $\mathsf{Succ}$ of two periodic synchronous trace $\pi_1$ over $\Sigma^{(1)}$ and $\pi_2$ over $\Sigma^{(2)}$ on the same maximum horizon $T$ is defined eventwise by:
@@ -697,7 +697,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \begin{itemize}
     \item $S_i$ is a finite set of states with initial state $s^0_i\in S_i$;
     \item $\Sigma_I$ is the input alphabet (the other agent’s \emph{untagged} collaborative letters);
-    \item $\Sigma_O^i$ is the set of output alphabet;
+    \item $\Sigma_O^i$ is the set of output symbols;
     \item $\delta_i: S_i \times 2^{\Sigma_I} \to S_i$ is a deterministic transition function;
     \item $\lambda_i: S_i \to 2^{\Sigma_O}$ is the output function.
   \end{itemize}
@@ -867,7 +867,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   Now we move to the step where both strategies are fixed and transformed to compute their outcome. To do so, we introduce the product of two complementary Moore machines.
   
   
-  \begin{definition}[Product of Complementary Determinstic Moore Machines]
+  \begin{definition}[Product of Complementary Deterministic Moore Machines]
   
   \[\text{Let }
   M_i \;=\; (S_i, s^0_i,\ \Sigma_I^j,\ \Sigma_O^i,\ \delta_i,\ \lambda_i)
@@ -955,7 +955,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   progress under synchronous feedback. Once a stable pair of states is reached, the product
   loops, generating the same joint output forever.
 
-  The individual Moore machines underlying the product construction are recalled in \ref{fig:moore-tenant-prod} and \ref{fig:moore-landlord-prod}, while their synchronous product is summarized in \ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
+  The individual Moore machines underlying the product construction are recalled in Sub-figure~\ref{fig:moore-tenant-prod} and Sub-figure~\ref{fig:moore-landlord-prod}, while their synchronous product is summarized in Sub-figure~\ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
   \begin{figure}[h]
   \centering
   \begin{subfigure}[t]{0.70\textwidth}
@@ -1019,7 +1019,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \end{figure}
   
   \noindent
-  Concretely, The run of the product $M_1^1 \times M_2^1$ in  \ref{fig:product-sketch}, corresponds to the omega-word\\
+  Concretely, The run of the product $M_1^1 \times M_2^1$ in  Sub-figure~\ref{fig:product-sketch}, corresponds to the omega-word\\
   $\trace{\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
    (\{\OCC^{(1)},\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\})^\omega}.$
   \end{example}
@@ -1046,21 +1046,19 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \emph{power} \(re^n\) (exactly \(n\) repetitions), and \emph{Kleene plus} \(re^+\) (one or more repetitions).
   The \emph{wildcard} \(\Gamma\) is the union of all $A \subseteq \Sigma$ used to skip a position, and \(\emptyset\) denotes the \emph{empty set of actions}.
   These constructs enable patterns such as “a repair is requested this month” (an atom), “after any number of months if Agent $1$ asks for termination (\(\Gamma \cdot\)), or “three consecutive months” \((re)^3\).
-  \begin{figure}[H]
+  \begin{figure}
   \centering
   \fbox{%
   \begin{minipage}{0.96\textwidth}
   \captionof{figure}{Syntax of \cDL}
   \label{fig:cdl-syntax}
   \small
-  Given a collaboration alphabet $\Sigma_C$ and let
-  $\Sigma := \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$ be the tagged action alphabet.
-  With:
-  $a \in \Sigma_C$ (collaboration action),\;
-  $p \in \{1,2\}$ (party).\;
-  $A \in 2^\Sigma$ (party tagged action set),\;
-  $n \in \mathbb{N^*}$ (non-zero natural number).\;
-  The syntax of \cdl is defined inductively via the following grammar:
+  Given a collaboration alphabet $\Sigma_C$ and a party index $p \in \{1,2\}$, we define the tagged action alphabet as
+  $
+  \Gamma := \Sigma_C^{(1)} \cup \Sigma_C^{(2)}.
+  $
+ Let $a \in \Sigma_C$ denote a collaborative action, $A \in 2^{\Gamma}$ a party-tagged action set, and $n \in \mathbb{N}^*$ a non-zero natural number.
+  The syntax of \cDL\ is defined inductively by the grammar below:
   
   \medskip
   \[
@@ -1112,7 +1110,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \emph{reparation} \((C \repair C')\) for contrary-to-duty fall-backs saying you are requested to perform $C$, if you fail you must conform to $C'$ in the next time position;
   \emph{triggered} clauses \(\trig[re]{C}\) that activate \(C\) when a pattern \(re\) occurs;
   \emph{guarded} clauses \(\guard[re]{C}\) that encapsulate conditions under which conforming to a contract is no longer necessary; 
-  \emph{n-repition} clauses inforces the repition of the enforcement of a contract $n$ times, with $n \in \mathbb{N^*}$; and finally, \emph{repetition} \(\repit{C}\) for the infinite repetition of the enforcement of a contract.
+  \emph{n-repitition} clauses inforces the repition of the enforcement of a contract $n$ times, with $n \in \mathbb{N^*}$; and finally, \emph{repetition} \(\repit{C}\) for the infinite repetition of the enforcement of a contract.
   Together, these constructs could be used to capture the clauses of a contract, the conditions under which they are activated or terminated, and how the clauses relate to each other regarding reparations or the timing of their application. More specifically, the combination of repetition and a guarded contract can capture the notion of open-ended contracts.
    In the following example, we illustrate how we could capture our motivating example.
   \subsection{Illustrating the Encoding in \cDL for the Motivating Example}
@@ -1182,6 +1180,8 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   The syntax above fixes \emph{what} can be expressed in \cDL.
 Regular-expression guards determine \emph{when} a clause becomes relevant, while deontic literals determine \emph{which} collaborative objective is required, forbidden, or allowed, and by which party.
 The encoding example shows that typical rental clauses can be represented compositionally using sequencing, reparation, triggering, and guarding.
+
+Crucially, the interpretation of these collaborative objectives relies on the interaction model established in \ref{sec:multiagent-sync}. Recall that we explicitly distinguished \emph{attempts} captured in the periodic set traces from \emph{successful collaboration} defined in Definition~\ref{successcomb}. Consequently, although the syntax refers to a collaborative action $a$, the evaluation logic is grounded in the agent-specific attempts $a^{(p)}$ preserved by our abstraction. This ensures that an agent is judged on their active participation rather than the joint outcome, preventing blame assignment when a compliant attempt is blocked by another party.
 
 What remains is to define \emph{how} such contracts are evaluated on traces.
 In \cDL, parts of a contract are \emph{relative} to the prior satisfaction or violation of other parts of the same contract.

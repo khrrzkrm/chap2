@@ -160,24 +160,27 @@ For any $L\subseteq\Sigma^*$,
 \]
 \end{lemma}
 
-\begin{proof}
-The first claim is immediate from the definition $\badclass{L}:=\Sigma^*\setminus\closureclass{L}$.
 
-For the second claim, assume towards a contradiction that there is $u\in\IRL{L}\cap\IAL{L}$.
-By definition of $\IRL{L}$ there exist $b\in\ERL{L}$ and a nonempty word $x\in\Sigma^{+}$ such that $u=bx$.
-By definition of $\IAL{L}$ there exist $m\in\EAL{L}=\minlang{L}$ and a nonempty word $y\in\Sigma^{+}$ such that $u=my$.
-Since both $b$ and $m$ are prefixes of $u$, they are comparable.
-If $m\preceq b$, then $b=mz$ for some $z\in\Sigma^{+}$, hence $b\in\EAL{L}\,\Sigma^{+}=\IAL{L}$, contradicting $b\in\ERL{L}=\minlang{\badclass{L}}\setminus\IAL{L}$.
-If $b\preceq m$, then $b$ is a prefix of the accepted word $m\in L$, so $b\in\closureclass{L}$, contradicting $b\in\ERL{L}\subseteq \minlang{\badclass{L}}\subseteq \badclass{L}=\Sigma^*\setminus\closureclass{L}$.
-Thus $\IRL{L}\cap\IAL{L}=\emptyset$.
+  \begin{proof}
+    The first claim follows directly from the definition, as $\badclass{L}$ is the set-theoretic complement of $\closureclass{L}$ in $\Sigma^*$.
+    
+    For the second claim ($\IRL{L}\cap \IAL{L}=\emptyset$), assume for the sake of contradiction that there exists a word $u \in \IRL{L} \cap \IAL{L}$.
+    By the definitions of irrelevant rejection and acceptance, we have $u = bx$ for some $b \in \ERL{L}, x \in \Sigma^+$ and $u = my$ for some $m \in \EAL{L}, y \in \Sigma^+$.
+    Since both $b$ and $m$ are prefixes of $u$, they are comparable.
+    If $m \preceq b$, then $b$ extends a minimal accepted word, implying $b \in \IAL{L}$, which contradicts $b \in \ERL{L}$ (since $\ERL{L}$ is defined as $\minlang{\badclass{L}} \setminus \IAL{L}$).
+    Conversely, if $b \preceq m$, then the accepted word $m$ extends a bad prefix $b$. However, since $b \in \badclass{L}$, no extension of $b$ can ever belong to $L$, contradicting $m \in L$. Thus, the intersection must be empty.
+    
+    For the third claim ($\minlang{L} \cap \IRL{L} = \emptyset$), we rely on the fundamental distinction between accepted and bad traces.
+    By definition, $\minlang{L}$ contains only words that belong to $L$ (specifically, the shortest ones).
+    In contrast, $\IRL{L}$ is a subset of $\badclass{L}$ (extensions of minimal bad prefixes), which contains only words that are strictly outside $\closureclass{L}$.
+    Since a word cannot be simultaneously accepted (in $L$) and a bad prefix (in $\badclass{L}$), the sets are disjoint.
+    \end{proof}
 
-For the third claim, note that $\IRL{L}\subseteq\badclass{L}$ (by Lemma~\ref{lem:two-splits}) and $\minlang{L}\subseteq\closureclass{L}$ (by Lemma~\ref{lem:basic}(1)).
-Hence
-$\minlang{L}\cap\IRL{L}\subseteq \closureclass{L}\cap\badclass{L}=\emptyset$.
-\end{proof}
 
 
-\paragraph{Five semantic regions}
+
+\paragraph{Five semantic regions.}
+We now make the outcome of the previous constructions explicit by introducing a canonical partition of $\Sigma^*$ into five semantic regions. Each region corresponds to a distinct monitoring status of a prefix: before any decision, at the exact point of decision, or strictly after that point. This partition is the semantic backbone of tight prefix evaluation.
 
 \begin{definition}[Five semantic regions]\label{def:five-regions}
 For any $L\subseteq\Sigma^*$, define:
@@ -193,6 +196,8 @@ For any $L\subseteq\Sigma^*$, define:
 \underbrace{\IRL{L}}_{\text{\emph{irrelevant rejection}}}.
 \]
 \end{definition}
+
+
 
 \begin{theorem}[Five-way partition of $\Sigma^*$]\label{thm:five-way}
 For every $L\subseteq\Sigma^*$, the space of all possible words could be decomposed into:
@@ -216,6 +221,7 @@ From $\Sigma^*=\closureclass{L}\ \dot\cup\ \badclass{L}$ and Lemma~\ref{lem:two-
 Now split $\closureclass{\minlang{L}}$ using Lemma~\ref{lem:basic}(2).
 Cross disjointness follows from Lemma~\ref{lem:cross}.
 \end{proof}
+
 
 %example
 \begin{example}[Five-region decomposition for a simple language]
@@ -306,8 +312,19 @@ $\semfive{u \vDash L}$ is well-defined and single-valued for every $u\in\Sigma^*
 \begin{theorem}[Prefix Monotonicity and Determinacy]\label{prop:tightness-obligations-unindexed}
   The semantics satisfy the following stability properties for any $u \in \Sigma^*$:
   \begin{enumerate}
-      \item \textbf{Stability of Verdicts:} If $\semfive{u \vDash L} \in \{\topt, \topp\}$, then for all extensions $v \succ u$, $\semfive{v \vDash L} = \topp$. Analogously for rejection.
-      \item \textbf{Unique Frontier:} If $\semfive{u \vDash L} = \topp$, there exists a unique strict prefix $u' \prec u$ such that $\semfive{u' \vDash L} = \topt$.
+      \item \textbf{Monotone evolution along extensions:}
+      If $\semfive{u \vDash L}=\topt$ and $x\in\Sigma^{+}$, then
+      $\semfive{u\concat x \vDash L}=\topp$.
+      If $\semfive{u \vDash L}=\topp$, then for all $x\in\Sigma^{+}$,
+      $\semfive{u\concat x \vDash L}=\topp$.
+      The dual statements hold for $\bott$ and $\botp$.
+
+      \item \textbf{Unique decision frontier:}
+      If $\semfive{u \vDash L}=\topp$, then there exists a unique strict prefix
+      $u'\prec u$ such that $\semfive{u' \vDash L}=\topt$.
+      Analogously, if $\semfive{u \vDash L}=\botp$, there exists a unique strict prefix
+      $u'\prec u$ such that $\semfive{u' \vDash L}=\bott$.
+
       \item \textbf{Determinism:} Since the partition in Theorem \ref{thm:five-way} is disjoint and complete, the semantics yields exactly one verdict for any input trace.
   \end{enumerate}
 \end{theorem}
@@ -318,27 +335,84 @@ $\EAL{L}:=\minlang{L}$, $\IAL{L}:=\EAL{L}\,\Sigma^{+}$,
 $\ERL{L}:=\minlang{\badclass{L}}\setminus\IAL{L}$, and $\IRL{L}:=\ERL{L}\,\Sigma^{+}$.
 
 \smallskip
-\noindent\textbf{(1) Stability of verdicts.}
+\noindent\textbf{(1) Monotone evolution along extensions.}
 Assume $\semfive{u \vDash L}\in\{\topt,\topp\}$.
 
-If $\semfive{u \vDash L}=\topt$, then $u\in\EAL{L}=\minlang{L}$. For any strict extension $v\succ u$ we can write $v=ux$ for some nonempty $x\in\Sigma^{+}$, hence $v\in \EAL{L}\,\Sigma^{+}=\IAL{L}$ and therefore $\semfive{v \vDash L}=\topp$.
+If $\semfive{u \vDash L}=\topt$, then $u\in\EAL{L}=\minlang{L}$. For any $x\in\Sigma^{+}$, $u\concat x$ is a strict extension of $u$, so $u\concat x\in \EAL{L}\,\Sigma^{+}=\IAL{L}$ and therefore $\semfive{u\concat x \vDash L}=\topp$.
 
-If $\semfive{u \vDash L}=\topp$, then $u\in\IAL{L}=\EAL{L}\,\Sigma^{+}$. Any strict extension $v\succ u$ satisfies $v=uy$ for some $y\in\Sigma^{+}$, so $v\in\IAL{L}\,\Sigma^{+}=\IAL{L}$, and again $\semfive{v \vDash L}=\topp$.
+If $\semfive{u \vDash L}=\topp$, then $u\in\IAL{L}=\EAL{L}\,\Sigma^{+}$. For any $x\in\Sigma^{+}$, $u\concat x$ is a strict extension of $u$, so $u\concat x\in\IAL{L}\,\Sigma^{+}=\IAL{L}$, and again $\semfive{u\concat x \vDash L}=\topp$.
 
-The rejection case is analogous: if $\semfive{u \vDash L}=\bott$ then $u\in\ERL{L}$ and every strict extension lies in $\IRL{L}=\ERL{L}\,\Sigma^{+}$, while if $\semfive{u \vDash L}=\botp$ then $u\in\IRL{L}$ and $\IRL{L}$ is closed under strict extensions by definition.
+The rejection case is analogous: if $\semfive{u \vDash L}=\bott$ then $u\in\ERL{L}$ and every $u\concat x$ with $x\in\Sigma^{+}$ lies in $\IRL{L}=\ERL{L}\,\Sigma^{+}$, while if $\semfive{u \vDash L}=\botp$ then $u\in\IRL{L}$ and $\IRL{L}$ is closed under strict extensions by definition.
 
 \smallskip
-\noindent\textbf{(2) Unique frontier.}
-Assume $\semfive{u \vDash L}=\topp$. Then $u\in\IAL{L}=\EAL{L}\,\Sigma^{+}$, so there exist $m\in\EAL{L}$ and $x\in\Sigma^{+}$ such that $u=mx$. Let $u':=m$. Then $u'\prec u$ and $\semfive{u' \vDash L}=\topt$.
+\noindent\textbf{(2) Unique decision frontier.}
+Assume $\semfive{u \vDash L}=\topp$. Then $u\in\IAL{L}=\EAL{L}\,\Sigma^{+}$, so there exist $m\in\EAL{L}$ and $x\in\Sigma^{+}$ such that $u=m\concat x$. Let $u':=m$. Then $u'\prec u$ and $\semfive{u' \vDash L}=\topt$.
 
-For uniqueness, suppose $u= m_1 x_1 = m_2 x_2$ with $m_1,m_2\in\EAL{L}$ and $x_1,x_2\in\Sigma^{+}$. Then both $m_1$ and $m_2$ are prefixes of $u$, hence they are comparable under the prefix order. If $m_1\prec m_2$, then $m_2$ is a strict extension of $m_1$ and cannot belong to $\minlang{L}=\EAL{L}$, contradicting minimality. Symmetrically, $m_2\prec m_1$ is impossible. Therefore $m_1=m_2$, and the strict prefix $u'$ with verdict $\topt$ is unique.
+For uniqueness, suppose $u= m_1\concat x_1 = m_2\concat x_2$ with $m_1,m_2\in\EAL{L}$ and $x_1,x_2\in\Sigma^{+}$. Then both $m_1$ and $m_2$ are prefixes of $u$, hence they are comparable under the prefix order. If $m_1\prec m_2$, then $m_2$ is a strict extension of $m_1$ and cannot belong to $\minlang{L}=\EAL{L}$, contradicting minimality. Symmetrically, $m_2\prec m_1$ is impossible. Therefore $m_1=m_2$, and the strict prefix $u'$ with verdict $\topt$ is unique.
 
-The same reasoning applies to the rejection side: if $\semfive{u \vDash L}=\botp$ then $u\in\IRL{L}=\ERL{L}\,\Sigma^{+}$, and the unique strict prefix with verdict $\bott$ is the unique factor from $\ERL{L}$.
+The same reasoning applies to the rejection side: if $\semfive{u \vDash L}=\botp$ then $u\in\IRL{L}=\ERL{L}\,\Sigma^{+}$, so there exist $b\in\ERL{L}$ and $x\in\Sigma^{+}$ such that $u=b\concat x$, and the unique strict prefix with verdict $\bott$ is the unique such $b$ from $\ERL{L}$.
 
 \smallskip
 \noindent\textbf{(3) Determinism.}
 By Theorem~\ref{thm:five-way}, the sets $\Pre{L}$, $\EAL{L}$, $\ERL{L}$, $\IAL{L}$, and $\IRL{L}$ form a pairwise-disjoint and complete partition of $\Sigma^{*}$. Hence every $u\in\Sigma^{*}$ belongs to exactly one region, so $\semfive{u \vDash L}$ returns exactly one verdict.
 \end{proof}
+
+\paragraph{Graphical overview.}
+Figure~\ref{prop:tightness-obligations-unindexed} visualizes the five semantic regions and their intended temporal evolution. The layout reflects how a language moves from an undecided language to a decisive frontier and then irreversibly into a post-verdict phase.
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[
+      x=1cm, y=1cm, scale=0.9,
+      every node/.style={font=\small\sffamily},
+      % Region style: Fixed width and height for uniformity
+      region/.style={draw, thick, fill opacity=1.0, align=center, inner sep=5pt, 
+                     text width=3cm, minimum height=2cm}
+  ]
+  
+      % --- Bounding Box ---
+      % Adjusted width to fit the wider layout
+      \draw[thick] (0,0) rectangle (16.5, 6.5);
+      
+  
+      % --- Region: PRE (Centered vertically) ---
+      \node[region, fill=yellow!20] (pre) at (3, 3.25) 
+          {$\Pre{L}$ \\ $\semfive{u \vDash L}=\mathsf{?}$};
+
+      % --- Column 2: Eager Frontiers ---
+      % Shifted Right by 5.5cm
+
+      % Eager Acceptance (Top Row)
+      \node[region, fill=green!40] (eal) at (8.5, 5.0) 
+          {$\EAL{L}$ \\ $\semfive{v \vDash L}=\topt$};
+
+      % Eager Rejection (Bottom Row)
+      \node[region, fill=red!40] (erl) at (8.5, 1.5) 
+          {$\ERL{L}$ \\ $\semfive{v' \vDash L}=\bott$};
+
+      % --- Column 3: Irrelevant Extensions ---
+      % Shifted Right by 5cm
+
+      % Irrelevant Acceptance (Top Row)
+      \node[region, fill=green!15] (ial) at (13.5, 5.0) 
+          {$\IAL{L}$ \\ $\semfive{w\vDash L}=\topp$};
+
+      % Irrelevant Rejection (Bottom Row)
+      \node[region, fill=red!15] (irl) at (13.5, 1.5) 
+          {$\IRL{L}$ \\ $\semfive{w' \vDash L}=\botp$};
+  
+      % --- Bad Class Boundary (Dashed Red) ---
+      % Encloses ERL and IRL (The bottom row)
+  
+      % --- Arrows ---
+      \draw[->, ultra thick, gray] (pre) -- (eal) node[midway, sloped, above, font=\scriptsize, text=black] {Possible $\Sigma^*$};
+      \draw[->, ultra thick, gray] (pre) -- (erl) node[midway, sloped, below, font=\scriptsize, text=black] {Possible $\Sigma^*$};
+      \draw[->, ultra thick, gray] (eal) -- (ial) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
+      \draw[->, ultra thick, gray] (erl) -- (irl) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
+  
+  \end{tikzpicture}
+  \caption{Visualizing Theorem \ref{prop:tightness-obligations-unindexed}. We have either one of this evolution that is possible $u\prec v \prec w$ or $u\prec v' \prec w'$. The acceptance languages are in green and the rejection languages are in red. The diagram highlight possible extension of each language from the undecided prefix to the final verdict stages. The absence of an arrow between a language class to another implies that no direct evolution is possible.}
+  \label{fig:five-way-partition}
+\end{figure}
 
 
 
@@ -511,72 +585,59 @@ $\lambda(\delta^{*}(s^0,u))=\semfive{u \vDash L}$.
 
 
 \begin{claim}[Linear-size Moore machine]\label{lem:moore-linear}
-Let $\aut(L)=(Q,\Sigma,\delta,q_0,F)$ be a completed DFA for $L$, and let
-$M_{\text{5tight}}(L)$ be the tight five-valued Moore machine of
-Definition~\ref{def:five-moore}. Then the number of reachable states of
-$M_{\text{5tight}}(L)$ is linear in the state space of $\aut(L)$, \ie, $|Q|$:
-\[
-  \bigl|S_{\mathrm{reach}}(M_{\text{5tight}}(L))\bigr|
-  \;=\;
-  \bigl|\mathrm{Reach}(\aut(L))\bigr|
-  \;\le\; |Q|.
-\]
-\end{claim}
+  Let $\aut(L)=(Q,\Sigma,\delta,q_0,F)$ be a completed DFA for $L$, and let
+  $M_{\text{5tight}}(L)$ be the tight five-valued Moore machine of
+  Definition~\ref{def:five-moore}.
+  We assume that all five region DFAs in Definition~\ref{def:five-aut} are constructed
+  over the same completed transition graph $(Q,\Sigma,\delta,q_0)$ of $\aut(L)$,
+  differing only in their accepting sets.
+  Then the number of reachable states of $M_{\text{5tight}}(L)$ is linear in the
+  state space of $\aut(L)$, \ie, $|Q|$:
+  \[
+    \bigl|S_{\mathrm{reach}}(M_{\text{5tight}}(L))\bigr|
+    \;=\;
+    \bigl|\mathrm{Reach}(\aut(L))\bigr|
+    \;\le\; |Q|.
+  \]
+  \end{claim}
 
 
-\paragraph{claim argument.}
-We argue directly from the constructions of the five DFAs used in
-$M_{\text{5tight}}(L)$.
-
-\smallskip
-\noindent
-\emph{(Same transition graph).}
-Starting from a completed DFA $\aut(L)=(Q,\Sigma,\delta,q_0,F)$:
-\begin{itemize}
-  \item The prefix-closure automaton $\closure{\aut(L)}=(Q,\Sigma,\delta,q_0,\Live)$
-        changes only the accepting set to $\Live$ (backward reachability to $F$).
-  \item Its complement for bad-prefixes $\badc{\aut(L)}=(Q,\Sigma,\delta,q_0,Q\setminus\Live)$
-        flips finals, keeping $(Q,\Sigma,\delta)$.
-  \item The minimal-frontier automaton $\minc{\aut(L)}=(Q,\Sigma,\delta,q_0,F_{\min})$
-        selects the first accepting BFS layer; again, only finals change.
-  \item The right-ideal closures for $\IAL{L}$ and $\IRL{L}$ “forward-saturate” the
-        corresponding finals (every state reachable by a nonempty path becomes final),
-        without altering $(Q,\Sigma,\delta)$.
-  \item $\ERL{L}=\minlang{\badclass{L}}\setminus \IAL{L}$ is realized on the same
-        $(Q,\Sigma,\delta,q_0)$ by taking
-        $F_{\mathrm{ER}} := F_{\min(\mathrm{Bad})}\setminus F_{\mathrm{IAL}}$,
-        since both operands already use $(Q,\Sigma,\delta,q_0)$.
-\end{itemize}
-Thus, \emph{all five DFAs share the identical transition graph $(Q,\Sigma,\delta)$}
-and differ only in their accepting sets.
-
-\smallskip
-\noindent
-\emph{(Diagonal runs in the product).}
-Fix any $u\in\Sigma^*$. Because the underlying transition function is the same in
-all five DFAs, the unique run from $q_0$ on $u$ ends in the \emph{same} state
-$q=\delta^*(q_0,u)$ in each DFA. Therefore, in the product Moore machine
-$M_{\text{5tight}}(L)$, the product state reached by $u$ is necessarily diagonal:
-$(q,q,q,q,q)$.
-
-\smallskip
-\noindent
-\emph{(Size bound).}
-Let $\Reach(\aut(L)):=\{\delta^*(q_0,u)\mid u\in\Sigma^*\}$ be the set of states
-reachable in $\aut(L)$. The mapping
-\[
-q\ \mapsto\ (q,q,q,q,q)
-\]
-is a bijection between $\Reach(\aut(L))$ and the set
-$S_{\mathrm{reach}}(M_{\text{5tight}}(L))$ of product states reachable in the
-Moore machine (by the diagonal property above). Hence
-\[
-     \bigl|S_{\mathrm{reach}}(\mathcal{M}_{\text{5tight}}(L))\bigr|
-     \;=\;\bigl|\Reach(\aut(L))\bigr|
-     \;\le\; |Q|.
-\]
-Therefore, the number of reachable Moore states grows at most linearly with the
-size of $\aut(L)$.
+  \paragraph{claim argument.}
+  We argue directly from the constructions of the five DFAs used in $M_{\text{5tight}}(L)$. The validity of the linear size bound relies on the fact that all component automata are defined over the \emph{same underlying transition structure}.
+  
+  \smallskip
+  \noindent
+  \emph{(Invariant transition graph).}
+  Starting from a completed DFA $\aut(L)=(Q,\Sigma,\delta,q_0,F)$, we construct the five region automata by modifying \emph{only} the accepting sets, while strictly preserving the transition graph $(Q,\Sigma,\delta)$. Crucially, we avoid standard minimization techniques that prune edges or merge states (such as making post-acceptance states sinks), as these would destroy the structural alignment required for the diagonal argument.
+  \begin{itemize}
+    \item The prefix-closure automaton $\closure{\aut(L)}$ uses $F_{\mathrm{PRE}} = \Live$ (states with a path to $F$).
+    \item The bad-prefix automaton $\badc{\aut(L)}$ uses $F_{\mathrm{BAD}} = Q \setminus \Live$.
+    \item The minimal-frontier automaton $\minc{\aut(L)}$ identifies the "first" accepting states without altering transitions.\\ We define $F_{\min} = \{ q \in F \mid \text{no predecessor of } q \text{ in the Bread First Search tree is in } F \}$. All outgoing edges from $F_{\min}$ remain intact, ensuring the graph topology is identical to $\aut(L)$.
+    \item The right-ideal closures for $\IAL{L}$ and $\IRL{L}$ define their accepting sets by forward reachability from $F_{\min}$ and $F_{\min(\mathrm{Bad})}$ respectively, again without modifying $\delta$.
+    \item Finally, $\ERL{L}$ is realized by the set difference $F_{\mathrm{ER}} := F_{\min(\mathrm{Bad})} \setminus F_{\mathrm{IAL}}$.
+  \end{itemize}
+  Thus, by construction, \emph{all five DFAs share the identical transition graph $(Q,\Sigma,\delta)$}.
+  
+  \smallskip
+  \noindent
+  \emph{(Diagonal runs in the product).}
+  Fix any $u\in\Sigma^*$. Because the underlying transition function $\delta$ is identical across all five DFAs, the unique run from $q_0$ on $u$ ends in the \emph{same} state $q=\delta^*(q_0,u)$ in every component. Therefore, the reachable state space of the product Moore machine $M_{\text{5tight}}(L)$ is restricted exclusively to the diagonal:
+  \[
+  S_{\mathrm{reach}}(M_{\text{5tight}}(L)) \subseteq \{ (q,q,q,q,q) \mid q \in Q \}.
+  \]
+  
+  \smallskip
+  \noindent
+  \emph{(Size bound).}
+  The mapping $q \mapsto (q,q,q,q,q)$ defines a bijection between the reachable states of the original DFA and the reachable states of the tight Moore machine. Consequently:
+  \[
+       \bigl|S_{\mathrm{reach}}(\mathcal{M}_{\text{5tight}}(L))\bigr|
+       \;=\;\bigl|\Reach(\aut(L))\bigr|
+       \;\le\; |Q|.
+  \]
+  This proves that the size of the tight monitor is linear with respect to the input DFA, avoiding the state explosion typical of product constructions.
+  
+  Additionally, since each component DFA is deterministic and complete, $\mathcal{M}_{\text{5tight}}(L)$ is a deterministic Moore machine that emits exactly one verdict from $\tightverdicts$ for every prefix. The monotonic evolution of these verdicts is guaranteed by Theorem~\ref{prop:tightness-obligations-unindexed}.
 
 
 
@@ -612,7 +673,8 @@ This section demonstrates the process of defining monitors for regular expressio
 This subsection fixes the semantics of the regular expressions that act as temporal guards in \cDL.
 
 \subsubsection{Semantics for Regular Expressions from \cDL}
-We work over the \emph{letter alphabet} as shown in the syntax of \cDL $\Gamma \ :=\ 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}}$,
+We work over the \emph{letter alphabet} $\Gamma := 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}}$ from the syntax in \ref{fig:cdl-syntax}, where each letter denotes the set of actions that occurred in one contractual period. 
+
 
 \begin{definition}[Semantics of regular expressions]\label{def:re-semantics}
 The satisfaction relation for a regular expression $\re$, written $\pi \modelsre \re$,
@@ -626,9 +688,14 @@ The relation is given inductively:
 \emptytrace \modelsre \varepsilon, &\text{}& \\[4pt]
 \pi \modelsre \emptyset &\text{iff}& A_0=\emptyset \nd |\pi| = 1,\\[4pt]
 \pi \modelsre \re_1 \mid \re_2 &\text{iff}& (\pi \modelsre \re_1) \;\text{or}\; (\pi \modelsre \re_2),\\[4pt]
-\pi \modelsre \re_1\cdot\re_2 &\text{iff}& \exists k\leq \size{\pi} : 
-  \pi_k \modelsre \re_1 \;\text{and}\; \pi^{k+1} \modelsre \re_2,\\[4pt]
-\pi \modelsre \re^n &\text{iff}&  (\text{if } n>1 \text{ then } \pi \modelsre re \cdot re^{n-1}) \nd (\pi \modelsre re \text{ if } n=1),\\[4pt]
+\pi \modelsre \re_1\cdot\re_2
+&\text{iff}&
+\exists k \in \{0,\dots,|\pi|\} :
+\pi[0,k-1] \modelsre \re_1
+\;\text{and}\;
+\pi^{k} \modelsre \re_2,\\[4pt]
+\pi \modelsre \re^1 &\text{iff}& \pi \modelsre \re,\\[4pt]
+\pi \modelsre \re^n &\text{iff}& \pi \modelsre \re \cdot \re^{n-1} \text{ for } n>1,\\[4pt]
 \pi \modelsre \re^+ &\text{iff}& 
   \exists\, n\ge1 : \pi \modelsre \re^n.
 \end{array}
@@ -645,10 +712,11 @@ We write $\Lang{\re} := \{\pi\in\Gamma^* \mid \pi \modelsre \re\}$ for the langu
   \item \textbf{Empty word $\varepsilon$.} Matches only the empty word: $\pi= \emptytrace$.
   \item \textbf{Empty-action letter $\emptyset$.} Matches the one-period trace with no actions: $\pi=\langle \emptyset\rangle$.
   \item \textbf{Union $(re_1\mid re_2)$.} Holds iff at least one disjunct holds on the whole trace.
-  \item \textbf{Sequencing $(re_1 \cdot re_2)$.} There is a split index $k$ with
-        $\pi[0,k]\modelsre re_1$ and $\pi[k{+}1,\size{\pi}]\modelsre re_2$.
-  \item \textbf{Fixed power $re^n$.} Iterated sequencing of $re$ exactly $n$ times:
-        $re^1\equiv re$; for $n>1$, $\pi\modelsre re^n$ iff $\pi\modelsre re \cdot re^{n-1}$.
+  \item \textbf{Sequencing $(re_1 \cdot re_2)$.}
+There exists a split index $k$ such that
+$\pi[0,k-1]\modelsre re_1$ and $\pi^{k}\modelsre re_2$.\footnote{The case $\pi[0,-1]$ is defined in \ref{traces} as $\emptytrace$}
+  \item \textbf{Fixed power $re^n$.} Iterated sequencing of $re$ exactly $n$ times is inductively defined:
+        two cases : if $n=1$ then evaluate for $re$; for $n>1$, enroll the first occurrence of $re$ and concatenate with $re^n-1$.
   \item \textbf{Kleene plus $re^+$.} Some positive iteration holds: $\exists n\ge1$ with $\pi\modelsre re^n$.
 \end{itemize}
 All satisfaction is defined on \emph{finite} traces, we show how to detect triggers and terminating conditions on regular expressions using the 5-valued semantics.
@@ -703,7 +771,6 @@ that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
 \end{itemize}
 Mark the global entry of the whole construction as initial, and the global exit as
 accepting. The resulting NFA accepts exactly $\Lang{re}$.
-
 \paragraph*{Stage 2  Determinization.}
 Apply the standard subset construction with $\varepsilon$-closures to obtain a DFA $\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language, as demonstrated in
 (\cite{RabinScott1959,HopcroftUllman2001}).
