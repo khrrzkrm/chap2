@@ -1,0 +1,1555 @@
+\subsection{Monitor Construction for Tight Contract Satisfaction}
+
+
+\begin{definition}[Tight satisfiaction monitor]
+\label{def:tightsatmon}
+The \emph{tight satisfaction monitor}, written $\tmon$, is a Moore machine whose output alphabet is the five-valued verdict set $\tightverdicts$. Formally,
+\[
+\tmon = (Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_{5}),
+\]
+where:
+\begin{enumerate}
+\item The output alphabet formed by 5 letters is 
+\[
+\tightverdicts = \{\mathsf{?},\topt,\bott,\topp,\botp\}.
+\]
+\item $Q$ is the set of states and $q_0\in Q$ is the initial state,
+\item $\Gamma = 2^\Sigma$ is the input event alphabet,
+\item $\delta: Q \times \Gamma \to Q$ is the transition function,
+\item $\lambda_{5}: Q \to \tightverdicts$ is the state output function.
+\end{enumerate}
+\end{definition}
+
+The next definition introduces the construction for any contract into its tight
+satisfaction monitor. The construction is a function that maps each contract $C$ to a tight satisfaction monitor that enforces it. The construction proceeds by structural induction on the syntax of $C$, and each operator in \cDL is matched by a corresponding monitor combination operator. Regular expression guards and triggers rely on the
+tight satisfaction monitor $\tsmc(\re)$ introduced earlier in
+Definition~\ref{def:tsmc-re}.
+
+\begin{definition}[Tight Satisfaction Monitor Construction]
+ \label{def:tsmc}
+The \emph{tight satisfaction monitor construction} is a function defined on $\cDL$, written  $\tsmc(C)$, that returns the tight satisfaction monitor for a contract
+$C$ in \cDL. It is defined inductively on the structure of $C$:
+ \[
+\tsmc(C) \;:=\;
+\begin{cases}
+  \tsmc_{\mathit{lit}}(\ell)
+    & \text{if } C = \ell, \\[0.4em]
+
+  \tsmc_{\mathit{\wedge}}\big(\tsmc(C_1),\tsmc(C_2)\big)
+    & \text{if } C = C_1 \wedge C_2, \\[0.4em]
+
+  \tsmc_{\mathit{;}}\big(\tsmc(C_1),\tsmc(C_2)\big)
+    & \text{if } C = C_1 ; C_2, \\[0.4em]
+
+  \tsmc_{\mathit{\repair}}\big(\tsmc(C_1),\tsmc(C_2)\big)
+    & \text{if } C = C_1 \repair C_2, \\[0.4em]
+
+  \tsmc_{\trigg}(\re,C')
+    & \text{if } C = \trig[\re]{C'}, \\[0.4em]
+
+  \tsmc_{\guardd}(\re,C')
+    & \text{if } C = \guard[\re]{C'}, \\[0.4em]
+
+  \tsmc_{\mathit{nrep}}\big(n,\tsmc(C')\big)
+    & \text{if } C = (C')^n, \\[0.4em]
+
+  \tsmc_{\mathit{Rep}}\big(\tsmc(C')\big)
+    & \text{if } C = \repit{C'}\;.
+\end{cases}
+\]
+Where the tight monitor construction for regular expressions $\tsmc(\re)$ is already defined in Definition~\ref{def:tsmc-re}.
+\end{definition}
+
+\paragraph{Monitor correctness invariant.}
+The monitor construction preserves the following invariant.
+For every contract $C$ in \cDL, every finite trace $\pi$, and every prefix $\pi[0,k]$,
+the state reached by the monitor $\tsmc(C)$ after reading $\pi[0,k]$
+emits exactly the verdict prescribed by the five-valued tight semantics, that is:
+\[
+\lambda_5\bigl(\delta(q_0,\pi[0,k])\bigr) \;=\; \semfive{\pi[0,k] \vDash C}.
+\]
+All operator-specific constructions are designed to preserve this invariant under
+synchronous product, redirection, and state elimination.
+Correctness lemmas below establish that the invariant holds inductively for each
+contract constructor. 
+
+We construct in the next subsections the tight satisfaction monitors compositionally from the syntax of contracts.
+The construction proceeds by structural induction on the contract and associates to each
+contract operator a corresponding monitor-combination operator.
+Conceptually, this follows the classical construction paradigm of Thompson for regular expressions,
+where complex behaviors are obtained by composing simpler automata.
+However, rather than constructing an intermediate nondeterministic automaton and determinizing it afterward,
+we perform the construction directly at the level of deterministic Moore machines.
+In particular, verdict propagation is built into the states and outputs of the monitor from the outset,
+so that tight satisfaction and violation are observed incrementally on prefixes of the trace.
+This avoids a separate determinization step and ensures that the monitor semantics coincides
+by construction with the five-valued tight semantics.
+
+\subsubsection*{Construction for Literal Contracts}
+\paragraph{From Tight Semantics to 5-Valued Monitoring.}
+The literal clauses above define one-step satisfaction and violation judgements for a single event word $\trace{A}$.
+We lift these clauses into a five-valued Moore machine whose outputs track the evolution of the tight verdicts over prefixes.
+\begin{definition}[Tight Satisfaction Monitor Construction for Literals]
+\label{def:moore-5-literal}
+For a literal $\ell$ from \cDL, the \emph{Tight Satisfaction monitor construction} for $\ell$, written $\tsmc_{\mathit{lit}}(\ell)$ is defined as:
+\[
+\tsmc_{\mathit{lit}}(\ell)
+  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5).
+\]
+\begin{itemize}
+  \item $Q=\{q_0,q_s,q_v,q_{ps},q_{pv}\}$,
+        with outputs
+        $\lambda_5(q_0)=\mathsf{?}$,
+        $\lambda_5(q_s)=\topt$,
+        $\lambda_5(q_v)=\bott$,\\
+        $\lambda_5(q_{ps})=\topp$,
+        $\lambda_5(q_{pv})=\botp$.
+  \item $\Gamma=2^{\Sigma}$ is the event alphabet.
+  \item $\delta:Q\times\Gamma\to Q$ is defined as follows:
+\[
+\begin{aligned}
+&\text{(1) tight transition: } 
+&& \delta(q_0,A)=
+  \begin{cases}
+    q_s & \text{if }\trace{A}\ \satt\ \ell,\\
+    q_v & \text{if }\trace{A}\ \violt\ \ell;
+  \end{cases}\\[2pt]
+&\text{(2) post transitions: }
+&& \delta(q_s,A)=q_{ps},\ \delta(q_v,A)=q_{pv},\ \\ & &&
+   \delta(q_{ps},A)=q_{ps},\ \delta(q_{pv},A)=q_{pv}.
+\end{aligned}
+\]
+
+\end{itemize}
+\end{definition}
+
+Hence, for every atomic literal,
+the machine emits $\mathsf{?}$ at the initial state,
+switches to $\topt$ or $\bott$ at the next state by consuming the event forming $\trace{A}$,
+and then permanently outputs $\topp$ or $\botp$ for all remaining events.
+This Moore representation is equivalent to the tight semantics of
+Definition~\ref{def:lattsat} but refines it with explicit prefix continuity.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  >=stealth',shorten >=1pt,auto,node distance=20mm,semithick,
+  every state/.style={rectangle,rounded corners,draw,minimum width=11mm,
+    minimum height=7.5mm,inner sep=2pt,font=\scriptsize,align=center}
+]
+
+% --- states ---------------------------------------------------
+\node[initial,state,fill=gray!10] (q0)  {$q_0$\\$\mathsf{?}$};
+\node[state,fill=green!18,right=of q0] (qs)  {$q_s$\\$\topt$};
+\node[state,fill=red!18,below=of q0]   (qv)  {$q_v$\\$\bott$};
+\node[state,fill=green!10,right=of qs] (qps) {$q_{ps}$\\$\topp$};
+\node[state,fill=red!10,below=of qps]  (qpv) {$q_{pv}$\\$\botp$};
+
+% --- transitions ----------------------------------------------
+\path[->]
+  (q0) edge[bend left=12] node[above,pos=0.5]
+    {$\{a^{(1)},a^{(2)}\}\subseteq A$} (qs)
+  (q0) edge[bend right=12] node[left,pos=0.45]
+    {$\{a^{(1)},a^{(2)}\} \not\subseteq A$} (qv)
+  (qs)  edge node[above] {$\Gamma$} (qps)
+  (qv)  edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} (qps)
+  (qpv) edge[loop right] node {$\Gamma$} (qpv);
+\end{tikzpicture}
+\caption{Compact 5-verdict Moore machine for the obligation literal
+$\obl[1]{a}$. 
+Each node displays its internal state and the corresponding output verdict $\in\tightverdicts$.
+The first joint execution of $a^{(1)}$ and $a^{(2)}$ yields~$\topt$,
+otherwise~$\bott$; subsequent steps emit the post-frontier verdicts
+$\topp$ or $\botp$.}
+\label{fig:moore-obligation-compact}
+\end{figure}
+
+
+\subsubsection*{Construction for Binary Contract Operators}
+
+For binary contract operators of the form $C\ \textsf{op}\ C'$ with
+$\textsf{op} \in \{\wedge,\ ;\ ,\ \repair\}$, the monitor for the composite contract is obtained by combining the already constructed monitors
+$\tsmc(C)$ and $\tsmc(C')$. Each operator has its own monitor construction,
+defined below for conjunction, sequence, and reparation. We begin with the
+conjunction case.
+
+
+\begin{definition}[Tight Satisfaction Monitor Construction for Conjunction]
+\label{def:moore-5-conj}
+Let $C$ and $C'$ be contracts in \cDL, and let
+\[
+\tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
+\quad\text{and}\quad
+\tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5).
+\]
+The tight satisfaction monitor construction for the conjunction
+$C \wedge C'$, written $\tsmc_{\wedge}(C,C')$, is defined as:
+\[
+\tsmc_{\wedge}(C,C')
+  = (Q_{\wedge}, q_0^{\wedge}, \Gamma, \tightverdicts, \delta_{\wedge}, \lambda_5^{\wedge}).
+\]
+
+\begin{itemize}
+  \item The state set is the Cartesian product
+  \[
+    Q_{\wedge} = Q \times Q',
+  \]
+  with the initial state
+  \[
+    q_0^{\wedge} = (q_0,\,q'_0).
+  \]
+
+  \item The output function is
+  \[
+    \lambda_5^{\wedge}(x,y) =
+    \lambda_{5}^{\textsf{comb}}\!\big(\lambda_5(x),\ \lambda'_5(y)\big),
+  \]
+  where $\lambda_{5}^{\textsf{comb}}$ is the conjunction-combination table:
+  \[
+  \begin{array}{c|ccccc}
+  \lambda_{5}^{\textsf{comb}}(v_1,v_2) & \mathsf{?} & \topt & \bott & \topp & \botp\\\hline
+  \mathsf{?} & \mathsf{?} & \mathsf{?} & \bott & \mathsf{?} & \botp\\
+  \topt      & \mathsf{?} & \topt      & \bott & \topt      & \botp\\
+  \bott      & \bott      & \bott      & \bott & \bott      & \botp\\
+  \topp      & \mathsf{?} & \topt      & \bott & \topp      & \botp\\
+  \botp      & \botp      & \botp      & \botp & \botp      & \botp
+  \end{array}
+  \]
+
+  \item The transition function is the synchronous product:
+  \[
+    \delta_{\wedge}\big((x,y),A\big)
+      = \big(\delta(x,A),\ \delta'(y,A)\big),
+  \]
+  for all $(x,y)\in Q_{\wedge}$ and $A\in\Gamma$.
+\end{itemize}
+\end{definition}
+
+
+\noindent
+\textbf{Intuition.}
+Each cell from $\lambda_5^{\textsf{comb}}$ definition specifies the global verdict emitted by the product monitor when
+the left component is in state $x$ with verdict $\lambda(x)$ and the right
+component in $y$ with verdict $\lambda'(y)$.  
+The operator is symmetric, commutative, and idempotent.  
+\noindent\textbf{Partial dominance for $\wedge$.}
+\noindent
+\textbf{Partial dominance rules for $\wedge$.}
+The monitor for $C \wedge C'$ checks both components at the same time and decides the global verdict according to the following rules:
+
+\begin{itemize}
+  \item If any component gives $\botp$, the result is $\botp$:
+  \[
+  \forall v\in\tightverdicts:\quad \botp \sqcap v = \botp,
+  \]
+  That is, once a permanent violation appears, the whole conjunction is permanently violated.
+
+  \item If any component gives $\bott$, and none is permanent, the result is $\bott$:
+  \[
+  \forall v\in\{\mathsf{?},\topt,\topp\}:\quad \bott \sqcap v = \bott,
+  \]
+  That is, a single tight violation makes the conjunction fail tightly.
+
+  \item Tight and permanent success combine as the weakest success:
+  \[
+  \topt \sqcap \topt = \topt,\qquad
+  \topt \sqcap \topp = \topt,\qquad
+  \topp \sqcap \topp = \topp,
+  \]
+  The conjunction is only permanently satisfied when both parts are permanent.
+
+  \item If both sides are undecided or only partly satisfied, the result stays $\mathsf{?}$:
+  \[
+  \mathsf{?}\sqcap v = \mathsf{?}\quad\text{for }v\in\{\mathsf{?},\topt,\topp\},
+  \]
+  The monitor waits until a clear outcome appears.
+
+  \item The operator is symmetric:
+  \[
+  v_1\sqcap v_2 = v_2\sqcap v_1,
+  \]
+  The order of operands does not matter.
+\end{itemize}
+
+
+\begin{lemma}[Correctness of the conjunctive monitor construction]
+\label{lem:conj-correct}
+Let 
+\[
+\tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
+\quad\text{and}\quad
+\tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5)
+\]
+and let
+\[
+\tsmc(C \wedge C')
+  = (Q_{\wedge}, q_0^{\wedge}, \Gamma, \tightverdicts, \delta_{\wedge}, \lambda_5^{\wedge})
+\]
+be the conjunction monitor defined in Definition~\ref{def:moore-5-conj}.
+For every trace $\pi$, the output of the conjunction monitor satisfies:
+\[
+\lambda_5^{\wedge}(\delta_\wedge(q_0^\wedge,\pi))=
+\semfive{\pi \vDash C \wedge C'}.\]
+\end{lemma}
+
+\noindent
+\textbf{Proof sketch.}
+The monitor $\tsmc_{\wedge}(\tsmc(C),\tsmc(C'))$ runs both component monitors in parallel and
+computes its output using the conjunction-combination table
+$\lambda_{5}^{\textsf{comb}}$. The correctness follows from the prefix-based
+tight semantics of $C \wedge C'$.
+
+\begin{itemize}
+  \item Permanent violation in either component produces $\botp$ immediately.
+  \item A tight violation in one component produces $\bott$ whenever no permanent result is already present.
+  \item Satisfaction requires both components to reach satisfaction states.  
+        If one is in $\topp$ or $\topt$ and the other is non-violating, the
+        combined verdict matches the corresponding entry in the table.
+  \item If both components remain undecided, the output is $\mathsf{?}$.
+\end{itemize}
+
+These cases match exactly the clauses for tight satisfaction, tight violation,
+post-satisfaction, and post-violation for the contract $C \wedge C'$. The monitor, therefore, correctly implements the tight semantics of conjunction.
+\qed
+
+
+Sequential composition is the second binary operator of \cDL. Given two already
+constructed monitors $\tsmc(C)$ and $\tsmc(C')$, the monitor for the composite
+contract $C\,;\,C'$ must first execute $C$ on the incoming trace and, once $C$
+reaches tight satisfaction, must continue execution with $C'$ on the remaining
+suffix. The construction below reuses the state spaces of both components by redirecting transitions that correspond to the tight success of $C$
+into the initial state of $C'$. This yields a tight prefix monitor that exactly matches the semantics of sequential composition.
+
+\begin{definition}[Sequential Monitor Construction]
+\label{def:moore-seq}
+Let
+\[
+\tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
+\quad\text{and}\quad
+\tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5)
+\]
+be the tight satisfaction monitors of $C$ and $C'$.  
+The tight satisfaction monitor for the sequential composition
+$C\,;\,C'$, written $\tsmc_{;}(C,C')$, is defined as:
+\[
+\tsmc_{;}(\tsmc(C),\tsmc(C'))
+  = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;}).
+\]
+
+\begin{itemize}
+  \item The state set is
+  \[
+    Q_{;} = (Q \setminus Q^{+})\ \cup\ Q',
+  \]
+  where
+  \[
+    Q^{+} = \{\,x \in Q \mid \lambda_5(x) \in \{\topt,\topp\}\,\},
+  \]
+  and the initial state is
+  \[
+    q_0^{;} = q_0.
+  \]
+
+  \item The transition function is
+  \[
+  \delta_{;}(q,A) =
+  \begin{cases}
+    q'_0 
+      & \text{if } q\in Q \text{ and } \lambda_5(\delta(q,A)) = \topt, \\[4pt]
+    \delta(x,A)
+      & \text{if } q\in Q \text{ and } \lambda_5(\delta(q,A)) \notin \{\topt,\topp\}, \\[4pt]
+    \delta'(x,A)
+      & \text{if } q\in Q'. \\
+  \end{cases}
+  \]
+
+  \item The output function is
+  \[
+  \lambda_5^{;}(x) =
+  \begin{cases}
+    \lambda_5(x)  & \text{if } x\in Q,\\
+    \lambda'_5(x) & \text{if } x\in Q'. \\
+  \end{cases}
+  \]
+\end{itemize}
+\end{definition}
+
+\noindent
+\textbf{Intuition.}
+The construction implements the idea that $C$ must succeed tightly before
+$C'$ becomes active. All states of $C$ that already correspond to tight
+satisfaction ($\lambda_5(x)=\topt$ or $\topp$) are removed, since execution
+should never continue inside them. Any transition in $C$ that would have
+entered such a removed state is redirected to the initial state $q'_0$ of
+$C'$, thereby starting the second contract at the exact prefix where $C$
+achieves tight success. All other transitions behave exactly as in the
+original monitors. The resulting machine therefore behaves as $C$ until $C$
+succeeds tightly, after which it behaves as $C'$ for the remainder of the
+trace.
+
+\begin{lemma}[Correctness of the sequential monitor construction]
+\label{lem:seq-correct}
+Let $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
+and let $\tsmc_{;}(\tsmc(C),\tsmc(C'))
+= (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor outputs the same verdict according to the sequence semantics:
+\[
+\lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)=
+\semfive{\pi \vDash C;C'}.
+\]
+\end{lemma}
+\textbf{Proof.}
+The proof is by induction on the length of the input trace $\pi$.
+
+\smallskip
+\emph{Base case.}
+For $\pi=\varepsilon$, the composite monitor starts in $q_0$, so
+$\lambda_5^{;}(\varepsilon)=\lambda_5(q_0)$,
+which matches the semantics of $C;C'$ on the empty trace.
+
+\smallskip
+\emph{Inductive step.}
+Assume correctness for all prefixes up to length $n$
+and consider the prefix $\pi[n+1]$.
+The only difference between $\delta_{;}$ and the component transitions
+is the redirection rule triggered when $\lambda_5(\delta(x,A))=\topt$.
+This redirection starts $C'$ on the remaining suffix of the trace,
+which matches the semantic clause
+\[
+\exists k:\ \pi_k\ \satt\ C\ \text{ and }\ \pi^{k+1}\ \satt\ C'.
+\]
+All other transitions follow $\delta$ or $\delta'$ and thus satisfy the
+inductive hypothesis.
+
+\smallskip
+\emph{Violation case.}
+If $C$ violates before any tight success, the redirection never occurs, and the global verdict is exactly the violation of $C$, matching $\pi\ \violt\ C;C'$.
+
+\smallskip
+\emph{Satisfaction case.}
+If $C$ reaches tight success at some position $k$ and $C'$ satisfies the
+suffix $\pi^{k+1}$, the transition to $q'_0$ is activated and the verdict
+of $C'$ is propagated, matching the semantics of $\satt\ C;C'$.
+
+\smallskip
+\emph{Conclusion.}
+Every prefix of $\pi$ is handled by either:
+(1) normal execution of $C$ or $C'$,
+or (2) the single redirection step that hands control from $C$ to $C'$.
+All verdicts, therefore, coincide exactly with the tight prefix semantics of
+$C;C'$.
+\qed
+
+
+
+\begin{definition}[Reparation Monitor Construction]
+\label{def:moore-repair}
+Let
+\[
+\tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
+\quad\text{and}\quad
+\tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5)
+\]
+be the tight satisfaction monitors for $C$ and $C'$.  
+The monitor for the reparation contract $C\repair C'$, written
+\[
+\tsmc_{\repair}(C,C'),
+\]
+is defined as the tuple
+\[
+\tsmc_{\repair}(\tsmc(C),\tsmc(C'))
+  = (Q_{\repair}, q_0^{\repair}, \Gamma, \tightverdicts, \delta_{\repair}, \lambda_5^{\repair}).
+\]
+
+\begin{itemize}
+  \item The state set is
+  \[
+    Q_{\repair} = (Q \setminus Q^{-})\ \cup\ Q',
+  \]
+  where
+  \[
+    Q^{-} = \{\,q \in Q \mid \lambda_5(q) \in \{\bott,\botp\}\,\},
+  \]
+  and the initial state is
+  \[
+    q_0^{\repair} = q_0.
+  \]
+
+  \item The transition function is
+  \[
+    \delta_{\repair}(q,A)=
+    \begin{cases}
+      q'_0
+        & \text{if } q\in Q \text{ and } \lambda_5(\delta(q,A))=\bott,\\[4pt]
+      \delta(q,A)
+        & \text{if } q\in Q \text{ and } \lambda_5(\delta(q,A))\notin\{\bott,\botp\},\\[4pt]
+      \delta'(q,A)
+        & \text{if } q\in Q'.\\
+    \end{cases}
+  \]
+
+  \item The output function is
+  \[
+     \lambda_5^{\repair}(q)=
+     \begin{cases}
+       \lambda_5(q)   & \text{if } q\in Q,\\[2pt]
+       \lambda'_5(q)  & \text{if } q\in Q'.\\
+     \end{cases}
+  \]
+\end{itemize}
+\end{definition}
+
+
+\noindent
+\textbf{Intuition.}
+The reparation operator activates the secondary contract $C'$ after the primary contract $C$ reaches a tight failure. The construction mirrors the sequential case, except that the redirection applies to transitions leading to a tight violation of $C$ rather than to those leading to tight satisfaction.
+
+All states of $C$ whose verdicts are already violating
+($\lambda_5(q)\in\{\bott,\botp\}$) are removed. Every transition in $C$ that
+would enter such a state is redirected to $q'_0$, the initial state of $C'$.
+This starts $C'$ exactly at the first prefix where $C$ tightly fails.  
+
+As long as no violation occurs, the monitor behaves exactly as $C$. Once a tight failure is detected, the remaining input is processed by $C'$.
+
+\begin{lemma}[Correctness of the reparation monitor construction]
+\label{lem:rep-correct}
+Let $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$, and let
+\[
+\tsmc_{\repair}(\tsmc(C),\tsmc(C'))
+  = (Q_{\repair}, q_0^{\repair}, \Gamma, \tightverdicts, \delta_{\repair}, \lambda_5^{\repair})
+\]
+be the monitor constructed in Definition~\ref{def:moore-repair}.
+Then, for every trace $\pi$, the monitor outputs the right verdict as specified by the tight semantics:
+\[
+\lambda_5^{\repair}(\delta_{\repair}(q_0^{\repair},\pi)) = \semfive{\pi \vDash C \repair C'}.
+\]
+\end{lemma}
+
+
+\noindent
+\textbf{Proof.}
+The argument parallels the proof for sequential composition.
+
+\smallskip
+\emph{Base case.}
+For $\pi=\varepsilon$, the monitor begins in $q_0^{\repair}=q_0$.
+Thus
+\[
+\lambda_5^{\repair}(\delta_{\repair}(q_0^{\repair},\varepsilon))
+ = \lambda_5(q_0),
+\]
+which matches the tight semantics of $C\repair C'$ on the empty trace.
+
+\smallskip
+\emph{Inductive step.}
+Assume correctness for prefixes up to length $n$ and consider the next letter $A$. If $\lambda_5(\delta(x,A))=\bott$, then
+$\delta_{\repair}(x,A)=q'_0$, so $C'$ takes over on the remaining suffix.
+This matches the semantic clause
+\[
+\exists k:\ \pi_k\ \violt\ C
+\quad\text{and}\quad
+\pi^{k+1}\ \satt\ C'.
+\]
+
+If no tight violation occurs, $\delta_{\repair}$ behaves exactly as $\delta$, so the inductive hypothesis applies.
+
+\smallskip
+\emph{Violation case.}
+If $C$ reaches a tight failure and $C'$ later fails on the suffix, the monitor outputs $\botp$, exactly as prescribed by the semantics.
+
+\smallskip
+\emph{Satisfaction case.}
+If $C$ tightly fails and $C'$ succeeds on the suffix, the monitor outputs
+$\topt$ or $\topp$, depending on whether the success occurs tightly or
+post-satisfaction.
+
+\smallskip
+\emph{Conclusion.}
+Every step of $\delta_{\repair}$ corresponds either to execution of $C$,
+execution of $C'$, or the single switch determined by tight failure of $C$.
+Thus,
+$
+\lambda_5^{\repair}(\delta_{\repair}(q_0^{\repair},\pi))
+$
+matches exactly the tight semantics of $C\repair C'$.
+\qed
+
+
+
+
+
+
+\begin{remark}[Relation to Control Phases and Prior Work]
+\label{rem:control-phases}
+The structural constructions of Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair}
+can be seen as the static counterpart of the \emph{control-phase} view
+used in runtime-verification frameworks.
+Instead of introducing an explicit control variable
+$m \in \{\mathbf{L}, \mathbf{R}\}$, with $\mathbf{L}$ for left-hand side and $\mathbf{R}$ for the right, to determine which component is active, our transformation achieves the same effect directly on the transition graph deleting the terminal states of the left monitor
+and redirecting the transitions that reach a decisive verdict
+($\topt$ for sequence, $\bott$ for reparation)
+to the initial state of the right monitor. This compile-time construction encodes the same operational behavior as a mode-augmented monitor that switches from $\mathbf{L}$ to $\mathbf{R}$
+when the switching condition is met.
+
+This idea parallels the phase-based runtime semantics proposed in the runtime verification literature~\cite{falcone2009runtime,bartocci2018rv},
+where control modes are used to synchronize sub-monitors
+for sequential patterns such as ``\emph{after $C$ succeeds, check $C'$}''.
+In contrast, the reparation composition corresponds to the
+``\emph{compensatory phase}'' discussed in
+\cite{governatori2006formal},
+where a secondary clause is activated after the primary obligation fails.
+Hence, the constructions in Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair}
+realize at the automaton level the same phase shifts
+($\mathbf{L}\!\to\!\mathbf{R}$ after tight success or tight failure)
+that those frameworks handle explicitly through control variables.
+\end{remark}
+
+
+
+\begin{example}[5-Output Moore Monitors for $C_3$ and $C_2 \wedge C_3$]
+\label{ex:moore-c3-literals}
+The reparation contract $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ combines two obligations:
+the primary duty $\obl[1]{\PAY}$ to pay rent,
+and the secondary reparation $\obl[1]{\PAYF}$ to pay a late fee if the first is violated.
+In addition, $C_2=\perm[1]{\OCC}$ grants the tenant (agent~2) permission to occupy the property.
+Below, we show the literal monitors, their reparation composition, and the conjunction $C_2\wedge C_3$,
+with verdict outputs $\tightverdicts=\{\mathsf{?},\topt,\bott,\topp,\botp\}$.
+
+
+We construct $C_2 \wedge C_3$ by the synchronous product of the 5-output monitors for $C_2=\perm[2]{\OCC}$ and $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$, then keep only
+reachable states and minimize construction~\ref{fig:moore-c3-literals}.
+The Letter classes used on edges correspond to  shorthand for literal satisfaction or violation conditions:
+\[
+\begin{aligned}
+\PAY^\surd   &:= \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}, 
+&\qquad \PAY^\times   &:= \Gamma\setminus \PAY^\surd,\\[2pt]
+\PAYF^\surd  &:= \{\,A\in\Gamma \mid \{\PAYF^{(1)},\PAYF^{(2)}\}\subseteq A\,\},
+&\qquad \PAYF^\times  &:= \Gamma\setminus \PAYF^\surd,\\[2pt]
+\OCC^{\surd} &:= \{\,A\in\Gamma \mid \OCC^{(2)}\in A \Rightarrow \OCC^{(1)}\in A\,\},
+&\qquad \OCC^{\times} &:= \Gamma\setminus \OCC^{\surd}.
+\end{aligned}
+\]
+Outputs follow the conjunction rule $\Lambda$:
+$\bott$ if any conjunct tightly rejects, $\botp$ if any conjunct is post-reject,
+$\topt$ when one conjunct hits $\topt$ while the other is already at/past acceptance
+($\topt$ or $\topp$), $\topp$ if both are post-accept, and $\mathsf{?}$ otherwise.
+
+Reading Fig.~\ref{fig:c2andc3} with the letter classes defined above: from $s_0$ (pre) there are three behaviors:
+(i) If \,$\OCC^\surd \land \PAY^\surd$\ holds in the current letter, both conjuncts succeed (perm is respected, and the primary obligation is met), so the product emits $\topt$
+and moves to post-accept $\topp$.
+(ii) If \,$\OCC^{\times}$\ holds, the permission conjunct fails tightly, so the product
+emits $\bott$ and then $\botp$ forever.
+(iii) If \,$\OCC^\surd \land \PAY^{\times}$\ holds, the reparation branch of $C_3$
+is activated, and we move to the waiting state $s_1$ (still $\mathsf{?}$). From $s_1$,
+\,$\PAYF^\surd$\ discharges the reparation and triggers $\topt$; otherwise
+\,$\PAYF^{\times}$\ yields $\bott$. After $\topt$ (accepting frontier), all continuations
+are in $\topp$; after $\bott$ (reject frontier) all continuations are in $\botp$.
+Thus, the decisive index for the conjunction is the latter of the two successes when both succeed, or the earlier tight failure when any conjunct fails, exactly as the figure shows.
+
+
+
+\begin{figure*}[h!]
+\centering
+\captionsetup[subfigure]{justification=centering}
+
+% ================================================================
+% (a)+(b) side-by-side literal monitors
+% ================================================================
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\scalebox{0.82}{
+\begin{tikzpicture}[
+  ->, >=Stealth, node distance=16mm,
+  every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
+                      minimum height=6mm,inner sep=2pt,font=\scriptsize,align=center}
+]
+\node[initial, initial where=above,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+\node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\$\topt$};
+\node[state,fill=red!18,below=of q0] (qv) {$s_{\bott}$\\$\bott$};
+\node[state,fill=green!10,right=of qs] (qps) {$s_{\topp}$\\$\topp$};
+\node[state,fill=red!10,below=of qps] (qpv) {$s_{\botp}$\\$\botp$};
+
+\path[->]
+  (q0) edge[bend left=10] node[above,pos=0.5] {$\PAY^\surd$} (qs)
+  (q0) edge[bend right=10] node[left,pos=0.5] {$ \PAY^\times$} (qv)
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
+\end{tikzpicture}}
+\caption{$\obl[1]{\PAY}$.
+Satisfaction occurs when both agents perform $\PAY$.}
+\label{fig:obl-pay}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\scalebox{0.82}{
+\begin{tikzpicture}[
+  ->, >=Stealth, node distance=16mm,
+  every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
+                      minimum height=6mm,inner sep=2pt,font=\scriptsize,align=center}
+]
+\node[initial,initial where=above,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+\node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\$\topt$};
+\node[state,fill=red!18,below=of q0] (qv) {$s_{\bott}$\\$\bott$};
+\node[state,fill=green!10,right=of qs] (qps) {$s_{\topp}$\\$\topp$};
+\node[state,fill=red!10,below=of qps] (qpv) {$s_{\botp}$\\$\botp$};
+
+\path[->]
+  (q0) edge[bend left=10] node[above,pos=0.5] {$\PAYF^\surd$} (qs)
+  (q0) edge[bend left=10] node[left,pos=0.5] {$\PAYF^\times$} (qv)
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
+\end{tikzpicture}}
+\caption{$\obl[1]{\PAYF}$.
+Satisfaction occurs when both agents perform $\PAYF$.}
+\label{fig:obl-payf}
+\end{subfigure}
+
+\vspace{2mm}
+
+% ================================================================
+% (c) Reparation composition
+% ================================================================
+\begin{subfigure}[t]{0.9\textwidth}
+\centering
+\scalebox{0.9}{
+\begin{tikzpicture}[
+  ->, >=Stealth, node distance=17mm,
+  every state/.style={
+    rectangle,rounded corners,draw,
+    minimum width=11mm,minimum height=7mm,
+    inner sep=2pt,font=\scriptsize,align=center}
+]
+\node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+\node[state,fill=gray!10,below=of q0] (qwait) {$s_{\mathsf{?2}}$\\$\mathsf{?}$};
+\node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\$\topt$};
+\node[state,fill=red!18,right=of qwait] (qv) {$s_{\bott}$\\$\bott$};
+\node[state,fill=green!10,right=of qs] (qps) {$s_{\topp}$\\$\topp$};
+\node[state,fill=red!10,below=of qps] (qpv) {$s_{\botp}$\\$\botp$};
+
+\path[->]
+  (q0) edge[bend left=10]  node[above,pos=0.45] {\scriptsize$\PAY^{\surd}$} (qs)
+  (q0) edge[bend right=10] node[left,pos=0.45]  {\scriptsize$\PAY^{\times}$} (qwait)
+  (qwait) edge[bend left=8] node[right,pos=0.45] {\scriptsize$\PAYF^{\surd}$} (qs)
+  (qwait) edge[bend right=10] node[below,pos=0.45] {\scriptsize$\PAY^{\times}$} (qv)
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
+\end{tikzpicture}}
+\caption{Reparation composition $\tsmc_\repair (\obl[1]{\PAY},\obl[1]{\PAYF})$.
+The monitor activates $\PAYF$ after tight failure of $\PAY$.}
+\label{fig:obl-pay-repair}
+\end{subfigure}
+
+\vspace{2mm}
+
+% ================================================================
+% (d) Conjunctive composition (C2 and C3)
+% ================================================================
+\begin{subfigure}[t]{0.9\textwidth}
+\centering
+\scalebox{0.9}{
+\begin{tikzpicture}[
+  ->, >=Stealth, node distance=20mm and 18mm,
+  every state/.style={
+    rectangle,rounded corners,draw,
+    minimum width=12mm,minimum height=7mm,
+    inner sep=2pt,font=\scriptsize,align=center
+  }
+]
+% States
+\node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+\node[state, fill=gray!10, below right=16mm and 17mm of q0] (q1) {$s_1$\\$\mathsf{?}$};
+\node[state,fill=green!18,right=22mm of q0] (qs) {$s_{\topt}$\\$\topt$};
+\node[state,fill=red!18,below=28mm of q0] (qv) {$s_{\bott}$\\$\bott$};
+\node[state,fill=green!10,right=22mm of qs] (qps) {$s_{\topp}$\\$\topp$};
+\node[state,fill=red!10,below=28mm of qps] (qpv) {$s_{\botp}$\\$\botp$};
+
+% Transitions
+\path[->]
+  (q0) edge[bend left=10] node[above,pos=0.5] {\scriptsize$\OCC^\surd \land \PAY^{\surd}$} (qs)
+  (q0) edge[bend right=14] node[left,pos=0.5] {\scriptsize$\OCC^{\times}$} (qv)
+  (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
+  (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
+  (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
+  (qs) edge node[above] {$\Gamma$} (qps)
+  (qv) edge node[below] {$\Gamma$} (qpv)
+  (qps) edge[loop right] node {$\Gamma$} ()
+  (qpv) edge[loop right] node {$\Gamma$} ();
+\end{tikzpicture}}
+\caption{Conjunctive composition $\tsmc_{\wedge}(C_2,C_3)$, where $C_2=\perm[1]{\OCC}$.}
+\label{fig:c2andc3}
+\end{subfigure}
+
+
+\caption{Literal and composite 5-output Moore monitors for
+$C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$.
+(a) and (b)~monitors for Literal composing $C_3$  side by side;
+(c)~Reparation composition $C_3$;
+(d)~Conjunctive composition $C_2 \wedge C_3$,
+where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \not\subset A \sor  \{\OCC^{1},\OCC^{1}\} \subseteq A\}$. 
+$\PAY^\surd:= \{A \mid \PAY^{(1)},\PAY^{(2)}\} \subseteq A $. The case $\PAYF^\surd$ is similarly defined as for $\PAY^\surd$.}
+\label{fig:moore-c3-literals}
+\end{figure*}
+\end{example}
+\newpage
+\subsubsection*{Construction for Binary Regular Expression-Contracts}
+Triggered contracts activate their body $C$ once the triggering pattern $re$
+reaches its first tight match. Before that point, the monitor behaves exactly as the regular-expression monitor for $re$ and emits only $\mathsf{?}$. Once the trigger fires, the monitor switches permanently to the contract monitor $\tsmc(C)$. If the pattern becomes impossible before it fires, the contract is
+vacuously satisfied. The construction follows the same blueprint as sequence and reparation, but applied to the decisive states of the regular expression monitor.
+
+\begin{definition}[Triggered Monitor Construction]
+\label{def:moore-trigger-seq}
+
+\[\text{Let }
+\tsmc(\re)=(Q_r, r_0, \Gamma, \tightverdicts, \delta_r, \lambda_5^r)
+\quad\text{and}\quad
+\tsmc(C)=(Q_c, c_0, \Gamma, \tightverdicts, \delta_c, \lambda_5^c)
+\]
+be five-valued tight satisfaction monitors for the regular expression $\re$ and the contract $C$.
+The triggered monitor for $\trig[re]{C}$ is the machine
+\[
+\tsmc_{\trigg}(\tsmc_{re}(\re),\tsmc(C))
+  := (Q_{\trigg}, q_0^{\trigg}, \Gamma, \tightverdicts, \delta_{\trigg}, \lambda_5^{\trigg}).
+\]
+
+\begin{itemize}
+  \item The state space is the states from the contracts unified with the reduced regular expression monitor states:
+  \[
+     Q_{\trigg} := Q_r^{\text{open}} \cup Q_c,
+  \]
+  where the reduced regular expressions states are:
+  \[
+     Q_r^{\text{open}}
+     := \{\,q \in Q_r \mid \lambda_5^r(q)\in\{\mathsf{?},\topt,\topp\}\,\}.
+  \]
+  The initial state is
+  \[
+    q_0^{\trigg} := r_0.
+  \]
+
+  \item The transition function is defined in two parts:
+
+  \begin{enumerate}
+      \item 
+  \textbf{Guard-active region ($q\in Q_r^{\text{open}}$).}
+  Let $q'=\delta_r(q,A)$.
+  \[
+  \delta_{\trigg}(q,A)=
+  \begin{cases}
+    c_0
+      & \text{if } q'\in Q_r^{\topt}
+        \quad\text{(first tight match of $re$)},\\[4pt]
+    q^{t}
+      & \text{if } q'\in Q_r^{\bott}
+        \quad\text{(trigger impossible)},\\[4pt]
+    q'
+      & \text{if } q'\in Q_r^{?}
+        \quad\text{(guard still open)}.
+  \end{cases}
+  \]
+  Here $q^{t}\in Q_c$ is any state with $\lambda_5^c(q^{t})=\topt$ and
+  $q^{p}\in Q_c$ is the analogous $\topp$-state, reused from the \tsmc(C) monitor
+  construction.
+
+\item  \textbf{Contract-active region ($y\in Q_c$)} 
+  \[
+    \delta_{\trigg}(y,A) := \delta_c(y,A).
+  \]
+\end{enumerate}
+  \item The output function is
+  \[
+  \lambda_5^{\trigg}(q)=
+  \begin{cases}
+    \mathsf{?}
+      & \text{if } q\in Q_r^{\text{open}},\\[2pt]
+    \lambda_5^{c}(q)
+      & \text{if } q\in Q_c.
+  \end{cases}
+  \]
+\end{itemize}
+\end{definition}
+
+
+\paragraph{Intuition.}
+The trigger monitor is obtained with the same redirection recipe used for sequence, but applied to the trigger. Keep only states that are still open in the trigger (outputs in \(\{\,\mathsf{?},\topt,\topp\,\}\)). Remove its decisive states. Redirect every transition that would be the first tight match of the triggering regular expression (the step that enters \(\topt\)) to the initial state of the contract monitor \(C\). From that point on, the global output is exactly the output of \(C\) on the suffix. Redirect every transition that would make the trigger impossible (enter \(\bott\) or \(\botp\)) to a vacuous-success sink for the overall contact that emits \(\topt\). While the guard remains open, only the guard component advances and the product emits \(\mathsf{?}\), so no premature verdict appears. This realizes the prefix clauses: success either because the trigger never becomes true, which we refer to as vacuous satisfaction, or because it fires at the earliest index and the suffix satisfies \(C\); violation only if the guard fires and the suffix violates \(C\).
+
+\begin{lemma}[Correctness of the triggered monitor construction]
+\label{lem:trigg-correct}
+\[\text{Let } \tsmc_{\trigg}(\tsmc_{re}(\re),\tsmc(C))
+      =(Q_{\trigg},\Gamma,\delta_{\trigg},q_0^{\trigg},\lambda_5^{\trigg})\]
+be the monitor constructed in Definition~\ref{def:moore-trigger-seq} for
+$\trig[re]{C}$. Then, for every trace $\pi$,
+\[
+\lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
+\;=\;
+\semfive{\pi \vDash \trig[re]{C}}.
+\]
+\end{lemma}
+
+\noindent
+\textbf{Proof sketch.}
+The proof follows the same pattern as for sequence and reparation, by induction on the length of $\pi$.
+
+\smallskip
+\emph{Base case.}
+For $\pi=\varepsilon$ the monitor is in $q_0^{\trigg}=r_0$, the initial state
+of the guard. The value
+\[
+\lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\varepsilon)\bigr)
+  = \lambda_5^r(r_0) = \mathsf{?}
+\]
+coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
+
+\smallskip
+\emph{Inductive step.}
+Assume the invariant holds for all prefixes of length $n$. Consider a prefix
+of length $n{+}1$ and its last letter $A$.
+
+There are two regions:
+
+\begin{itemize}
+  \item \emph{Guard-active region ($x\in Q_r^{\text{open}}$).}
+  By construction, $\delta_{\trigg}(x,A)$ is:
+  \begin{itemize}
+    \item $c_0$, if $\delta_r(x,A)\in Q_r^{\topt}$. This is exactly the case
+    where $re$ reaches tight success for the first time. The next state is the
+    initial state of $\tsmc(C)$, so subsequent behavior matches the semantics
+    of $C$ on the suffix. This realizes the clause “trigger fires at the
+    earliest index and the suffix must satisfy $C$”.
+    \item a vacuous-success state (or the chosen $\topt$–$\topp$ pair) if
+    $\delta_r(x,A)\in Q_r^{\bott}$, that is, the pattern becomes impossible.
+    This matches the case where the trigger never fires and $\trig[re]{C}$
+    holds vacuously.
+    \item $\delta_r(x,A)$ if $\delta_r(x,A)\in Q_r^{?}$, in which case the
+    guard remains open, and the global verdict stays $\mathsf{?}$. This matches the semantic clause that no decisive information is available as long as neither a match nor an impossibility has been detected.
+  \end{itemize}
+  The inductive hypothesis on the guard monitor ensures that the moment of redirection coincides with the earliest decisive prefix of $re$.
+
+  \item \emph{Contract-active region ($y\in Q_c$).}
+  Once the monitor has been redirected into $c_0$, all transitions are given by $\delta_c$, and outputs by $\lambda_5^c$. The induction hypothesis for
+  $\tsmc(C)$ gives
+  \[
+  \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
+   = \lambda_5^{c}\bigl(\delta_c(c_0,\pi')\bigr)
+   = \semfive{\pi' \vDash C},
+  \]
+  where $\pi'$ is the suffix after the trigger point. This matches the
+  semantics of $\trigg[re]{C}$ on all traces where the trigger has fired.
+\end{itemize}
+
+\smallskip
+\emph{Violation and satisfaction cases.}
+If the trigger fires at some earliest index $k$ and the suffix $\pi^{k+1}$
+violates $C$ tightly or post, the monitor is in the contract-active region and
+outputs the corresponding $\bott$ or $\botp$, which is exactly
+$\semfive{\pi \vDash \trigg[re]{C}}$ in this case.  
+If the trigger never fires and the guard becomes impossible, the monitor
+outputs $\topt$ and then $\topp$, which matches vacuous satisfaction.  
+In all other cases the output remains $\mathsf{?}$, as the semantics of
+$\trigg[re]{C}$ leaves the status undecided.
+
+\smallskip
+\emph{Conclusion.}
+At each prefix, the monitor either simulates the guard with the correct decisive redirection points or simulates $C$ on the correct suffix. Hence
+for every trace $\pi$ the monitor verdict
+\(
+\lambda_5^{\trigg}(\delta_{\trigg}(q_0^{\trigg},\pi))
+\)
+coincides with the five-valued tight semantics of $\trigg[re]{C}$.
+\qed
+
+
+
+
+
+\begin{definition}[Guarded Monitor Construction]
+\label{def:moore-guard}
+\[\text{Let }
+\tsmc(\re)=(Q_r, r_0, \Gamma, \tightverdicts, \delta_r, \lambda_5^r)
+\quad\text{and}\quad
+\tsmc(C)=(Q_c, c_0, \Gamma, \tightverdicts, \delta_c, \lambda_5^c).
+\]
+The guarded contract monitor for $\guard[re]{C}$ is the synchronous product
+\[
+\tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
+  :=(Q_r\times Q_c,\ (r_0,c_0),\ \Gamma,\ \tightverdicts,\ \delta_{\guardd},\ \lambda_5^{\guardd}),
+\]
+with
+\[
+\delta_{\guardd}((x,y),A)
+  :=(\delta_r(x,A),\delta_c(y,A)).
+\]
+
+\[
+\lambda_5^{\guardd}(x,y)=
+\begin{cases}
+\bott
+  & \text{if }\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}
+    \ \text{and }\lambda_5^c(y)=\bott,\\[2pt]
+\botp
+  & \text{if }\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}
+    \ \text{and }\lambda_5^c(y)=\botp,\\[2pt]
+\topt
+  & \text{if }\lambda_5^r(x)=\bott
+    \ \text{and }\lambda_5^c(y)\in\{\mathsf{?},\topt,\topp\},\\[2pt]
+\topp
+  & \text{if }\lambda_5^r(x)=\botp
+    \ \text{and }\lambda_5^c(y)\in\{\mathsf{?},\topt,\topp\},\\[2pt]
+\topt
+  & \text{if }\lambda_5^r(x)\in\{\topt,\topp\}
+    \ \text{and }\lambda_5^c(y)=\topt,\\[2pt]
+\topp
+  & \text{if }\lambda_5^r(x)\in\{\topt,\topp\}
+    \ \text{and }\lambda_5^c(y)=\topp,\\[2pt]
+\mathsf{?}
+  & \text{otherwise.}
+\end{cases}
+\]
+\end{definition}
+
+
+
+\paragraph{Intuition.}
+The guard reads both monitors in lockstep and enforces:
+
+\begin{itemize}
+  \item \emph{Open guard.} While the guard is open
+  \(\bigl(\lambda_r\in\{\mathsf{?},\topt,\topp\}\bigr)\), i.e. exactly when \(\pi\ \clossat\ re\),
+  any tight or post failure of \(C\) becomes the global failure:
+  \begin{align*}
+    \pi\ \violt\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \violt\ C),\\
+    \pi\ \postviol\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \postviol\ C).
+  \end{align*}
+
+  \item \emph{Guard impossible.} If the guard becomes impossible
+  \(\bigl(\lambda_r\in\{\bott,\botp\}\bigr)\), we accept provided \(C\) has not failed:
+  \begin{align*}
+    \pi\ \satt\ \guard[re]{C} &\iff (\pi\ \violt\ re)\ \land\ (\pi\ \clossat\ C),\\
+    \pi\ \postsat\ \guard[re]{C} &\iff (\pi\ \violt\ re)\ \land\ (\pi\ \postsat\ C).
+  \end{align*}
+
+  \item \emph{Guard fired/closed.} When the guard has fired/closed
+  \(\bigl(\lambda_r\in\{\topt,\topp\}\bigr)\), we require \(C\) to (tight/post) succeed:
+  \begin{align*}
+    \pi\ \satt\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \satt\ C),\\
+    \pi\ \postsat\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \postsat\ C).
+  \end{align*}
+\end{itemize}
+
+The resulting case table is symmetric and total, and it collapses to the expected two-valued clauses once tight/post outcomes are merged into satisfied vs.\ violated.
+
+\begin{lemma}[Correctness of the guarded monitor construction]
+\label{lem:guard-correct}
+\[\text{Let }
+\tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
+  =(Q_{\guardd},q_0^{\guardd},\Gamma,\tightverdicts,\delta_{\guardd},\lambda_5^{\guardd})
+\]
+be the monitor constructed in Definition~\ref{def:moore-guard} for
+$\guardd[re]{C}$.  
+Then, for every finite trace $\pi$,
+\[
+\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
+  \;=\;
+\semfive{\pi \vDash \guard[re]{C}}.
+\]
+\end{lemma}
+\noindent\textbf{Proof sketch.}
+The argument proceeds by induction on the length of $\pi$.  
+The guarded monitor is a synchronous product of $\tsmc(re)$ and $\tsmc(C)$,
+with the output governed by the case distinction in
+Definition~\ref{def:moore-guard}.  
+Each region of the case table matches exactly one of the semantic clauses for 
+$\guardd[re]{C}$.
+
+\smallskip
+\emph{Base case.}
+For $\pi=\varepsilon$ we have
+\[
+\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\varepsilon)\bigr)
+  = \lambda_5^{\guardd}(r_0,c_0),
+\]
+which yields $\mathsf{?}$ in agreement with
+$\semfive{\varepsilon \vDash \guardd[re]{C}}$.
+
+\smallskip
+\emph{Inductive step.}
+Assume correctness for all prefixes of length $n$.
+Consider $\pi[n{+}1]$ with last letter $A$ and let
+\[
+(x',y') := \delta_{\guardd}((x,y),A)
+           = (\delta_r(x,A),\delta_c(y,A)).
+\]
+
+There are three semantic regions, corresponding to the three guard statuses.
+
+\begin{itemize}
+  \item \textbf{Guard open}
+  \(\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}\).  
+  This means $\pi$ still possibly satisfies the guard.  
+  The guarded semantics requires that any tight or post failure of $C$ becomes the global failure.  
+  The monitor table assigns $\bott$ or $\botp$ precisely in these cases, and
+  $\mathsf{?}$ otherwise, matching
+  \[
+  \semfive{\pi \vDash \guardd[re]{C}}
+    = \semfive{\pi \vDash C}
+    \quad\text{as long as $re$ is still open.}
+  \]
+
+  \item \textbf{Guard impossible}
+  \(\lambda_5^r(x)\in\{\bott,\botp\}\).  
+  This corresponds exactly to $\pi\ \violt\ re$.  
+  The guarded semantics declares vacuous acceptance provided that $C$ has not already failed.  
+  The output table assigns $\topt$ or $\topp$ if $C$ has not failed, and
+  propagates $\bott$ or $\botp$ if it has.  
+  This matches the semantic requirements for vacuous satisfaction.
+
+  \item \textbf{Guard closed (triggered or concluded)}
+  \(\lambda_5^r(x)\in\{\topt,\topp\}\).  
+  In this region, the guard has fired or completed successfully, and the
+  semantics require $C$ to satisfy or to fail.  
+  The output table combines the post-accept and tight-accept verdicts of $C$
+  with those of $re$ exactly as demanded by the five-valued semantics:
+  \[
+     \semfive{\pi \vDash \guardd[re]{C}}
+       = \semfive{\pi \vDash C}
+       \quad\text{once $re$ has closed.}
+  \]
+\end{itemize}
+
+\smallskip
+\emph{Conclusion.}
+At each prefix of $\pi$, the guarded monitor outputs exactly the verdict
+prescribed by the five-valued semantics of $\guardd[re]{C}$.  
+Thus
+\[
+\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
+  = \semfive{\pi \vDash \guardd[re]{C}}
+\]
+for all traces $\pi$.
+\qed
+
+
+
+
+
+
+
+\subsubsection*{Construction for repetition contracts}
+
+Repetition contracts describe behaviors that must be satisfied several times in
+sequence. The monitor construction follows the intuition that each repetition runs an independent copy of the monitor for $C$, with the next copy becoming active exactly when the previous one reaches tight success. For finite
+repetition $C^n$, this results in $n$ chained monitors. For unbounded
+repetition $\repit{C}$, we obtain an infinite cycle without ever reporting
+tight success.
+
+\medskip
+The following constructions make these ideas explicit.
+\begin{definition}[Tight monitor construction for finite repetition $\nrep(n,C)$]
+\label{def:moore-repeat-finite}
+\[\text{Let } \tsmc(C)=(Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)\]
+be the five-valued tight satisfaction monitor for $C$.  
+For $n\in\mathbb{N}^*$, the tight monitor for the finite repetition contract
+$\nrep(n,C)$ is defined as
+\[
+\tsmc_{\nrep}(n,C)
+  := (Q_{\nrep},q_0^{\nrep},\Gamma,\tightverdicts,\delta_{\nrep},\lambda_5^{\nrep}).
+\]
+
+\medskip
+\noindent\emph{Disjoint copies.}
+For each $i\in\{1,\dots,n\}$, create a disjoint copy of the base monitor:
+\[
+Q^{(i)}=\{q^{(i)}\mid q\in Q\},\qquad
+\delta^{(i)}(q^{(i)},A)=(\delta(q,A))^{(i)},\qquad
+\lambda_5^{(i)}(q^{(i)})=\lambda_5(q).
+\]
+Write $q_0^{(i)}$ for the copy of $q_0$.
+
+\medskip
+\noindent\emph{State space and start state.}
+\[
+Q_{\nrep}
+  := \Bigl(\bigcup_{i=1}^n Q^{(i)}\Bigr)\cup\{q_{\topp},q_{\botp}\},
+\qquad
+q_0^{\nrep} := q_0^{(1)},
+\]
+where $q_{\topp}$ and $q_{\botp}$ are fresh post-success and post-failure sinks.
+
+\medskip
+\noindent\emph{Transition function.}  
+For $1\le i\le n-1$:
+\[
+\delta_{\nrep}(q^{(i)},A)=
+\begin{cases}
+q_0^{(i+1)}
+   & \text{if }\lambda_5^{(i)}(\delta^{(i)}(q^{(i)},A))=\topt,\\[2pt]
+\delta^{(i)}(q^{(i)},A)
+   & \text{if }\lambda_5^{(i)}(\delta^{(i)}(q^{(i)},A))
+      \notin\{\topt,\topp\}.
+\end{cases}
+\]
+For the last copy $i=n$:
+\[
+\delta_{\nrep}(q^{(n)},A)=
+\begin{cases}
+q_{\topp}
+   & \text{if }\lambda_5^{(n)}(\delta^{(n)}(q^{(n)},A))=\topt,\\[2pt]
+\delta^{(n)}(q^{(n)},A)
+   & \text{if }\lambda_5^{(n)}(\delta^{(n)}(q^{(n)},A))
+      \notin\{\topt,\topp\}.
+\end{cases}
+\]
+Sink states absorb:
+\[
+\delta_{\nrep}(q_{\topp},A)=q_{\topp},
+\qquad
+\delta_{\nrep}(q_{\botp},A)=q_{\botp}.
+\]
+
+\medskip
+\noindent\emph{Output function.}
+For $q^{(i)}\in Q^{(i)}$:
+\[
+\lambda_5^{\nrep}(q^{(i)})=
+\begin{cases}
+\bott & \text{if }\lambda_5^{(i)}(q^{(i)})=\bott,\\
+\mathsf{?} & \text{if }\lambda_5^{(i)}(q^{(i)})
+            \in\{\mathsf{?},\topt,\topp\}.
+\end{cases}
+\]
+For sink states:
+\[
+\lambda_5^{\nrep}(q_{\topp})=\topp,
+\qquad
+\lambda_5^{\nrep}(q_{\botp})=\botp.
+\]
+
+\medskip
+\noindent
+This completes the construction of the five-valued monitor for $\nrep(n,C)$.
+\end{definition}
+
+\begin{lemma}[Correctness of the finite repetition monitor]
+\label{lem:repeat-finite-correct}
+For every finite trace $\pi$, contract $C$, and
+$\tsmc_{\nrep}(n,C)
+  := (Q_{\nrep},q_0^{\nrep},\Gamma,\tightverdicts,\delta_{\nrep},\lambda_5^{\nrep})$, the following holds
+\[
+\lambda_5^{\nrep}\bigl(\delta_{\nrep}(q_0^{\nrep},\pi)\bigr)
+   = \semfive{\pi \vDash C^n}.
+\]
+\end{lemma}
+
+
+
+
+In the next sections, we use the definitions of the different languages in the semantics of \cdl, along with automata constructions and transformations, to enable automatic detection of violations and the attribution of blame for synchronous interactions over contracts in \cDL.
+
+
+\begin{definition}[Tight monitor construction for unbounded repetition $\repit{C}$]
+\label{def:moore-repeat-unbounded}
+Let
+\[
+\tsmc(C)=(Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)
+\]
+be the tight satisfaction monitor for $C$.
+The monitor for the unbounded repetition $\repit{C}$ is defined as
+\[
+\tsmc_{\text{Rep}}
+  := (Q_\omega,q_0,\Gamma,\tightverdicts,\delta_\omega,\lambda_5^{\omega})
+\]
+where the construction removes all success states of $C$ and redirects
+tight success back to the initial state.
+
+\medskip
+\noindent\emph{State space.}
+\[
+Q_\omega := Q \setminus Q_{\top},
+\qquad
+Q_{\top} := \{\, q\in Q \mid \lambda_5(q)\in\{\topt,\topp\}\,\}.
+\]
+
+\medskip
+\noindent\emph{Transition function.}
+For every $q\in Q_\omega$ and $A\in\Gamma$:
+\[
+\delta_\omega(q,A)=
+\begin{cases}
+q_0
+  & \text{if }\lambda_5(\delta(q,A))=\topt 
+    \quad(\text{restart next iteration after tight success}),\\[2pt]
+\delta(q,A)
+  & \text{otherwise}.
+\end{cases}
+\]
+
+\medskip
+\noindent\emph{Output function.}
+The monitor never declares satisfaction:
+\[
+\lambda_5^{\omega}(q)=
+\begin{cases}
+\bott & \text{if }\lambda_5(q)=\bott,\\[2pt]
+\mathsf{?} & \text{if }\lambda_5(q)\in\{\mathsf{?},\topt,\topp\}.
+\end{cases}
+\]
+
+This yields the tight five-valued monitor for $\repit{C}$.
+\end{definition}
+
+\begin{lemma}[Correctness of the unbounded repetition monitor]
+\label{lem:repeat-unbounded-correct}
+For every finite trace $\pi$, and
+$\tsmc_{\repit{}}(C)
+  := (Q_\omega,q_0,\Gamma,\tightverdicts,\delta_\omega,\lambda_5^{\omega})$
+, the following holds
+\[
+\lambda_5^{\omega}\bigl(\delta_\omega(q_0,\pi)\bigr)
+  = \semfive{\pi \vDash \repit{C}}.
+\]
+\end{lemma}
+The monitor never emits $\topt$ nor $\topp$, because tight satisfaction of
+$\repit{C}$ is false.  
+It emits $\bott$ (and then permanently $\botp$) exactly when some iteration of
+$C$ violates tightly, i.e.
+\[
+\exists n\in\mathbb{N}:\ \pi \violt C^n.
+\]
+Otherwise, it remains in the undecided verdict $\mathsf{?}$.
+
+
+
+\begin{example}[Open ended contract monitor construction]
+
+
+W\begin{example}[Open ended contract monitor construction]
+\label{ex:open-ended}
+
+We illustrate the constructions for the guarded open-ended contract \(\guard[re]{\repit{C_3}}\) where
+\(re = *^{+};\{\notifterm^{(1)}\}\) and
+\(C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}\).
+The construction proceeds in three steps:
+the unbounded-repetition monitor for \(C_3\),
+the regular-expression monitor for \(re\),
+and finally the guarded product. The resulting automata
+are shown in \ref{fig:one-per-line}.
+
+\medskip
+\noindent\textbf{(a) \(\tsmc(\repit{C_3})\)
+(Subfigure~\ref{fig:rep-c3_vertical}).}
+The monitor contains the states \(q_0/\mathsf{?}\), \(q_w/\mathsf{?}\), \(q_{\bott}/\bott\), and \(q_{\botp}/\botp\). The meaning of the transitions is as follows.
+
+A joint payment \(\PAY^\surd\) keeps the monitor at \(q_0\).
+A missed payment \(\PAY^\times\) moves to the waiting state \(q_w\).
+From \(q_w\), a successful late fee \(\PAYF^\surd\) restarts the cycle
+by returning to \(q_0\). A failed repair \(\PAYF^\times\) produces a tight
+violation and moves to \(q_{\bott}\), which then steps on any letter to the
+permanent sink \(q_{\botp}\). The sink loops on all letters.
+
+This matches the construction of Definition~\ref{def:moore-repeat-unbounded}:
+tight success restarts a new cycle, and tight failure leads to a permanent
+violation.
+
+\medskip
+\noindent\textbf{(b) \(\tsmc_{re}(re)\) for
+\(re = *^{+};\{\notifterm^{(1)}\}\)
+(Subfigure~\ref{fig:guard-}).}
+The monitor has states \(s_0/\mathsf{?}\), \(s_1/\mathsf{?}\), \(s^t/\topt\), and \(s^{+}/\topp\).
+
+The regular-expression part reads arbitrary letters:
+\(s_0 \xrightarrow{*} s_1\).
+While no termination notice is received, the machine remains in \(s_1\)
+via \(\overline{T} = \Gamma \setminus T\).
+A letter in \(T=\{A\mid \notifterm^{(1)}\in A\}\) produces a tight match
+and moves to \(s^t\). Any continuation moves to the post-acceptance state
+\(s^{+}\), which loops on all letters.
+
+\medskip
+\noindent\textbf{(c) Guarded product
+\(\tsmc_\guardd(\tsmc_{re}(re),\tsmc(\repit{C_3})\)
+(Subfigure~\ref{fig:guard-repC3}).}
+The product is organised by verdict class:
+violating states on the left, undecided states in the centre, and
+accepting states on the right.
+
+\smallskip
+\emph{Undecided region (centre).}
+The reachable combinations while the guard is open are
+\(s_0\times q_0\),
+\(s_1\times q_w\),
+and \(s_1\times q_0\).
+Their transitions follow the product rule \((x,y)\xrightarrow{A}(\delta_r(x,A),\delta_c(y,A))\).
+Examples include:
+\[
+\begin{aligned}
+&s_0\times q_0 \xrightarrow{\PAY^\times} s_1\times q_w,\\
+&s_1\times q_w \xrightarrow{\PAYF^\times} (s_0,s_1)\times q_{\bott},\\
+&s_1\times q_w \xrightarrow{\PAYF^\surd \wedge \overline{T}} s_1\times q_0,\\
+&s_1\times q_0 \xrightarrow{\PAY^\times \wedge \overline{T}} s_1\times q_w,\\
+&s_0\times q_0 \xrightarrow{\PAY^\surd} s_1\times q_0.
+\end{aligned}
+\]
+
+\smallskip
+\emph{Violation region (left).}
+Once the contract component reaches \(q_{\bott}\),
+the guard is still open so the product outputs \(\bott\) and moves on any
+letter to \(S\times q_{\botp}\), which loops on every letter.
+
+\smallskip
+\emph{Acceptance region (right).}
+When the guard fires on a letter in \(T\), the product moves to
+\(s^t\times(q_0,q_w)\) with verdict \(\topt\) provided the repetition contract has
+not violated. From there, any continuation leads to the post-acceptance
+state \(s^{+}\times Q\) that loops on all letters and emits \(\topp\).
+
+\medskip
+\noindent
+This behavior follows directly from Definition~\ref{def:moore-guard}:
+while \(\lambda_r\in\{\mathsf{?},\topt,\topp\}\) the guard is open, so any tight or
+post violation of \(\repit{C_3}\) becomes a violation of the guarded contract.
+Once the guard becomes true on \(T\), the contract must satisfy \(\repit{C_3}\)
+from that point on, for the global verdict to be tight or post acceptance.
+
+
+\end{example}
+
+
+\begin{figure}[h!]
+\centering
+\tikzset{
+  ->, >=Stealth, semithick,
+  node distance=17mm,
+  every state/.style={
+    rectangle,rounded corners,draw,
+    minimum width=12mm,minimum height=7mm,
+    inner sep=2pt,font=\scriptsize,align=center}
+}
+
+% M(rep(C3)) — full width
+\begin{subfigure}[t]{0.94\textwidth}
+\centering
+\begin{tikzpicture}
+  \node[initial,state,fill=gray!10]          (q0)  {$q_0$\\$\mathsf{?}$};
+  \node[state,fill=gray!10,below=of q0]      (qw)  {$q_w$\\$\mathsf{?}$};
+  \node[state,fill=red!18,right=of qw]       (qv)  {$q_{\bott}$\\$\bott$};
+  \node[state,fill=red!10,above=of qv]       (qpv) {$q_{\botp}$\\$\botp$};
+
+  \path
+    % In-cycle behavior:
+    (q0) edge[loop above] node[above,pos=0.5] {\scriptsize $\PAY^\surd$} ()
+    (q0) edge[bend right=13] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
+    (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0) % restart on tight success
+    (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
+    % Failure sink:
+    (qv)  edge node[left] {$\Gamma$} (qpv)
+    (qpv) edge[loop right] node {$\Gamma$} ();
+\end{tikzpicture}
+\caption{Monitor for $\repit{C_3}$.}
+\label{fig:rep-c3_vertical}
+\end{subfigure}
+
+
+
+\vspace{3mm}
+\begin{subfigure}[t]{0.94\textwidth}
+\centering
+\begin{tikzpicture}
+\node[initial,state,fill=gray!10]  (s0)  {$s_0$\\$\mathsf{?}$};
+\node[state,fill=gray!10,right=of s0]  (g)   {$s_1$\\$\mathsf{?}$};
+\node[state,fill=green!18,right=16mm of g] (acc) {$s^t$\\$\topt$};
+\node[state,fill=green!10,right=19mm of acc] (ap) {$s^{+}$\\$\topp$};
+
+% --- Transitions ---
+\path
+  (s0) edge node[above,pos=0.4] {$\Gamma$} (g)
+  (g) edge[loop below] node[below] {$\overline{T}$} ()
+  (g) edge node[above] {$T$} (acc)
+%   (t2) edge node[left,pos=0.5] {$\Gamma$} (acc)
+  (acc) edge node[above] {$\Gamma$} (ap)
+  (ap) edge[loop above] node {$\Gamma$} ();
+
+% --- Legend ---
+\node[below=10mm of g,align=center] (leg){
+$T := \{\,A\in\Gamma\mid \notifterm^{(1)}\in A\,\}$,\;
+$\overline{T} := \Gamma\!\setminus\! T$,\;
+};
+\end{tikzpicture}
+\caption{Monitor for the regular expression  $\Gamma^+ \cdot  \ \{terminate^{(1)}\}$.}
+\label{fig:guard-}
+\end{subfigure}
+\vspace{3mm}
+
+% -----------------------------------------
+% (b) Guarded: guard[re_C5]{rep(C3)} — full width
+% -----------------------------------------
+
+
+\begin{subfigure}[t]{0.94\textwidth}
+\centering
+\begin{tikzpicture}
+
+% --- Columns: Bad (x=-3) | ? (x=0) | Accept (x=+3) ---
+
+% ? column (Open, undecided)
+\node[initial,state,fill=gray!10]  (Oq0)  at (0, 0) {$s_0\times q_0$\\$\mathsf{?}$};
+\node[state,fill=gray!10]          (Oqw)  at (0,-2) {$s_1\times q_w$\\$\mathsf{?}$};
+
+\node[state,fill=gray!10]  (Oqq00)  at (4, 0) {$s_1\times q_0$\\$\mathsf{?}$};
+%\node[state,fill=gray!10]          (Oqw0)  at (3,-2) {$\text{Open}\times q_w$\\$\mathsf{?}$};
+
+% Bad column (left): tight/post violation sinks
+\node[state,fill=red!18]           (Oqv)  at (-3,-2) {$(s_0,s_1)\times q_{\bott}$\\$\bott$};
+\node[state,fill=red!10]           (Oqpv) at (-3, 0) {$S \times q_{\botp}$\\$\botp$};
+
+% Accept column (right): guard impossible (vacuous accept)
+\node[state,fill=green!18]         (Iq0t) at (4, -2) {$s^t\times (q_0,q_w)$\\$\topt$};
+\node[state,fill=green!10]         (Iqwt) at (6,-2) {$s^+\times Q$\\$\topp$};
+
+% --- Open-region transitions (guard open; C repeats) ---
+\path
+  %(Oq0) edge[loop above] node {\scriptsize $\overline T$ or $\PAY^\surd$} ()
+  (Oq0) edge node[left]        {\scriptsize $\PAY^\times$} (Oqw)
+  (Oqw) edge[bend left=14] node[below]{\scriptsize $\PAYF^\times$} (Oqv)
+ % (Oqw) edge[bend left=12] node[left]{\scriptsize $\PAYF^\surd$} (Oq0)
+  (Oqv) edge              node[left] {$\Gamma$} (Oqpv)
+  (Oqpv) edge[loop left]  node {$\Gamma$} ();
+
+% --- Mode switches: Open -> Imposs (guard hits bott/botp) ---
+\path
+  (Oq0) edge[bend left=10]  node[above]        {\scriptsize $\PAY^\surd$} (Oqq00)
+  (Oqw) edge [bend left=20] node[sloped,above]{\scriptsize $\PAYF^\surd \wedge \overline{T}$} (Oqq00)
+  (Oqq00) edge  [bend left=20] node[sloped,below] {\scriptsize $\PAY^\times \wedge \overline{T}$} (Oqw)
+  
+  (Oqq00) edge  node[right] {$T$} (Iq0t)
+  (Oqw) edge[bend right=12]  node[below] {\scriptsize $\PAYF^\surd \wedge T$} (Iq0t)
+  (Iq0t) edge[bend right=12]  node[below] {\scriptsize $*$} (Iqwt);
+  %(Oq0) edge[bend left=14]  node[below,sloped] {\scriptsize guard $\botp$} (Iqwt)
+  %(Oqw) edge[bend left=16]  node[below,sloped] {\scriptsize guard $\botp$} (Iqwt);
+
+% --- Imposs region loops ---
+\path
+ % (Iq0t) edge[loop right] node {$\Gamma$} ()
+  (Iqwt) edge[loop right] node {$\Gamma$} ()
+  (Oqq00) edge[loop right] node {\scriptsize$\PAY^\surd \wedge \overline{T}$} ();
+
+\end{tikzpicture}
+\caption{Tight satisfaction monitor construction for $\guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$.}
+\label{fig:guard-repC3}
+\end{subfigure}
+\caption{Progressive construction for  $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$. Sub-figure (c) is obtained by applying $\tsmc_\guardd$ on sub-figure (b) and (a). }
+\label{fig:one-per-line}
+\end{figure}
+
+\end{example}
+
+The guarded open-ended contract illustrates how the automaton constructions combine.  
+The unbounded repetition of \(C_3\) enforces an indefinite sequence of payments with repair, and the regular expression \(re\) recognizes the first occurrence of a termination notice.  
+The guarded product synchronizes both behaviors: while the guard is open, all failures of \(\repit{C_3}\) propagate to the global verdict; once the guard closes, the open-ended obligation is discharged, and the monitor collapses to post acceptance provided that no violation has occurred.  
+This example shows that the tight constructions scale to nested patterns of sequencing, repetition, guarding, and reparation while still preserving a direct correspondence with the prefix semantics of \cDL.

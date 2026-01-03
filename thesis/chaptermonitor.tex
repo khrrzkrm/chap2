@@ -370,7 +370,7 @@ Since the contract regulates obligations and permissions \emph{per month} rather
 the timeline into month windows $\Ik{0},\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
 within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
 
-\begin{definition}[Periodic synchronized set trace]
+\begin{definition}[Periodic synchronized set trace]\label{def:periodic}
 A \defn{periodic synchronized set trace} over an alphabet $\Sigma^i$ for agent $i$ over a global clock with a fixed Period is a sequence of sets of actions, i.e 
 \[
 \pi_i \;=\; \trace{\Aik{i}{0},\ \Aik{i}{1},\ \Aik{i}{2},\ \dots}\ \in\ \wordsets{\Sig{i}}^{\infty}.
@@ -840,7 +840,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \label{fig:moore-strategies}
   \end{figure}
   
-  \noindent\textit{Formalization (matchingref{fig:moore-strategies}).}
+  
   \[
   \begin{aligned}
   M_1^1&=(S,s_0,\ \Sigma_I^{(1)},\Sigma_O^{(1)},\ \delta_1,\lambda_1),
@@ -1195,7 +1195,7 @@ By isolating unique satisfaction and violation frontiers, this semantics ensures
 \input{tightmotivation.tex}
 
 
-%\input{forwardtight.tex}
+\input{forwardtight.tex}
 
 %\input{quantitativeviol.tex}
 

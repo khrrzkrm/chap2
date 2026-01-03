@@ -75,13 +75,13 @@ durchs MINT-Büro, d.\,h. nach der mündlichen Prüfung)
   \include{preliminaries}
   \include{chapterconflict}
   \include{chaptermonitor}
-  \include{konzept}
-  \include{evaluation}
+  %\include{konzept}
+  %\include{evaluation}
   \include{fazit}
 
   \appendix
 
-  \include{appendix}
+  %\include{appendix}
 
   \backmatter
 
@@ -95,11 +95,11 @@ durchs MINT-Büro, d.\,h. nach der mündlichen Prüfung)
   \pdfbookmark{\listtablename}{listoftables}
   \listoftables
 
-  \cleardoublepage
-  \phantomsection
-  \renewcommand{\listtheoremname}{Definitions- und Theoremverzeichnis}
-  \pdfbookmark{\listtheoremname}{listoftheorems}
-  \listoftheorems[ignoreall,show={Lemma,Theorem,Korollar,Definition}]
+  % \cleardoublepage
+  % \phantomsection
+  % \renewcommand{\listtheoremname}{Definitions- und Theoremverzeichnis}
+  % \pdfbookmark{\listtheoremname}{listoftheorems}
+  % \listoftheorems[ignoreall,show={Lemma,Theorem,Korollar,Definition}]
 
   \cleardoublepage
   \phantomsection
@@ -107,9 +107,17 @@ durchs MINT-Büro, d.\,h. nach der mündlichen Prüfung)
   \lstlistoflistings
 
   \include{abkuerzungen}
+  
+ 
 
   \cleardoublepage
   \phantomsection
   \pdfbookmark{\bibname}{bibliography}
   \bibliography{literature}
+
+  \cleardoublepage
+  \phantomsection
+  \pdfbookmark{Curriculum Vitae}{cv}
+  \include{lebenslauf}
+  
 \end{document}

@@ -165,7 +165,7 @@ For any $L\subseteq\Sigma^*$,
     The first claim follows directly from the definition, as $\badclass{L}$ is the set-theoretic complement of $\closureclass{L}$ in $\Sigma^*$.
     
     For the second claim ($\IRL{L}\cap \IAL{L}=\emptyset$), assume for the sake of contradiction that there exists a word $u \in \IRL{L} \cap \IAL{L}$.
-    By the definitions of irrelevant rejection and acceptance, we have $u = bx$ for some $b \in \ERL{L}, x \in \Sigma^+$ and $u = my$ for some $m \in \EAL{L}, y \in \Sigma^+$.
+    By the definitions of irrelevant rejection and acceptance, we have $u = b\concat x$ for some $b \in \ERL{L}, x \in \Sigma^+$ and $u = m\concat y$ for some $m \in \EAL{L}, y \in \Sigma^+$.
     Since both $b$ and $m$ are prefixes of $u$, they are comparable.
     If $m \preceq b$, then $b$ extends a minimal accepted word, implying $b \in \IAL{L}$, which contradicts $b \in \ERL{L}$ (since $\ERL{L}$ is defined as $\minlang{\badclass{L}} \setminus \IAL{L}$).
     Conversely, if $b \preceq m$, then the accepted word $m$ extends a bad prefix $b$. However, since $b \in \badclass{L}$, no extension of $b$ can ever belong to $L$, contradicting $m \in L$. Thus, the intersection must be empty.

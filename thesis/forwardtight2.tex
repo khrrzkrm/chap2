@@ -1,0 +1,799 @@
+\subsection{Forward-Looking Blaming Semantics}
+The tight semantics of \cDL identify when a contract is satisfied or violated, but do not explain \emph{who} caused a violation.  
+To attribute responsibility, we refine the violation verdicts based on which party failed to meet the relevant normative requirement.  
+We break down tight and post violations into those caused by agent 1, those caused by agent 2, those caused jointly by both, and those where neither party is responsible (blameless cases).  
+Formally, we introduce tight violation verdicts
+\[
+\bottone,\quad \bottp{2},\quad \bottp{12},\quad \bottp{0},
+\]
+and their post-violation counterparts
+\[
+\botpp{1},\quad \botpp{2},\quad \botpp{12},\quad \botpp{0}.
+\]
+By replacing the undifferentiated violation verdicts of the five-valued semantics with these responsibility-aware variants, and keeping the three non-violating verdicts \(\mathsf{?},\topt,\topp\), we obtain the forward-looking blame eleven-valued semantics
+\[
+\mathbb{V}_{11}
+    = \{\mathsf{?},\topt,\topp\}
+      \cup \{\bot^{t}_{S},\bot^{p}_{S}\mid S\in\{0,1,2,12\}\}.
+\]
+This refined judgement structure allows the monitors constructed in the next section to pinpoint the agents responsible for each contractual breach.
+
+
+\subsubsection*{Blame Rules for Literals}
+\begin{definition}[Blame assignment for literals]
+Let $p\in\{1,2\}$ be the main subject of the norm and let $\barp$ denote the other party.
+Let $\trace{A}$ be a single-step word with $A\in\Gamma$. We write $a^{(i)}\in A$ when party $i$ attempts $a$ in this step.
+
+\paragraph{Obligation \(\obl[p]{a}\).}
+Violation occurs if and only if the joint execution does not happen. Blame principle:
+if the subject does not attempt, blame the subject; otherwise, blame the other party for not cooperating:
+\[
+\begin{aligned}
+\trace{A}\ \vDash_{\bottp{p}}\ \obl[p]{a} \;&\mydef\; a^{(p)}\notin A,\\
+\trace{A}\ \vDash_{\bottp{\barp}}\ \obl[p]{a} \;&\mydef\; a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
+\end{aligned}
+\]
+These two cases partition a tight violation of $\obl[p]{a}$.
+
+\paragraph{Prohibition \(\frb[p]{a}\).}
+Violation requires the joint act to occur. Since the subject should refrain, blame the subject:
+\[
+\trace{A}\ \vDash_{\bottp{p}}\ \frb[p]{a}\ \;\mydef\;\ \{a^{(1)}, a^{(2)}\}\subseteq A.
+\]
+If only one agent attempts the action, it does not violate a prohibition, so no other possible blame arises. An agent cannot be blamed for a prohibition that was not assigned to it.
+
+\paragraph{Power \(\perm[p]{a}\).}
+Blame occurs only when the subject of the power attempts and the other party withholds cooperation, and the blame goes to the other party:
+\[
+\trace{A}\ \vDash_{\bottp{\barp}}\ \perm[p]{a}\ \;\mydef\;\ a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
+\]
+
+\paragraph{Units: Valid ($\top$) and invalid ($\bot$).}
+\(\lnot(\trace{A}\vDash_{\bottp{S}}\top)\) for all $S$.  
+\(\trace{A}\vDash_{\bottp{0}}\bot\) by convention (unsatisfiable literal with no party subject).
+
+\paragraph{Post violation (prefix closure of blame).}
+Tight blame persists to extensions, and post blame is exactly “some earlier tight blame”:
+\[
+\trace{A}\ \vDash_{\bottp{S}}\ \ell\ \Longrightarrow\ 
+\forall\,\pi\ne\varepsilon:\ \trace{A}\pi\ \vDash_{\botpp{S}}\ \ell,
+\qquad
+\pi\ \vDash_{\botpp{S}}\ \ell\ \Longleftrightarrow\ \exists\,j<|\pi|:\ \pi[0,j]\ \vDash_{\bottp{S}}\ \ell.
+\]
+\end{definition}
+
+\begin{remark}[No joint blame at the literal level]
+    Each literal is decided on a single step, and the only responsibility split is between the subject and the other party:
+    either the subject fails to attempt, or the other party fails to cooperate, or no violation occurs. Hence, for literals, the blame set is always a singleton \(S\in\{\{1\},\{2\}\}\) (or empty for \(\bot\)), never \(\{12\}\).
+\end{remark}
+
+
+\begin{example}[Obligation, prohibition, and power blame]
+By fixing $p=1$, $\barp=2$. Consider the following letters $A\in\Gamma$:
+
+\smallskip
+\noindent\emph{Obligation \(\obl[1]{a}\).}
+\[
+\begin{array}{lcl}
+A=\emptyset: & \trace{A}\ \vDash_{\bottp{1}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
+A=\{a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{1}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
+A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{2}}\ \obl[1]{a} & \text{(other party did not cooperate)}\\
+A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(joint execution present).}
+\end{array}
+\]
+
+\noindent\emph{Prohibition \(\frb[1]{a}\).}
+\[
+\begin{array}{lcl}
+A=\{a^{(1)},a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{1}}\ \frb[1]{a} & \text{(subject should have refrained)}\\
+A=\{a^{(1)}\} \quad: & \text{no violation} & \text{The prohibited action was not successful}
+\end{array}
+\]
+
+\noindent\emph{Power \(\perm[1]{a}\).}
+\[
+\begin{array}{lcl}
+A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{2}}\ \perm[1]{a} & \text{(subject asked, other party withheld)}\\
+A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(properly supported)}\\
+A\in\{\emptyset,\{a^{(2)}\}\}: & \text{no violation} & \text{(no unsupported subject attempt).}
+\end{array}
+\]
+\end{example}
+
+\subsubsection*{Blame Propagation in Contracts}
+\paragraph{Conjunction.}
+For $S \subseteq\{1, 2\}$ of agent(s), and  two contract $C$ and $C'$ from \cDL and a synchronous trace $\pi$, blame is defined for the conjunction $C \wedge C'$ is defined as:
+\[
+\pi\ \vDash_{\bottp{S}}\ (C\wedge C') \;\iff\;
+\begin{cases}
+\pi\ \vDash_{\bottp{S}}\ C \ \nd\ \pi \vDash_{\dbot} C',\\[2pt]
+\pi\ \vDash_{\bottp{S}}\ C' \ \nd\ \pi \vDash_{\dbot} C,\\[2pt]
+\pi\ \vDash_{\bottp{S_1}}\ C\ \nd\ \pi\ \vDash_{\bottp{S_2}}\ C' \text{ with } S=S_1\cup S_2.
+\end{cases}
+\]
+Where $\dbot$ stand for a non violation verdict, i.e, $\dbot \in \{\,?,\ \topp,\ \topt\,\}$\\
+\emph{Intuition.}
+The three cases summarize the possible outcomes of forward-looking blame.
+The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contracts could be violated at the same time point, in this case, the agent or agents responsible for \emph{both simultaneous} violation get the blame.
+
+For the rest of the operators,  blame  follows a similar definition as the tight violation, with $k \in [0, \size{\pi}]$:
+
+\paragraph{Sequence.}
+For \(S\subseteq\{1,2\}\), contracts \(C,C'\) in \cDL, and a synchronous trace \(\pi\):
+\[
+\pi\ \vDash_{\bottp{S}}\ (C;C') \;\iff\;
+\begin{cases}
+\pi\ \vDash_{\bottp{S}}\ C,\\[2pt]
+\pi_k\ \vDash_{\topt} \ C \ \nd\ \pi^{k+1}\ \vDash_{\bottp{S}}\ C'.
+\end{cases}
+\]
+\emph{Intuition.} The first decisive failure before \(C\) has tightly succeeded belongs to \(C\), so its blame propagates. Once \(C\) has tightly succeeded (\(\topt\)) or is in post-success (\(\topp\)), only \(C'\) can still fail, so the blame comes from \(C'\). There is no tie, since \(C'\) becomes active only after \(C\) has tightly succeeded.
+
+\paragraph{Reparation.}
+For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) is defined as:
+\[
+\pi\ \vDash_{\bottp{S}}\ (C\repair C')
+\;\iff\;
+\exists\,k\ \text{such that}\ 
+\pi[0,k]\ \vDash_{\bott}\ C
+\ \nd\
+\pi[k{+}1,|\pi|]\ \vDash_{\bottp{S}}\ C'.
+\]
+\emph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\), therefore, corresponds to the agents responsible for violating the reparation \(C'\) once it is triggered. The blame for $C$ is not considered, as one cares only for the overall violation of the combined contracts.
+
+
+\begin{example}[Witness traces for all blame verdicts]
+We use $\Sigma_C=\{\PAY,\PAYF,\OCC\}$ and letters $A_t\subseteq\Gamma$ with agent tags $\cdot^{(1)},\cdot^{(2)}$.
+Recall
+\[
+C_2' := \perm[1]{\OCC}\ ;\ \perm[1]{\OCC},\qquad
+C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
+\]
+
+
+\medskip
+\noindent\textbf{Tight blame for agent 1 }
+\[
+\pi_1=\langle A_0\rangle,\quad A_0=\{\OCC^{(1)}\}
+\]
+Here $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdict are:
+\begin{itemize}
+\item The tenant (1) gets blamed for violating the obligation to pay rent:\\ $\pi_1 \vDash_{\bottp{1}} \obl[1]{\PAY}$. 
+\item The landlord (2) gets blamed for violating the power of the tenant to occupy the flat:\\
+$\pi_1 \vDash_{\bottp{2}} \perm[1]{\PAY}$.
+\end{itemize}
+But the specification allows for the reparation $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$. So consequently, no tight violation can be diagnosed at $T=1$:\\
+$\pi_1 \presat \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.$
+Consequently, only the landlord gets the blame for the overall specification:
+\[\pi_1 \vDash_{\bottp{2}} C_2' \wedge C_3.\]
+
+Moreover, consider the trace of  $\pi_2:= \trace{\{\OCC^{(1)}\}, \{\OCC^{(1)}\}}$, the extension of $\pi_1$ with the same event, as the blame is forward and tight looking, the blame is still assigned only to agent $2$ (landlord) as they is responsible for the first violation.
+
+Let us consider instead the following trace $\pi_3:=\trace{A_0',A_1}$ with $A_0':= \{\OCC^{(1)}, \OCC^{(2)}\}$ and $A_1:= \{\OCC^{(1)}\}$.
+
+Here:
+\begin{itemize}
+\item The landlord gets the blame at $T=2$ for violating the power of the tenant to occupy the flat in the second month:\\
+$\pi_3 \vDash_{\bottp{2}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
+\item For the reparation clause $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ we must distinguish two different situations in which the fine is not honoured:
+  \begin{itemize}
+    \item if the tenant never attempts to pay the fine, that is, no letter of the trace contains $\PAYF^{(1)}$, then the blame goes to agent 1:\\
+    $\pi \vDash_{\bottp{1}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$,
+    \item if instead the tenant attempts to pay the fine and the landlord does not cooperate, for example, in a letter $A$ with $\PAYF^{(1)}\in A$ and $\PAYF^{(2)}\notin A$, then the fine obligation is violated, and the blame goes to agent 2:\\
+    $\pi \vDash_{\bottp{2}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$.
+  \end{itemize}
+\end{itemize}
+\end{example}
+\subsection{From Tight Contract Satisfaction Monitor to Tight Blame Monitor}
+
+\begin{definition}[Blame monitor]
+\label{def:blamemonitor}
+The \emph{blame monitor}, written $\mathcal{M}_{11}$, is a Moore machine whose
+output alphabet is the eleven-valued blame verdict set $\mathbb{V}_{11}$.
+Formally,
+\[
+\mathcal{M}_{11} = (Q,q_0,\Gamma,\mathbb{V}_{11},\delta,\lambda_{11}),
+\]
+where:
+\begin{enumerate}
+  \item The output alphabet formed by 11 letters is
+  \[
+  \mathbb{V}_{11}
+      = \{\mathsf{?},\topt,\topp\}
+        \cup \{\bot^{t}_{S},\bot^{p}_{S} \mid S\in\{0,1,2,12\}\}.
+  \]
+  \item $Q$ is the set of states and $q_0\in Q$ is the initial state,
+  \item $\Gamma = 2^\Sigma$ is the input event alphabet,
+  \item $\delta: Q \times \Gamma \to Q$ is the transition function,
+  \item $\lambda_{11}: Q \to \mathbb{V}_{11}$ is the state output function.
+\end{enumerate}
+\end{definition}
+
+The blame monitor refines the five-valued tight satisfaction monitor by keeping the same control structure and replacing each violating region with a
+responsibility-aware verdict from $\mathbb{V}_{11}$.
+
+\begin{definition}[Blame monitor construction]
+\label{def:bmc}
+Let $C$ be a contract in \cDL. The \emph{blame monitor construction} is a
+function on contracts, written $\bmc(C)$, that returns the blame monitor over
+$\mathbb{V}_{11}$ for $C$.
+We define $\bmc(C)$ by reusing the tight satisfaction monitor construction of
+Definition~\ref{def:tsmc}. Let
+\[
+\tsmc(C) = (Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)
+\]
+be the tight satisfaction monitor for $C$.
+The corresponding blame monitor is
+\[
+\bmc(C) := (Q,q_0,\Gamma,\mathbb{V}_{11},\delta,\lambda_{11}),
+\]
+that is, the state space, initial state, input alphabet, and transition
+function are reused from $\tsmc(C)$, and only the output function is refined
+from $\lambda_5$ to $\lambda_{11}$ as described below.
+\end{definition}
+
+\paragraph{Lifting contract verdicts to blame verdicts.}
+Intuitively, $\lambda_{11}$ refines the five-valued verdicts of the tight
+contract monitor by attaching a blame set to every violating region. The three
+non-violating outcomes,
+\[
+\mathsf{?},\quad \topt,\quad \topp,
+\]
+are kept unchanged. Whenever the tight semantics reach a tight violation at
+some prefix, the corresponding state in the blame monitor outputs a symbol of
+the form $\bot^t_S$ where $S\in\{\{1\},\{2\},\{1,2\},\emptyset\}$ specifies who is responsible? Likewise, every post-violation region is labeled by some
+$\bot^p_S$.
+
+Formally, let $\vDash_{\bottp{S}}$ and $\vDash_{\botpp{S}}$ be the
+denotational blame judgments introduced above. For a finite trace $\pi$ and
+prefix index $k<|\pi|$, define the \emph{ideal} blame verdict
+\[
+\mathsf{Blame}(C,\pi[0,k]) \in \mathbb{V}_{11}
+\]
+as follows:
+\[
+\mathsf{Blame}(C,\pi[0,k]) =
+\begin{cases}
+\mathsf{?}
+  & \text{if }\pi[0,k]\ \presat\ C,\\[4pt]
+\topt
+  & \text{if }\pi[0,k]\ \satt\ C,\\[4pt]
+\topp
+  & \text{if }\pi[0,k]\ \postsat\ C,\\[4pt]
+\bot^t_S
+  & \text{if }\pi[0,k]\ \vDash_{\bottp{S}} C,\\[4pt]
+\bot^p_S
+  & \text{if }\pi[0,k]\ \vDash_{\botpp{S}} C.
+\end{cases}
+\]
+By construction of the five-way semantics and the blame rules, exactly one of these cases applies to each prefix, and the set $S$ is uniquely determined whenever a blame judgement holds.
+
+\begin{definition}[Blame refinement of a contract monitor]
+  \label{def:bm-refinement}
+  Let $\mathcal{M}(C)=(Q,\Gamma,\delta,q_0,\lambda)$ be the five-valued Moore monitor for contract $C$, with outputs in $\mathbb{V}_5 = \{\mathsf{?},\topt,\bott,\topp,\botp\}$.
+  
+  The \emph{tight blame monitor} $\mathcal{BM}(C)$ is constructed by retaining the control structure of $\mathcal{M}(C)$ while refining the violation outputs to pinpoint responsibility. Formally:
+  \[
+  \mathcal{BM}(C) = (Q,\Gamma,\delta,q_0,\lambda^{\mathcal{BM}}),
+  \]
+  where the new output function $\lambda^{\mathcal{BM}}: Q \to \mathbb{V}_{11}$ is defined for every state $q \in Q$ (reached by some trace $\pi$) as follows:
+  
+  \[
+  \lambda^{\mathcal{BM}}(q) = 
+  \begin{cases}
+    % Non-violating cases remain identical
+    \lambda(q) & \text{if } \lambda(q) \in \{\mathsf{?},\ \topt,\ \topp\}, \\[8pt]
+    
+    % Tight Violation Split
+    \bottp{S} & \text{if } \lambda(q) = \bott \text{ and } \pi \vDash_{\bottp{S}} C, \\[8pt]
+    
+    % Post Violation Split
+    \botpp{S} & \text{if } \lambda(q) = \botp \text{ and } \pi \vDash_{\botpp{S}} C.
+  \end{cases}
+  \]
+
+  \begin{theorem}[Correctness and Consistency of the Blame Monitor]
+    \label{thm:bm-correct}
+    Let $C$ be a contract in \cDL. Let $\tmon(C)$ be its tight satisfaction monitor with output function $\lambda_5$, and let $\mathcal{BM}(C)$ be its blame monitor with output function $\lambda^{\mathcal{BM}}$ (also denoted $\lambda_{11}$).
+    Let $\mathsf{Blame}(C,\pi)$ denote the denotational blame verdict of $C$ on trace $\pi$ as defined in the forward-looking semantics (Subsection.{\ref{forwardsatsem}}).
+    
+    For every finite trace $\pi$, the following equality holds:
+    \[
+    \lambda^{\mathcal{BM}}\bigl(\delta^{\mathcal{BM}}(q_0,\pi)\bigr) 
+      \;=\; 
+    \mathsf{Blame}(C,\pi).
+    \]
+    Furthermore, the blame monitor is consistent with the tight satisfaction monitor for non-violating verdicts. For all traces $\pi$:
+    \[
+    \mathsf{Blame}(C,\pi)\in \{\mathsf{?}, \topt, \topp\} 
+      \implies 
+    \lambda^{\mathcal{BM}}\bigl(\delta^{\mathcal{BM}}(q_0,\pi)\bigr) 
+      \;=\; 
+    \lambda_5\bigl(\delta^{\tmon}(q_0,\pi)\bigr).
+    \]
+    \end{theorem}
+    
+    \begin{proof}
+    The proof proceeds by structural induction on $C$. We define $\lambda^{\mathcal{BM}}$ (denoted $\lambda_{11}$) using $\lambda_5$ and verify both correctness and consistency for each operator.
+    
+    \paragraph{Base Case: Literals ($\ell$).}
+    We defined $\lambda_{11}^{\mathit{lit}}(q, A)$ such that if $\lambda_5(q) \in \{\mathsf{?}, \topt, \topp\}$, then $\lambda_{11}^{\mathit{lit}}(q, A) = \lambda_5(q)$.
+    If $\lambda_5(q) = \bott$, it maps to $\bottp{S}$ (where $S \neq \emptyset$).
+    Thus, $\lambda_{11}(q) \in \{\mathsf{?}, \topt, \topp\} \iff \lambda_5(q) \in \{\mathsf{?}, \topt, \topp\}$ and the values are identical. Consistency holds. Correctness holds by Definition~\ref{def:bm-refinement}.
+    
+    \paragraph{Inductive Step: Conjunction ($C_1 \wedge C_2$).}
+    Let $q = (q_1, q_2)$. The definition of $\lambda_{11}^{\wedge}$ defaults to the combination table $\lambda_5^{\textsf{comb}}$ whenever neither component outputs a blame verdict (which corresponds to neither component outputting $\bott$ or $\botp$).
+    \[
+    \lambda_{11}^{\wedge}(q) = \lambda_5^{\textsf{comb}}(\lambda_5(q_1), \lambda_5(q_2)) \quad \text{if no blame detected.}
+    \]
+    Since $\lambda_5^{\wedge}$ is defined exactly by this table, and blame verdicts $\bottp{S}$ are only introduced when at least one sub-monitor has a violation, the non-violating outcomes are identical.
+    $\lambda^{\mathcal{BM}}(q) = \topt \iff \lambda_5(q) = \topt$ (and similarly for $\topp, \mathsf{?}$).
+    
+    \paragraph{Inductive Step: Sequence ($C_1 ; C_2$).}
+    The state space is partitioned into $Q_1$ and $Q_2$.
+    \begin{itemize}
+        \item If $q \in Q_1$: $\lambda_{11}^{;}(q) = \lambda_{11}^1(q)$. By IH, $\lambda_{11}^1$ is consistent with $\lambda_5^1$. Since $\lambda_5^{;}(q) = \lambda_5^1(q)$ here, consistency is preserved.
+        \item If $q \in Q_2$: $\lambda_{11}^{;}(q) = \lambda_{11}^2(q)$. By IH, $\lambda_{11}^2$ is consistent with $\lambda_5^2$. Since $\lambda_5^{;}(q) = \lambda_5^2(q)$ here, consistency is preserved.
+    \end{itemize}
+    
+    \paragraph{Inductive Step: Reparation ($C_1 \repair C_2$).}
+    The state space is $Q_1 \cup Q_2$.
+    \begin{itemize}
+        \item If $q \in Q_1$: The construction ensures $q$ is non-violating for $C_1$. We defined $\lambda_{11}^{\repair}(q) = \lambda_5^1(q)$. Since $\lambda_5^{\repair}(q) = \lambda_5^1(q)$, they are identical.
+        \item If $q \in Q_2$: The primary contract failed. We defined $\lambda_{11}^{\repair}(q) = \lambda_{11}^2(q)$. By IH, this is consistent with $\lambda_5^2(q)$. Since $\lambda_5^{\repair}(q) = \lambda_5^2(q)$, consistency is preserved.
+    \end{itemize}
+    
+    \paragraph{Conclusion.}
+    For all constructions, $\lambda^{\mathcal{BM}}(q) = \lambda_5(q)$ whenever $\lambda_5(q)$ is a non-violating verdict. Whenever $\lambda_5(q)$ is a violation ($\bott, \botp$), $\lambda^{\mathcal{BM}}(q)$ refines it to a blame verdict ($\bottp{S}, \botpp{S}$). Thus, the monitor is consistent for satisfaction/undecided verdicts and correct for blame assignment.
+    \end{proof}
+  
+  This transformation effectively partitions the set of generic violation states into disjoint subsets of blamed states:
+  \begin{itemize}
+      \item The tight violation states are split: $\{q \mid \lambda(q)=\bott\} = \bigcup_{S} \{q \mid \lambda^{\mathcal{BM}}(q)=\bottp{S}\}$,
+      \item The post violation states are split: $\{q \mid \lambda(q)=\botp\} = \bigcup_{S} \{q \mid \lambda^{\mathcal{BM}}(q)=\botpp{S}\}$.
+  \end{itemize}
+  \end{definition}
+
+  \begin{proof}[Proof of Theorem~\ref{thm:bm-correct}: Definition of $\lambda_{11}$]
+    The proof proceeds by structural induction on the contract $C$. We construct the blame output function $\lambda_{11}$ for the blame monitor $\mathcal{BM}(C)$ by refining the output function $\lambda_5$ of the tight satisfaction monitor $\tsmc(C)$.
+    
+    \paragraph{Base Case: Literals.}
+    Let $\ell = \obl[p]{a}$. The 5-valued monitor has a tight violation state $q_v$ where $\lambda_5(q_v)=\bott$.
+    The blame monitor refines this output based on the input letter $A$ that triggered the transition to $q_v$.
+    We define $\lambda_{11}^{\mathit{lit}}(q, A)$ as:
+    \[
+    \lambda_{11}^{\mathit{lit}}(q, A) = 
+    \begin{cases}
+      \bottp{p} 
+        & \text{if } \lambda_5(q)=\bott \text{ and } a^{(p)} \notin A, \\
+        & \text{(Subject failed to attempt)} \\[4pt]
+      \bottp{\bar{p}} 
+        & \text{if } \lambda_5(q)=\bott \text{ and } a^{(p)} \in A \land a^{(\bar{p})} \notin A, \\
+        & \text{(Counterparty withheld cooperation)} \\[4pt]
+      \botpp{S}
+        & \text{if } \lambda_5(q)=\botp \text{ (inherits previous blame } S), \\[4pt]
+      \lambda_5(q) 
+        & \text{if } \lambda_5(q) \in \{\mathsf{?}, \topt, \topp\}.
+    \end{cases}
+    \]
+    This matches the blame assignment for literals defined in Definition~\ref{def:bm-refinement}.
+    
+    \paragraph{Inductive Step: Conjunction.}
+    Let $C = C_1 \wedge C_2$. The monitor state is $(q_1, q_2)$.
+    We define $\lambda_{11}^{\wedge}$ using the blame functions $\lambda_{11}^1, \lambda_{11}^2$ of the sub-monitors and their 5-valued checks.
+    \[
+    \lambda_{11}^{\wedge}(q_1, q_2) = 
+    \begin{cases}
+      % Joint Violation
+      \bottp{S_1 \cup S_2} 
+        & \text{if } \lambda_{11}^1(q_1)=\bottp{S_1} \text{ and } \lambda_{11}^2(q_2)=\bottp{S_2}, \\[6pt]
+    
+      % C1 Violates, C2 Safe
+      \bottp{S_1} 
+        & \text{if } \lambda_{11}^1(q_1)=\bottp{S_1} \text{ and } \lambda_5^2(q_2) \in \{\mathsf{?}, \topt, \topp\}, \\[6pt]
+    
+      % C2 Violates, C1 Safe
+      \bottp{S_2} 
+        & \text{if } \lambda_{11}^2(q_2)=\bottp{S_2} \text{ and } \lambda_5^1(q_1) \in \{\mathsf{?}, \topt, \topp\}, \\[6pt]
+        
+      % Post-violation cases (uses same union logic)
+      \botpp{S_1 \cup S_2}
+        & \text{if } \lambda_{11}^1(q_1)=\botpp{S_1} \text{ or } \lambda_{11}^2(q_2)=\botpp{S_2}, \\[6pt]
+    
+      % Non-violating combination
+      \lambda_5^{\textsf{comb}}(\lambda_5^1(q_1), \lambda_5^2(q_2)) 
+        & \text{otherwise}.
+    \end{cases}
+    \]
+    This implements the conjunction blame propagation rules.
+    
+    \paragraph{Inductive Step: Sequence.}
+    Let $C = C_1 ; C_2$. The state space is partitioned into $Q_1$ (active $C_1$) and $Q_2$ (active $C_2$).
+    \[
+    \lambda_{11}^{;}(q) = 
+    \begin{cases}
+      \lambda_{11}^1(q) 
+        & \text{if } q \in Q_1, \\[6pt]
+      \lambda_{11}^2(q) 
+        & \text{if } q \in Q_2.
+    \end{cases}
+    \]
+    Since $Q_1$ contains only states where $C_1$ has not yet succeeded, any violation here is attributed to $C_1$. Once in $Q_2$, $C_1$ has succeeded, so blame falls on $C_2$.
+    
+    \paragraph{Inductive Step: Reparation.}
+    Let $C = C_1 \repair C_2$. The state space is partitioned into $Q_1$ (active $C_1$) and $Q_2$ (active reparation $C_2$).
+    \[
+    \lambda_{11}^{\repair}(q) = 
+    \begin{cases}
+      \lambda_{5}^1(q) 
+        & \text{if } q \in Q_1, \\[6pt]
+      \lambda_{11}^2(q) 
+        & \text{if } q \in Q_2.
+    \end{cases}
+    \]
+   By construction, $Q_1$ excludes all violation states of $C_1$, so $\lambda_{11}$ simply returns the non-violating 5-valued verdict. If $C_1$ fails, the monitor moves to $Q_2$, where the blame is determined entirely by the reparation contract $C_2$.
+    \end{proof}
+    In all cases, $\lambda_{11}$ correctly maps the state to the specific blame verdict defined by the forward-looking semantics. We now move to illustrate this refinement with two interesting examples.
+
+    \begin{example}[Blame Monitor for $C_2 \wedge C_3$]
+      Let us recall that $C_2 = \perm[1]{\OCC}$ represents the tenant's power to occupy the property, and $C_3 = \obl[1]{\PAY} \repair \obl[1]{\PAYF}$ represents the obligation to pay rent, repaired by paying a fine.
+      The following figure shows the blame refinement of the monitor in Fig.~\ref{fig:c2andc3}. The generic violation state is partitioned into specific blame verdicts based on the cause of the failure.
+      
+      \begin{figure}[h!]
+      \centering
+      \begin{tikzpicture}[
+        ->, >=Stealth, node distance=20mm and 18mm,
+        every state/.style={
+          rectangle,rounded corners,draw,
+          minimum width=12mm,minimum height=7mm,
+          inner sep=2pt,font=\scriptsize,align=center
+        },
+        initial text={}
+      ]
+      
+      % --- Non-Violating States (Preserved) ---
+      \node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+      \node[state, fill=gray!10, below right=15mm and 20mm of q0] (q1) {$s_1$\\$\mathsf{?}$};
+      \node[state,fill=green!18,right=35mm of q0] (qs) {$s_{\topt}$\\$\topt$};
+      \node[state,fill=green!10,right=22mm of qs] (qps) {$s_{\topp}$\\$\topp$};
+      
+      % --- Blame States (Split) ---
+      % Blame 2 (Landlord) - e.g., blocking permission or fine
+      \node[state,fill=red!18,below=25mm of q0] (qv2) {$s_{\bott}^2$\\$\bottp{2}$};
+      \node[state,fill=red!10,below=15mm of qv2] (qpv2) {$s_{\botp}^2$\\$\botpp{2}$};
+      
+      % Blame 1 (Tenant) - e.g., failing to pay fine
+      \node[state,fill=red!18,right=50mm of qv2] (qv1) {$s_{\bott}^1$\\$\bottp{1}$};
+      \node[state,fill=red!10,below=15mm of qv1] (qpv1) {$s_{\botp}^1$\\$\botpp{1}$};
+      
+      % --- Transitions ---
+      
+      % 1. Success paths (Unchanged)
+      \path
+        (q0) edge[bend left=10] node[above,pos=0.6] {\scriptsize$\OCC^\surd \land \PAY^{\surd}$} (qs)
+        (q0) edge[bend left=12] node[pos=0.6,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
+        (q1) edge[bend left=8] node[right,pos=0.4] {\scriptsize$\PAYF^\surd$} (qs)
+        (qs) edge node[above] {$\Gamma$} (qps)
+        (qps) edge[loop right] node {$\Gamma$} ();
+      
+      % 2. Violation: Landlord Fault (Blame 2)
+      % From s0: Landlord blocks occupation (Violation of P_1(OCC))
+      \path
+        (q0) edge[bend right=20] node[left,pos=0.5] {\scriptsize$\OCC^{\times}$} (qv2);
+      
+      % From s1: Landlord blocks fine payment (Violation of O_1(PAY_F))
+      % Define specific label for blocked fine: Tenant tries, Landlord blocks
+      \path
+        (q1) edge[bend left=15] node[above,sloped] {\scriptsize$\PAYF^{\text{blk}}$} (qv2);
+      
+      % 3. Violation: Tenant Fault (Blame 1)
+      % From s1: Tenant fails to pay fine (Violation of O_1(PAY_F))
+      % Define specific label for passive failure: Tenant doesn't try
+      \path
+        (q1) edge[bend right=15] node[above,sloped] {\scriptsize$\PAYF^{\text{fail}}$} (qv1);
+      
+      % 4. Post-Violation Loops
+      \path
+        (qv2) edge node[left] {$\Gamma$} (qpv2)
+        (qv1) edge node[right] {$\Gamma$} (qpv1)
+        (qpv2) edge[loop left] node {$\Gamma$} ()
+        (qpv1) edge[loop right] node {$\Gamma$} ();
+      
+      \end{tikzpicture}
+      \caption{Blame Monitor $\mathcal{BM}(C_2 \wedge C_3)$.
+      \textbf{Changes from Tight Monitor:}
+      The state $s_{\bott}$ is split into $s_{\bott}^2$ (Landlord blame) and $s_{\bott}^1$ (Tenant blame).
+      \textbf{Edge Definitions:}
+      $\OCC^\times$: Tenant attempts $\OCC$, Landlord blocks.
+     $\PAYF^{\text{fail}}$: Tenant does not attempt $\PAYF$ ($\PAYF^{(1)} \notin A$).
+      $\PAYF^{\text{blk}}$: Tenant attempts $\PAYF$, Landlord blocks.
+      }
+      \label{fig:blame-monitor}
+      \end{figure}
+      \end{example}
+
+      Although the previous example is constructed using a conjunction, the reparation operator within $C_3$ delays the assignment of blame for the payment obligation.
+Specifically, if the tenant fails to pay rent, the monitor transitions to a waiting state for the repair (outputting $\mathsf{?}$) rather than immediately emitting a violation verdict.
+Consequently, it is impossible for both conjuncts to return a tight violation $\bott$ at the same initial step.
+To illustrate a scenario where the monitor can output the joint blame verdict $\bottp{12}$, we consider the reparation-free reduction of the specification: $C_2 \wedge \obl[1]{\PAY}$.
+
+      \begin{example}[Blame Monitor with double blame]
+        The following monitor shows the emergence of joint blame. From the initial state $s_0$, three distinct violation paths are possible depending on who fails. The path to $s_{\bott}^{12}$ represents the simultaneous failure of both parties.
+        
+        \begin{figure}[h!]
+        \centering
+        \begin{tikzpicture}[
+          ->, >=Stealth, node distance=20mm and 25mm,
+          every state/.style={
+            rectangle,rounded corners,draw,
+            minimum width=12mm,minimum height=7mm,
+            inner sep=2pt,font=\scriptsize,align=center
+          },
+          initial text={}
+        ]
+        
+        % --- Initial State ---
+        \node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+        
+        % --- Success State ---
+        \node[state,fill=green!18,right=35mm of q0] (qs) {$s_{\topt}$\\$\topt$};
+        \node[state,fill=green!10,right=20mm of qs] (qps) {$s_{\topp}$\\$\topp$};
+        
+        % --- Violation States ---
+        
+        % 1. Joint Blame (Top Path)
+        \node[state,fill=purple!18,above right=7mm and 35mm of q0] (q12) {$s_{\bott}^{12}$\\$\bottp{12}$};
+        \node[state,fill=purple!10,right=20mm of q12] (qp12) {$s_{\botp}^{12}$\\$\botpp{12}$};
+        
+        % 2. Tenant Blame (Middle/Right Path)
+        \node[state,fill=red!18,below=7mm of qs] (q1) {$s_{\bott}^{1}$\\$\bottp{1}$};
+        \node[state,fill=red!10,right=20mm of q1] (qp1) {$s_{\botp}^{1}$\\$\botpp{1}$};
+        
+        % 3. Landlord Blame (Bottom Path)
+        \node[state,fill=red!18,below=7mm of q1] (q2) {$s_{\bott}^{2}$\\$\bottp{2}$};
+        \node[state,fill=red!10,right=20mm of q2] (qp2) {$s_{\botp}^{2}$\\$\botpp{2}$};
+        
+        % --- Transitions ---
+        
+        % Success: Tenant pays AND Landlord allows occupation
+        \path
+          (q0) edge node[above] {\scriptsize$\OCC^\surd \land \PAY^\surd$} (qs)
+          (qs) edge node[above] {$\Gamma$} (qps)
+          (qps) edge[loop right] node {$\Gamma$} ();
+        
+        % Joint Violation: Tenant doesn't pay AND Landlord blocks occupation
+        \path
+          (q0) edge[bend left=20] node[sloped,above] {\scriptsize$\OCC^\times \land \PAY^{\text{fail}}$} (q12)
+          (q12) edge node[above] {$\Gamma$} (qp12)
+          (qp12) edge[loop right] node {$\Gamma$} ();
+        
+        % Tenant Violation: Landlord allows occupation, BUT Tenant doesn't pay
+        \path
+          (q0) edge[bend right=5] node[sloped,above,pos=0.6] {\scriptsize$\OCC^\surd \land \PAY^{\text{fail}}$} (q1)
+          (q1) edge node[above] {$\Gamma$} (qp1)
+          (qp1) edge[loop right] node {$\Gamma$} ();
+        
+        % Landlord Violation: Tenant pays, BUT Landlord blocks occupation
+        \path
+          (q0) edge[bend right=30] node[sloped,below] {\scriptsize$\OCC^\times \vee \PAY^{\text{blk}}$} (q2)
+          (q2) edge node[above] {$\Gamma$} (qp2)
+          (qp2) edge[loop right] node {$\Gamma$} ();
+        
+        \end{tikzpicture}
+        \caption{Blame Monitor for $C_2 \wedge \obl[1]{\PAY}$.\\
+        \textbf{Edge Definitions:}\\
+        $\PAY^{\text{fail}}$: Tenant does not attempt payment ($\PAY^{(1)} \notin A$).\\
+        $\OCC^\times$: Tenant attempts occupation, Landlord blocks.\\ $\PAY^{\text{blk}}$: Tenant attempts to pay and Landlord blocks.\\
+        The state $s_{\bott}^{12}$ is reached only when both violations occur in the same step.}
+        \label{fig:joint-blame}
+        \end{figure}
+        \end{example}
+
+
+        \begin{example}[Blame Monitor for $\repit{C_3}$]
+          The figure below shows the blame monitor for the unbounded repetition of the rent-and-reparation contract. The generic violation state $q_{\bott}$ from the standard monitor is split into $s_{\bott}^1$ and $s_{\bott}^2$. Crucially, once the monitor transitions to a post-violation sink (e.g., $s_{\botp}^1$), it loops on any input $*$. This demonstrates the "first blame" limitation: if the tenant is blamed for missing a fine, the monitor will never blame the landlord for any future misconduct.
+          
+          \begin{figure}[h!]
+          \centering
+          \begin{tikzpicture}[
+            ->, >=Stealth, node distance=20mm and 20mm,
+            every state/.style={
+              rectangle,rounded corners,draw,
+              minimum width=12mm,minimum height=7mm,
+              inner sep=2pt,font=\scriptsize,align=center
+            },
+            initial text={}
+          ]
+          
+          % --- Active States ---
+          \node[initial,state,fill=gray!10]          (q0)  {$q_0$\\$\mathsf{?}$};
+          \node[state,fill=gray!10,below=of q0]      (qw)  {$q_w$\\$\mathsf{?}$};
+          
+          % --- Split Violation States ---
+          
+          % Path 1: Tenant Blame (Most common case)
+          \node[state,fill=red!18,above right= 4 mm and 20mm of qw]       (qv1)  {$s_{\bott}^1$\\$\bottp{1}$};
+          \node[state,fill=red!10,right=20mm of qv1]       (qpv1) {$s_{\botp}^1$\\$\botpp{1}$};
+          
+          % Path 2: Landlord Blame (Blocking the fine)
+          \node[state,fill=red!18,below right= 4 mm and 20mm of qw]       (qv2)  {$s_{\bott}^2$\\$\bottp{2}$};
+          \node[state,fill=red!10,right=20mm of qv2]       (qpv2) {$s_{\botp}^2$\\$\botpp{2}$};
+          
+          % --- Transitions ---
+          
+          % 1. In-cycle behavior
+          \path
+              (q0) edge[loop above] node[above,pos=0.5] {\scriptsize $\PAY^\surd$} ()
+              (q0) edge[bend right=15] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
+              (qw) edge[bend right=15] node[right,pos=0.5] {\scriptsize $\PAYF^\surd$} (q0); % Restart on repair
+          
+          % 2. Violation: Tenant Fault
+          % Tenant fails to pay the fine (no blocking)
+          \path
+              (qw) edge node[above] {\scriptsize $\PAYF^{\text{fail}}$} (qv1);
+          
+          % 3. Violation: Landlord Fault
+          % Tenant attempts fine, Landlord blocks
+          \path
+              (qw) edge[bend right=15] node[below,sloped] {\scriptsize $\PAYF^{\text{blk}}$} (qv2);
+          
+          % 4. Sinks (The Limitation)
+          % Once in a sink, the monitor loops forever, ignoring future events
+          \path
+              (qv1)  edge node[above] {$\Gamma$} (qpv1)
+              (qpv1) edge[loop right] node {$\Gamma$} ()
+              (qv2)  edge node[above] {$\Gamma$} (qpv2)
+              (qpv2) edge[loop right] node {$\Gamma$} ();
+          
+          \end{tikzpicture}
+          \caption{Blame Monitor for $\repit{C_3}$.
+          \textbf{Limitation:} If the trace reaches $s_{\botp}^1$ (Tenant blame), the monitor remains there forever. Even if the landlord subsequently blocks a valid payment attempt ($\PAYF^{\text{blk}}$) in a future step, the verdict remains $\botpp{1}$.}
+          \label{fig:rep-c3_blame}
+          \end{figure}
+          \end{example}     
+          
+\subsection{Conclusion and Limitation}      
+          We have presented forward-looking semantics and a corresponding monitor construction that refine the standard satisfaction verdicts by assigning responsibility. 
+          This approach is computationally efficient and provides immediate feedback on the \emph{status} of the contract, allowing for runtime enforcement and dispute resolution at the moment a breach occurs.
+          
+          However, this prefix-based view naturally implies a limitation regarding the completeness of the violation history. 
+          The semantics is designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. 
+          Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
+          A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment.
+          Consequently, any subsequent violations committed by other agents at later time steps are effectively masked by the first failure.
+          
+          This limitation is particularly evident in open-ended contracts involving the repetition operator. 
+          As illustrated by the monitor for $\repit{C_3}$ (Figure~\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
+          Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
+          Therefore, while this framework is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction. 
+          This is a notable constraint, as in law and normative systems, one typically has to account for all violations to determine the full extent of liability or penalties.
+          Capturing such multi-point violations would require a mechanism to reset or parallelize monitoring threads after a failure, rather than absorbing them into a permanent sink.
+          
+          Finally, extending this framework to support a cumulative blame semantics suggests interesting theoretical challenges. 
+          In particular, the interaction between timed operators and conjunctions complicates fault aggregation. 
+          For instance, determining whether overlapping failures in concurrent branches or repeated violations within sliding time windows should be counted as distinct or continuous breaches requires a more complex, possibly non-monotonic, judgment structure than the one presented here.          
+
+% \begin{theorem}[Correctness of the blame monitor]
+% \label{thm:bm-correct}
+% Let $C$ be a contract in \cDL, and let $\bmc(C)$ be its blame monitor. For
+% every finite trace $\pi$ and every prefix index $k<|\pi|$, if the run of
+% $\bmc(C)$ on $\pi$ is
+% \[
+% q_0,q_1,\dots,q_k,
+% \]
+% then
+% \[
+% \lambda_{11}(q_k) = \mathsf{Blame}_C\big(\pi[0,k]\big).
+% \]
+% In particular:
+% \begin{itemize}
+%   \item $\lambda_{11}(q_k)\in\{\mathsf{?},\topt,\topp\}$
+%         iff $\pi[0,k]\in\{\presat,\satt,\postsat\}$ for $C$,
+%   \item $\lambda_{11}(q_k)=\bot^t_S$
+%         iff $\pi[0,k]\ \vDash_{\bottp{S}} C$,
+%   \item $\lambda_{11}(q_k)=\bot^p_S$
+%         iff $\pi[0,k]\ \vDash_{\botpp{S}} C$.
+% \end{itemize}
+% \end{theorem}
+
+% \begin{proof}[Proof sketch]
+% Correctness of the tight monitor construction $\tsmc(C)$ with respect to the
+% five-valued semantics has already been established for all constructors.
+% The blame rules for literals and contract operators are defined by structural
+% recursion on $C$ and share the same tight frontiers as the underlying
+% violation semantics. By Lemma~\ref{lem:mutual prefix}, each prefix carries at
+% most one tight frontier, and the five regions are disjoint. The inductive
+% clauses for blame propagation mirror the violation clauses, so for every
+% reachable state $q_k$ on the run over $\pi$, the contract semantics assigns a
+% unique verdict in $\mathbb{V}_{11}$ to the prefix $\pi[0,k]$.
+% By Definition~\ref{def:bm-refinement}, $\lambda_{11}(q_k)$ is exactly that
+% verdict. The statement follows by induction on the structure of $C$ and on the
+% length of $\pi$.
+% \end{proof}
+
+% The blame monitor thus provides a concrete, prefix-based implementation of the
+% forward-looking blame semantics. It reads the same synchronous trace as the
+% tight satisfaction monitor, but instead of only declaring whether $C$ is
+% satisfied or violated, it refines every violation region with a precise
+% allocation of responsibility to the involved agents.
+
+% \begin{example}[Blame monitors for $C_3$ and $C_2\wedge C_3$]
+% We illustrate the reuse of the tight monitor construction on the rent contract
+% $C_3 = \obl[1]{\PAY}\repair\obl[1]{\PAYF}$ and its conjunction with the
+% permission $C_2=\perm[1]{\OCC}$.
+% The five-valued monitors for $\repit{C_3}$ and for $C_2\wedge C_3$ were given
+% in Example~\ref{ex:moore-c3-literals}.
+% The corresponding blame monitors are obtained by keeping the same states and
+% transitions and only refining the outputs.
+
+% \begin{figure}[h!]
+% \centering
+% \tikzset{
+%   ->, >=Stealth, semithick,
+%   node distance=17mm,
+%   every state/.style={
+%     rectangle,rounded corners,draw,
+%     minimum width=12mm,minimum height=7mm,
+%     inner sep=2pt,font=\scriptsize,align=center}
+% }
+
+% % Blame monitor for rep(C3)
+% \begin{subfigure}[t]{0.46\textwidth}
+% \centering
+% \begin{tikzpicture}
+%   \node[initial,state,fill=gray!10]          (q0)  {$q_0$\\$\mathsf{?}$};
+%   \node[state,fill=gray!10,below=of q0]      (qw)  {$q_w$\\$\mathsf{?}$};
+%   \node[state,fill=red!18,right=of qw]       (qv)  {$q_{\bot^t}$\\$\bot^t_{\{1\}}$};
+%   \node[state,fill=red!10,above=of qv]       (qpv) {$q_{\bot^p}$\\$\bot^p_{\{1\}}$};
+
+%   \path
+%     (q0) edge[loop above] node[above,pos=0.5] {\scriptsize $\PAY^\surd$} ()
+%     (q0) edge[bend right=13] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
+%     (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0)
+%     (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
+%     (qv)  edge node[left] {$\Gamma$} (qpv)
+%     (qpv) edge[loop right] node {$\Gamma$} ();
+% \end{tikzpicture}
+% \caption{Blame monitor for $\repit{C_3}$. All unrepaired violations of $C_3$ are blamed on agent 1.}
+% \label{fig:rep-c3-blame}
+% \end{subfigure}
+% \hfill
+
+% % Blame monitor for C2 ^ C3
+% \begin{subfigure}[t]{0.46\textwidth}
+% \centering
+% \scalebox{0.9}{
+% \begin{tikzpicture}[
+%   ->, >=Stealth, node distance=20mm and 18mm,
+%   every state/.style={
+%     rectangle,rounded corners,draw,
+%     minimum width=12mm,minimum height=7mm,
+%     inner sep=2pt,font=\scriptsize,align=center
+%   }
+% ]
+% \node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+% \node[state, fill=gray!10, below right=16mm and 17mm of q0] (q1) {$s_1$\\$\mathsf{?}$};
+% \node[state,fill=green!18,right=22mm of q0] (qs) {$s_{\topt}$\\$\topt$};
+% \node[state,fill=red!18,below=28mm of q0] (qv) {$s_{\bot^t}$\\$\bot^t_{S}$};
+% \node[state,fill=green!10,right=22mm of qs] (qps) {$s_{\topp}$\\$\topp$};
+% \node[state,fill=red!10,below=28mm of qps] (qpv) {$s_{\bot^p}$\\$\bot^p_{S}$};
+
+% \path[->]
+%   (q0) edge[bend left=10] node[above,pos=0.5] {\scriptsize$\OCC^\surd \land \PAY^{\surd}$} (qs)
+%   (q0) edge[bend right=14] node[left,pos=0.5] {\scriptsize$\OCC^{\times}$} (qv)
+%   (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
+%   (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
+%   (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
+%   (qs) edge node[above] {$\Gamma$} (qps)
+%   (qv) edge node[below] {$\Gamma$} (qpv)
+%   (qps) edge[loop right] node {$\Gamma$} ()
+%   (qpv) edge[loop right] node {$\Gamma$} ();
+% \end{tikzpicture}}
+% \caption{Blame monitor for $C_2\wedge C_3$. $S$ denotes the blame set prescribed by the conjunction blame rules.}
+% \label{fig:c2andc3-blame}
+% \end{subfigure}
+
+% \caption{Blame monitor construction by reuse of the tight monitors for $\repit{C_3}$ and $C_2\wedge C_3$. States and transitions are inherited from the five-valued monitors; only the outputs are refined from $\bott,\botp$ to the responsibility-aware verdicts $\bot^t_S,\bot^p_S$.}
+% \label{fig:blame-monitors-c2-c3}
+% \end{figure}
+% \end{example
