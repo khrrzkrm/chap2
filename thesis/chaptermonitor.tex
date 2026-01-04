@@ -353,7 +353,7 @@ In the fourth month, the tenant attempts to address the earlier non-payment by t
  \[
  \begin{aligned}
  \taumt_{1}
- &=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent},36)\, (\textsf{pay\_rent\_f},95)},\\
+ &=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent},36), (\textsf{pay\_rent\_f},95)},\\
  \taumt_{2}
  &=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\ (\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
  \end{aligned}
@@ -367,15 +367,16 @@ In the fourth month, the tenant attempts to remedy the earlier violation by payi
 While this description is clear at the level of concrete events, it is not yet aligned with the contractual semantics, which operate on monthly obligations and joint outcomes rather than individual timestamps. This motivates the next step: synchronizing the agent-local traces into a common period-based structure that supports collaboration, interference, and normative evaluation.
 \subsubsection{Step 1: Abstraction into Periodic Synchronized Set trace}
 Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
-the timeline into month windows $\Ik{0},\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
+the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
 within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
 
 \begin{definition}[Periodic synchronized set trace]\label{def:periodic}
-A \defn{periodic synchronized set trace} over an alphabet $\Sigma^i$ for agent $i$ over a global clock with a fixed Period is a sequence of sets of actions, i.e 
+A \defn{periodic synchronized set trace} over an alphabet $\Sigma_i$ for agent $i$ over a global clock with a fixed period length is an infinite sequence of sets of actions indexed from $1$, that is,
 \[
-\pi_i \;=\; \trace{\Aik{i}{0},\ \Aik{i}{1},\ \Aik{i}{2},\ \dots}\ \in\ \wordsets{\Sig{i}}^{\infty}.
+\pi_i \;=\; \trace{\Aik{i}{1},\ \Aik{i}{2},\ \Aik{i}{3},\ \dots}
+\ \in\ \wordsets{\Sig{i}}^{\infty}.
 \]
-Each $\Aik{i}{k}\subseteq \Sig{i}$ represents the set of actions attributed to agent $i$ during the the period $k$
+Each $\Aik{i}{k}\subseteq \Sig{i}$ represents the set of actions attributed to agent $i$ during period $k$
 (empties allowed).
 \end{definition}
 
@@ -389,16 +390,17 @@ as follows.
 
 Given a finite metric-timed trace
 \[
-\taumt = \trace{(a_0,t_0),\dots,(a_n,t_n)}
-\quad\text{with } a_j \in \Sigma,\ t_j \in \mathbb{N},
+\taumt = \trace{(a_1,t_1),\dots,(a_n,t_n)}
+\quad\text{with } a_j \in \Sigma,\ t_j \in \mathbb{N}\ \text{for all } j\in\{1,\dots,n\},
 \]
 we partition time into period windows
 \[
-I_k := [kx,(k+1)x-1] \quad (k \in \mathbb{N}).
+  I_k \;:=\; [(k-1)(x+1),\ k(x+1)-1]
+  \qquad (k \ge 1).
 \]
 The aggregated periodic synchronized set trace
 \[
-\AGGI_x(\taumt) := \pi = \trace{A_0,\dots,A_K}
+\AGGI_x(\taumt) := \pi = \trace{A_1,\dots,A_K}
 \]
 is defined by
 \[
@@ -406,13 +408,14 @@ A_k := \{\, a \in \Sigma \mid \exists\, t \in I_k:\ (a,t) \in \taumt \,\},
 \]
 where
 \[
-K := \max\{\, k \mid I_k \cap \{t_0,\dots,t_n\} \neq \emptyset \,\}.
+K := \max\{\, k \mid I_k \cap \{t_1,\dots,t_n\} \neq \emptyset \,\}.
 \]
 \end{definition}
 \begin{proof}
 By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
 $t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
-Since $k < \ell$ implies $I_k < I_{\ell}$ by construction of the period windows,
+Since $k<\ell$ and the windows are disjoint and ordered, we have
+$\max(I_k) < \min(I_{\ell})$,
 we obtain $t_a < t_b$.
 \end{proof}
 
@@ -422,13 +425,16 @@ we obtain $t_a < t_b$.
 Let $\taumt_i \in (\Sigma_i \times \mathbb{N})^{*}$ be a finite metric-timed trace and let $x \in \mathbb{N}$.
 Let
 \[
-\pi_i := \AGGI_x(\taumt_i) = \trace{A^{(i)}_0,\dots,A^{(i)}_K}.
+\pi_i := \AGGI_x(\taumt_i) = \trace{A^{(i)}_1,\dots,A^{(i)}_K}.
 \]
 Then aggregation preserves inter-period order in the following sense:
 \[
-\forall k < \ell\ \forall a \in A^{(i)}_k\ \forall b \in A^{(i)}_{\ell}\;
-\exists\, t_a \in I_k,\ t_b \in I_{\ell}:
-(a,t_a) \in \taumt_i,\ (b,t_b) \in \taumt_i,\ \text{and } t_a < t_b.
+\forall\, k,\ell \in \{1,\dots,K\},\ k<\ell,\
+\forall\, a \in A^{(i)}_k,\ \forall\, b \in A^{(i)}_{\ell},\
+\forall\, t_a,t_b:\
+\bigl((a,t_a)\in\taumt_i \land t_a\in I_k\bigr)\ \land\
+\bigl((b,t_b)\in\taumt_i \land t_b\in I_{\ell}\bigr)
+\ \Rightarrow\ t_a<t_b.
 \]
 \end{lemma}
 
@@ -445,25 +451,25 @@ Nevertheless, aggregation has a cost, as it loses intra-period order, action mul
 \label{ex:agg-30-locked}
 By fixing the period to 30, we can decompose the 120 days into 4 horizons:
 \[
-\Ik{0}=[0,30],\qquad \Ik{1}=[31,60],\qquad \Ik{2}=[61,90],\qquad \Ik{3}=[91,120].
+\Ik{1}=[0,30],\qquad \Ik{2}=[31,60],\qquad \Ik{3}=[61,90],\qquad \Ik{4}=[91,120].
 \]
 The two timed traces $\taumt_1$ and $\taumt_2$ are transformed using the function $\AGGI_{30}$ transformation respectively into:
 \[
 \begin{aligned}
 \pi_1&=\trace{%
-\underbrace{\{\textsf{pay\_rent}\}}_{\Ik{0}},\
-\underbrace{\{\textsf{start\_occ, \textsf{pay\_rent}}\}}_{\Ik{1}},\
-\underbrace{\emptyset}_{\Ik{2}},\
-\underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{3}}},\\[2pt]
+\underbrace{\{\textsf{pay\_rent}\}}_{\Ik{1}},\
+\underbrace{\{\textsf{start\_occ, \textsf{pay\_rent}}\}}_{\Ik{2}},\
+\underbrace{\emptyset}_{\Ik{3}},\
+\underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{4}}},\\[2pt]
 \pi_2&=\trace{%
-\underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{0}},\
-\underbrace{\{\textsf{ack\_pay}\}}_{\Ik{1}},\
-\underbrace{\emptyset}_{\Ik{2}},
-\underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{3}}}.
+\underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{1}},\
+\underbrace{\{\textsf{ack\_pay}\}}_{\Ik{2}},\
+\underbrace{\emptyset}_{\Ik{3}},
+\underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{4}}}.
 \end{aligned}
 \]
-By Lemma~\ref{lem:agg-to-periodic}, for agent~1 the element $\textsf{start\_occ}\in \Aik{1}{1}$ precedes
-$\textsf{pay\_rent\_f}\in \Aik{1}{3}$ (witness times $35<95$), and similarly for agent~2.
+By Lemma~\ref{lem:agg-to-periodic}, for agent~1 the element $\textsf{start\_occ}\in \Aik{1}{2}$ precedes
+$\textsf{pay\_rent\_f}\in \Aik{1}{4}$ (witness times $35<95$), and similarly for agent~2.
 \end{example}
 
 \subsubsection{Step 2: Abstraction to a Collaboration Alphabet}
@@ -519,16 +525,16 @@ Using the traces from Example~\ref{ex:agg-30-locked},
 \[
 \begin{aligned}
 \pi_1&=\trace{%
-\underbrace{\{\textsf{pay\_rent}\}}_{\Ik{0}},\ 
-\underbrace{\{\textsf{start\_occ}, \textsf{pay\_rent} \}}_{\Ik{1}},\ 
-\underbrace{\emptyset}_{\Ik{2}},\ 
-\underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{3}}
+\underbrace{\{\textsf{pay\_rent}\}}_{\Ik{1}},\ 
+\underbrace{\{\textsf{start\_occ}, \textsf{pay\_rent} \}}_{\Ik{2}},\ 
+\underbrace{\emptyset}_{\Ik{3}},\ 
+\underbrace{\{\textsf{pay\_rent\_f}\}}_{\Ik{4}}
 },\\[2pt]
 \pi_2&=\trace{%
-\underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{0}},\ 
-\underbrace{\{\textsf{ack\_pay}\}}_{\Ik{1}},\ 
-\underbrace{\emptyset}_{\Ik{2}},\ 
-\underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{3}}
+\underbrace{\{\textsf{grant\_occ},\ \textsf{ack\_pay}\}}_{\Ik{1}},\ 
+\underbrace{\{\textsf{ack\_pay}\}}_{\Ik{2}},\ 
+\underbrace{\emptyset}_{\Ik{3}},\ 
+\underbrace{\{\textsf{ref\_pay\_f},\ \textsf{change\_lock}\}}_{\Ik{4}}
 }.
 \end{aligned}
 \]
@@ -546,21 +552,21 @@ The corresponding collaboration-trace abstractions of $\pi_1$ and $\pi_2$ are $\
 \[
 \begin{aligned}
 \pi_1^{C}&=\trace{%
-\underbrace{\{\pay{1}\}}_{\Ik{0}},\ 
-\underbrace{\{\occ{1},\ \pay{1}\}}_{\Ik{1}},\ 
-\underbrace{\{\occ{1}\}}_{\Ik{2}},\ 
-\underbrace{\{\payf{1}\}}_{\Ik{3}}
+\underbrace{\{\pay{1}\}}_{\Ik{1}},\ 
+\underbrace{\{\occ{1},\ \pay{1}\}}_{\Ik{2}},\ 
+\underbrace{\{\occ{1}\}}_{\Ik{3}},\ 
+\underbrace{\{\payf{1}\}}_{\Ik{4}}
 },\\[2pt]
 \pi_2^{C}&=\trace{%
-\underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{0}},\ 
 \underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{1}},\ 
-\underbrace{\{\occ{2}\}}_{\Ik{2}},\ 
-\underbrace{\emptyset}_{\Ik{3}}
+\underbrace{\{\occ{2},\ \pay{2}\}}_{\Ik{2}},\ 
+\underbrace{\{\occ{2}\}}_{\Ik{3}},\ 
+\underbrace{\emptyset}_{\Ik{4}}
 }.
 \end{aligned}
 \]
-Reading: in month \(\Ik{0}\), agent~1 positively contributes to $\PAY$, and agent~2 allows $\OCC$\ and accepts $\PAY$.
-In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contributes to $\PAY$ and allows the occupation $\OCC$. In \(\Ik{2}\), agent~1 keeps $\OCC$ but does not pay, and the landlord keeps allowing $\OCC$. In \(\Ik{3}\), the landlord blocks both $\PAY$ and denies $\OCC$, although the tenant wants to keep occupying the flat and pays.
+Reading: in month \(\Ik{1}\), agent~1 positively contributes to $\PAY$, and agent~2 allows $\OCC$\ and accepts $\PAY$.
+In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contributes to $\PAY$ and allows the occupation $\OCC$. In \(\Ik{3}\), agent~1 keeps $\OCC$ but does not pay, and the landlord keeps allowing $\OCC$. In \(\Ik{4}\), the landlord blocks both $\PAY$ and denies $\OCC$, although the tenant wants to keep occupying the flat and pays.
 \end{example}
 
   
@@ -575,7 +581,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   Let  $\Sigma$ be an alphabet and let $\Sigma^{(1)}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
   $\Sigma^{(2)}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
   The \emph{successful collaboration operator}, written $\mathsf{Succ}$ of two periodic synchronous trace $\pi_1$ over $\Sigma^{(1)}$ and $\pi_2$ over $\Sigma^{(2)}$ on the same maximum horizon $T$ is defined eventwise by:
-  \[\forall k\in\{0,\dots,T\},
+  \[\forall k\in\{1,\dots,T\},
   \mathrm{Succ}(\pi_1,\pi_2)[k]
   \ := \unlab\!\big(\pi_1[k]\big) \cap\ \unlab\!\big(\pi_2[k]\big).
   \]
@@ -726,7 +732,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
     s^{0}_i := s^0_i,
     \qquad
     s^{k+1}_i := \delta_i(s^k_i, X_k)
-    \quad\text{for all }k \ge 0.
+    \quad\text{for all }k \ge 1.
     \]
     
     \noindent For finite input $X$ of length $n{+}1$ we write $|X|=n{+}1$ and 
@@ -794,51 +800,51 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   Both machines use $S=\{s_0,s_1,s_2\}$ with initial state $s_0$.
   Transitions are guarded by the current letters of the agent \emph{other} (seen as a set).
 
-  The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encodings in \ref{fig:moore-tenant} and \ref{fig:moore-landlord}, respectively.
+  The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encodings in Subfigure~\ref{fig:moore-tenant-prod} and Subfigure~\ref{fig:moore-landlord-prods}, respectively.
   
-  \begin{figure}[h]
-  \centering
-  \begin{subfigure}[t]{0.70\textwidth}
-  \centering
-  \scalebox{0.9}{
-  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
-    % Tenant machine M_1^1
-    \node[state,initial] (s_0) {$s_0/\mathrm{A_1}$};
-    \node[state,right=of s_0] (s_1) {$s_1/\mathrm{B_1}$};
-    \node[state,right=of s_1] (s_2) {$s_2/\mathrm{C_1}$};
+  % \begin{figure}[h]
+  % \centering
+  % \begin{subfigure}[t]{0.70\textwidth}
+  % \centering
+  % \scalebox{0.9}{
+  % \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
+  %   % Tenant machine M_1^1
+  %   \node[state,initial] (s_0) {$s_0/\mathrm{A_1}$};
+  %   \node[state,right=of s_0] (s_1) {$s_1/\mathrm{B_1}$};
+  %   \node[state,right=of s_1] (s_2) {$s_2/\mathrm{C_1}$};
   
-    \path[->]
-      (s_0) edge[bend left=10] node {$\OCC^{(2)}$} (s_1)
-      (s_1) edge[loop above] node {$\OCC^{(2)}$} ()
-            edge[bend left=10] node {$\overline{\OCC^{(2)}}$} (s_2);
-  \end{tikzpicture}}
-  \caption{$M_1^1$ (tenant).\\ $\mathrm{A_1}=\{\PAY^{(1)}\}$, $\mathrm{B_1}=\{\OCC^{(1)},\PAY^{(1)}\}$, $\mathrm{C_1}=\emptyset$.}
-  \label{fig:moore-tenant}
-  \end{subfigure}
+  %   \path[->]
+  %     (s_0) edge[bend left=10] node {$\OCC^{(2)}$} (s_1)
+  %     (s_1) edge[loop above] node {$\OCC^{(2)}$} ()
+  %           edge[bend left=10] node {$\overline{\OCC^{(2)}}$} (s_2);
+  % \end{tikzpicture}}
+  % \caption{$M_1^1$ (tenant).\\ $\mathrm{A_1}=\{\PAY^{(1)}\}$, $\mathrm{B_1}=\{\OCC^{(1)},\PAY^{(1)}\}$, $\mathrm{C_1}=\emptyset$.}
+  % \label{fig:moore-tenant}
+  % \end{subfigure}
   
-  \begin{subfigure}[t]{0.70\textwidth}
-  \centering
-  \scalebox{0.9}{
-  \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
-    % Landlord machine M_2^1
-    \node[state,initial] (s_0) {$s_0/\mathrm{A_2}$};
-    \node[state,right=of s_0] (s_1) {$s_1/\mathrm{A_2}$};
-    \node[state,right=of s_1] (s_2) {$s_2/\mathrm{B_2}$};
+  % \begin{subfigure}[t]{0.70\textwidth}
+  % \centering
+  % \scalebox{0.9}{
+  % \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
+  %   % Landlord machine M_2^1
+  %   \node[state,initial] (s_0) {$s_0/\mathrm{A_2}$};
+  %   \node[state,right=of s_0] (s_1) {$s_1/\mathrm{A_2}$};
+  %   \node[state,right=of s_1] (s_2) {$s_2/\mathrm{B_2}$};
   
-    \path[->]
-      (s_0) edge[loop above] node {$\PAY^{(1)}$} ()
-            edge[bend left=10] node {$\overline{\PAY^{(1)}}$} (s_1)
-      (s_1) edge[bend left=10] node {$\PAYF^{(1)}$} (s_0)
-            edge[bend left=10] node {$\PAY^{(1)}$} (s_2);
-  \end{tikzpicture}}
-  \caption{$M_2^1$ (landlord). Outputs: $\mathrm{A_2}=\{\OCC^{(2)},\PAY^{(2)}\}$, $\mathrm{B_2}=\emptyset$.}
-  \label{fig:moore-landlord}
-  \end{subfigure}
+  %   \path[->]
+  %     (s_0) edge[loop above] node {$\PAY^{(1)}$} ()
+  %           edge[bend left=10] node {$\overline{\PAY^{(1)}}$} (s_1)
+  %     (s_1) edge[bend left=10] node {$\PAYF^{(1)}$} (s_0)
+  %           edge[bend left=10] node {$\PAY^{(1)}$} (s_2);
+  % \end{tikzpicture}}
+  % \caption{$M_2^1$ (landlord). Outputs: $\mathrm{A_2}=\{\OCC^{(2)},\PAY^{(2)}\}$, $\mathrm{B_2}=\emptyset$.}
+  % \label{fig:moore-landlord}
+  % \end{subfigure}
   
-  \caption{Moore machines for the tenant and landlord representing their strategies over tagged $\Sigma_C$.
-  In the transition, the $\overline{\PAY^{1}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{1}$, similarly $\PAY^{1}$ is a shorthand for any input set containing $\PAY^{1}$}. 
-  \label{fig:moore-strategies}
-  \end{figure}
+  % \caption{Moore machines for the tenant and landlord representing their strategies over tagged $\Sigma_C$.
+  % In the transition, the $\overline{\PAY^{1}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{1}$, similarly $\PAY^{1}$ is a shorthand for any input set containing $\PAY^{1}$}. 
+  % \label{fig:moore-strategies}
+  % \end{figure}
   
   
   \[
@@ -898,13 +904,13 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \end{itemize}
   The \emph{language} $L(M_i \otimes M_j) \subseteq \Sigma^\omega$ consists of all infinite words
   \[
-  \trace{A_0, A_1, A_2 \dots}
+  \trace{A_1, A_2 \dots}
   \]
   such that there exists a run
   \[
-  (s^0_i, s^0_j) \xrightarrow{A_0} (s_{i,1}, s_{j,1}) \xrightarrow{A_1} (s_{i,2}, s_{j,2}) \xrightarrow{A_2} \dots
+  (s^0_i, s^0_j) \xrightarrow{A_1} (s_{i,1}, s_{j,1}) \xrightarrow{A_2} (s_{i,2}, s_{j,2}) \xrightarrow{A_3} \dots
   \]
-  with $A_k = \lambda_i(s_{i,k}) \cup \lambda_j(s_{j,k})$ for all $k \geq 0$.
+  with $A_k = \lambda_i(s_{i,k}) \cup \lambda_j(s_{j,k})$ for all $k \geq 1$.
   \end{definition}
   
   
@@ -924,7 +930,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \]
   and this run induces a \emph{unique word}
   \[
-  \pi \;=\; \trace{A_0,A_1,A_2,\dots} \;\in\; \big(2^{\Sigma_O^i \cup \Sigma_O^j}\big)^\omega,
+  \pi \;=\; \trace{A_1,A_1,A_2,\dots} \;\in\; \big(2^{\Sigma_O^i \cup \Sigma_O^j}\big)^\omega,
   \]
   where
   \[
@@ -943,7 +949,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   By induction on $t$, this yields a unique run of the product automaton starting from $(s^0_i,s^0_j)$.
   Collecting the joint outputs at each step produces the word $\pi$, which is therefore unique.
   If the run stabilizes in a sink state with constant outputs, $\pi$ is ultimately periodic
-  and may be regarded as finite; otherwise $\pi$ is infinite.
+  otherwise $\pi$ is infinite.
   \end{proof}
   
   \begin{example}[Product automaton sketch for $M_1^1 \times M_2^1$]
@@ -955,7 +961,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   progress under synchronous feedback. Once a stable pair of states is reached, the product
   loops, generating the same joint output forever.
 
-  The individual Moore machines underlying the product construction are recalled in Sub-figure~\ref{fig:moore-tenant-prod} and Sub-figure~\ref{fig:moore-landlord-prod}, while their synchronous product is summarized in Sub-figure~\ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
+  The individual Moore machines underlying the product construction are recalled in Sub-figure~\ref{fig:moore-tenant-prod} and Sub-figure~\ref{fig:moore-landlord-prods}, while their synchronous product is summarized in Sub-figure~\ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
   \begin{figure}[h]
   \centering
   \begin{subfigure}[t]{0.70\textwidth}
@@ -992,7 +998,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
             edge[bend left=10] node {$\PAY^{(1)}$} (s_2);
   \end{tikzpicture}}
   \caption{$M_2^1$ (landlord), with : $\mathrm{A_2}=\{\OCC^{(2)},\PAY^{(2)}\}$, $\mathrm{B_2}=\emptyset$}
-  \label{fig:moore-landlord-prod}
+  \label{fig:moore-landlord-prods}
   \end{subfigure}
   \vspace{0.5cm}
   \begin{subfigure}[t]{0.70\textwidth}
@@ -1014,7 +1020,8 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   
   \caption{Tenant’s machine $M_1^1$, landlord’s machine $M_2^1$, and their product 
   automaton $M_1^1 \times M_2^1$. 
-  Each product state is labeled by the joint output $\lambda_1(s_i^1)\cup\lambda_2(s_j^2)$.}
+  Each product state is labeled by the joint output $\lambda_1(s_i^1)\cup\lambda_2(s_j^2)$.
+  In the transition, the $\overline{\PAY^{1}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{1}$, similarly $\PAY^{1}$ is a shorthand for any input set containing $\PAY^{1}$.} 
   \label{fig:moore-product-full}
   \end{figure}
   
@@ -1026,7 +1033,7 @@ In \(\Ik{1}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   This section establishes a disciplined abstraction pipeline that bridges concrete executions and normative reasoning. Starting from raw metric-timed observations, we progressively lifted behavior into agent-local periodic traces and then into a collaboration-oriented representation aligned with the contractual calendar.
    The resulting model makes attempts, interference, and potential joint outcomes explicit without introducing interpretative assumptions or discarding observable behavior. Also, the modelization of strategies makes explicit how agents reason prospectively about each other’s behavior, enabling the analysis of compliance not only as an ex post property of traces (after the interaction has occurred), but as an ex ante property of interacting plans (before actions are taken, at the level of intended behavior).
   Crucially, this abstraction separates what agents did from what jointly succeeded, preserving exactly the distinctions required for responsibility and blame attribution. The collaborative periodic trace thus serves as the semantic interface between concrete interaction data and the normative machinery introduced next.
-  \todo{fix subfigure}
+ 
   
   \section{The Two-Agents Collaborative Normative Logic \cDL}
   The abstraction developed in the previous section provides the execution model on which normative reasoning will be grounded. 
@@ -1197,5 +1204,5 @@ By isolating unique satisfaction and violation frontiers, this semantics ensures
 
 \input{forwardtight.tex}
 
-%\input{quantitativeviol.tex}
+
 

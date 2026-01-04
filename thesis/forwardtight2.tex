@@ -58,7 +58,7 @@ Tight blame persists to extensions, and post blame is exactly “some earlier ti
 \trace{A}\ \vDash_{\bottp{S}}\ \ell\ \Longrightarrow\ 
 \forall\,\pi\ne\varepsilon:\ \trace{A}\pi\ \vDash_{\botpp{S}}\ \ell,
 \qquad
-\pi\ \vDash_{\botpp{S}}\ \ell\ \Longleftrightarrow\ \exists\,j<|\pi|:\ \pi[0,j]\ \vDash_{\bottp{S}}\ \ell.
+\pi\ \vDash_{\botpp{S}}\ \ell\ \Longleftrightarrow\ \exists\,j<|\pi|:\ \pi[1,j]\ \vDash_{\bottp{S}}\ \ell.
 \]
 \end{definition}
 
@@ -135,7 +135,7 @@ For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) i
 \pi\ \vDash_{\bottp{S}}\ (C\repair C')
 \;\iff\;
 \exists\,k\ \text{such that}\ 
-\pi[0,k]\ \vDash_{\bott}\ C
+\pi[1,k]\ \vDash_{\bott}\ C
 \ \nd\
 \pi[k{+}1,|\pi|]\ \vDash_{\bottp{S}}\ C'.
 \]
@@ -248,22 +248,22 @@ Formally, let $\vDash_{\bottp{S}}$ and $\vDash_{\botpp{S}}$ be the
 denotational blame judgments introduced above. For a finite trace $\pi$ and
 prefix index $k<|\pi|$, define the \emph{ideal} blame verdict
 \[
-\mathsf{Blame}(C,\pi[0,k]) \in \mathbb{V}_{11}
+\mathsf{Blame}(C,\pi[1,k]) \in \mathbb{V}_{11}
 \]
 as follows:
 \[
-\mathsf{Blame}(C,\pi[0,k]) =
+\mathsf{Blame}(C,\pi[1,k]) =
 \begin{cases}
 \mathsf{?}
-  & \text{if }\pi[0,k]\ \presat\ C,\\[4pt]
+  & \text{if }\pi[1,k]\ \presat\ C,\\[4pt]
 \topt
-  & \text{if }\pi[0,k]\ \satt\ C,\\[4pt]
+  & \text{if }\pi[1,k]\ \satt\ C,\\[4pt]
 \topp
-  & \text{if }\pi[0,k]\ \postsat\ C,\\[4pt]
+  & \text{if }\pi[1,k]\ \postsat\ C,\\[4pt]
 \bot^t_S
-  & \text{if }\pi[0,k]\ \vDash_{\bottp{S}} C,\\[4pt]
+  & \text{if }\pi[1,k]\ \vDash_{\bottp{S}} C,\\[4pt]
 \bot^p_S
-  & \text{if }\pi[0,k]\ \vDash_{\botpp{S}} C.
+  & \text{if }\pi[1,k]\ \vDash_{\botpp{S}} C.
 \end{cases}
 \]
 By construction of the five-way semantics and the blame rules, exactly one of these cases applies to each prefix, and the set $S$ is uniquely determined whenever a blame judgement holds.
@@ -683,16 +683,16 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 % \]
 % then
 % \[
-% \lambda_{11}(q_k) = \mathsf{Blame}_C\big(\pi[0,k]\big).
+% \lambda_{11}(q_k) = \mathsf{Blame}_C\big(\pi[1,k]\big).
 % \]
 % In particular:
 % \begin{itemize}
 %   \item $\lambda_{11}(q_k)\in\{\mathsf{?},\topt,\topp\}$
-%         iff $\pi[0,k]\in\{\presat,\satt,\postsat\}$ for $C$,
+%         iff $\pi[1,k]\in\{\presat,\satt,\postsat\}$ for $C$,
 %   \item $\lambda_{11}(q_k)=\bot^t_S$
-%         iff $\pi[0,k]\ \vDash_{\bottp{S}} C$,
+%         iff $\pi[1,k]\ \vDash_{\bottp{S}} C$,
 %   \item $\lambda_{11}(q_k)=\bot^p_S$
-%         iff $\pi[0,k]\ \vDash_{\botpp{S}} C$.
+%         iff $\pi[1,k]\ \vDash_{\botpp{S}} C$.
 % \end{itemize}
 % \end{theorem}
 
@@ -705,7 +705,7 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 % most one tight frontier, and the five regions are disjoint. The inductive
 % clauses for blame propagation mirror the violation clauses, so for every
 % reachable state $q_k$ on the run over $\pi$, the contract semantics assigns a
-% unique verdict in $\mathbb{V}_{11}$ to the prefix $\pi[0,k]$.
+% unique verdict in $\mathbb{V}_{11}$ to the prefix $\pi[1,k]$.
 % By Definition~\ref{def:bm-refinement}, $\lambda_{11}(q_k)$ is exactly that
 % verdict. The statement follows by induction on the structure of $C$ and on the
 % length of $\pi$.

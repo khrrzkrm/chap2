@@ -677,31 +677,56 @@ We work over the \emph{letter alphabet} $\Gamma := 2^{\Sigma_C^{(1)} \cup \Sigma
 
 
 \begin{definition}[Semantics of regular expressions]\label{def:re-semantics}
-The satisfaction relation for a regular expression $\re$, written $\pi \modelsre \re$,
-is defined over a finite trace $\pi=\langle A_0,\ldots,A_{n-1}\rangle\in\Gamma^*$,
-where each letter $A_i\in\Gamma$ is a set of actions that occurred at period $i$.  
-The relation is given inductively:
-\[
-\begin{array}{lcl}
-\pi \modelsre \mathsf{A} &\text{iff}&  |\pi| = 1\ \text{and}\ \mathsf{A}\subseteq A_0,\\[4pt]
-\pi \modelsre \Gamma &\text{iff}& |\pi| = 1,\\[4pt]
-\emptytrace \modelsre \varepsilon, &\text{}& \\[4pt]
-\pi \modelsre \emptyset &\text{iff}& A_0=\emptyset \nd |\pi| = 1,\\[4pt]
-\pi \modelsre \re_1 \mid \re_2 &\text{iff}& (\pi \modelsre \re_1) \;\text{or}\; (\pi \modelsre \re_2),\\[4pt]
-\pi \modelsre \re_1\cdot\re_2
-&\text{iff}&
-\exists k \in \{0,\dots,|\pi|\} :
-\pi[0,k-1] \modelsre \re_1
-\;\text{and}\;
-\pi^{k} \modelsre \re_2,\\[4pt]
-\pi \modelsre \re^1 &\text{iff}& \pi \modelsre \re,\\[4pt]
-\pi \modelsre \re^n &\text{iff}& \pi \modelsre \re \cdot \re^{n-1} \text{ for } n>1,\\[4pt]
-\pi \modelsre \re^+ &\text{iff}& 
-  \exists\, n\ge1 : \pi \modelsre \re^n.
-\end{array}
-\]
-We write $\Lang{\re} := \{\pi\in\Gamma^* \mid \pi \modelsre \re\}$ for the language of $\re$.
-\end{definition}
+  The satisfaction relation for a regular expression $\re$, written
+  $\pi \modelsre \re$, is defined over a finite trace
+  $\pi=\langle A_1, \ldots,A_n\rangle\in\Gamma^*$,
+  where each letter $A_i\in\Gamma$ denotes the set of actions that occurred at
+  period $i$.
+  The relation is defined inductively as follows:
+  \[
+  \begin{array}{lcl}
+  \pi \modelsre \mathsf{A}
+  &\text{iff}&
+  n = 1 \ \text{and}\ \mathsf{A}\subseteq A_1,\\[4pt]
+  
+  \pi \modelsre \Gamma
+  &\text{iff}&
+  n = 1,\\[4pt]
+  
+  \emptytrace \modelsre \varepsilon, & & \\[4pt]
+  
+  \pi \modelsre \emptyset
+  &\text{iff}&
+  n = 1 \ \text{and}\ A_1 = \emptyset,\\[4pt]
+  
+  \pi \modelsre \re_1 \mid \re_2
+  &\text{iff}&
+  (\pi \modelsre \re_1)\ \text{or}\ (\pi \modelsre \re_2),\\[4pt]
+  
+  \pi \modelsre \re_1 \cdot \re_2
+  &\text{iff}&
+  \exists k \in \{0,\dots,n\} :
+  \pi_k \modelsre \re_1
+  \ \text{and}\
+  \pi^k \modelsre \re_2,\\[4pt]
+  
+  \pi \modelsre \re^1
+  &\text{iff}&
+  \pi \modelsre \re,\\[4pt]
+  
+  \pi \modelsre \re^n
+  &\text{iff}&
+  \pi \modelsre \re \cdot \re^{\,n-1}
+  \quad\text{for } n>1,\\[4pt]
+  
+  \pi \modelsre \re^+
+  &\text{iff}&
+  \exists\, n\ge 1 : \pi \modelsre \re^n.
+  \end{array}
+  \]
+  We write $\Lang{\re} := \{\pi\in\Gamma^* \mid \pi \modelsre \re\}$ for the language
+  denoted by $\re$.
+  \end{definition}
 
 \noindent
 \noindent
@@ -712,9 +737,13 @@ We write $\Lang{\re} := \{\pi\in\Gamma^* \mid \pi \modelsre \re\}$ for the langu
   \item \textbf{Empty word $\varepsilon$.} Matches only the empty word: $\pi= \emptytrace$.
   \item \textbf{Empty-action letter $\emptyset$.} Matches the one-period trace with no actions: $\pi=\langle \emptyset\rangle$.
   \item \textbf{Union $(re_1\mid re_2)$.} Holds iff at least one disjunct holds on the whole trace.
-  \item \textbf{Sequencing $(re_1 \cdot re_2)$.}
-There exists a split index $k$ such that
-$\pi[0,k-1]\modelsre re_1$ and $\pi^{k}\modelsre re_2$.\footnote{The case $\pi[0,-1]$ is defined in \ref{traces} as $\emptytrace$}
+  \item \textbf{Sequencing $(\re_1 \cdot \re_2)$.}
+There exists a split index $k\in\{0,\dots,n\}$ such that the prefix
+$\pi[1,k]$ satisfies $\re_1$ and the suffix $\pi[k+1,n]$ satisfies $\re_2$.
+The case $k=0$ corresponds to $\re_1$ matching the empty trace, while
+$k=n$ corresponds to $\re_2$ matching the empty trace.
+Thus, sequencing expresses that the trace can be decomposed into two
+contiguous segments, evaluated independently and in order.
   \item \textbf{Fixed power $re^n$.} Iterated sequencing of $re$ exactly $n$ times is inductively defined:
         two cases : if $n=1$ then evaluate for $re$; for $n>1$, enroll the first occurrence of $re$ and concatenate with $re^n-1$.
   \item \textbf{Kleene plus $re^+$.} Some positive iteration holds: $\exists n\ge1$ with $\pi\modelsre re^n$.
@@ -760,7 +789,7 @@ that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
 
   \item \textbf{Sequencing $(re_1 \cdot re_2)$:} build $(p_1,q_1)$ and $(p_2,q_2)$, then
         add $q_1 \xrightarrow{\varepsilon} p_2$ and take $(p_1,q_2)$ as entry/exit.
-        This matches the split $\pi[0,k]$ and $\pi[k{+}1,n]$ in the semantics.
+        This matches the semantic split $\pi[1,k]$ and $\pi[k+1,n]$, with $k=0$ denoting the empty prefix.
 
   \item \textbf{Fixed power $re^n$:} unroll as $re;\cdots;re$ ($n$ times). The base
         $re^1\equiv re$.

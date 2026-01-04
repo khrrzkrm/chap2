@@ -33,7 +33,7 @@ Isolating the state of the contract (via the CPM) from the evaluation of complia
 \subsection{Contract Progress Monitor}
 
 The core of our measurement framework is the \emph{progression function}, $\Prog$.
-Conceptually similar to the Brzozowski derivative~\cite{brzozowski1964derivatives} for regular expressions, $\Prog$ consumes the current event and the current contract to produce the \emph{residual contract} for the subsequent step.
+The consumes the current one event  and the current \emph{state of a contract} to produce the \emph{residual contract} for the subsequent step.
 
 \begin{definition}[Contract Progression Function]
 Let $\Gamma = 2^\Sigma$ be the event alphabet.
@@ -97,31 +97,72 @@ Repetition unrolls the contract one step at a time:
 These constructs rely on regular expression matching.
 \[
 \Prog(\trace{A}, \guard[re]{C}) :=
-\begin{cases}
-  \emptc & \text{if } \trace{A} \satt \guard[re]{C} \text{ (Guard satisfies, release)}, \\
+\begin{cases}Guard satisfies, re
+  \emptc & \text{if } \trace{A} \satt \guard[re]{C} \text{ (release)}, \\
   \guard[\Prog_{re}(\trace{A}, re)]{\Prog(\trace{A}, C)} & \text{otherwise (Guard persists)}.
 \end{cases}
 \]
 \[
 \Prog(\trace{A}, \trig[re]{C}) :=
 \begin{cases}
-  \emptc & \text{if } \trace{A} \violt re \text{ (Trigger failed permanently)}, \\
+  \emptc & \text{if } \trace{A} \violt re \text{ (Trigger failed)}, \\
   C & \text{if } \trace{A} \satt re \text{ (Trigger fires)}, \\
   \trig[\Prog_{re}(\trace{A}, re)]{C} & \text{if } \trace{A} \presat re \text{ (Trigger pending)}.
 \end{cases}
 \]
 
+Where the regular progress function $\Prog_{re}: 2^\Gamma \times \cDL_{re} \to \cDL_{re} $ is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
+ We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon$ 
+ \paragraph{Atomic regular expressions}
+ For a set of actions $A \in \Gamma$ we have:
+$Prog_{re}(\trace{A}, A') := \epsilon.$ 
+  
+ \paragraph{Concatenation}
+For $\re \cdot \re'$, the progression is defined as:
+\[
+\Prog_{re}(\trace{A}, \re \cdot \re') := 
+    \Prog_{re}(\trace{A}, re) \cdot re'.
+\]
 
-\paragraph{Regular Expression Derivatives ($\Prog_{re}$).}
-The helper function $\Prog_{re}$ computes the standard derivative~\cite{brzozowski1964derivatives} of the regular expression.
-For atomic sets $A'$ and step $A$, $\Prog_{re}(\trace{A}, A') = \epsilon$ if matches, else failure.
-For operations like union ($\mid$) and Kleene plus ($^+$), the derivatives follow standard automata-theoretic constructions.
+\paragraph{Union}
+For $re \mid re'$, the progression is defined by distinguishing cases based on violation:
+\[
+\Prog_{re}(\trace{A}, re \mid re') := \begin{cases} 
+\Prog_{re}(\trace{A}, re') & \text{if } \trace{A} \violt re ,\\
+\Prog_{re}(\trace{A}, re) & \text{if } \trace{A} \violt re' ,\\
+\Prog_{re}(\trace{A}, re) \mid \Prog_{re}(A, re') & \text{otherwise}.
+\end{cases}
+\]
+
+\paragraph{n-repition}
+For $\re^n$, with $n \in \mathbb{N}^*$ the progression is defined as:
+\[
+\Prog_{re}(\trace{A}, re^n) := \Prog_{re}(\trace{A},re)\cdot re^{n-1}.
+\]
+
+
+\paragraph{Operator $+$}
+For $\re^+$, the progression is defined as:
+\[
+\Prog_{re}(\trace{A}, re^+) := \Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A},re)\cdot re^+.
+\]
+
+Moving up for the special case of single event traces, for $\pi = \trace{A} \circ \pi'$ with
+$A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix. Then:
+\[
+  \Prog(\trace{A} \circ \pi', C) :=
+  \begin{cases}
+    \emptc & \text{if } \Prog(\trace{A}, C) = \emptc, \\[4pt]
+    \Prog\bigl(\pi',\,\Prog(\trace{A}, C)\bigr) & \text{otherwise}.
+  \end{cases}
+\]
 
 
 \end{definition}
+The helper function $\Prog_{re}$ computes the residual regular expression following an idea from Brzozowski's derivative~\cite{brzozowski1964derivatives} of the regular expression. In our case, it is tuned for the tight semantics.
 
 \begin{lemma}[Termination]
-For each finite prefix $\pi$, $\Prog(\pi, C)$ terminates in at most $|\pi|$ recursive steps.
+For each finite prefix $\pi$, $\Prog(\pi, C)$ terminates in at most $ min|\pi|$ recursive steps and the worst case is considering the worst regular expression such as the guard of the use case.
 
 \end{lemma}
 To illustrate the CPM, the evolution of the residual contract under different traces is examined. The evaluation initiates with the fundamental building block of normative enforcement: the reparation.
@@ -135,8 +176,8 @@ Consider the basic rental reparation clause:
 In the first trace $\pi$, the tenant pays rent in Month 1 ($\PAY \in A_1$). Since $\trace{A_1} \satt \obl[1]{\PAY}$, the condition for discharge is met. The reparation structure collapses to $\emptc$, meaning no further obligations exist for Month 2.
 
     \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
+ 
     \begin{tikzpicture}[y=1.6cm,x=3.0cm]
-    
       \tikzset{
         cell/.style={
           draw, rectangle, text width=26mm,
@@ -147,7 +188,7 @@ In the first trace $\pi$, the tenant pays rent in Month 1 ($\PAY \in A_1$). Sinc
       % Labels
       \node at (0,0)   {Month $i$};
       \node at (0,-1)  {Event at i $A_i$};
-      \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+      \node at (0,-2)  {$\Prog(\pi_{i},C)$};
       % Row 1: time
       \node[cell] at (1,0) (t1) {$1$};
       \node[cell] at (2,0) (t2) {$2$};
@@ -169,7 +210,7 @@ In the first trace $\pi$, the tenant pays rent in Month 1 ($\PAY \in A_1$). Sinc
       \draw[dotted](e2.south)--(r2.north);
     \end{tikzpicture}
     }}
-    {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which no reparation is not required}
+    {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which no reparation is  required}
     {example:prog-repair1}
     {\vspace{8pt}}{\vspace{-12pt}}
 
@@ -190,7 +231,7 @@ In trace $\pi'$, the tenant fails to pay in Month 1 ($\PAY \notin A'_1$). Here, 
     % Labels
     \node at (0,0)   {Month $i$};
     \node at (0,-1)  {Event at i $A_i$};
-    \node at (0,-2)  {$\Prog(\pi'_{i-1},C)$};
+    \node at (0,-2)  {$\Prog(\pi'_{i},C)$};
     % Row 1: time
     \node[cell] at (1,0) (t1) {$1$};
     \node[cell] at (2,0) (t2) {$2$};
@@ -214,7 +255,7 @@ In trace $\pi'$, the tenant fails to pay in Month 1 ($\PAY \notin A'_1$). Here, 
   
   \end{tikzpicture}
   }}
-  {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which no reparation is not required}
+  {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which required a reparation}
   {example:prog-repair2}
   {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
@@ -246,16 +287,16 @@ This results in an accumulation of duties: the fine from Month 2 and the new ren
     % Labels
     \node at (0,0)   {Month $i$};
     \node at (0,-1)  {Event at i $A_i$};
-    \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+    \node at (0,-2)  {$\Prog(\pi_{i},C)$};
     % Row 1: time
     \node[cell] at (1,0) (t1) {$1$};
-    \node[cell] at (2,0) (t2) {$2$};
+    \node[cell] at (2.5,0) (t2) {$2$};
     % Row 2: events
     \node[cell] at (1,-1) (e1) {$\{\PAY^{(12)}\}$};
-    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+    \node[cell] at (2.5,-1) (e2) {$\{\OCC^{(1)}\}$};
     % Row 3: residuals
     \node[cell] at (1,-2) (r1) {$\repit{C_3}$};
-    \node[cell] at (2,-2) (r2) {$\obl[1]{\PAYF} ; \repit{C_3}$};
+    \node[cell] at (2.5,-2) (r2) {$\obl[1]{\PAYF} ;$\\$ \repit{C_3}$};
     % Arrows
     \draw (t1)--(t2);
     \draw (e1)--(e2);
@@ -303,19 +344,19 @@ The tenant pays in Month 1 ($A_1$) and issues a termination notice in Month 2 ($
     % Labels
     \node at (0,0)   {Month $i$};
     \node at (0,-1)  {Event at i $A_i$};
-    \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
+    \node at (0,-2)  {$\Prog(\pi_{i},C)$};
     % Row 1: time
     \node[cell] at (1,0) (t1) {$1$};
-    \node[cell] at (2,0) (t2) {$2$};
+    \node[cell] at (2.4,0) (t2) {$2$};
     % Row 2: events
     \node[cell] at (1,-1) (e1) {$\{\PAY^{(1)}, \PAY^{(2)}\}$};
-    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}, \notifterm^{(1)}\}$};
+    \node[cell] at (2.4,-1) (e2) {$\{\OCC^{(1)}, \notifterm^{(1)}\}$};
     % Row 3: residuals
     % Step 1: Contract satisfied (payment made), Guard not satisfied yet (needs >0 length or specific event).
     % Residual guard becomes (Notif | Gamma+ . Notif)
     \node[cell] at (1,-2) (r1) {$\guard[\resid]{\repit{C_3}}$};
     % Step 2: Guard satisfied by NotifTerm in A2. Contract discharges to epsilon.
-    \node[cell] at (2,-2) (r2) {\emptc};
+    \node[cell] at (2.4,-2) (r2) {\emptc};
     % Arrows
     \draw (t1)--(t2);
     \draw (e1)--(e2);
@@ -358,7 +399,7 @@ This illustrates how the CPM maintains the ``wrapper'' (the guard) while the con
     % Labels
     \node at (0,0)   {Month $i$};
     \node at (0,-1)  {Event at i $A_i$};
-    \node at (0,-2)  {$\Prog(\pi'_{i-1},C)$};
+    \node at (0,-2)  {$\Prog(\pi'_{i},C)$};
     
     % Row 1: time
     \node[cell] at (1,0) (t1) {$1$};

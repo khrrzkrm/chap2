@@ -1,24 +1,29 @@
 \subsection{Monitor Construction for Tight Contract Satisfaction}
 
-
-\begin{definition}[Tight satisfiaction monitor]
-\label{def:tightsatmon}
-The \emph{tight satisfaction monitor}, written $\tmon$, is a Moore machine whose output alphabet is the five-valued verdict set $\tightverdicts$. Formally,
-\[
-\tmon = (Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_{5}),
-\]
-where:
-\begin{enumerate}
-\item The output alphabet formed by 5 letters is 
-\[
-\tightverdicts = \{\mathsf{?},\topt,\bott,\topp,\botp\}.
-\]
-\item $Q$ is the set of states and $q_0\in Q$ is the initial state,
-\item $\Gamma = 2^\Sigma$ is the input event alphabet,
-\item $\delta: Q \times \Gamma \to Q$ is the transition function,
-\item $\lambda_{5}: Q \to \tightverdicts$ is the state output function.
-\end{enumerate}
-\end{definition}
+\paragraph{From semantics to monitors.}
+The definitions in Section~\ref{forwardsatsem} specify, for each contract $C$, which trace prefixes are tight satisfaction and tight violation frontiers, and how the remaining verdicts are derived from them.
+In this section we turn these clauses into finite-state monitors that compute the same verdicts incrementally along a trace.
+The construction is Moore-style: each state summarizes exactly the information needed to determine the current five-valued verdict, and each new letter updates this summary by a deterministic transition.
+We prove that the monitor output agrees with the denotational semantics at every prefix, which enables algorithmic compliance checking and serves as the basis for the responsibility-aware extensions developed next.
+\begin{definition}[Tight satisfaction monitor]
+    \label{def:tightsatmon}
+    The \emph{tight satisfaction monitor}, written $\tmon$, is a Moore machine whose output alphabet is the five-valued verdict set $\tightverdicts$.
+    Formally,
+    \[
+    \tmon = (Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_{5}),
+    \]
+    where:
+    \begin{enumerate}
+    \item The output alphabet formed by 5 letters is 
+    \[
+    \tightverdicts = \{\mathsf{?},\topt,\bott,\topp,\botp\}.
+    \]
+    \item $Q$ is the set of states and $q_0\in Q$ is the initial state,
+    \item $\Gamma = 2^\Sigma$ is the input event alphabet,
+    \item $\delta: Q \times \Gamma \to Q$ is the transition function,
+    \item $\lambda_{5}: Q \to \tightverdicts$ is the state output function.
+    \end{enumerate}
+    \end{definition}
 
 The next definition introduces the construction for any contract into its tight
 satisfaction monitor. The construction is a function that maps each contract $C$ to a tight satisfaction monitor that enforces it. The construction proceeds by structural induction on the syntax of $C$, and each operator in \cDL is matched by a corresponding monitor combination operator. Regular expression guards and triggers rely on the
@@ -62,11 +67,11 @@ Where the tight monitor construction for regular expressions $\tsmc(\re)$ is alr
 
 \paragraph{Monitor correctness invariant.}
 The monitor construction preserves the following invariant.
-For every contract $C$ in \cDL, every finite trace $\pi$, and every prefix $\pi[0,k]$,
-the state reached by the monitor $\tsmc(C)$ after reading $\pi[0,k]$
+For every contract $C$ in \cDL, every finite trace $\pi$, and every prefix $\pi[1,k]$,
+the state reached by the monitor $\tsmc(C)$ after reading $\pi[1,k]$
 emits exactly the verdict prescribed by the five-valued tight semantics, that is:
 \[
-\lambda_5\bigl(\delta(q_0,\pi[0,k])\bigr) \;=\; \semfive{\pi[0,k] \vDash C}.
+\lambda_5\bigl(\delta(q_0,\pi[1,k])\bigr) \;=\; \semfive{\pi[1,k] \vDash C}.
 \]
 All operator-specific constructions are designed to preserve this invariant under
 synchronous product, redirection, and state elimination.
@@ -228,13 +233,6 @@ $C \wedge C'$, written $\tsmc_{\wedge}(C,C')$, is defined as:
 
 
 \noindent
-\textbf{Intuition.}
-Each cell from $\lambda_5^{\textsf{comb}}$ definition specifies the global verdict emitted by the product monitor when
-the left component is in state $x$ with verdict $\lambda(x)$ and the right
-component in $y$ with verdict $\lambda'(y)$.  
-The operator is symmetric, commutative, and idempotent.  
-\noindent\textbf{Partial dominance for $\wedge$.}
-\noindent
 \textbf{Partial dominance rules for $\wedge$.}
 The monitor for $C \wedge C'$ checks both components at the same time and decides the global verdict according to the following rules:
 
@@ -244,13 +242,11 @@ The monitor for $C \wedge C'$ checks both components at the same time and decide
   \forall v\in\tightverdicts:\quad \botp \sqcap v = \botp,
   \]
   That is, once a permanent violation appears, the whole conjunction is permanently violated.
-
   \item If any component gives $\bott$, and none is permanent, the result is $\bott$:
   \[
   \forall v\in\{\mathsf{?},\topt,\topp\}:\quad \bott \sqcap v = \bott,
   \]
   That is, a single tight violation makes the conjunction fail tightly.
-
   \item Tight and permanent success combine as the weakest success:
   \[
   \topt \sqcap \topt = \topt,\qquad
@@ -258,13 +254,12 @@ The monitor for $C \wedge C'$ checks both components at the same time and decide
   \topp \sqcap \topp = \topp,
   \]
   The conjunction is only permanently satisfied when both parts are permanent.
-
+  \emph{Note:} The case $\topt \sqcap \topp = \topt$ reflects that if one component is exactly at its satisfaction frontier ($\topt$) while the other is already past it ($\topp$), the conjunction as a whole is determined by the later of the two, effectively placing the global frontier at the current step.
   \item If both sides are undecided or only partly satisfied, the result stays $\mathsf{?}$:
   \[
   \mathsf{?}\sqcap v = \mathsf{?}\quad\text{for }v\in\{\mathsf{?},\topt,\topp\},
   \]
   The monitor waits until a clear outcome appears.
-
   \item The operator is symmetric:
   \[
   v_1\sqcap v_2 = v_2\sqcap v_1,
@@ -804,165 +799,194 @@ reaches its first tight match. Before that point, the monitor behaves exactly as
 vacuously satisfied. The construction follows the same blueprint as sequence and reparation, but applied to the decisive states of the regular expression monitor.
 
 \begin{definition}[Triggered Monitor Construction]
-\label{def:moore-trigger-seq}
-
-\[\text{Let }
-\tsmc(\re)=(Q_r, r_0, \Gamma, \tightverdicts, \delta_r, \lambda_5^r)
-\quad\text{and}\quad
-\tsmc(C)=(Q_c, c_0, \Gamma, \tightverdicts, \delta_c, \lambda_5^c)
-\]
-be five-valued tight satisfaction monitors for the regular expression $\re$ and the contract $C$.
-The triggered monitor for $\trig[re]{C}$ is the machine
-\[
-\tsmc_{\trigg}(\tsmc_{re}(\re),\tsmc(C))
-  := (Q_{\trigg}, q_0^{\trigg}, \Gamma, \tightverdicts, \delta_{\trigg}, \lambda_5^{\trigg}).
-\]
-
-\begin{itemize}
-  \item The state space is the states from the contracts unified with the reduced regular expression monitor states:
-  \[
-     Q_{\trigg} := Q_r^{\text{open}} \cup Q_c,
-  \]
-  where the reduced regular expressions states are:
-  \[
-     Q_r^{\text{open}}
-     := \{\,q \in Q_r \mid \lambda_5^r(q)\in\{\mathsf{?},\topt,\topp\}\,\}.
-  \]
-  The initial state is
-  \[
-    q_0^{\trigg} := r_0.
-  \]
-
-  \item The transition function is defined in two parts:
-
-  \begin{enumerate}
-      \item 
-  \textbf{Guard-active region ($q\in Q_r^{\text{open}}$).}
-  Let $q'=\delta_r(q,A)$.
-  \[
-  \delta_{\trigg}(q,A)=
-  \begin{cases}
-    c_0
-      & \text{if } q'\in Q_r^{\topt}
-        \quad\text{(first tight match of $re$)},\\[4pt]
-    q^{t}
-      & \text{if } q'\in Q_r^{\bott}
-        \quad\text{(trigger impossible)},\\[4pt]
-    q'
-      & \text{if } q'\in Q_r^{?}
-        \quad\text{(guard still open)}.
-  \end{cases}
-  \]
-  Here $q^{t}\in Q_c$ is any state with $\lambda_5^c(q^{t})=\topt$ and
-  $q^{p}\in Q_c$ is the analogous $\topp$-state, reused from the \tsmc(C) monitor
-  construction.
-
-\item  \textbf{Contract-active region ($y\in Q_c$)} 
-  \[
-    \delta_{\trigg}(y,A) := \delta_c(y,A).
-  \]
-\end{enumerate}
-  \item The output function is
-  \[
-  \lambda_5^{\trigg}(q)=
-  \begin{cases}
-    \mathsf{?}
-      & \text{if } q\in Q_r^{\text{open}},\\[2pt]
-    \lambda_5^{c}(q)
-      & \text{if } q\in Q_c.
-  \end{cases}
-  \]
-\end{itemize}
-\end{definition}
-
-
-\paragraph{Intuition.}
-The trigger monitor is obtained with the same redirection recipe used for sequence, but applied to the trigger. Keep only states that are still open in the trigger (outputs in \(\{\,\mathsf{?},\topt,\topp\,\}\)). Remove its decisive states. Redirect every transition that would be the first tight match of the triggering regular expression (the step that enters \(\topt\)) to the initial state of the contract monitor \(C\). From that point on, the global output is exactly the output of \(C\) on the suffix. Redirect every transition that would make the trigger impossible (enter \(\bott\) or \(\botp\)) to a vacuous-success sink for the overall contact that emits \(\topt\). While the guard remains open, only the guard component advances and the product emits \(\mathsf{?}\), so no premature verdict appears. This realizes the prefix clauses: success either because the trigger never becomes true, which we refer to as vacuous satisfaction, or because it fires at the earliest index and the suffix satisfies \(C\); violation only if the guard fires and the suffix violates \(C\).
-
-\begin{lemma}[Correctness of the triggered monitor construction]
-\label{lem:trigg-correct}
-\[\text{Let } \tsmc_{\trigg}(\tsmc_{re}(\re),\tsmc(C))
-      =(Q_{\trigg},\Gamma,\delta_{\trigg},q_0^{\trigg},\lambda_5^{\trigg})\]
-be the monitor constructed in Definition~\ref{def:moore-trigger-seq} for
-$\trig[re]{C}$. Then, for every trace $\pi$,
-\[
-\lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
-\;=\;
-\semfive{\pi \vDash \trig[re]{C}}.
-\]
-\end{lemma}
-
-\noindent
-\textbf{Proof sketch.}
-The proof follows the same pattern as for sequence and reparation, by induction on the length of $\pi$.
-
-\smallskip
-\emph{Base case.}
-For $\pi=\varepsilon$ the monitor is in $q_0^{\trigg}=r_0$, the initial state
-of the guard. The value
-\[
-\lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\varepsilon)\bigr)
-  = \lambda_5^r(r_0) = \mathsf{?}
-\]
-coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
-
-\smallskip
-\emph{Inductive step.}
-Assume the invariant holds for all prefixes of length $n$. Consider a prefix
-of length $n{+}1$ and its last letter $A$.
-
-There are two regions:
-
-\begin{itemize}
-  \item \emph{Guard-active region ($x\in Q_r^{\text{open}}$).}
-  By construction, $\delta_{\trigg}(x,A)$ is:
-  \begin{itemize}
-    \item $c_0$, if $\delta_r(x,A)\in Q_r^{\topt}$. This is exactly the case
-    where $re$ reaches tight success for the first time. The next state is the
-    initial state of $\tsmc(C)$, so subsequent behavior matches the semantics
-    of $C$ on the suffix. This realizes the clause “trigger fires at the
-    earliest index and the suffix must satisfy $C$”.
-    \item a vacuous-success state (or the chosen $\topt$–$\topp$ pair) if
-    $\delta_r(x,A)\in Q_r^{\bott}$, that is, the pattern becomes impossible.
-    This matches the case where the trigger never fires and $\trig[re]{C}$
-    holds vacuously.
-    \item $\delta_r(x,A)$ if $\delta_r(x,A)\in Q_r^{?}$, in which case the
-    guard remains open, and the global verdict stays $\mathsf{?}$. This matches the semantic clause that no decisive information is available as long as neither a match nor an impossibility has been detected.
-  \end{itemize}
-  The inductive hypothesis on the guard monitor ensures that the moment of redirection coincides with the earliest decisive prefix of $re$.
-
-  \item \emph{Contract-active region ($y\in Q_c$).}
-  Once the monitor has been redirected into $c_0$, all transitions are given by $\delta_c$, and outputs by $\lambda_5^c$. The induction hypothesis for
-  $\tsmc(C)$ gives
-  \[
-  \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
-   = \lambda_5^{c}\bigl(\delta_c(c_0,\pi')\bigr)
-   = \semfive{\pi' \vDash C},
-  \]
-  where $\pi'$ is the suffix after the trigger point. This matches the
-  semantics of $\trigg[re]{C}$ on all traces where the trigger has fired.
-\end{itemize}
-
-\smallskip
-\emph{Violation and satisfaction cases.}
-If the trigger fires at some earliest index $k$ and the suffix $\pi^{k+1}$
-violates $C$ tightly or post, the monitor is in the contract-active region and
-outputs the corresponding $\bott$ or $\botp$, which is exactly
-$\semfive{\pi \vDash \trigg[re]{C}}$ in this case.  
-If the trigger never fires and the guard becomes impossible, the monitor
-outputs $\topt$ and then $\topp$, which matches vacuous satisfaction.  
-In all other cases the output remains $\mathsf{?}$, as the semantics of
-$\trigg[re]{C}$ leaves the status undecided.
-
-\smallskip
-\emph{Conclusion.}
-At each prefix, the monitor either simulates the guard with the correct decisive redirection points or simulates $C$ on the correct suffix. Hence
-for every trace $\pi$ the monitor verdict
-\(
-\lambda_5^{\trigg}(\delta_{\trigg}(q_0^{\trigg},\pi))
-\)
-coincides with the five-valued tight semantics of $\trigg[re]{C}$.
-\qed
+    \label{def:moore-trigger-seq}
+    
+    \[\text{Let }
+    \tsmc(\re)=(Q_r, r_0, \Gamma, \tightverdicts, \delta_r, \lambda_5^r)
+    \quad\text{and}\quad
+    \tsmc(C)=(Q_c, c_0, \Gamma, \tightverdicts, \delta_c, \lambda_5^c)
+    \]
+    be five-valued tight satisfaction monitors for the regular expression $\re$ and the contract $C$.
+    The triggered monitor for $\trig[re]{C}$ is the machine
+    \[
+    \tsmc_{\trigg}(\tsmc_{re}(\re),\tsmc(C))
+      := (Q_{\trigg}, q_0^{\trigg}, \Gamma, \tightverdicts, \delta_{\trigg}, \lambda_5^{\trigg}).
+    \]
+    
+    \begin{itemize}
+      \item The state space includes the open states of the trigger, the states of the contract, and two fresh sink states for vacuous success:
+      \[
+         Q_{\trigg} := Q_r^{\text{open}} \cup Q_c \cup \{q_{\mathit{vac}}^{\topt}, q_{\mathit{vac}}^{\topp}\},
+      \]
+      where the reduced regular expressions states are:
+      \[
+         Q_r^{\text{open}}
+         := \{\,q \in Q_r \mid \lambda_5^r(q)\in\{\mathsf{?},\topt,\topp\}\,\}.
+      \]
+      The initial state is
+      \[
+        q_0^{\trigg} := r_0.
+      \]
+    
+      \item The transition function $\delta_{\trigg}$ is defined in three parts:
+    
+      \begin{enumerate}
+          \item 
+      \textbf{Guard-active region ($q\in Q_r^{\text{open}}$).}
+      Let $q'=\delta_r(q,A)$.
+      \[
+      \delta_{\trigg}(q,A)=
+      \begin{cases}
+        c_0
+          & \text{if } q'\in Q_r^{\topt}
+            \quad\text{(first tight match: activate } C\text{)},\\[4pt]
+        q_{\mathit{vac}}^{\topt}
+          & \text{if } q'\in Q_r^{\bott}
+            \quad\text{(trigger impossible: vacuous success)},\\[4pt]
+        q'
+          & \text{if } q'\in Q_r^{?}
+            \quad\text{(guard still open)}.
+      \end{cases}
+      \]
+      
+      \item  \textbf{Contract-active region ($y\in Q_c$).} 
+      \[
+        \delta_{\trigg}(y,A) := \delta_c(y,A).
+      \]
+      
+      \item \textbf{Vacuous success sinks.}
+      \[
+        \delta_{\trigg}(q_{\mathit{vac}}^{\topt}, A) := q_{\mathit{vac}}^{\topp}, \qquad
+        \delta_{\trigg}(q_{\mathit{vac}}^{\topp}, A) := q_{\mathit{vac}}^{\topp}.
+      \]
+      \end{enumerate}
+    
+      \item The output function is
+      \[
+      \lambda_5^{\trigg}(q)=
+      \begin{cases}
+        \mathsf{?}
+          & \text{if } q\in Q_r^{\text{open}},\\[2pt]
+        \lambda_5^{c}(q)
+          & \text{if } q\in Q_c,\\[2pt]
+        \topt
+          & \text{if } q = q_{\mathit{vac}}^{\topt},\\[2pt]
+        \topp
+          & \text{if } q = q_{\mathit{vac}}^{\topp}.
+      \end{cases}
+      \]
+    \end{itemize}
+    \end{definition}
+    
+    
+    \paragraph{Intuition.}
+    The trigger monitor is obtained with the same redirection recipe used for sequence, but applied to the trigger.
+    Keep only states that are still open in the trigger (outputs in \(\{\,\mathsf{?},\topt,\topp\,\}\)). Remove its decisive states.
+    Redirect every transition that would be the first tight match of the triggering regular expression (the step that enters \(\topt\)) to the initial state of the contract monitor \(C\).
+    From that point on, the global output is exactly the output of \(C\) on the suffix.
+    Redirect every transition that would make the trigger impossible (enter \(\bott\) or \(\botp\)) to the fresh vacuous-success sink \(q_{\mathit{vac}}^{\topt}\), which emits \(\topt\) and then permanently \(\topp\).
+    While the guard remains open, only the guard component advances and the product emits \(\mathsf{?}\), so no premature verdict appears.
+    This realizes the prefix clauses: success either because the trigger never becomes true (vacuous satisfaction), or because it fires at the earliest index and the suffix satisfies \(C\);
+    violation only if the guard fires and the suffix violates \(C\).
+    
+    \begin{lemma}[Correctness of the triggered monitor construction]
+    \label{lem:trigg-correct}
+    \[\text{Let } \tsmc_{\trigg}(\tsmc_{re}(\re),\tsmc(C))
+          =(Q_{\trigg},\Gamma,\delta_{\trigg},q_0^{\trigg},\lambda_5^{\trigg})\]
+    be the monitor constructed in Definition~\ref{def:moore-trigger-seq} for
+    $\trig[re]{C}$.
+    Then, for every trace $\pi$,
+    \[
+    \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
+    \;=\;
+    \semfive{\pi \vDash \trig[re]{C}}.
+    \]
+    \end{lemma}
+    
+    \noindent
+    \textbf{Proof sketch.}
+    The proof follows the same pattern as for sequence and reparation, by induction on the length of $\pi$.
+    
+    \smallskip
+    \emph{Base case.}
+    For $\pi=\varepsilon$ the monitor is in $q_0^{\trigg}=r_0$, the initial state
+    of the guard.
+    The value
+    \[
+    \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\varepsilon)\bigr)
+      = \lambda_5^r(r_0) = \mathsf{?}
+    \]
+    coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
+    
+    \smallskip
+    \emph{Inductive step.}
+    Assume the invariant holds for all prefixes of length $n$.
+    Consider a prefix
+    of length $n{+}1$ and its last letter $A$.
+    There are three regions:
+    
+    \begin{itemize}
+      \item \emph{Guard-active region ($x\in Q_r^{\text{open}}$).}
+      By construction, $\delta_{\trigg}(x,A)$ is:
+      \begin{itemize}
+        \item $c_0$, if $\delta_r(x,A)\in Q_r^{\topt}$.
+        This is exactly the case
+        where $re$ reaches tight success for the first time.
+        The next state is the
+        initial state of $\tsmc(C)$, so subsequent behavior matches the semantics
+        of $C$ on the suffix.
+        This realizes the clause “trigger fires at the
+        earliest index and the suffix must satisfy $C$”.
+        
+        \item $q_{\mathit{vac}}^{\topt}$, if $\delta_r(x,A)\in Q_r^{\bott}$, that is, the pattern becomes impossible.
+        This state outputs $\topt$ and transitions to the permanent success state $q_{\mathit{vac}}^{\topp}$.
+        This matches the semantics where the trigger never fires and $\trig[re]{C}$
+        holds vacuously (tight success followed by post-success).
+    
+        \item $\delta_r(x,A)$ if $\delta_r(x,A)\in Q_r^{?}$, in which case the
+        guard remains open, and the global verdict stays $\mathsf{?}$.
+        This matches the semantic clause that no decisive information is available as long as neither a match nor an impossibility has been detected.
+      \end{itemize}
+      The inductive hypothesis on the guard monitor ensures that the moment of redirection coincides with the earliest decisive prefix of $re$.
+    
+      \item \emph{Contract-active region ($y\in Q_c$).}
+      Once the monitor has been redirected into $c_0$, all transitions are given by $\delta_c$, and outputs by $\lambda_5^c$.
+      The induction hypothesis for
+      $\tsmc(C)$ gives
+      \[
+      \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\pi)\bigr)
+       = \lambda_5^{c}\bigl(\delta_c(c_0,\pi')\bigr)
+       = \semfive{\pi' \vDash C},
+      \]
+      where $\pi'$ is the suffix after the trigger point.
+      This matches the
+      semantics of $\trigg[re]{C}$ on all traces where the trigger has fired.
+      
+      \item \emph{Vacuous success region.}
+      If the monitor enters $q_{\mathit{vac}}^{\topt}$ or $q_{\mathit{vac}}^{\topp}$, it correctly emits the success verdicts corresponding to a triggered contract whose trigger can no longer be satisfied.
+    \end{itemize}
+    
+    \smallskip
+    \emph{Violation and satisfaction cases.}
+    If the trigger fires at some earliest index $k$ and the suffix $\pi^{k+1}$
+    violates $C$ tightly or post, the monitor is in the contract-active region and
+    outputs the corresponding $\bott$ or $\botp$, which is exactly
+    $\semfive{\pi \vDash \trigg[re]{C}}$ in this case.
+    If the trigger never fires and the guard becomes impossible, the monitor
+    outputs $\topt$ and then $\topp$, which matches vacuous satisfaction.
+    In all other cases the output remains $\mathsf{?}$, as the semantics of
+    $\trigg[re]{C}$ leaves the status undecided.
+    
+    \smallskip
+    \emph{Conclusion.}
+    At each prefix, the monitor either simulates the guard with the correct decisive redirection points, simulates $C$ on the correct suffix, or enters the correct vacuous success state.
+    Hence
+    for every trace $\pi$ the monitor verdict
+    \(
+    \lambda_5^{\trigg}(\delta_{\trigg}(q_0^{\trigg},\pi))
+    \)
+    coincides with the five-valued tight semantics of $\trigg[re]{C}$.
+    \qed
 
 
 

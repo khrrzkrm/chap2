@@ -176,7 +176,7 @@ This theorem highlights the utility of the quantitative approach for post-hoc an
 To illustrate the lemma and the violation semantics, we study several examples:
 
 % --- Reparation Example: add label and extension reference
-\begin{example}[Reparation: Tight vs.\ Quantitative Evaluation (Extension of Example~\ref{ex:prog-repit} and Figures~\ref{example:prog-repair1}--\ref{example:prog-repair2})]\label{ex:eval-reparation}
+\begin{example}[Reparation: Tight vs.\ Quantitative Evaluation (Extension of Example~\ref{ex:prog-repit}, \ref{example:prog-repair1}, and ref{example:prog-repair2})]\label{ex:eval-reparation}
 We revisit Example~\ref{ex:prog-repit} and explicitly evaluate both the forward-looking tight semantics and the quantitative violation semantics at each step.
 
 Let
@@ -191,7 +191,7 @@ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
   \item \textbf{Quantitative score:} $\qsem{\trace{A_1},C_3}=0$.
 \end{itemize}
 This illustrates immediate satisfaction with zero cost.
-Figure~\ref{fig:eval-reparation-pi} summarizes the point-wise valuation for $\pi$.
+\ref{fig:eval-reparation-pi} summarizes the point-wise valuation for $\pi$.
 
 % --- Insert evaluation table for single-step trace (pi) ---
 \boxalignfigure{\resizebox{0.55\textwidth}{!}{%
@@ -205,8 +205,8 @@ Figure~\ref{fig:eval-reparation-pi} summarizes the point-wise valuation for $\pi
   % Labels
   \node at (0,0)   {Month $i$};
   \node at (0,-1)  {Event at i $A_i$};
-  \node at (0,-2)  {$\Prog(\pi_{i-1},C_3)$};
-  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i-1},C_3)}$};
+  \node at (0,-2)  {$\Prog(\pi_{i},C_3)$};
+  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},C_3)}$};
   \node at (0,-4)  {$\semfive{\pi_i,C_3}$};
   % Row 1: time
   \node[cell] at (1.2,0) (t1) {$1$};
@@ -247,11 +247,12 @@ Figure~\ref{fig:eval-reparation-pi} summarizes the point-wise valuation for $\pi
   and \\$\qsem{\trace{A'_2},\obl[1]{\PAYF}}=0$.
 \end{itemize}
 Overall, $\pi' \satt C_3$ but $\qsem{\pi',C_3}=1$, illustrating Theorem~\ref{thm:quant-consistency}(3).
-Figure~\ref{fig:eval-reparation-piprime} summarizes the point-wise valuation for $\pi'$.
+\ref{fig:eval-reparation-piprime} summarizes the point-wise valuation for $\pi'$.
 
 % --- Insert evaluation table for two-step trace (pi') ---
+% PATCHED: add xshift=1cm to horizontally shift the figure
 \boxalignfigure{\resizebox{0.75\textwidth}{!}{%
-\begin{tikzpicture}[y=1.6cm,x=3.0cm]
+\begin{tikzpicture}[y=1.6cm,x=3.0cm,xshift=1cm]
   \tikzset{
     cell/.style={
       draw, rectangle, text width=26mm,
@@ -261,8 +262,8 @@ Figure~\ref{fig:eval-reparation-piprime} summarizes the point-wise valuation for
   % Labels
   \node at (0,0)   {Month $i$};
   \node at (0,-1)  {Event at i $A_i$};
-  \node at (0,-2)  {$\Prog(\pi_{i-1},C_3)$};
-  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i-1},C_3)}$};
+  \node at (0,-2)  {$\Prog(\pi_{i},C_3)$};
+  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},C_3)}$};
   \node at (0,-4)  {$\semfive{\pi_i,C_3}$};
   % Row 1: time
   \node[cell] at (1.2,0) (t1) {$1$};
@@ -303,7 +304,7 @@ Figure~\ref{fig:eval-reparation-piprime} summarizes the point-wise valuation for
 \end{example}
 
 % --- Repetition Example: add label and extension reference
-\begin{example}[Infinite Repetition with Accumulated Cost (Extension of Example~\ref{example:prog-repitc1})]\label{ex:eval-repetition}
+\begin{example}[Infinite Repetition with Accumulated Cost (Extension of \ref{example:prog-repitc1})]\label{ex:eval-repetition}
 We extend Example~(Progression of Infinite Repetition) for
 \[
 \repit{C_3} = \repit{\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}}.
@@ -325,38 +326,38 @@ $A_1=\{\PAY^{(12)}\}$ and $A_2=\{\OCC^{(1)}\}$.
 
 Thus, $\pi \postviol \repit{C_3}$ while $\qsem{\pi,\repit{C_3}}=1$.
 A longer trace that later satisfies the fine would increase satisfaction without decreasing the accumulated score, illustrating monotonicity.
-Figure~\ref{fig:eval-repetition} summarizes the point-wise valuation for this trace.
+\ref{fig:eval-repetition} summarizes the point-wise valuation for this trace.
 
 % --- Insert evaluation table for repetition example (2 columns) ---
 \boxalignfigure{\resizebox{0.75\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.0cm]
   \tikzset{
     cell/.style={
-      draw, rectangle, text width=26mm,
+      draw, rectangle, text width=34mm,
       minimum height=7mm, align=center, font=\small
     }
   }
   % Labels
   \node at (0,0)   {Month $i$};
   \node at (0,-1)  {Event at i $A_i$};
-  \node at (0,-2)  {$\Prog(\pi_{i-1},\repit{C_3})$};
-  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i-1},\repit{C_3})}$};
+  \node at (0,-2)  {$\Prog(\pi_{i},\repit{C_3})$};
+  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},\repit{C_3})}$};
   \node at (0,-4)  {$\semfive{\pi_i,\repit{C_3}}$};
   % Row 1: time
-  \node[cell] at (1.2,0) (t1) {$1$};
-  \node[cell] at (2.2,0) (t2) {$2$};
+  \node[cell] at (1.5,0) (t1) {$1$};
+  \node[cell] at (3,0) (t2) {$2$};
   % Row 2: events
-  \node[cell] at (1.2,-1) (e1) {$\{\PAY^{(12)}\}$};
-  \node[cell] at (2.2,-1) (e2) {$\{\OCC^{(1)}\}$};
+  \node[cell] at (1.5,-1) (e1) {$\{\PAY^{(12)}\}$};
+  \node[cell] at (3,-1) (e2) {$\{\OCC^{(1)}\}$};
   % Row 3: residuals
-  \node[cell] at (1.2,-2) (r1) {$\repit{C_3}$};
-  \node[cell] at (2.2,-2) (r2) {$\obl[1]{\PAYF} ; \repit{C_3}$};
+  \node[cell] at (1.5,-2) (r1) {$\repit{C_3}$};
+  \node[cell] at (3,-2) (r2) {$\obl[1]{\PAYF} ; \repit{C_3}$};
   % Row 4: instantaneous score
-  \node[cell] at (1.25,-3) (s1) {$0$};
-  \node[cell] at (2.25,-3) (s2) {$1$};
+  \node[cell] at (1.5,-3) (s1) {$0$};
+  \node[cell] at (3,-3) (s2) {$1$};
   % Row 5: V5 verdict
-  \node[cell] at (1.2,-4) (v1) {$\mathsf{?}$};
-  \node[cell] at (2.2,-4) (v2) {$\bott$};
+  \node[cell] at (1.5,-4) (v1) {$\mathsf{?}$};
+  \node[cell] at (3,-4) (v2) {$\bott$};
   % Horizontal lines
   \draw (t1)--(t2);
   \draw (e1)--(e2);
@@ -399,7 +400,7 @@ C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}.
   and \\$\qsem{\trace{A_2},C}=0$.
 \end{itemize}
 Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
-Figure~\ref{fig:eval-guard-pi} summarizes the point-wise valuation for $\pi$.
+\ref{fig:eval-guard-pi} summarizes the point-wise valuation for $\pi$.
 
 % --- Insert evaluation table for guarded contract, trace pi ---
 \boxalignfigure{\resizebox{0.9\textwidth}{!}{%
@@ -413,8 +414,8 @@ Figure~\ref{fig:eval-guard-pi} summarizes the point-wise valuation for $\pi$.
   % Labels
   \node at (0,0)   {Month $i$};
   \node at (0,-1)  {Event at i $A_i$};
-  \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
-  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i-1},C)}$};
+  \node at (0,-2)  {$\Prog(\pi_{i},C)$};
+  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},C)}$};
   \node at (0,-4)  {$\semfive{\pi_i,C}$};
   % Row 1: time
   \node[cell] at (1.2,0) (t1) {$1$};
@@ -457,43 +458,44 @@ Figure~\ref{fig:eval-guard-pi} summarizes the point-wise valuation for $\pi$.
 \begin{itemize}
   \item \textbf{Step 2:}
   $\trace{A_2'} \violt \repit{C_3}$,
-  $\Prog(\pi',C)=\guard[\dots]{(\obl[1]{\PAYF};\repit{C_3})}$,
+  $\Prog(\pi',C)=\guard[\Gamma^+ \cdot \notifterm^{(1)}]{(\obl[1]{\PAYF};\repit{C_3})}$,
   and $\qsem{\trace{A_2'},C}=1$.
 \end{itemize}
 
 Thus, $\pi' \presat C$ in the tight semantics but $\qsem{\pi',C}=1$, directly illustrating that quantitative semantics exposes violations masked by guards and reparations.
-Figure~\ref{fig:eval-guard-piprime} summarizes the pointwise valuation for $\pi'$.
+\ref{fig:eval-guard-piprime} summarizes the point-wise valuation for $\pi'$.
 
 % --- Insert evaluation table for guarded contract, trace pi' ---
-\boxalignfigure{\resizebox{0.9\textwidth}{!}{%
+\boxalignfigure{\resizebox{0.9\textwidth}{!}{
+  \centering
 \begin{tikzpicture}[y=1.6cm,x=3.2cm]
   \tikzset{
     cell/.style={
-      draw, rectangle, text width=32mm,
+      draw, rectangle, text width=36mm,
       minimum height=7mm, align=center, font=\small
     }
   }
   % Labels
   \node at (0,0)   {Month $i$};
   \node at (0,-1)  {Event at i $A_i$};
-  \node at (0,-2)  {$\Prog(\pi_{i-1},C)$};
-  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i-1},C)}$};
+  \node at (0,-2)  {$\Prog(\pi_{i},C)$};
+  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},C)}$};
   \node at (0,-4)  {$\semfive{\pi_i,C}$};
   % Row 1: time
-  \node[cell] at (1.2,0) (t1) {$1$};
-  \node[cell] at (2.2,0) (t2) {$2$};
+  \node[cell] at (1.3,0) (t1) {$1$};
+  \node[cell] at (2.6,0) (t2) {$2$};
   % Row 2: events
-  \node[cell] at (1.2,-1) (e1) {$\{\PAY^{(12)}\}$};
-  \node[cell] at (2.2,-1) (e2) {$\{\OCC^{(1)}\}$};
+  \node[cell] at (1.3,-1) (e1) {$\{\PAY^{(12)}\}$};
+  \node[cell] at (2.6,-1) (e2) {$\{\OCC^{(1)}\}$};
   % Row 3: residuals
-  \node[cell] at (1.2,-2) (r1) {$C$};
-  \node[cell] at (2.2,-2) (r2) {$\guard[\dots]{(\obl[1]{\PAYF};\repit{C_3})}$};
+  \node[cell] at (1.3,-2) (r1) {$C$};
+  \node[cell] at (2.6,-2) (r2) {$\lceil\Gamma^+ \cdot \notifterm^{(1)} \rceil$\\$ (\obl[1]{\PAYF};\repit{C_3})$};
   % Row 4: instantaneous score
-  \node[cell] at (1.2,-3) (s1) {$0$};
-  \node[cell] at (2.2,-3) (s2) {$1$};
+  \node[cell] at (1.3,-3) (s1) {$0$};
+  \node[cell] at (2.6,-3) (s2) {$1$};
   % Row 5: V5 verdict
-  \node[cell] at (1.2,-4) (v1) {$\mathsf{?}$};
-  \node[cell] at (2.2,-4) (v2) {$\mathsf{?}$};
+  \node[cell] at (1.3,-4) (v1) {$\mathsf{?}$};
+  \node[cell] at (2.6,-4) (v2) {$\mathsf{?}$};
   % Horizontal lines
   \draw (t1)--(t2);
   \draw (e1)--(e2);
@@ -700,7 +702,7 @@ The \emph{Quantitative Monitor Construction} function that returns for a contrac
     
     From $q_2$, the repetition phase is stable. Successful payment events $A \in \PAY^{(12)}$ yield zero cost and leave the residual unchanged, resulting in a self-loop. Failed payment events incur a unit penalty and return progress to the fine residual $q_1$. As before, the occurrence of a termination notification immediately discharges the contract to $\emptc$, with the instantaneous cost reflecting whether the payment obligation was satisfied at that final step.
     
-    Collecting all distinct residuals reachable from $q_0$ under these event classes yields exactly the states and transitions shown in Figure~\ref{fig:qmc-guard-repit}.
+    Collecting all distinct residuals reachable from $q_0$ under these event classes yields exactly the states and transitions shown in \ref{fig:qmc-guard-repit}.
     
 
 
@@ -755,7 +757,7 @@ Let
 \]
 with $A_1:=\{\PAY^{(1)}, \PAY^{(2)}\}$, $A_2=\{\OCC^{1}\}$, and $A_3:=\{\notifterm^{(1)}, \PAYF^{(12)}\}$.
 
-By inspection of Figure~\ref{fig:qmc-guard-repit} and by Definition~\ref{def:quant-execution-score}, the unique run of $\qmc(C)$ on $\pi$ is
+By inspection of \ref{fig:qmc-guard-repit} and by Definition~\ref{def:quant-execution-score}, the unique run of $\qmc(C)$ on $\pi$ is
 \[
 q_0 \xrightarrow{A_1/0} q_2 \xrightarrow{A_2/1} q_1 \xrightarrow{A_3/0} \emptc.
 \]
@@ -857,8 +859,8 @@ While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, i
     \begin{cases}
       \qblame{\trace{A}, C} 
         & \text{if } \pi = \epsilon \lor \Prog(\trace{A},C)=\emptc,\\[4pt]
-      \qblame{\trace{A}, C} + \qblame{\pi, \Prog(\trace{A},C)}
-        & \text{otherwise}.
+      \qblame{\trace{A}, C} +   & \text{otherwise}.\\ \qblame{\pi, \Prog(\trace{A},C)}
+       
     \end{cases}
     \]
     
@@ -1214,12 +1216,10 @@ In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ yields $
   initial text={}
 ]
 
-% --- Two residual states only ---
 \node[initial,state] (q0) {$\perm[1]{\OCC}\ \wedge\ \obl[1]{\PAY}$};
 \node[state, right=of q0] (qe) {$\emptc$};
 
-% --- All relevant one-step outcomes go from the initial residual to \emptc ---
-% Use different bending for readability.
+
 \path
   (q0) edge[bend left=36] node[above] {\scriptsize $\OCC^\surd \land \PAY^\surd\,/\,(0,0)$} (qe)
   (q0) edge[bend left=12] node[above] {\scriptsize $\OCC^\times \land \PAY^{\text{fail}}\,/\,(1,1)$} (qe)

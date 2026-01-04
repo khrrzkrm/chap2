@@ -11,41 +11,49 @@ We begin by establishing three word models of action-based behavior and the cano
 For the remainder of this dissertation, let \(\Sigma\) denote a non-empty set of discrete \emph{actions}. Before introducing the three timing models, we fix a small algebraic core that is shared by all discrete-action words, namely the basic sequence structure and the standard operators that act on it.
 
 Words are sequences of events. An \emph{event} in our discrete setting, denoted by $\event$, is a data structure derived from $\Sigma$. We denote the set of \emph{finite words} by $\event^\star$, the set of \emph{infinite words} by $\event^\omega$, and the set of all words (finite or infinite) by $\event^\infty := \event^\star \cup \event^\omega$.
+Before moving to the differences regarding timing models, all word types share the fundamental algebraic structure of a sequence. To avoid redundancy in subsequent definitions, we establish here the properties common to any finite word $w$ over a concrete event domain $E$ (where $E$ could simply be $\Sigma$).
 
+\paragraph{Notation for finite traces} \( w = \trace{e_1,\,e_2,\,\dots,\,e_{n}} \in \mathbb{E}^* \) symbolizes a finite word $w$ defined by a sequence of events $e_i$ from \( E \). We define the following canonical notions:
+
+\paragraph{Notation for finite traces.}
+Let \( w = \trace{e_1,\,e_2,\,\dots,\,e_{n}} \in E^* \) be a finite word.
+We adopt \emph{1-based indexing} where indices correspond to the count of events.
+
+\begin{itemize}
+    \item \defn{Size}: The length of the word is denoted by \( |w| := n \).
+    
+    \item \defn{Positions}: The set of valid element indices is \( \mathsf{pos}(w) := \{1, 2, \dots, n\} \).
+    
+    \item \defn{Indexing}: For any \( k \in \mathsf{pos}(w) \), the event at position \(k\) is \( w[k] := e_k \).
+    
+    \item \defn{Prefix}: For any \( 0 \le k \le n \), the prefix of length \( k \) is denoted by \( w_k \) (or \( w[1,k] \)).
+    \[
+        w_k := \trace{e_1, \dots, e_k}.
+    \]
+    \emph{Exception Handling:} If \( k=0 \), then \( w_0 = \emptytrace \).
+    
+    \item \defn{Suffix}: For any \( 0 \le k \le n \), the suffix remaining \emph{after} the first \( k \) events is denoted by \( w^k \).
+    \[
+        w^k := \trace{e_{k+1}, \dots, e_n}.
+    \]
+    \emph{Exception Handling:} If \( k=n \), then \( w^n = \emptytrace \).
+    
+    % \item \defn{Decomposition}: For any cut point \( 0 \le k \le n \), the word is the concatenation of prefix and suffix:
+    % \[
+    %     w = w_k \concat w^k.
+    % \]
+\end{itemize}
 \paragraph{Words vs. traces.}
 Although we conceptually distinguish a \emph{word} as an abstract behavior from a \emph{trace} as an observed execution, finite words and finite traces boil down to the same underlying data structure, namely a finite sequence of events. Accordingly, in the scope of this dissertation, we use \emph{word} as the default technical term in the formal development, and we use \emph{trace} only when emphasizing that a particular finite sequence comes from recorded observations.
 
 \paragraph{Omega notation for infinite words.}
 Let $\event$ be the underlying event domain.
-For any event $e \in \event$, we write
-$e^{\omega}$
-to denote the infinite word obtained by repeating $e$ at every position, that is,
+For any nonempty finite word $u \in \event^{+}$, written $u=\trace{e_1,\dots,e_n}$ with $n\ge 1$, we write
+$u^{\omega}$
+to denote the infinite word obtained by repeating $u$ indefinitely, that is,
 \[
-e^{\omega} \;:=\; \trace{e,e,e,\dots} \;\in\; \event^{\omega}.
+u^{\omega} \;:=\; \trace{e_1,\dots,e_n,\,e_1,\dots,e_n,\,e_1,\dots,e_n,\,\dots} \;\in\; \event^{\omega}.
 \]
-
-
-
-Before moving to the differences regarding timing models, all word types share the fundamental algebraic structure of a sequence. To avoid redundancy in subsequent definitions, we establish here the properties common to any finite word $w$ over a concrete event domain $E$ (where $E$ could simply be $\Sigma$).
-
-The notation \( w = \trace{e_0,\,e_1,\,\dots,\,e_{n-1}} \in E^* \) symbolizes a finite word $w$ defined by a sequence of events $e_i$ from \( E \). We define the following canonical notions:
-
-\begin{itemize}
-    \item \defn{Size}: The length of the word corresponds to the number of events forming it and is denoted by \( |w| := n \).
-    \item \defn{Positions}: The set of valid indices is defined as \( \mathsf{pos}(w) := \{0, 1, \dots, n-1\} \).
-    \item \defn{Indexing}: For any \( k \in \mathsf{pos}(w) \), we denote the event at index \(k\) by \( w[k] := e_k \).
-    \item \defn{Prefix}: The prefix of length \( k+1 \) is denoted by $ w[0,k]$ or $ w_k $ and is defined as $\trace{e_0, \dots, e_k} $ for $ 0 \le k < n $.
-    \item \defn{Suffix}: The suffix starting from index \( k \) is denoted by \( w^k := \trace{e_{k},\dots,e_{n-1}} \) for \( 0 \le k < n \).
-    \item \defn{Empty word}: We write \( \emptytrace \) for the empty sequence, where \( |\emptytrace| = 0 \).
-\end{itemize}
-
-\paragraph{Boundary conventions.}
-For uniform treatment of splitting and concatenation, we adopt the following conventions for any finite word $w$:
-\[
-  w[0,-1] := \emptytrace,\qquad
-  w^{|w|} := \emptytrace.
-\]
-These conventions ensure that prefixes and suffixes are well-defined at the boundaries of a word.
 
 
 \noindent\textbf{Generic Projection.}
@@ -59,9 +67,9 @@ Logical-time words capture \emph{order only}, abstracting away any notion of spe
 \begin{definition}[Logical-time word, notation \(\tault\)]
   A (finite) logical-time word over an alphabet \(\Sigma\) is a sequence:
   \[
-  \tault\;=\; \trace{(a_0),\,(a_1),\,\dots,\,(a_{n-1})}\ \in\ \Sigma^{*},
+  \tault\;=\; \trace{(a_1),\,(a_2),\,\dots,\,(a_{n})}\ \in\ \Sigma^{*},
   \]
-  where \(a_k\in\Sigma\) for all \(k\).
+  where \(a_k\in\Sigma\) for all \(k\in\{1,\dots,n\}\).
 \end{definition}
 
 We now introduce basic operators on logical-time words. We start with concatenation, then define a counting function for action occurrences. Both notions will be reused when relating logical-time words to the richer time models introduced next.
@@ -69,13 +77,13 @@ We now introduce basic operators on logical-time words. We start with concatenat
 
 %
 \begin{definition}[Concatenation of logical-time words]
-  Let $\tault_1=\trace{(a_0),\dots,(a_{n-1})}\in\Sigma^{*}$ and
-  $\tault_2=\trace{(b_0),\dots,(b_{m-1})}\in\Sigma^{*}$.
+  Let $\tault_1=\trace{(a_1),\dots,(a_{n})}\in\Sigma^{*}$ and
+  $\tault_2=\trace{(b_1),\dots,(b_{m})}\in\Sigma^{*}$.
   Their \defn{concatenation}, written $\tault_1\concat\tault_2$, is the logical-time word in $\Sigma^{*}$ defined by
   \[
     \tault_1 \concat \tault_2
     \;:=\;
-    \trace{(a_0),\dots,(a_{n-1}),(b_0),\dots,(b_{m-1})}.
+    \trace{(a_1),\dots,(a_{n}),(b_1),\dots,(b_{m})}.
   \]
   \[
     \tault_1 \concat \emptytrace
@@ -95,18 +103,18 @@ Additionally, the following holds for the concatenation of any two logical-time 
   \item \defn{Length}: $\lvert\tault_1\concat\tault_2\rvert = \lvert\tault_1\rvert + \lvert\tault_2\rvert$.
   \item \defn{Indexing}: for $k\in\mathsf{pos}(\tault_1\concat\tault_2)$,
   \[
-    (\tault_1\concat\tault_2)[k] :=
-    \begin{cases}
-      \tault_1[k], & \text{if } 0\le k < \lvert\tault_1\rvert,\\
-      \tault_2[k-\lvert\tault_1\rvert], & \text{if } \lvert\tault_1\rvert \le k < \lvert\tault_1\rvert+\lvert\tault_2\rvert.
-    \end{cases}
+  (\tault_1\concat\tault_2)[k] :=
+  \begin{cases}
+    \tault_1[k], & \text{if } 1\le k \le \lvert\tault_1\rvert,\\
+    \tault_2[k-\lvert\tault_1\rvert], & \text{if } \lvert\tault_1\rvert < k \le \lvert\tault_1\rvert+\lvert\tault_2\rvert.
+  \end{cases}
   \]
 \end{itemize}
 
 The next operator abstracts from positions and records how often a given action occurs in a word.
 
 \begin{definition}[Counting function on logical-time words]
-  Let $a\in\Sigma$ and let $\tault=\trace{(a_0),\dots,(a_{n-1})}\in\Sigma^{*}$ be a logical-time word.
+  Let $a\in\Sigma$ and let $\tault=\trace{(a_1),\dots,(a_{n})}\in\Sigma^{*}$ be a logical-time word.
   The \defn{count} of $a$ in $\tault$, written $\#(a,\tault)$, is defined by
   \[
     \#(a,\tault)
@@ -123,7 +131,7 @@ The next operator abstracts from positions and records how often a given action 
   \[
   \tault=\trace{(\textsf{pick}),(\textsf{handover})}.
   \]
-  \emph{Size and Indexing:} \(|\tault|=2\), \(\tault[0]=\textsf{pick}\).\\
+  \emph{Size and Indexing:} \(|\tault|=2\), \(\tault[1]=\textsf{pick}\).\\
   \emph{Counts:} \(\#({\textsf{handover}},\tault)=1\).\\
   \emph{Projection:} with \(A=\{\textsf{handover}\}\), \(\tault{\upharpoonright}A=\trace{(\textsf{handover})}\).\\
   \emph{Concatenation:} \(\tault\concat\trace{(\textsf{pick})} = \trace{(\textsf{pick}),(\textsf{handover}),(\textsf{pick})}\).
@@ -136,13 +144,13 @@ Metric-timed words extend the previous model by recording \emph{which} action oc
 
 \begin{definition}[Finite \timedwords of actions] \label{timedwords} 
     A \emph{finite \timedword} $\tau$ is defined as a finite sequence of timed events, $\tau \in ({\timedevents})^*$.
-     \[\tau := \trace{(a_0,t_0), (a_1,t_1), \ \dots, \ (a_{n-1},t_{n-1}) }\]
-     with \(a_k\in\Sigma\), \(t_k\in\mathbb{N}\), and strictly increasing timestamps \(0\le t_0<\cdots<t_{n-1}\).
+     \[\tau := \trace{(a_1,t_1), (a_2,t_2), \ \dots, \ (a_{n},t_{n}) }\]
+     with \(a_k\in\Sigma\), \(t_k\in\mathbb{N}\), and strictly increasing timestamps \(0\le t_1<\cdots<t_{n}\).
 \end{definition}
 
 % NOTE: The definition name is left as is, but the surrounding prose and references should use "words"
 \begin{definition}[Auxiliary operators on metric-timed words]
-  Let $\taumt=\trace{(a_0,t_0),\dots,(a_{n-1},t_{n-1})}\in(\Sigma\times\mathbb{N})^{*}$.
+  Let $\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})}\in(\Sigma\times\mathbb{N})^{*}$.
   \begin{itemize}
     \item The \defn{label} and \defn{timestamp} projections of the $k$th event are defined by
     \[
@@ -156,7 +164,7 @@ Metric-timed words extend the previous model by recording \emph{which} action oc
     \[
       \mathsf{last}(\taumt):=
       \begin{cases}
-        t_{n-1}, & \text{if } n>0,\\
+        t_n, & \text{if } n>0,\\
         0, & \text{if } n=0.
       \end{cases}
     \]
@@ -164,7 +172,7 @@ Metric-timed words extend the previous model by recording \emph{which} action oc
     \[
       \mathsf{span}(\taumt):=
       \begin{cases}
-        t_{n-1}-t_0, & \text{if } n>0,\\
+        t_n-t_1, & \text{if } n>0,\\
         0, & \text{if } n=0.
       \end{cases}
     \]
@@ -179,7 +187,7 @@ Metric-timed words extend the previous model by recording \emph{which} action oc
 
 
     \begin{definition}[Timed distance between two events]
-        Let $\taumt=\trace{(a_0,t_0),\dots,(a_{n-1},t_{n-1})}\in(\Sigma\times\mathbb{N})^{*}$ be a metric-timed word.
+        Let $\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})}\in(\Sigma\times\mathbb{N})^{*}$ be a metric-timed word.
         For any two indices $i,j\in\mathsf{pos}(\taumt)$ with $i<j$, the \defn{timed distance} between event $i$ and event $j$ is
         \[
           \Delta(\taumt,(i,j))\;:=\; t_j-t_i.
@@ -190,9 +198,9 @@ Metric-timed words extend the previous model by recording \emph{which} action oc
      
      The \emph{action lookup function} $\rho : \domtr \times \mathbb{N} \to \Sigma \cup \{ \Undef \}$ returns the action performed at absolute time $t$ in a metric-timed word; if no event occurs at time $t$, it returns the special symbol $\Undef$:
         \[
-        \rho\big(\trace{(a_0,t_0), \dots, (a_{n-1},t_{n-1})}, t\big) := 
+        \rho\big(\trace{(a_1,t_1), \dots, (a_{n},t_{n})}, t\big) := 
         \begin{cases} 		
-            a_i & \text{if  } t_i=t \text{ for some } i \in \{0,\dots,n-1\},\\
+            a_i & \text{if  } t_i=t \text{ for some } i \in \{1,\dots,n\},\\
             \Undef & \text{otherwise.}
         \end{cases}
         \]
@@ -201,7 +209,7 @@ Metric-timed words extend the previous model by recording \emph{which} action oc
 
 \noindent\textbf{Basic operators and short hands.}
 For \(A\subseteq\Sigma\), projection \( \taumt{\upharpoonright}A\in(A\times\mathbb{N})^{*} \) keeps exactly the pairs \((a,t)\) where \(a\in A\).\\
-Prefixes can be defined by \emph{length} \( \taumt[0,k] \), or by \emph{time} \( \taumt{\upharpoonright}\{t\le T\} \) (shorthand: \( \taumt\{t\le T\}\)).\\
+Prefixes can be defined by \emph{length} \( \taumt[1,k] \), or by \emph{time} \( \taumt{\upharpoonright}\{t\le T\} \) (shorthand: \( \taumt\{t\le T\}\)).\\
 
 
 \begin{example}[Metric-timed operators]
@@ -209,11 +217,11 @@ Prefixes can be defined by \emph{length} \( \taumt[0,k] \), or by \emph{time} \(
   \[
   \taumt=\trace{(\textsf{badge\_tapped},1),(\textsf{door\_open},3)}.
   \]
-  \emph{Size and Indexing:} \(|\taumt|=2\), \(\taumt[0]=(\textsf{badge\_tapped},1)\).\\
+  \emph{Size and Indexing:} \(|\taumt|=2\), \(\taumt[1]=(\textsf{badge\_tapped},1)\).\\
   \emph{Lookup action:} $\rho(\taumt,1)=\textsf{badge\_tapped}$ and $\rho(\taumt,2)= \Undef$.\\
   \emph{Time properties:} \(\mathsf{time}(\taumt)=\{1,3\}\), \(\mathsf{span}(\taumt)=2\).\\
   \emph{Time-prefix:} \(\taumt\{t\le 2\}=\trace{(\textsf{badge\_tapped},1)}\).\\
-  \emph{Timed distance}: the distance between event $0$ and event $1$ is $\Delta(\taumt,(0,1))=3-1=2$.
+  \emph{Timed distance}: the distance between event $1$ and event $2$ is $\Delta(\taumt,(1,2))=3-1=2$.
 \end{example}
 
 Metric-timed words provide \emph{precise} quantitative information, in particular the exact timed distance between any two events in the same word, captured by differences of their timestamps.
@@ -360,7 +368,7 @@ Figure~\ref{fig:word-models-summary} summarizes the relationship between the thr
 The map \(\LT\) drops time stamps but preserves labels and their order. It is the coarsest view that still distinguishes different event sequences.
 
 \begin{lemma}[Logical-time projection \(\LT\): order-only view]
-Let \(\taumt=\trace{(a_0,t_0),\dots,(a_{n-1},t_{n-1})} \) be a timed word. There exists a unique logical word \(\tault=\LT(\taumt)\in\Sigma^{*}\) satisfying:
+Let \(\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})} \) be a timed word. There exists a unique logical word \(\tault=\LT(\taumt)\in\Sigma^{*}\) satisfying:
 \begin{itemize}
   \item \textbf{Number of event preservation}: \( |\tault| = |\taumt| = n \).
   \item \textbf{Action occurrence preservation}: \( \forall a\in\Sigma, \#(a,\tault) = \#(a,\taumt) \).
@@ -372,7 +380,7 @@ Let \(\taumt=\trace{(a_0,t_0),\dots,(a_{n-1},t_{n-1})} \) be a timed word. There
 
 \begin{proof}
 \defn{Construction.}\;
-Define \(\LT(\taumt):=\trace{(a_0),\,(a_1),\,\dots,\,(a_{n-1})}\). All properties follow from erasing time stamps while preserving labels and their order.
+Define \(\LT(\taumt):=\trace{(a_1),\,(a_2),\,\dots,\,(a_{n})}\). All properties follow from erasing time stamps while preserving labels and their order.
 \end{proof}
 
 \paragraph{From metric time to synchronous time.}
