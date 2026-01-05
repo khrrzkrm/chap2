@@ -1,6 +1,7 @@
-\chapter{Preliminaries}
-
+\chapter{Preliminaries}\label{chapter:preliminaries}
+This chapter introduces the mathematical structures that underlie the temporal component of our normative framework, together with the basic models used to represent system executions. We focus on representations that allow timed constraints to be stated, combined, and analyzed symbolically, without committing to a particular execution or monitoring model. In parallel, we introduce trace-based word models that serve as the semantic carriers for observed behavior and interaction. The material in this chapter is intentionally elementary and self contained. Its purpose is not to introduce new logical operators, but to establish precise domains for manipulating time ranges and executions algebraically, which will later be embedded into normative specifications and monitoring constructions.
 \section{Interval Set over Integers}
+Timed constraints in normative systems are rarely punctual. Obligations and prohibitions typically apply over contiguous or fragmented time ranges, and reasoning directly over individual time points leads to unnecessary blow up. For this reason, we adopt sets of intervals as our basic representation of temporal constraints. Interval sets provide a compact and canonical way to capture possibly discontinuous time ranges, while still supporting precise arithmetic operations such as intersection, union, and difference. Before introducing interval sets and their algebra, we first fix the underlying numerical domain on which these intervals are defined.
 \subsection{Natural Numbers and Extended Natural Numbers}
 
 Let  $\mathbb{N}$ denote the set of all positive integers including zero, i.e.\ \( \mathbb{N}:= \{ 0, 1, 2, 3, \dots \} \) and let \emph{less} ($<$) and  \emph{less or equal} ($\leq$) denote the usual order relations on $\mathbb{N}$.

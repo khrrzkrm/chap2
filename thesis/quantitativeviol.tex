@@ -97,7 +97,7 @@ Repetition unrolls the contract one step at a time:
 These constructs rely on regular expression matching.
 \[
 \Prog(\trace{A}, \guard[re]{C}) :=
-\begin{cases}Guard satisfies, re
+\begin{cases}
   \emptc & \text{if } \trace{A} \satt \guard[re]{C} \text{ (release)}, \\
   \guard[\Prog_{re}(\trace{A}, re)]{\Prog(\trace{A}, C)} & \text{otherwise (Guard persists)}.
 \end{cases}
