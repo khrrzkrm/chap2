@@ -90,14 +90,16 @@ party~2 simultaneously supports it with $a^{(2)}$.
 
 %
 \begin{definition}[Literal tight satisfaction]\label{def:lattsat}
+  For the empty trace, we have:
+  \[
+  \emptytrace\ \presat \ell \quad \text{for any literal } \ell.
+  \]
   Literals are decided on a single synchronous step. We define their semantics on a single event word $\trace{A}$ ($A\in\Gamma$) and the empty word $\emptytrace$.
-  
+  \[
+  \emptytrace\ \presat \ell \quad \text{for any literal } \ell.
+  \]
   \smallskip
   \noindent\textbf{Tight satisfaction.}
-  For the empty word, tight satisfaction never holds (an event is required):
-  \[
-  \emptytrace\ \not\satt\ \ell \quad \text{for any literal } \ell.
-  \]
   For a single event word $\trace{A}$:
   \[
   \begin{array}{l@{\quad}c@{\quad}l}
@@ -112,10 +114,6 @@ party~2 simultaneously supports it with $a^{(2)}$.
   \medskip
   
   \noindent\textbf{Tight violation.}
-  Similarly, the empty word never tightly violates a literal (violation requires an observed mismatch):
-  \[
-  \emptytrace\ \not\violt\ \ell \quad \text{for any literal } \ell.
-  \]
   For a single event word $\trace{A}$:
   \[
   \begin{array}{l@{\quad}c@{\quad}l}
@@ -274,7 +272,7 @@ or a violation-then-repair pattern.
     
     In case (ii), tight satisfaction of $C$ is a frontier event along prefixes of a fixed trace,
     so $\pi_k \satt C$ and $\pi_m \satt C$ imply $k=m$.
-    Hence the same suffix $\pi^{k}$ both tightly satisfies and tightly violates $C'$,
+    Hence, the same suffix $\pi^{k}$ both tightly satisfies and tightly violates $C'$,
     namely $\pi^{k} \satt C'$ and $\pi^{k} \violt C'$,
     contradicting the suffix-disjointness hypothesis for $C'$.
     
@@ -290,7 +288,7 @@ or a violation-then-repair pattern.
     
     In case (b), tight violation of $C$ is also a frontier event along prefixes of a fixed trace,
     so $\pi_k \violt C$ and $\pi_m \violt C$ imply $k=m$.
-    Hence the same suffix $\pi^{k}$ both violates and satisfies $C'$,
+    Hence, the same suffix $\pi^{k}$ both violates and satisfies $C'$,
     namely $\pi^{k} \violt C'$ and $\pi^{k} \satt C'$,
     contradicting the suffix-disjointness hypothesis for $C'$.
     
@@ -450,11 +448,11 @@ satisfies either immediately when both conjuncts hold, or later when a reparatio
   (i) Lemma~\ref{lem:binary-disjoint} for the sequence operator (applied to $C$ and $C^{n-1}$),
   (ii) the induction hypothesis for $C$, and
   (iii) the induction hypothesis for $C^{n-1}$ together with the suffix-disjointness assumption.
-  Thus $\neg(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n)$ holds.
+  Thus, $\neg(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n)$ holds.
   
   \paragraph{Unbounded repetition $\repit{C}$.}
   By definition, $\pi\ \satt\ \repit{C}$ is \emph{false} for every finite trace $\pi$.
-  Hence $\pi$ cannot both tightly satisfy and tightly violate $\repit{C}$.
+  Hence, $\pi$ cannot both tightly satisfy and tightly violate $\repit{C}$.
   \end{proof}
   
 
@@ -543,7 +541,7 @@ satisfies either immediately when both conjuncts hold, or later when a reparatio
     This implies we have both $\pi^{k}\ \violt\ C$ and $\pi^{k}\ \satt\ C$ on the \emph{same} suffix.
     This contradicts the disjointness hypothesis for $C$ on the suffix $\pi^{k}$.
     
-    Hence $\pi$ cannot both tightly satisfy and tightly violate $\trig[re]{C}$.
+    Hence, $\pi$ cannot both tightly satisfy and tightly violate $\trig[re]{C}$.
     
     \paragraph{Guarded $\guard[re]{C}$.}
     Assume toward contradiction that $\pi\ \satt\ \guard[re]{C}$ and $\pi\ \violt\ \guard[re]{C}$.
@@ -556,7 +554,7 @@ satisfies either immediately when both conjuncts hold, or later when a reparatio
     Expanding $\clossat$, this means $(\pi\ \presat\ re \sor \pi\ \satt\ re) \nd \pi\ \violt\ re$.
     By the disjointness hypothesis for $re$, $\satt$ excludes $\violt$.
     By Lemma~\ref{lem:mutual prefix}, $\presat$ excludes $\violt$.
-    Thus Case (i) is impossible.
+    Thus, Case (i) is impossible.
     
     Thus guarded contracts are also disjoint.
   \end{proof}
@@ -622,7 +620,7 @@ A_2=\{\notifterm^{(1)},\PAY^{(1)},\PAY^{(2)}\},\\
 A_3=A_4=A_5=\{\PAY^{(1)},\PAY^{(2)}\}.
 \end{array}
 \]
-The guard is satisfied in month 5 and the payments were all succesful, hence $\pi_{\mathsf{sat}}\ \satt\ C_9$.
+The guard is satisfied in month 5 and the payments were all successful, hence $\pi_{\mathsf{sat}}\ \satt\ C_9$.
 
 \emph{Tight violation.}
 \[
@@ -656,7 +654,7 @@ The next lemma states this exclusion precisely by showing that the two frontiers
 For every contract $C$ in \cDL\ and every finite trace $\pi$, the tight satisfaction and tight violation forward semantics are mutually exclusive, that is:
 \begin{enumerate}
   \item \emph{No earlier tight violation at or after tight satisfaction.}\\[2pt]
-   $\text {if }\displaystyle \pi\ \satt\ C \ \text{then}\ \nexists\,j<|\pi|:\ \pi[1,j]\ \violt\ C\big.$
+   $\text {If }\displaystyle \pi\ \satt\ C \ \text{then}\ \nexists\,j<|\pi|:\ \pi[1,j]\ \violt\ C\big.$
 
   \item \emph{No earlier tight satisfaction at or after tight violation.}\\[2pt]
   $\displaystyle \text {if } \pi\ \violt\ C \ \text{then}\ \nexists\,j<|\pi|:\ \pi[1,j]\ \satt\ C\big.$
@@ -755,7 +753,7 @@ For every contract $C$ in \cDL\ and every finite trace $\pi$, we have
 \begin{proof}
 By structural induction on the syntax of $C$.
 
-\emph{Base: literals.} Disjointness holds by Definition~\ref{def:lattsat}, since on a single letter the satisfaction and violation clauses are complementary.
+\emph{Base: literals.} Disjointedness holds by Definition~\ref{def:lattsat}, since on a single letter the satisfaction and violation clauses are complementary.
 
 \emph{Inductive steps.}
 For binary constructors $C_1\wedge C_2$, $C_1;C_2$, and $C_1\repair C_2$, the claim follows from Lemma~\ref{lem:binary-disjoint} and the induction hypotheses for $C_1$ and $C_2$ (including the required suffix form).
@@ -771,10 +769,10 @@ $\{\presat,\satt,\violt,\postsat,\postviol\}$ for \cDL are pairwise disjoint and
 \end{theorem}
 \begin{proof}
 Fix a finite trace $\pi$ and contract $C$.
-We reason pointwise on prefixes of $\pi$ (as defined in Section~\ref{traces}) and lift the result to the trace-level relations via Definition~\ref{def:postprecont}.
+We reason point wise on prefixes of $\pi$ (as defined in Section~\ref{traces}) and lift the result to the trace-level relations via Definition~\ref{def:postprecont}.
 
 By Lemma~\ref{lem:mutual prefix}, along a fixed trace the two frontiers cannot both occur on (possibly different) prefixes: if some prefix tightly satisfies $C$, then no prefix tightly violates $C$, and conversely.
-Moreover, constructor-wise disjointness holds pointwise for every prefix, that is, $\neg(\Pi_{\min}\ \satt\ C\ \nd\ \Pi_{\min}\ \violt\ C)$ for every prefix $\Pi_{\min}$.
+Moreover, constructor-wise disjointness holds point wise for every prefix, that is, $\neg(\Pi_{\min}\ \satt\ C\ \nd\ \Pi_{\min}\ \violt\ C)$ for every prefix $\Pi_{\min}$.
 This is established formally in Lemma~\ref{lem:constructor-disjoint}.
 
 Now consider any prefix position $j$ with $1\le j<|\pi|$ and view the corresponding trace prefix $\pi[1,j]$.

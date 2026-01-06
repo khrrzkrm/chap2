@@ -177,14 +177,14 @@ Adding it does not repair or refine the conflict, so $\phi_1$ is non-minimal.
 \smallskip
 \noindent\textbf{Case $\phi_2$.}  
 Here, the same deontic pair is unsatisfiable, and $\{\ob{\{[1,1]\}}{a},\ob{\{[1,1]\}}{c}\}$ introduces an additional punctual \emph{ontic} conflict (Lemma~\ref{punctont}).  
-Thus $\phi_2$ contains two overlapping conflicts, violating minimality even more clearly.
+Thus, $\phi_2$ contains two overlapping conflicts, violating minimality even more clearly.
 
 \smallskip
 Hence, although $\phi_1$ and $\phi_2$ are both unsatisfiable, they are not precise conflicts: each includes a proper subset that is already inconsistent.
 \end{example}
 
 \subsection{Exhibiting Punctual Conflicts in Arbitrary Formulas}\label{extrapolation}
-To exhibit conflicts in an arbitrary formula using the definition of conflicts established in the previous subsection, we first define the notion of a formula being built up by a punctual conflict. Next, we formalize the notion of a formula having a conflict which is a syntactic property as we link the notion of a formula having a conflict if there exists a rewriting preserving some syntactic properties that is built up by a conflict. We then define a algorithm that detects all punctual conflicts when a formula has conflict and prove its correctness.
+To exhibit conflicts in an arbitrary formula using the definition of conflicts established in the previous subsection, we first define the notion of a formula being built up by a punctual conflict. Next, we formalize the notion of a formula having a conflict which is a syntactic property as we link the notion of a formula having a conflict if there exists a rewriting preserving some syntactic properties that is built up by a conflict. We then define an algorithm that detects all punctual conflicts when a formula has conflict and prove its correctness.
 \subsubsection{A formula Build up by a conflict}
 
 This notion captures the most immediate way in which conflicts arise in the syntax of a formula: a punctual conflict is explicitly present as one of its sub-terms. 
@@ -270,12 +270,12 @@ For any $\phi$, consider
 \[
   \phi' := \phi \,\sqcup\, \big(\ob{\{[3,3]\}}{a} \,\sqcap\, \forb{\{[3,3]\}}{a}\big).
 \]
-Because the added conjunct is a conflict, $\phi \equiv \phi'$. Applying the naive definition leads to concluding that $\phi$ has a conflict. Applying the naive definition will conclude that $\phi$ has not conflict when $\phi'$ has none.
+Because the added conjunct is a conflict, $\phi \equiv \phi'$. Applying the naive definition leads to concluding that $\phi$ has a conflict. Applying the naive definition will conclude that $\phi$ has no conflict when $\phi'$ has none.
 \end{inparaenum}
 
 These cases show that the naive criterion
 “$\phi$ has a conflict iff it is equivalent to some formula built up by a conflict”  
-is inadequate: equivalence alone permits both the erasure of genuine conflicts and the introduction of spurious ones. This motivates our refined, syntax-aware definition of \emph{having a conflict}, which relies on the invariants of lowest upper common Boolean operator (\LUCO) and literal ancestor preservation (\LAP). 
+is inadequate: equivalence alone permits both the erasure of genuine conflicts and the introduction of spurious ones. This motivates our refined, syntax-aware definition of \emph{having a conflict}, which relies on the invariants of the lowest upper common Boolean operator (\LUCO) and literal ancestor preservation (\LAP). 
 
 
 \begin{definition}[Lowest upper common Boolean operator under unique occurrence]\label{def:luco-unique}
@@ -416,7 +416,7 @@ We justify that $\phi$ specifies the conflict $\ob{\{[2,2]\}}{a} \sqcap \forb{\{
     \item $\ob{\{[2,2]\}}{a}$ and $\ob{\{[3,3]\}}{a}$ are descendants of $\ob{\{[2,3]\}}{a}$, and their interval sets are contained in $[2,3]$.
     \item $\forb{\{[2,2]\}}{a}$ and $\forb{\{[3,4]\}}{a}$ are descendants of $\forb{\{[2,4]\}}{a}$, and their interval sets are contained in $[2,4]$.
   \end{itemize}
-  Moreover, the descendants recombine conjunctively or disjunctively exactly as required to recover their ancestors. Hence \LAP\ is satisfied.
+  Moreover, the descendants recombine conjunctively or disjunctively exactly as required to recover their ancestors. Hence, \LAP\ is satisfied.
 
   \item \textbf{Built up by a conflict.}  
   The first disjunct of $\phi'$ visibly contains the punctual conflict
@@ -431,7 +431,7 @@ Therefore, $\phi$ \emph{has} a conflict according to Definition~\ref{def:has-con
 
 We now move on to show an algorithm that systematically computes all the conflicts specified by a formula. 
 
-\subsubsection{A \tool{DPNF} algorithm that lists punctual conflicts a formula has}
+\subsubsection{A \tool{DPNF} Algorithm that Lists Punctual Conflicts a Formula has}
 
 
 To exhibit all punctual conflicts a formula specifies, we propose the following systematic methodology, which takes advantage of the punctual and disjunctive normal forms studied previously. First, since the literals forming $\phi$ are not necessarily punctual, we transform $\phi$ into a normal punctual form $\pnf(\phi, k)$, where we choose $k$ to be the maximal time point appearing in any literal obligation within $\phi$. Secondly, as punctual conflicts are formed by conjunction, we transform the punctual normal form into the disjunctive normal form \dnf according to Lemma~\ref{lem:dnf}. Doing so results in a disjunction of product terms, where punctual conflicts can be easily pattern-matched. We demonstrate this approach in Algorithm~\ref{fig:conflict-extraction}.
@@ -439,7 +439,7 @@ To exhibit all punctual conflicts a formula specifies, we propose the following 
 
 \begin{minipage}{0.95\textwidth}
 \begin{algorithm}[H]
-\caption{Procedure \textsc{PunctualConflicts} \mathcall{PC}}
+\caption{Procedure \textsc{Punctual-Conflicts} \mathcall{PC}}
 \label{fig:conflict-extraction}
 \KwIn{A formula $\phi \in \TDDLfm$}
 \KwOut{A set $\mathcall{PC}$ of tuples $(\pt, \mathcall{C})$ where $\pt$ is a product term and $\mathcall{C}$ is a set of punctual conflicts in $\pt$}
@@ -584,7 +584,7 @@ hence the languages are equal.
 To prove the correctness of Algorithm~\ref{fig:conflict-extraction}, we need to show that it is sound and complete. We need two directions:
 (i) every \emph{reported} pair is a punctual conflict \emph{specified by} the input $\phi$ (soundness);
 (ii) every punctual conflict \emph{specified by} $\phi$ is \emph{reported} (completeness).
- to proving 
+
 % Relying solely on semantic equivalence ($\dutyequiv$) proven in Lemma~\ref{lem:dpnf-semantics} is insufficient: a disjunction can semantically absorb an unsatisfiable conjunct as shown in Lemma~\ref{empty_inter_union} (e.g., $\phi \sqcup (\ell_1 \sqcap \ell_2)$ has the same language as $\phi$ when $\ell_1 \sqcap \ell_2$ is unsatisfiable). Thus, semantic language preservation alone neither guarantees that conflict-causing \emph{pairs of literals} remains after normalization, nor that no spurious pairs are introduced. In other words, a purely semantic transformation could inadvertently delete syntactically specified conflicts or introduce fictitious ones.
 
 
@@ -592,7 +592,7 @@ The next three lemmas state how $\pnf$ maintains the \emph{structural} propertie
 in the sense of Definitions~\ref{def:luco-unique} (lowest upper common Boolean operator, \LUCO)
 and~\ref{def:lit-ancestor} (literal ancestor preservation).
 Lemma~\ref{lem:pnf-luco} (\LUCO \emph{ preservation}) says that $\pnf$ refines literals
-\emph{locally} and therefore preserves, for every pair of (unique) literals, the \LUCO they had in $\phi$.
+\emph{locally} and therefore preserves, for every pair of (unique) literals, the \LUCO order they had in $\phi$.
 Lemma~\ref{lem:pnf-ancestor} (\emph{literal-ancestor preservation for $\pnf$}) shows the
 downward and upward obligations of Definition~\ref{def:lit-ancestor} for $\pnf$.
 Lemma~\ref{lem:witness-punct-pnf} (\emph{witness punctualization}) explains how punctual
@@ -675,14 +675,14 @@ contains both.
 
 The \dnf normalization is obtained by repeatedly orienting distributivity (e.g.\ $\phi_1\sqcap(\phi_2\sqcup\phi_3)\to
 (\phi_1\sqcap\phi_2)\sqcup(\phi_1\sqcap\phi_3)$) and applying associativity/commutativity.
-These rewritings do not invert the order of $\sqcap$ and $\sqcup$ but only \emph{propagate one
+These rewriting do not invert the order of $\sqcap$ and $\sqcup$ but only \emph{propagate one
 operator outward}. Consequently, the labels of internal nodes and their dominance relations along
 any pair of root-to-leaf paths are preserved. 
 
 \emph{(i) \LUCO preservation.} Suppose, for contradiction, that the \LUCO of two corresponding
 literal positions change under $\dnf$. Then along the two paths, some $\sqcap$/$\sqcup$ node that
 was the \emph{lowest} common dominator must become either (a) no longer common, or (b) no longer
-lowest. But the $\dnf$ rewritings only restructure by outward propagation without swapping
+lowest. But the $\dnf$ rewriting only restructure by outward propagation without swapping
 $\sqcap$/$\sqcup$ labels or creating a new, lower common dominator below that node. Hence, neither
 (a) nor (b) can occur, contradicting the assumption. Therefore, the LUCO is preserved.
 
@@ -735,7 +735,7 @@ Comparing \LUCO relations before (as computed in Example~\ref{ex:AST}) and after
 \LUCO_{\dnf(\phi)}(x,y) &= \sqcup \;=\; \LUCO_{\phi}(x,y)\quad
 \text{for }x\in\{\ell_1,\ell_2,\ell_3\},\ y\in\{\ell_4,\ell_5\}.
 \end{align*}
-Thus the \LUCO \emph{label} is preserved by $\dnf$, even though the \LUCO node may move,
+Thus, the \LUCO \emph{label} is preserved by $\dnf$, even though the \LUCO node may move,
 e.g.\ $\ell_1,\ell_2$ are separated by the root $\sqcup$ in $\dnf(\phi)$.
 \end{example}
 
@@ -857,7 +857,7 @@ By Lemma~\ref{lem:pnf-ancestor} (downward) each has an ancestor $\ell,\ell'$ in 
 with the same modality/action and covering $t$. By Lemma~\ref{lem:pnf-luco} followed by
 Lemma~\ref{lem:dnf-luco}, we have: (i), the \LUCO relating the two positions is preserved across
 $\pnf$ and $\dnf$, since they are present conjunctively in the product term, the \LUCO in $\phi$
-is $\sqcap$. Hence $\ell\sqcap\ell'$ is a syntactically specified punctual pair in $\phi$,
+is $\sqcap$. Hence, $\ell\sqcap\ell'$ is a syntactically specified punctual pair in $\phi$,
 of the same conflict type as $\hat\ell \sqcap \hat\ell'$ (types are syntactic and preserved).
 Therefore, no product term forming a punctual conflict is introduced: every reported pair corresponds to one
 already specified in $\phi$, and also its type(deontic vs ontic) is sound.
@@ -916,7 +916,7 @@ We now prove the disjunctive modularity of our conflict detection algorithm.
 
 \begin{lemma}[Conflict Extraction over Disjunctive Normal Form]
 \label{lem:pc-dnf-union}
-Let $\phi$ be a formula in \TDDLfm and let  $\phi':=\bigsqcup_{i=1}^n \phi_i'$ be the resulting formula from the disjunctive normalisation obtained according to Lemma~\ref{lem:dnf}.
+Let $\phi$ be a formula in \TDDLfm and let  $\phi':=\bigsqcup_{i=1}^n \phi_i'$ be the resulting formula from the disjunctive normalization obtained according to Lemma~\ref{lem:dnf}.
 Then the set of tuples product term, conflicts obtained for $\phi$ is the union of the set of tuples product term, conflicts in its disjuncts:
 $$
 \mathcall{PC}(\phi) = \bigcup_{i=1}^n \mathcall{PC}(\phi_i').
@@ -1087,7 +1087,7 @@ We introduce the notion of \emph{conflict density} as a measure to quantify the 
 
 \begin{definition}[Conflict Density]\label{def:Conflict density-measure}
 Let $\phi$ be a formula from \TDDLfm and $k= \textsc{MaxOPoint}(\phi)$.  
-We define the \defn{conflict density} for the formula $\phi$, written  $\cd(\phi)$, as the ration between the conflicting product terms and the the total number of product terms in $\dnf(\pnf(\phi,k))$, formally:
+We define the \defn{conflict density} for the formula $\phi$, written  $\cd(\phi)$, as the ration between the conflicting product terms and  the total number of product terms in $\dnf(\pnf(\phi,k))$, formally:
 $$
 \cd(\phi) := \frac{\size{\mathcall{PC}(\phi)}}{\Xi(\phi)} \quad.
 $$
@@ -1160,7 +1160,7 @@ We move now to do it for the overall use case we have, following Lemma~\ref{lem:
 \mathcall{PC}(\UC) = \mathcall{PC}(\UC_1') \cup \mathcall{PC}(\UC_2').
 \]
 
-with:
+With:
 \[
 \size{\mathcall{PC}(\UC_1')} = 5 \quad \text{and} \quad \size{\mathcall{PC}(\UC_2')} = 8.
 \]
@@ -1172,7 +1172,7 @@ So:
 \textbf{Obligation count.}  
 From the punctual normal form construction:
 \[
-\UC_1' \text{ and } \UC_2' \text{ each produce } 8 \text{ punctual obligations (1 per } t \subin \{[9,16]\}).
+\UC_1' \text{ and } \UC_2' \text{ each produce } 8 \text{ punctual obligations }( 1 \text{ per } t \subin \{[9,16]\}).
 \]
 Thus:
 \[
@@ -1244,7 +1244,7 @@ Define the pruned disjunction
 
 \emph{Equivalence.}
 By Lemma~\ref{lem:dpnf-semantics}, $\phi\equiv \phi_{\text{dpnf}}$.
-For every $j\notin I$, Algorithm~\ref{fig:conflict-extraction} returned a nonempty conflict set $\mathcall{C}_{\pt_j}\neq\emptyset$, meaning $\pt_j$ contains a punctual conflict. By the definition of punctual conflict and closure under conjunction, each such $\pt_j$ is unsatisfiable. Hence
+For every $j\notin I$, Algorithm~\ref{fig:conflict-extraction} returned a nonempty conflict set $\mathcall{C}_{\pt_j}\neq\emptyset$, meaning $\pt_j$ contains a punctual conflict. By the definition of punctual conflict and closure under conjunction, each such $\pt_j$ is unsatisfiable. Hence,
 \[
 \phi_{\text{dpnf}}\ \equiv\ \Big(\bigsqcup_{i\in I}\pt_i\Big)\ \sqcup\ \Big(\bigsqcup_{j\notin I}\underbrace{\pt_j}_{\bot}\Big)\ \equiv\ \bigsqcup_{i\in I}\pt_i\ =\ \phi'.
 \]
@@ -1253,7 +1253,7 @@ Therefore $\phi\equiv \phi'$.
 \emph{Zero conflict density.}
 By construction, every disjunct $\pt_i$ retained in $\phi'$ satisfies $\mathcall{C}_{\pt_i}=\emptyset$. Thus $\mathcall{PC}(\phi')=\emptyset$ and, by Def.~\ref{def:Conflict density-measure}, $\cd(\phi')=0$.
 
-This completes the constructive proof: $\phi'$ is obtained by (i) computing $\pnf$ and $\dnf$, (ii) calling Algorithm~\ref{fig:conflict-extraction} to mark conflicting product terms, and (iii) disjoining only the conflict-free ones.
+This completes the constructive proof: $\phi'$ is obtained by (i) computing $\pnf$ and $\dnf$, (ii) calling Algorithm~\ref{fig:conflict-extraction} to mark conflicting product terms, and (iii) Put into the disjunction only the conflict-free ones.
 \end{proof}
 
 Having established that Algorithm~\ref{fig:conflict-extraction} is sound and complete for detecting punctual conflicts, we now turn to the question of how to refine a formula by \emph{eliminating} such conflicts. The idea is to discard any product term in the disjunctive punctual normal form that contains a conflict, thereby retaining only those disjuncts that remain consistent. This yields a conflict-free rewriting of the input formula, which we denote by $\Namb(\phi)$. By construction and by Theorem~\ref{lem:conflict-sound-complete}, every conflict identified and removed in this process corresponds to a genuine conflict specified by $\phi$, ensuring the soundness of the refinement. Formally, a variant of this algorithm would consist of: if every product term of $\dnf(\pnf(\phi,k))$ contains a punctual conflict, then no refinement is possible and the procedure returns \textbf{False}. Otherwise, $\Namb(\phi)$ is defined as the disjunction of all conflict-free product terms. The construction is given in Algorithm~\ref{alg:conflict-free-rewriting}.
@@ -1418,7 +1418,7 @@ The conflict free rewriting $\Namb(\UC_2')$ prunes all conflicting product terms
 Here $\UC_2''$ compresses the three surviving punctual obligations on \delAtPark\ into a single obligation over $\{[9,9],[15,16]\}$, while prohibitions on \delAtGate\ are merged back into their original interval sets.
 \end{example}
 
-These examples motivate \emph{controlled} conflict density management: when readability/size matters, designers can (i) keep compact high-level formulas that \emph{implicitly} contain ontic conflicts and resolve them later during planning, or (ii) eliminate conflicts upfront and then refactor the resulting \dpnf\ with merging rules (\textbf{ObDis}, \textbf{FConj}) to restore conciseness. In the next section, we present a generalized conflict rule over punctual literals that unifies deontic and ontic cases and supports concise rewritings without fully enumerating the \dpnf.
+These examples motivate \emph{controlled} conflict density management: when readability/size matters, designers can (i) keep compact high-level formulas that \emph{implicitly} contain ontic conflicts and resolve them later during planning, or (ii) eliminate conflicts upfront and then refactor the resulting \dpnf\ with merging rules (\textbf{ObDis}, \textbf{FConj}) to restore conciseness. In the next section, we present a generalized conflict rule over punctual literals that unifies deontic and ontic cases and supports concise rewriting without fully enumerating the \dpnf.
 
 \subsection{Generalized Conflict Rules and Conflict Calculus}\label{subsec:calculus}
 The previous section demonstrated that eliminating punctual conflicts may lead to significant increases in formula size. While some verbose conflict free rewriting formulas can be refactored into more concise forms, this is not always possible without losing semantic precision. In this section, we generalize the conflict scenarios observed earlier and formalize them as inference rules. These rules allow the user to explore the formula and choose which conflicts to remove.

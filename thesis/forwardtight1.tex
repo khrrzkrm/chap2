@@ -67,11 +67,11 @@ Where the tight monitor construction for regular expressions $\tsmc(\re)$ is alr
 
 \paragraph{Monitor correctness invariant.}
 The monitor construction preserves the following invariant.
-For every contract $C$ in \cDL, every finite trace $\pi$, and every prefix $\pi[1,k]$,
-the state reached by the monitor $\tsmc(C)$ after reading $\pi[1,k]$
+For every contract $C$ in \cDL, every finite trace $\pi$, and every prefix $\pi_k$,
+the state reached by the monitor $\tsmc(C)$ after reading $\pi_k$
 emits exactly the verdict prescribed by the five-valued tight semantics, that is:
 \[
-\lambda_5\bigl(\delta(q_0,\pi[1,k])\bigr) \;=\; \semfive{\pi[1,k] \vDash C}.
+\lambda_5\bigl(\delta(q_0,\pi_k)\bigr) \;=\; \semfive{\pi_k \vDash C}.
 \]
 All operator-specific constructions are designed to preserve this invariant under
 synchronous product, redirection, and state elimination.
@@ -396,44 +396,78 @@ and let $\tsmc_{;}(\tsmc(C),\tsmc(C'))
 \textbf{Proof.}
 The proof is by induction on the length of the input trace $\pi$.
 
-\smallskip
-\emph{Base case.}
-For $\pi=\varepsilon$, the composite monitor starts in $q_0$, so
-$\lambda_5^{;}(\varepsilon)=\lambda_5(q_0)$,
-which matches the semantics of $C;C'$ on the empty trace.
-
-\smallskip
-\emph{Inductive step.}
-Assume correctness for all prefixes up to length $n$
-and consider the prefix $\pi[n+1]$.
-The only difference between $\delta_{;}$ and the component transitions
-is the redirection rule triggered when $\lambda_5(\delta(x,A))=\topt$.
-This redirection starts $C'$ on the remaining suffix of the trace,
-which matches the semantic clause
-\[
-\exists k:\ \pi_k\ \satt\ C\ \text{ and }\ \pi^{k+1}\ \satt\ C'.
-\]
-All other transitions follow $\delta$ or $\delta'$ and thus satisfy the
-inductive hypothesis.
-
-\smallskip
-\emph{Violation case.}
-If $C$ violates before any tight success, the redirection never occurs, and the global verdict is exactly the violation of $C$, matching $\pi\ \violt\ C;C'$.
-
-\smallskip
-\emph{Satisfaction case.}
-If $C$ reaches tight success at some position $k$ and $C'$ satisfies the
-suffix $\pi^{k+1}$, the transition to $q'_0$ is activated and the verdict
-of $C'$ is propagated, matching the semantics of $\satt\ C;C'$.
-
-\smallskip
-\emph{Conclusion.}
-Every prefix of $\pi$ is handled by either:
-(1) normal execution of $C$ or $C'$,
-or (2) the single redirection step that hands control from $C$ to $C'$.
-All verdicts, therefore, coincide exactly with the tight prefix semantics of
-$C;C'$.
-\qed
+    \begin{proof}
+        Let $M:=\tsmc_{;}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$.
+        We prove by induction on $n:=|\pi|$ that
+        \[
+        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+        \;=\;
+        \semfive{\pi \vDash C;C'}.
+        \]
+        
+        \paragraph{Base case ($n=0$).}
+        For $\pi=\emptytrace$ we have $\delta_{;}(q_0^{;},\emptytrace)=q_0$ and thus
+        \[
+        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\emptytrace)\big)=\lambda_5(q_0)=\mathsf{?}.
+        \]
+        This matches the tight semantics of $C;C'$ on the empty trace: no decisive prefix for $C$ has been reached and $C'$ cannot be active yet.
+        
+        \paragraph{Inductive step.}
+        Assume the claim holds for all traces of length $n$.
+        Let $\pi$ be a trace of length $n{+}1$ and write $\pi=\pi'\concat\trace{A}$ with $|\pi'|=n$ and $A\in\Gamma$.
+        Let $s:=\delta_{;}(q_0^{;},\pi')$ be the state reached after reading $\pi'$.
+        We distinguish whether the monitor is already executing the right component.
+        
+        \smallskip
+        \noindent\emph{Case 1: $s\in Q'$.}
+        Then, by Definition~\ref{def:moore-seq}, $\delta_{;}(s,A)=\delta'(s,A)$ and $\lambda_5^{;}(s)=\lambda'_5(s)$, hence
+        \[
+        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+        =
+        \lambda'_5\big(\delta'(s,A)\big).
+        \]
+        Reaching a state of $Q'$ means that the switch from $C$ to $C'$ has already happened at some earlier prefix, and from that point on the sequential monitor behaves exactly as the monitor for $C'$ on the remaining suffix.
+        Therefore the tight semantics of $C;C'$ on $\pi$ is determined by the verdict of $C'$ on that suffix.
+        By correctness of $\tsmc(C')$ (established for the tight monitor construction),
+        the right-hand side equals $\semfive{\pi \vDash C;C'}$.
+        
+        \smallskip
+        \noindent\emph{Case 2: $s\in Q$.}
+        Let $t:=\delta(s,A)$ be the next state of the left monitor.
+        There are two subcases.
+        
+        \smallskip
+        \noindent\emph{Case 2(a): $\lambda_5(t)=\topt$.}
+        Then Definition~\ref{def:moore-seq} redirects the transition to $q'_0$, so $\delta_{;}(s,A)=q'_0$ and
+        \[
+        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+        =
+        \lambda_5^{;}(q'_0)
+        =
+        \lambda'_5(q'_0)
+        =
+        \mathsf{?}.
+        \]
+        Semantically, this is exactly the step where $C$ reaches its tight satisfaction frontier on the prefix $\pi$, and the contract $C'$ becomes active on the remaining suffix.
+        At this switching moment, the suffix is empty, so the status of $C'$ is undecided, and the sequence verdict is $\mathsf{?}$.
+        Thus the monitor output matches $\semfive{\pi \vDash C;C'}$.
+        
+        \smallskip
+        \noindent\emph{Case 2(b): $\lambda_5(t)\notin\{\topt,\topp\}$.}
+        Then the switch has not occurred, so $\delta_{;}(s,A)=t$ and $\lambda_5^{;}(t)=\lambda_5(t)$.
+        Therefore
+        \[
+        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+        =
+        \lambda_5(t)
+        =
+        \semfive{\pi \vDash C}.
+        \]
+        Before $C$ reaches tight satisfaction, the sequence semantics is governed by the left component on the current prefix, hence $\semfive{\pi \vDash C}=\semfive{\pi \vDash C;C'}$ in this case.
+        So the equality holds.
+        
+        All cases agree with the semantic clauses of sequential composition, so the induction closes.
+        \end{proof}
 
 
 
@@ -519,55 +553,21 @@ Then, for every trace $\pi$, the monitor outputs the right verdict as specified 
 \lambda_5^{\repair}(\delta_{\repair}(q_0^{\repair},\pi)) = \semfive{\pi \vDash C \repair C'}.
 \]
 \end{lemma}
+\begin{proof}[Proof sketch]
+The argument follows exactly the same scheme as the proof of
+Lemma~\ref{lem:seq-correct} for sequential composition.
 
+The reparation monitor behaves as the tight monitor for $C$ as long as no tight violation occurs.
+By the correctness invariant of $\tsmc(C)$, all prefixes before the first tight violation are evaluated exactly as prescribed by the tight semantics of $C\repair C'$.
 
-\noindent
-\textbf{Proof.}
-The argument parallels the proof for sequential composition.
+At the unique prefix where $C$ reaches a tight violation ($\bott$), the construction redirects the transition to the initial state $q'_0$ of the monitor for $C'$.
+This corresponds precisely to the semantic clause that activates the reparation contract after the first decisive failure of $C$.
 
-\smallskip
-\emph{Base case.}
-For $\pi=\varepsilon$, the monitor begins in $q_0^{\repair}=q_0$.
-Thus
-\[
-\lambda_5^{\repair}(\delta_{\repair}(q_0^{\repair},\varepsilon))
- = \lambda_5(q_0),
-\]
-which matches the tight semantics of $C\repair C'$ on the empty trace.
+From that point on, the monitor evolves exactly as $\tsmc(C')$ on the remaining suffix.
+By the inductive correctness of the tight monitor construction for $C'$, the emitted verdict coincides with the tight semantics of $C'$ on that suffix.
 
-\smallskip
-\emph{Inductive step.}
-Assume correctness for prefixes up to length $n$ and consider the next letter $A$. If $\lambda_5(\delta(x,A))=\bott$, then
-$\delta_{\repair}(x,A)=q'_0$, so $C'$ takes over on the remaining suffix.
-This matches the semantic clause
-\[
-\exists k:\ \pi_k\ \violt\ C
-\quad\text{and}\quad
-\pi^{k+1}\ \satt\ C'.
-\]
-
-If no tight violation occurs, $\delta_{\repair}$ behaves exactly as $\delta$, so the inductive hypothesis applies.
-
-\smallskip
-\emph{Violation case.}
-If $C$ reaches a tight failure and $C'$ later fails on the suffix, the monitor outputs $\botp$, exactly as prescribed by the semantics.
-
-\smallskip
-\emph{Satisfaction case.}
-If $C$ tightly fails and $C'$ succeeds on the suffix, the monitor outputs
-$\topt$ or $\topp$, depending on whether the success occurs tightly or
-post-satisfaction.
-
-\smallskip
-\emph{Conclusion.}
-Every step of $\delta_{\repair}$ corresponds either to execution of $C$,
-execution of $C'$, or the single switch determined by tight failure of $C$.
-Thus,
-$
-\lambda_5^{\repair}(\delta_{\repair}(q_0^{\repair},\pi))
-$
-matches exactly the tight semantics of $C\repair C'$.
-\qed
+Since all other transitions are unchanged and no ambiguity about the switching point is possible, the monitor output agrees with the tight semantics of $C\repair C'$ on all finite traces.
+\end{proof}
 
 
 
@@ -909,11 +909,11 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     
     \smallskip
     \emph{Base case.}
-    For $\pi=\varepsilon$ the monitor is in $q_0^{\trigg}=r_0$, the initial state
+    For $\pi=\emptytrace$ the monitor is in $q_0^{\trigg}=r_0$, the initial state
     of the guard.
     The value
     \[
-    \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\varepsilon)\bigr)
+    \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\emptytrace)\bigr)
       = \lambda_5^r(r_0) = \mathsf{?}
     \]
     coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
@@ -1075,7 +1075,7 @@ The resulting case table is symmetric and total, and it collapses to the expecte
   =(Q_{\guardd},q_0^{\guardd},\Gamma,\tightverdicts,\delta_{\guardd},\lambda_5^{\guardd})
 \]
 be the monitor constructed in Definition~\ref{def:moore-guard} for
-$\guardd[re]{C}$.  
+$\guard[re]{C}$.  
 Then, for every finite trace $\pi$,
 \[
 \lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
@@ -1089,17 +1089,17 @@ The guarded monitor is a synchronous product of $\tsmc(re)$ and $\tsmc(C)$,
 with the output governed by the case distinction in
 Definition~\ref{def:moore-guard}.  
 Each region of the case table matches exactly one of the semantic clauses for 
-$\guardd[re]{C}$.
+$\guard[re]{C}$.
 
 \smallskip
 \emph{Base case.}
-For $\pi=\varepsilon$ we have
+For $\pi=\emptytrace$ we have
 \[
-\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\varepsilon)\bigr)
+\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\emptytrace)\bigr)
   = \lambda_5^{\guardd}(r_0,c_0),
 \]
 which yields $\mathsf{?}$ in agreement with
-$\semfive{\varepsilon \vDash \guardd[re]{C}}$.
+$\semfive{\emptytrace \vDash \guard[re]{C}}$.
 
 \smallskip
 \emph{Inductive step.}
@@ -1120,7 +1120,7 @@ There are three semantic regions, corresponding to the three guard statuses.
   The monitor table assigns $\bott$ or $\botp$ precisely in these cases, and
   $\mathsf{?}$ otherwise, matching
   \[
-  \semfive{\pi \vDash \guardd[re]{C}}
+  \semfive{\pi \vDash \guard[re]{C}}
     = \semfive{\pi \vDash C}
     \quad\text{as long as $re$ is still open.}
   \]
@@ -1140,7 +1140,7 @@ There are three semantic regions, corresponding to the three guard statuses.
   The output table combines the post-accept and tight-accept verdicts of $C$
   with those of $re$ exactly as demanded by the five-valued semantics:
   \[
-     \semfive{\pi \vDash \guardd[re]{C}}
+     \semfive{\pi \vDash \guard[re]{C}}
        = \semfive{\pi \vDash C}
        \quad\text{once $re$ has closed.}
   \]
@@ -1149,11 +1149,11 @@ There are three semantic regions, corresponding to the three guard statuses.
 \smallskip
 \emph{Conclusion.}
 At each prefix of $\pi$, the guarded monitor outputs exactly the verdict
-prescribed by the five-valued semantics of $\guardd[re]{C}$.  
+prescribed by the five-valued semantics of $\guard[re]{C}$.  
 Thus
 \[
 \lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
-  = \semfive{\pi \vDash \guardd[re]{C}}
+  = \semfive{\pi \vDash \guard[re]{C}}
 \]
 for all traces $\pi$.
 \qed

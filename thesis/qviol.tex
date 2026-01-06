@@ -40,7 +40,7 @@ To define the quantitative violation semantics that do not stop at the first vio
     \[
     \qsem{\trace{A}\concat \pi, C} :=
     \begin{cases} 
-      \qsem{\trace{A}, C } & \text{if } \pi = \epsilon \lor \Prog(\trace{A},C)= \emptc,\\
+      \qsem{\trace{A}, C } & \text{if } \pi = \emptytrace \lor \Prog(\trace{A},C)= \emptc,\\
       \qsem{\trace{A}, C } + \qsem{\pi, \Prog(\trace{A},C)} & \text{otherwise}.
     \end{cases}
     \]
@@ -191,7 +191,7 @@ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
   \item \textbf{Quantitative score:} $\qsem{\trace{A_1},C_3}=0$.
 \end{itemize}
 This illustrates immediate satisfaction with zero cost.
-\ref{fig:eval-reparation-pi} summarizes the point-wise valuation for $\pi$.
+\ref{fig:eval-reparation-pi} summarizes the pointwise valuation for $\pi$.
 
 % --- Insert evaluation table for single-step trace (pi) ---
 \boxalignfigure{\resizebox{0.55\textwidth}{!}{%
@@ -247,7 +247,7 @@ This illustrates immediate satisfaction with zero cost.
   and \\$\qsem{\trace{A'_2},\obl[1]{\PAYF}}=0$.
 \end{itemize}
 Overall, $\pi' \satt C_3$ but $\qsem{\pi',C_3}=1$, illustrating Theorem~\ref{thm:quant-consistency}(3).
-\ref{fig:eval-reparation-piprime} summarizes the point-wise valuation for $\pi'$.
+\ref{fig:eval-reparation-piprime} summarizes the pointwise valuation for $\pi'$.
 
 % --- Insert evaluation table for two-step trace (pi') ---
 % PATCHED: add xshift=1cm to horizontally shift the figure
@@ -326,7 +326,7 @@ $A_1=\{\PAY^{(12)}\}$ and $A_2=\{\OCC^{(1)}\}$.
 
 Thus, $\pi \postviol \repit{C_3}$ while $\qsem{\pi,\repit{C_3}}=1$.
 A longer trace that later satisfies the fine would increase satisfaction without decreasing the accumulated score, illustrating monotonicity.
-\ref{fig:eval-repetition} summarizes the point-wise valuation for this trace.
+\ref{fig:eval-repetition} summarizes the pointwise valuation for this trace.
 
 % --- Insert evaluation table for repetition example (2 columns) ---
 \boxalignfigure{\resizebox{0.75\textwidth}{!}{%
@@ -400,7 +400,7 @@ C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}.
   and \\$\qsem{\trace{A_2},C}=0$.
 \end{itemize}
 Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
-\ref{fig:eval-guard-pi} summarizes the point-wise valuation for $\pi$.
+\ref{fig:eval-guard-pi} summarizes the pointwise valuation for $\pi$.
 
 % --- Insert evaluation table for guarded contract, trace pi ---
 \boxalignfigure{\resizebox{0.9\textwidth}{!}{%
@@ -450,7 +450,7 @@ Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
   \draw[dotted](s2.south)--(v2.north);
 \end{tikzpicture}
 }}
-{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{})$, and tight satisfaction ($\semfive{})$ for the contract $C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$ under the trace $\pi=\trace{A_1,A_2}$.}
+{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{})$, and tight satisfaction ($\semfive{}$) for the contract $C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$ under the trace $\pi=\trace{A_1,A_2}$.}
 {fig:eval-guard-pi}
 {\vspace{8pt}}{\vspace{-12pt}}
 
@@ -463,7 +463,7 @@ Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
 \end{itemize}
 
 Thus, $\pi' \presat C$ in the tight semantics but $\qsem{\pi',C}=1$, directly illustrating that quantitative semantics exposes violations masked by guards and reparations.
-\ref{fig:eval-guard-piprime} summarizes the point-wise valuation for $\pi'$.
+\ref{fig:eval-guard-piprime} summarizes the pointwise valuation for $\pi'$.
 
 % --- Insert evaluation table for guarded contract, trace pi' ---
 \boxalignfigure{\resizebox{0.9\textwidth}{!}{
@@ -743,8 +743,8 @@ The \emph{Quantitative Monitor Construction} function that returns for a contrac
     \end{tikzpicture}
     }}
     {The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$, with $re:=\Gamma^+ \cdot \notifterm^{(1)} $ and $C_3:= \obl[1]{\PAY} \repair \obl[1]{\PAYF}$. On the transitions:\\
-    $\PAY^{(12)}:=\{A \in \Gamma \mid \{\PAY^{(1)}, \PAY^{(2)}\} \subseteq A\}$ a shorthand for when the payement successfully occured.\\
-    $\notifterm^{(1)}:=\{A \in \Gamma \mid \{\notifterm^{(1)}\} \subseteq A\}$ for agent (1) sending a terminiation notification.\\
+    $\PAY^{(12)}:=\{A \in \Gamma \mid \{\PAY^{(1)}, \PAY^{(2)}\} \subseteq A\}$ a shorthand for when the payment successfully occurred.\\
+    $\notifterm^{(1)}:=\{A \in \Gamma \mid \{\notifterm^{(1)}\} \subseteq A\}$ for agent (1) sending a termination notification.\\
     $ \overline{P}:= \{A \in \Gamma \setminus P\}.$\\
     $P \wedge Q := \{A \mid A \in P \cap Q\}.$}
     {fig:qmc-guard-repit}
@@ -858,7 +858,7 @@ While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, i
     \qblame{\trace{A}\concat \pi, C} :=
     \begin{cases}
       \qblame{\trace{A}, C} 
-        & \text{if } \pi = \epsilon \lor \Prog(\trace{A},C)=\emptc,\\[4pt]
+        & \text{if } \pi = \emptytrace \lor \Prog(\trace{A},C)=\emptc,\\[4pt]
       \qblame{\trace{A}, C} +   & \text{otherwise}.\\ \qblame{\pi, \Prog(\trace{A},C)}
        
     \end{cases}
@@ -993,7 +993,6 @@ So far, we have introduced two quantitative views of non-compliance. The first o
     \begin{lemma}[The relation of the blame score to the violation score]
         \label{lem:qsem-qblame-decomp}
         Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
-        
         \[ \text{If }
         \qblame{\pi,C} = (n_1,n_2)
         \]
@@ -1116,7 +1115,7 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             where:
             \begin{enumerate}
               \item $Q := \{\Prog(\pi,C) \mid \pi\in\Gamma^*\}$ is the set of reachable residual contracts.
-              \item $q_0 := \Prog(\epsilon,C)=C$.
+              \item $q_0 := \Prog(emptytrace,C)=C$.
               \item $\delta(q,A) := \Prog(\trace{A},q)$.
               \item $\lambda_{\mathbb{N}^2}(q,A):= \qblame{\trace{A},q}$, that is, the instantaneous blame vector contributed by the current letter $A$ when the active residual is $q$.
             \end{enumerate}
@@ -1147,8 +1146,8 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             
             \smallskip
             \noindent\emph{Base case $n=0$.}
-            If $\pi=\epsilon$, then by Definition~\ref{def:qbm-score} the sum is the neutral element $(0,0)$.
-            By the definition of $\qblame{\cdot,\cdot}$ on the empty trace, $\qblame{\epsilon,C}=(0,0)$.
+            If $\pi=\emptytrace$, then by Definition~\ref{def:qbm-score} the sum is the neutral element $(0,0)$.
+            By the definition of $\qblame{\cdot,\cdot}$ on the empty trace, $\qblame{\emptytrace,C}=(0,0)$.
             Hence, the equality holds.
             
             \smallskip
@@ -1188,7 +1187,7 @@ We construct the quantitative blame monitor for the contract
   C := \perm[1]{\OCC} \wedge \obl[1]{\PAY},
 \]
 where $\perm[1]{\OCC}$ models the tenant's power to occupy.
-As in Example~\ref{ex:doubleblame}, the first step fully determines whether a violation occurs.
+As in Example~\ref{example:joint-blame} from the forward tight blame monitor, the first step fully determines whether a violation occurs.
 However, in the quantitative blame view, the transition is labeled with a vector in $\mathbb{N}^2$ that counts \emph{how many} violations occurred at that step and \emph{who} is responsible.
 
 We use the following event classes (as shorthand predicates over a letter $A\subseteq\Gamma$):

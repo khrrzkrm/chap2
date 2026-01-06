@@ -1,12 +1,8 @@
 \section{Quantitative Violation Semantics}
-
-\subsection{Motivation and Scope}
-
-\paragraph{Beyond Boolean Verdicts.}
 The basic restriction of the forward-looking tight satisfaction semantics, as defined in the previous section, resides in its binary and prefix-closed nature.
 In that framework, the monitoring process halts definitively at the first tight violation.
 Despite being computationally efficient for stopping compliance systems (e.g., an access control system that is failing), this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
-It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time—a critical requirement for comprehensive legal responsibility.
+It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time, a critical requirement for comprehensive legal responsibility.
 To tackle this limitation, it is necessary to transition from a boolean verdict to a \emph{quantitative semantics}, changing the emphasis from the question ``Did a violation occur?'' to ``How many violations occurred, and what was their magnitude?''
 
 

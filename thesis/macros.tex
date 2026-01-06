@@ -392,7 +392,7 @@
 \newcommand\bydef[1]{\xLeftrightarrow{\text{#1}}}
 \newcommand\cDLunmath{c\mathcal{DL}\xspace}
 %\newcommand{\badclass}[1]{\mathrm{BPL}(#1)}\
-\newcommand\cDL{\ensuremath{\logic{TACNL}} \xspace}
+\newcommand\cDL{\logic{TACNL}}
 \newcommand\cdl{\cDL}
 \newcommand{\andd}{~\text{and}~}
 \newcommand{\Rej}{\textit{Rej}}
@@ -409,9 +409,9 @@
 \newcommand{\postsat}{\models_{\topp}}
 \newcommand{\postviol}{\models_{\botp}}
 
-\newcommand\qsat{\models_{Q,\top}^p}
-\newcommand\qsatv{\models_{Q,\bot}^p}
-\newcommand\qsatun{\models_{Q,?}^p}
+\newcommand\qsat{\models_{Q, \top}^p}
+\newcommand\qsatv{\models_{Q, \bot}^p}
+\newcommand\qsatun{\models_{Q, ?}^p}
 \newcommand\qsatt[1]{\models_{Q}^#1}
 \newcommand\score{\rho}
 %newcommand\guard{\rotatebox[origin=c]{-90}{$\bumpeq$}}
@@ -450,6 +450,7 @@
 
 % --- Five-valued semantics bracket ---
 \newcommand{\semfive}[1]{\left\llbracket #1 \right\rrbracket_{5}}
+\newcommand{\semelf}[1]{\left\llbracket #1 \right\rrbracket_{11}}
 \newcommand{\qsem}[1]{\left\llbracket #1 \right\rrbracket_{\text{qviol}}}
 \newcommand{\qblame}[1]{\left\llbracket #1 \right\rrbracket_{\text{qblame}}}
 

@@ -7,52 +7,49 @@ When we speak of traces, we mean recorded words obtained from concrete execution
 
 We begin by establishing three word models of action-based behavior and the canonical morphisms between them. Subsequently, we study how to synchronize two words of the same type.
 
-\subsection{An Abstract Algebraic Theory of Discrete-Action Words}
-For the remainder of this dissertation, let \(\Sigma\) denote a non-empty set of discrete \emph{actions}. Before introducing the three timing models, we fix a small algebraic core that is shared by all discrete-action words, namely the basic sequence structure and the standard operators that act on it.
+\subsection{Notations on Discrete-Action Words}
+For the remainder of this dissertation, let \(\Sigma\) denote a non-empty set of discrete \emph{actions}. Before introducing the specific timing models, we fix a small algebraic core shared by all discrete-action words, specifically the basic sequence structure and standard operators.
 
-Words are sequences of events. An \emph{event} in our discrete setting, denoted by $\event$, is a data structure derived from $\Sigma$. We denote the set of \emph{finite words} by $\event^\star$, the set of \emph{infinite words} by $\event^\omega$, and the set of all words (finite or infinite) by $\event^\infty := \event^\star \cup \event^\omega$.
-Before moving to the differences regarding timing models, all word types share the fundamental algebraic structure of a sequence. To avoid redundancy in subsequent definitions, we establish here the properties common to any finite word $w$ over a concrete event domain $E$ (where $E$ could simply be $\Sigma$).
+\paragraph{Events and Words.}
+An \emph{event}, denoted by $e$, is an element of an event domain $\mathbb{E}$. The specific structure of $\mathbb{E}$ depends on the timing model derived from $\Sigma$ (e.g., $\mathbb{E} = \Sigma$ for untimed words, or $\mathbb{E} = \Sigma \times \mathbb{R}_{\ge 0}$ for timed words).
+We denote the set of \emph{finite words} over $\mathbb{E}$ by $\mathbb{E}^*$, the set of \emph{infinite words} by $\mathbb{E}^\omega$, and the set of all words by $\mathbb{E}^\infty := \mathbb{E}^* \cup \mathbb{E}^\omega$.
 
-\paragraph{Notation for finite traces} \( w = \trace{e_1,\,e_2,\,\dots,\,e_{n}} \in \mathbb{E}^* \) symbolizes a finite word $w$ defined by a sequence of events $e_i$ from \( E \). We define the following canonical notions:
+\paragraph{Empty word.}
+The empty word, denoted by $\emptytrace$, is the unique finite word containing no events.
 
-\paragraph{Notation for finite traces.}
-Let \( w = \trace{e_1,\,e_2,\,\dots,\,e_{n}} \in E^* \) be a finite word.
-We adopt \emph{1-based indexing} where indices correspond to the count of events.
+\paragraph{Notation for non-empty finite words.}
+Let \( w = \langle e_1,\,e_2,\,\dots,\,e_{n} \rangle \in \mathbb{E}^* \) be a non-empty finite word.
+We adopt \emph{1-based indexing} where indices correspond to the position of events in the sequence.
 
 \begin{itemize}
-    \item \defn{Size}: The length of the word is denoted by \( |w| := n \).
+    \item \defn{Size}: The length of the word denoted by $\size{w}$, is defined as \( |w| := n \).
     
-    \item \defn{Positions}: The set of valid element indices is \( \mathsf{pos}(w) := \{1, 2, \dots, n\} \).
+    \item \defn{Positions}: The set of valid positions is \( \mathsf{pos}(w) := \{1, 2, \dots, n\} \).
     
     \item \defn{Indexing}: For any \( k \in \mathsf{pos}(w) \), the event at position \(k\) is \( w[k] := e_k \).
     
-    \item \defn{Prefix}: For any \( 0 \le k \le n \), the prefix of length \( k \) is denoted by \( w_k \) (or \( w[1,k] \)).
+    \item \defn{Prefix}: For any \( 0 \le k \le n \), the prefix of length \( k \) is denoted by \( w_k \):
     \[
-        w_k := \trace{e_1, \dots, e_k}.
+        w_k := \langle e_1, \dots, e_k \rangle.
     \]
-    \emph{Exception Handling:} If \( k=0 \), then \( w_0 = \emptytrace \).
+    Note that \( w_0 = \emptytrace \) and \( w_n = w \).
     
-    \item \defn{Suffix}: For any \( 0 \le k \le n \), the suffix remaining \emph{after} the first \( k \) events is denoted by \( w^k \).
+    \item \defn{Suffix}: For any \( 0 \le k \le n \), the suffix remaining \emph{after} the first \( k \) events is denoted by \( w^k \):
     \[
-        w^k := \trace{e_{k+1}, \dots, e_n}.
+        w^k := \langle e_{k+1}, \dots, e_n \rangle.
     \]
-    \emph{Exception Handling:} If \( k=n \), then \( w^n = \emptytrace \).
-    
-    % \item \defn{Decomposition}: For any cut point \( 0 \le k \le n \), the word is the concatenation of prefix and suffix:
-    % \[
-    %     w = w_k \concat w^k.
-    % \]
+    Note that \( w^0 = w \) and \( w^n = \emptytrace \).
 \end{itemize}
-\paragraph{Words vs. traces.}
-Although we conceptually distinguish a \emph{word} as an abstract behavior from a \emph{trace} as an observed execution, finite words and finite traces boil down to the same underlying data structure, namely a finite sequence of events. Accordingly, in the scope of this dissertation, we use \emph{word} as the default technical term in the formal development, and we use \emph{trace} only when emphasizing that a particular finite sequence comes from recorded observations.
 
-\paragraph{Omega notation for infinite words.}
-Let $\event$ be the underlying event domain.
-For any nonempty finite word $u \in \event^{+}$, written $u=\trace{e_1,\dots,e_n}$ with $n\ge 1$, we write
+\paragraph{Words vs. Traces.}
+We conceptually distinguish a \emph{word} (an abstract sequence representing behavior) from a \emph{trace} (an observed execution of a system). However, formally, both are finite sequences of events in $\mathbb{E}^*$. In this dissertation, we use "word" as the default technical term and "trace" when emphasizing that the sequence is the result of a recorded observation.
+
+\paragraph{Omega notation.}
+For any non-empty finite word $u \in \mathbb{E}^{+}$, written $u=\langle e_1,\dots,e_n \rangle$ with $n\ge 1$, we write
 $u^{\omega}$
-to denote the infinite word obtained by repeating $u$ indefinitely, that is,
+to denote the infinite word obtained by repeating $u$ indefinitely:
 \[
-u^{\omega} \;:=\; \trace{e_1,\dots,e_n,\,e_1,\dots,e_n,\,e_1,\dots,e_n,\,\dots} \;\in\; \event^{\omega}.
+u^{\omega} \;:=\; \langle e_1,\dots,e_n,\,e_1,\dots,e_n,\,\dots \rangle \;\in\; \mathbb{E}^{\omega}.
 \]
 
 
@@ -438,7 +435,7 @@ The asynchronous operator models purely interleaved joint behavior, generating \
   & \tault_1=a\cdot u,\ \tault_2=b\cdot v.
   \end{cases}
   \]
-  where $a\in\Sigma_1$, $b\in\Sigma_2$, $u \in \Sigma_1^*$ and $v \in \Sigma_2^*$.
+  Where $a\in\Sigma_1$, $b\in\Sigma_2$, $u \in \Sigma_1^*$ and $v \in \Sigma_2^*$.
 \end{definition}
 
 As a result, we have that every $w\in \tault_1 \shuffle \tault_2$ satisfies the projection property:
