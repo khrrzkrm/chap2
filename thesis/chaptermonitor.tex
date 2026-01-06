@@ -428,14 +428,14 @@ Let
 \pi_i := \AGGI_x(\taumt_i) = \trace{A^{(i)}_1,\dots,A^{(i)}_K}.
 \]
 Then aggregation preserves inter-period order in the following sense:
-\[
-\forall\, k,\ell \in \{1,\dots,K\},\ k<\ell,\
+\begin{align*}
+&\forall\, k,\ell \in \{1,\dots,K\},\ k<\ell,\
 \forall\, a \in A^{(i)}_k,\ \forall\, b \in A^{(i)}_{\ell},\
-\forall\, t_a,t_b:\
+\forall\, t_a,t_b:\\&
 \bigl((a,t_a)\in\taumt_i \land t_a\in I_k\bigr)\ \land\
 \bigl((b,t_b)\in\taumt_i \land t_b\in I_{\ell}\bigr)
 \ \Rightarrow\ t_a<t_b.
-\]
+\end{align*}
 \end{lemma}
 
 \begin{proof}
@@ -589,7 +589,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \end{definition}
   \begin{example}[Successful collaboration ]
   From the two transformed traces  $\pi_1^{C}$ and $\pi_2^{C}$ from the Example.\ref{ex:collab}
-  We illustrate \(\mathrm{Succ}(\pi_1^{C},\pi_2^{C})\)  in Figure.~\ref{example:succ-meet}
+  We illustrate \(\mathrm{Succ}(\pi_1^{C},\pi_2^{C})\)  in \ref{example:succ-meet}
   \boxalignfigure{ \resizebox{0.96\textwidth}{!}{
   \begin{tikzpicture}[y=2cm,x=3cm]
     % Uniform rectangle nodes for all events (no colors)
@@ -800,7 +800,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   Both machines use $S=\{s_0,s_1,s_2\}$ with initial state $s_0$.
   Transitions are guarded by the current letters of the agent \emph{other} (seen as a set).
 
-  The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encodings in Subfigure~\ref{fig:moore-tenant-prod} and Subfigure~\ref{fig:moore-landlord-prods}, respectively.
+  The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encoding in Figure~\ref{fig:moore-tenant-prod} and Figure~\ref{fig:moore-landlord-prods}, respectively.
   
   % \begin{figure}[h]
   % \centering
@@ -961,7 +961,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   progress under synchronous feedback. Once a stable pair of states is reached, the product
   loops, generating the same joint output forever.
 
-  The individual Moore machines underlying the product construction are recalled in Sub-figure~\ref{fig:moore-tenant-prod} and Sub-figure~\ref{fig:moore-landlord-prods}, while their synchronous product is summarized in Sub-figure~\ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
+  The individual Moore machines underlying the product construction are recalled in Figure~\ref{fig:moore-tenant-prod} and Figure~\ref{fig:moore-landlord-prods}, while their synchronous product is summarized in Figure~\ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
   \begin{figure}[h]
   \centering
   \begin{subfigure}[t]{0.70\textwidth}
@@ -1026,7 +1026,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \end{figure}
   
   \noindent
-  Concretely, The run of the product $M_1^1 \times M_2^1$ in  Sub-figure~\ref{fig:product-sketch}, corresponds to the omega-word\\
+  Concretely, The run of the product $M_1^1 \times M_2^1$ in  Figure~\ref{fig:product-sketch}, corresponds to the omega-word\\
   $\trace{\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
    (\{\OCC^{(1)},\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\})^\omega}.$
   \end{example}
@@ -1117,14 +1117,14 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \emph{reparation} \((C \repair C')\) for contrary-to-duty fall-backs saying you are requested to perform $C$, if you fail you must conform to $C'$ in the next time position;
   \emph{triggered} clauses \(\trig[re]{C}\) that activate \(C\) when a pattern \(re\) occurs;
   \emph{guarded} clauses \(\guard[re]{C}\) that encapsulate conditions under which conforming to a contract is no longer necessary; 
-  \emph{n-repitition} clauses inforces the repition of the enforcement of a contract $n$ times, with $n \in \mathbb{N^*}$; and finally, \emph{repetition} \(\repit{C}\) for the infinite repetition of the enforcement of a contract.
+  \emph{n-repetition} clauses enforces the repetition of the enforcement of a contract $n$ times, with $n \in \mathbb{N^*}$; and finally, \emph{repetition} \(\repit{C}\) for the infinite repetition of the enforcement of a contract.
   Together, these constructs could be used to capture the clauses of a contract, the conditions under which they are activated or terminated, and how the clauses relate to each other regarding reparations or the timing of their application. More specifically, the combination of repetition and a guarded contract can capture the notion of open-ended contracts.
    In the following example, we illustrate how we could capture our motivating example.
   \subsection{Illustrating the Encoding in \cDL for the Motivating Example}
   \begin{example}[Encoding the rental clauses in \cDL]
   \label{ex:contract-encoding}
   We now illustrate how the rental agreement introduced in Example~\ref{ME} 
-  can be systematically encoded in the \cDL\ syntax (see Fig.~\ref{fig:cdl-syntax}).  
+  can be systematically encoded in the \cDL\ syntax (see \ref{fig:cdl-syntax}).  
   We define the collaboration alphabet that captures all joint actions relevant to the contract:
   \[
   \Sigma_C = \{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \notifterm,\ \REPAIR\}.

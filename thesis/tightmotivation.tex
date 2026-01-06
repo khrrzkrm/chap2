@@ -52,14 +52,14 @@ the tight five-valued semantics.
 \label{sec:lang-frontiers-tight}
 
 In this subsection, we generalize the construction of tight semantics to \emph{any regular language} $L \subseteq \Sigma^*$.
-To do so, we must distinguish between the classical notion of \emph{static language membership} and the requirements of \emph{behaviour evaluation}.
+To do so, we must distinguish between the classical notion of \emph{static language membership} and the requirements of \emph{behavior evaluation}.
 
 Standard language theory evaluates a word $w$ holistically: $w$ is either inside or outside $L$.
-From the normative, behaviour-oriented point of view, we instead ask whether the desired behaviour has \emph{already} been achieved on some prefix.
-This requires a prefix-sensitive notion of evaluation together with \emph{eagerness}: we must identify the \emph{first} prefix at which the behaviour becomes satisfied or becomes impossible.
+From the normative, behavior-oriented point of view, we instead ask whether the desired behavior has \emph{already} been achieved on some prefix.
+This requires a prefix-sensitive notion of evaluation together with \emph{eagerness}: we must identify the \emph{first} prefix at which the behavior becomes satisfied or becomes impossible.
 This viewpoint diverges from plain set membership.
 For example, if $L=\{a\}$, the word $aa$ is not in $L$ (it is rejected by language membership).
-However, for behavioural monitoring, the prefix $a$ already establishes success; the second $a$ is merely an irrelevant extension, not a failure.
+However, for behavioral monitoring, the prefix $a$ already establishes success; the second $a$ is merely an irrelevant extension, not a failure.
 
 Our objective is to formalize this shift by partitioning $\Sigma^*$ into regions that isolate these \emph{boundaries of decision}, explicitly resolving conflicts between ``bad words'' and ``extensions of good words'' in favor of the latter.
 
@@ -358,7 +358,7 @@ By Theorem~\ref{thm:five-way}, the sets $\Pre{L}$, $\EAL{L}$, $\ERL{L}$, $\IAL{L
 \end{proof}
 
 \paragraph{Graphical overview.}
-Figure~\ref{prop:tightness-obligations-unindexed} visualizes the five semantic regions and their intended temporal evolution. The layout reflects how a language moves from an undecided language to a decisive frontier and then irreversibly into a post-verdict phase.
+\ref{prop:tightness-obligations-unindexed} visualizes the five semantic regions and their intended temporal evolution. The layout reflects how a language moves from an undecided language to a decisive frontier and then irreversibly into a post-verdict phase.
 \begin{figure}[h]
   \centering
   \begin{tikzpicture}[
@@ -419,7 +419,7 @@ Figure~\ref{prop:tightness-obligations-unindexed} visualizes the five semantic r
 
 \subsubsection{From Language Automaton to Tight Monitor Construction}
 
-This subsection explains how the deterministic language automaton obtained for a regular expression is lifted into a tight monitor. A language automaton recognises complete words of a regular expression, whereas a tight monitor must classify every prefix of every word into one of the five semantic regions. The transition structure of the automaton is therefore preserved, and only the output behaviour changes: each state receives a tight verdict according to the five-valued prefix semantics. This yields the tight monitor for regular expressions introduced in Definition~\ref{def:tsmc-re}.
+This subsection explains how the deterministic language automaton obtained for a regular expression is lifted into a tight monitor. A language automaton recognises complete words of a regular expression, whereas a tight monitor must classify every prefix of every word into one of the five semantic regions. The transition structure of the automaton is therefore preserved, and only the output behavior changes: each state receives a tight verdict according to the five-valued prefix semantics. This yields the tight monitor for regular expressions introduced in Definition~\ref{def:tsmc-re}.
 
 We now recall the components used in this transformation and show how to convert the DFA into a Moore machine with tight verdicts.
 
@@ -831,7 +831,7 @@ Continuing from Example.~\ref{ex:contract-encoding}, we demonstrate the automata
 \Sigma_C  &:= \{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \notifterm,\ \REPAIR\}.
 \end{aligned}
 \]
-Figure~\ref{fig:thompson-C5} depicts the Thompson-style $\varepsilon$-NFA for $\re_{C_5}$, and Figure~\ref{fig:dfa-C5-determinized} shows its determinized and completed DFA.
+\ref{fig:thompson-C5} depicts the Thompson-style $\varepsilon$-NFA for $\re_{C_5}$, and \ref{fig:dfa-C5-determinized} shows its determinized and completed DFA.
 
 \tikzset{
   ->, >=Stealth,
@@ -958,7 +958,7 @@ coincides with the tight five-valued semantics:
 \]
 
 \begin{example}[Tight monitor for $C_5$]\label{ex:moore-C5-tight}
-Continuing Example~\ref{ex:end-to-end-C5}, Figure~\ref{fig:moore-C5-tight-compact} shows the compact five-valued Moore monitor obtained by applying the tight monitor construction of Definition~\ref{def:tsmc-re} to the regular expression $\re_{C_5}$.
+Continuing Example~\ref{ex:end-to-end-C5}, \ref{fig:moore-C5-tight-compact} shows the compact five-valued Moore monitor obtained by applying the tight monitor construction of Definition~\ref{def:tsmc-re} to the regular expression $\re_{C_5}$.
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[

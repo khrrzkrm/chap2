@@ -832,7 +832,7 @@ equivalent formula satisfying \LUCO and
 % \begin{proof}
 % \emph{(i) Alternation preservation:}  
 % We prove by contradiction. Assume there exists a sub-formula in $\dnf(\phi)$ whose Boolean operator alternation pattern differs from any alternation pattern in $\phi$. The only transformation used to obtain $\dnf(\phi)$ from $\phi$ is repeated application of the distributivity equivalences in Lemma~\ref{lemma:operequiv}, which replace a sub-formula of the form \\
-% $\phi_1 \sqcap (\phi_2 \sqcup \phi_3)$ by $(\phi_1 \sqcap \phi_2) \sqcup (\phi_1 \sqcap \phi_3)$, or symmetrically for disjunction over conjunction. These rewritings do not invert the order of $\sqcap$ and $\sqcup$ but only propagate one operator outward. Thus, any alternation pattern in $\dnf(\phi)$ is inherited from some subformula of $\phi$, contradicting the assumption. Hence alternation is preserved.
+% $\phi_1 \sqcap (\phi_2 \sqcup \phi_3)$ by $(\phi_1 \sqcap \phi_2) \sqcup (\phi_1 \sqcap \phi_3)$, or symmetrically for disjunction over conjunction. These rewritings do not invert the order of $\sqcap$ and $\sqcup$ but only propagate one operator outward. Thus, any alternation pattern in $\dnf(\phi)$ is inherited from some subformula of $\phi$, contradicting the assumption. Hence, alternation is preserved.
 
 % \emph{(ii) Ancestor preservation:}  
 % Again, we proceed by contradiction. Suppose there exists a literal $\ell$ in $\dnf(\phi)$ such that no identical literal occurs in $\phi$. The $\dnf$ transformation rewrites only via distributivity and associativity, which neither introduces new literals nor modifies their deontic operator or time interval. Therefore, every literal in $\dnf(\phi)$ must have appeared unchanged in $\phi$. This contradicts the assumption, hence ancestor preservation holds.
@@ -950,19 +950,19 @@ the top-level product terms of $\phi'$, hence $\pt=\phi_j'$ for some $j\in\{1,\d
 extractor is run on $\phi_j'$ alone, the preprocessing is inert:
 $\pnf(\phi_j',k)=\phi_j'$ (already punctual) and $\dnf(\phi_j')=\phi_j'$ (already a conjunction).
 Therefore, the same per-term analysis over pairs of literals in $\pt$ is performed, yielding the
-same conflict set $\mathcall{C}$. Hence $(\pt,\mathcall{C})\in\mathcall{PC}(\phi_j')\subseteq
+same conflict set $\mathcall{C}$. Hence, $(\pt,\mathcall{C})\in\mathcall{PC}(\phi_j')\subseteq
 \bigcup_{i=1}^n \mathcall{PC}(\phi_i')$.
 
 \smallskip\noindent
 $\supseteq$: Take any $(\pt,\mathcall{C})\in\mathcall{PC}(\phi_i')$ for some $i$. Since
 $\phi_i'$ is a top-level product term of $\phi'$, the run of the extractor on $\phi$ will visit
 that very product term $\pt=\phi_i'$ and execute the identical per-term scan, thus producing the
-same $\mathcall{C}$. Therefore $(\pt,\mathcall{C})\in\mathcall{PC}(\phi)$.
+same $\mathcall{C}$. Therefore, $(\pt,\mathcall{C})\in\mathcall{PC}(\phi)$.
 
 \smallskip
 In both directions, we used the following facts (i) DNF puts each product term at the top level, and (ii) the
 conflict check is \emph{local} to each product term (it never compares literals across distinct
-disjuncts). Hence $\mathcall{PC}(\phi)=\bigcup_{i=1}^n \mathcall{PC}(\phi_i')$.
+disjuncts). Hence, $\mathcall{PC}(\phi)=\bigcup_{i=1}^n \mathcall{PC}(\phi_i')$.
 \end{proof}
 
 % \vspace{1em}

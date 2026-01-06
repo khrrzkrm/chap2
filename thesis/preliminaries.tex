@@ -39,7 +39,7 @@ $
 For $n\in\mathbb{N}$, we write $n\in[\tmin,\tmax]$ iff $\tmin \leq_\infty n \leq_\infty \tmax$. 
  \end{definition}
 
- Informally, an non empty interval $[\tmin,\tmax]$  \emph{represents} a contiguous set of numbers, that is:  $\{n \mid n\in[\tmin,\tmax]\}$, and the empty interval $\varnothing$ represents the empty set of natural numbers.
+ Informally, a non-empty interval $[\tmin,\tmax]$  \emph{represents} a contiguous set of numbers, that is:  $\{n \mid n\in[\tmin,\tmax]\}$, and the empty interval $\varnothing$ represents the empty set of natural numbers.
 The \emph{size} of an interval $I$, written $\size{I}$, relates to the cardinality of the set that it represents. Thus, the size for $\varnothing$ is zero and for valid non-empty intervals:
 \[
 \size{[a,b]} :=
@@ -183,7 +183,7 @@ We show below examples illustrating some relations between intervals:
     \item \textbf{Before}: \( I := [0, 3] \) and \( I' := [4, 7] \). \\
     \( I \text{ is before } I' \), since \( I \) ends before \( I' \) starts.
 
-    \item \textbf{Non unifiable}: \( I := [0,2] \) and \( I' := [4, 7] \). \\
+    \item \textbf{Non-unifiable}: \( I := [0,2] \) and \( I' := [4, 7] \). \\
     \( I \text{ is not unifiable with } I' \), since $[0,3]$ precedes $[4,7]$.
     
     \item \textbf{After}: \( I := [5, 8] \) and \( I' := [0, 4] \). \\
@@ -206,7 +206,7 @@ We show below examples illustrating some relations between intervals:
     
     \item \textbf{Contains}: \( I := [0, 7] \) and \( I' := [2, 5] \). \\
     \( I \text{ contains } I' \), since \( I \) starts before \( I' \) and ends after \( I' \) ends.
-    \item \textbf{Non unifiable}: \( I := [0, 3] \) and \( I' := [5, \infty] \). \\
+    \item \textbf{Non-unifiable}: \( I := [0, 3] \) and \( I' := [5, \infty] \). \\
     \( \overline{U}(I,I') \), since $3+1 < 5$.
 \end{enumerate}
 \end{example}

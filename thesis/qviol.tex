@@ -40,7 +40,7 @@ To define the quantitative violation semantics that do not stop at the first vio
     \[
     \qsem{\trace{A}\concat \pi, C} :=
     \begin{cases} 
-      \qsem{\trace{A}, C } & \text{if } \pi = \emptytrace \lor \Prog(\trace{A},C)= \emptc,\\
+      \qsem{\trace{A}, C } & \text{if } \pi = \emptytrace \sor\\ & \Prog(\trace{A},C)= \emptc,\\
       \qsem{\trace{A}, C } + \qsem{\pi, \Prog(\trace{A},C)} & \text{otherwise}.
     \end{cases}
     \]
@@ -49,7 +49,7 @@ To define the quantitative violation semantics that do not stop at the first vio
     \qsem{\trace{A}, C} :=
     \begin{cases} 
       \qsem{\trace{A},C_1} + \qsem{\trace{A}, C_2} & \text{if } C = C_1 \wedge C_2, \\
-      0 &\text{if } \lnot(\trace{A} \violt \LH(C)) \sor \LH(C)= \epsilon_{\ell}\\
+      0 &\text{if } \lnot(\trace{A} \violt \LH(C))\\ & \sor \LH(C)= \epsilon_{\ell},\\
       1 & \text{if } \trace{A} \violt \LH(C), \\
     \end{cases}
     \]
@@ -61,12 +61,12 @@ Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract ex
     \item \textbf{Accumulates:} It adds the snapshot penalty to the result of the recursive call on the remaining trace using the \emph{new} state.
 \end{enumerate}
 
-Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract execution as a path-accumulation problem. At every time step, the function:
-\begin{enumerate}
-    \item \textbf{Snapshots the penalty:} It calculates $\qsem{\trace{A}, C}$, which asks ``Given the current literals from $C$, does the current event $A$ violate any of them?'' This is a stateless check based purely on the structure of $C$ at that instant.
-    \item \textbf{Updates the state:} It computes $\Prog(\trace{A}, C)$, effectively moving the contract pointer forward (e.g., from a paid obligation to the next month's rent, or from a violated duty to a reparation).
-    \item \textbf{Accumulates:} It adds the snapshot penalty to the result of the recursive call on the remaining trace using the \emph{new} state.
-\end{enumerate}
+% Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract execution as a path-accumulation problem. At every time step, the function:
+% \begin{enumerate}
+%     \item \textbf{Snapshots the penalty:} It calculates $\qsem{\trace{A}, C}$, which asks ``Given the current literals from $C$, does the current event $A$ violate any of them?'' This is a stateless check based purely on the structure of $C$ at that instant.
+%     \item \textbf{Updates the state:} It computes $\Prog(\trace{A}, C)$, effectively moving the contract pointer forward (e.g., from a paid obligation to the next month's rent, or from a violated duty to a reparation).
+%     \item \textbf{Accumulates:} It adds the snapshot penalty to the result of the recursive call on the remaining trace using the \emph{new} state.
+% \end{enumerate}
 
 The explicit handling of Sequence and Reparation is done in the contract progress function, which ensures that ``zero-delay'' transitions are penalized correctly. For instance, if a contract requires $C_1$ then $C_2$, and an event discharges $C_1$ but violates $C_2$ in the same step, the summation logic ($\qsem{\trace{A}, C_1} + \qsem{\trace{A}, C_2}$) ensures the violation of $C_2$ is not ignored simply because it appeared in a continuation.
 
@@ -74,7 +74,7 @@ The explicit handling of Sequence and Reparation is done in the contract progres
 The definition of the instantaneous score $\qsem{\trace{A}, C}$ rests on distinguishing between \textbf{concurrent} (parallel) obligations and \textbf{structural} (atomic) constraints. It decouples the measurement of the ``volume'' of non-compliance from the binary verification of specific rules.
 
 \paragraph{Additivity of Concurrency.}
-The case $\qsem{\trace{A}, C_1 \wedge C_2} := \qsem{\trace{A}, C_1 } + \qsem{\trace{A}, C_2}$ captures the ``width'' of the violation as show in Example.\ref{fig:joint-blame}. In normative systems, a conjunction represents distinct, independent obligations that are active simultaneously. By summing the scores, the function ensures that the penalty is proportional to the number of distinct parallel duties neglected in a single instant, preventing ``violation masking'' in which a single boolean verdict could hide multiple breaches.
+The case $\qsem{\trace{A}, C_1 \wedge C_2} := \qsem{\trace{A}, C_1 } + \qsem{\trace{A}, C_2}$ captures the ``width'' of the violation as shown in \ref{fig:joint-blame}. In normative systems, a conjunction represents distinct, independent obligations that are active simultaneously. By summing the scores, the function ensures that the penalty is proportional to the number of distinct parallel duties neglected in a single instant, preventing ``violation masking'' in which a single boolean verdict could hide multiple breaches.
 
 \paragraph{Binary Structural Verdict.}
 For constructs that are not distinct parallel duties (such as literals, sequences, or reparations), the definition relies on the binary tight violation relation ($\violt$). This captures the ``existence'' of a fault in a non-decomposable structure. For example, a single atomic duty ($\obl{a}$) can only be violated once per step.
@@ -94,16 +94,16 @@ While a binary trace might be "Satisfied" (via reparation), the quantitative sco
       \item \textbf{Zero Score Implications:}
       If $\qsem{\pi, C} = 0$, then exactly one of the following three disjoint cases holds:
       \begin{enumerate}
-        \item $\pi \satt C$ if and only if $\Prog{\pi, C} = \emptc$ and $\forall k < |\pi|-1:\Prog(\pi[0,k], C) \neq \emptc$.
-        \item $\pi \postsat C$ if and only if $\Prog{\pi, C} = \emptc$ and\\ $\exists k < |\pi|-1$ such that $\Prog(\pi[0,k], C) = \emptc$.
+        \item $\pi \satt C$ if and only if $\Prog{\pi, C} = \emptc$ and $\forall k < |\pi|-1:\Prog(\pi_k, C) \neq \emptc$.
+        \item $\pi \postsat C$ if and only if $\Prog{\pi, C} = \emptc$ and\\ $\exists k < |\pi|-1$ such that $\Prog(\pi_k, C) = \emptc$.
         \item $\pi \presat C$ if and only if $\Prog{\pi, C} \neq \emptc$.
       \end{enumerate}
       
       \item \textbf{Non-Zero Score Implications:}
       If $\qsem{\pi, C} \neq 0$, then:
       \begin{enumerate}
-        \item $\pi \violt C$ if and only if $\qsem{\pi, C} = 1$ and $\qsem{\pi[0, |\pi|-2], C} = 0$.
-        \item $\pi \postviol C$ if and only if $\qsem{\pi, C} > 1$ or ($\qsem{\pi, C} = 1$ and\\ $\qsem{\pi[0, |\pi|-2], C} = 1$).
+        \item $\pi \violt C$ if and only if $\qsem{\pi, C} = 1$ and $\qsem{\pi, C} = 0$.
+        \item $\pi \postviol C$ if and only if $\qsem{\pi, C} > 1$ or ($\qsem{\pi, C} = 1$ and\\ $\qsem{\pi_{n-1}, C} = 1$).
       \end{enumerate}
       
       \item \textbf{Reparation Cost:}
@@ -113,53 +113,53 @@ While a binary trace might be "Satisfied" (via reparation), the quantitative sco
   
   \begin{proof}
   We prove the implications by structural induction on the trace $\pi$ and the contract $C$, utilizing the definitions of the quantitative function $\qsem{}$ and the contract progression $\Prog$.
-  
-  \paragraph{1. Zero Score Implications ($\qsem{\pi, C} = 0$)}
+ \begin{enumerate}
+  \item Zero Score Implications ($\qsem{\pi, C} = 0$)
   Assume $\qsem{\pi, C} = 0$. By the definition of the cumulative score, this implies that for all steps $i < |\pi|$,
    the instantaneous penalty is zero: $\qsem{\trace{A_i}, \Prog(\pi_i,C)} = 0$. Consequently, no tight violation has occurred at any step. The contract state evolves purely via $\Prog$ without triggering any penalty clauses.
   
   \begin{enumerate}
-      \item \textbf{Case 1(a): Tight Satisfaction ($\satt$).}
+      \item Tight Satisfaction ($\satt$).
       \begin{itemize}
           \item $(\Rightarrow)$ Assume $\Prog(\pi, C) = \emptc$ and for all strict prefixes $\pi'$, $\Prog(\pi', C) \neq \emptc$.
           The condition $\Prog(\pi, C) = \emptc$ indicates that the contract has been fully discharged. Since the score is 0, this discharge was not achieved via a violation-triggered path (e.g., a reparation where the primary failed). The absence of $\emptc$ in prior prefixes ensures that this is the \emph{first} moment of discharge. By Definition~\ref{def:binary-contract-semantics} (Tight Satisfaction), the first prefix to fully satisfy the obligations corresponds to $\satt$.
           \item $(\Leftarrow)$ If $\pi \satt C$, then by Lemma~\ref{lem:sat-saturation} (Satisfaction Saturation), the progression must reach $\emptc$ exactly at $\pi$. Since it is a \emph{tight} satisfaction, no proper prefix could have satisfied it (reached $\emptc$) earlier.
       \end{itemize}
   
-      \item \textbf{Case 1(b): Post Satisfaction ($\postsat$).}
+      \item Post Satisfaction ($\postsat$).
       \begin{itemize}
-          \item The condition $\exists k < |\pi|$ such that $\Prog(\pi[0,k], C) = \emptc$ implies that the contract was already discharged at a previous step $k$.
+          \item The condition $\exists k < |\pi|$ such that $\Prog(\pi_k, C) = \emptc$ implies that the contract was already discharged at a previous step $k$.
           \item By Definition~\ref{def:postprecont}, $\pi \postsat C$ holds if there exists a strict prefix that tightly satisfies $C$. Since the score is 0, the path to $k$ was compliant. Thus, the state remains $\emptc$ for the remainder of the trace, maintaining the $\postsat$ status.
       \end{itemize}
   
-      \item \textbf{Case 1(c): Pre Satisfaction ($\presat$).}
+      \item Pre Satisfaction ($\presat$).
       \begin{itemize}
           \item Assume $\Prog(\pi, C) \neq \emptc$. Since $\qsem{\pi, C} = 0$, no violation has occurred. However, the contract has not reduced to the empty contract $\emptc$, meaning active obligations remain.
           \item This satisfies the definition of $\presat$: the trace is neither satisfied ($\satt/\postsat$) nor violated ($\violt/\postviol$). It is effectively "pending."
       \end{itemize}
   \end{enumerate}
   
-  \paragraph{2. Non-Zero Score Implications ($\qsem{\pi, C} \neq 0$)}
+  \item Non-Zero Score Implications ($\qsem{\pi, C} \neq 0$)
   Assume $\qsem{\pi, C} > 0$. This implies $\exists i$ such that $\qsem{\trace{A_i}, C_i} > 0$.
   
   \begin{enumerate}
-      \item \textbf{Case 2(a): Tight Violation ($\violt$).}
+      \item  Tight Violation ($\violt$).
       \begin{itemize}
           \item We consider the case where $\qsem{\pi, C} = 1$, the score of the immediate prefix is $0$ and let $n= \size{\pi}$ .
-          \item $\qsem{\pi[0, n-2], C} = 0$ implies that for all previous steps, the contract was in a compliant state ($\presat$).
-          \item The jump to $\qsem{\pi, C} = 1$ implies that the instantaneous score at the last step $\qsem{\trace{A_{n-1}}, \Prog(\pi[0,n-2],C)} = 1$.
+          \item $\qsem{\pi_{n-1}, C} = 0$ implies that for all previous steps, the contract was in a compliant state ($\presat$).
+          \item The jump to $\qsem{\pi, C} = 1$ implies that the instantaneous score at the last step $\qsem{\trace{A_{n-1}}, \Prog(\pi_{n-1},C)} = 1$.
           \item A positive instantaneous score corresponds to a tight violation of the active residual contract.
           \item Since this is the \emph{first} non-zero score, it corresponds to the \emph{first} prefix that triggers a violation. This corresponds to the definition of $\pi \violt C$.
       \end{itemize}
   
-      \item \textbf{Case 2(b): Post Violation ($\postviol$).}
+      \item Post Violation ($\postviol$).
       \begin{itemize}
-          \item The condition $\qsem{\pi, C} > 1$ or ($\qsem{\pi, C}=1$ and $\qsem{prefix}=1$) implies that the violation score did not originate purely at the current step (or if it did, it was cumulative).
-          \item Specifically, if $\qsem{\pi[0, n-2], C} \ge 1$, then a violation occurred strictly in the past.
+          \item The condition $\qsem{\pi, C} > 1$ or ($\qsem{\pi, C}=1$ and $\qsem{\pi_{n-1},C}=1$) implies that the violation score did not originate purely at the current step (or if it did, it was cumulative).
+          \item Specifically, if $\qsem{\pi_{n-2}, C} \ge 1$, then a violation occurred strictly in the past.
           \item By Definition~\ref{def:postprecont}, if a strict prefix tightly violated the contract ($\violt$), the current trace is in $\postviol$. The non-zero score is carried forward monotonically.
       \end{itemize}
   
-      \item \textbf{Case 2(c): Reparation Cost.}
+      \item  Reparation Cost.
       \begin{itemize}
           \item Consider a contract $C_{primary} \repair C_{repair}$.
           \item If $\pi$ satisfies this strictly through the reparation mechanism, it means $\pi$ did \emph{not} satisfy $C_{primary}$.
@@ -168,6 +168,7 @@ While a binary trace might be "Satisfied" (via reparation), the quantitative sco
       \end{itemize}
       Therefore, the path involving the repair accumulates a score of at least 1 (the penalty for breaking the primary), confirming $\qsem{\pi, C} > 0$.
   \end{enumerate}
+\end{enumerate}
   \end{proof}
 
 This theorem highlights the utility of the quantitative approach for post-hoc analysis: distinguishing between a "perfect" execution (Score 0) and a "compliant but costly" execution (Score $>0$, e.g., paying fines), a distinction lost in the binary $\satt$ verdict.
@@ -176,7 +177,7 @@ This theorem highlights the utility of the quantitative approach for post-hoc an
 To illustrate the lemma and the violation semantics, we study several examples:
 
 % --- Reparation Example: add label and extension reference
-\begin{example}[Reparation: Tight vs.\ Quantitative Evaluation (Extension of Example~\ref{ex:prog-repit}, \ref{example:prog-repair1}, and ref{example:prog-repair2})]\label{ex:eval-reparation}
+\begin{example}[Reparation: Tight vs.\ Quantitative Evaluation (Extension of Example~\ref{ex:prog-repit}, \ref{example:prog-repair1}, and \ref{example:prog-repair2})]\label{ex:eval-reparation}
 We revisit Example~\ref{ex:prog-repit} and explicitly evaluate both the forward-looking tight semantics and the quantitative violation semantics at each step.
 
 Let
@@ -566,7 +567,7 @@ The \emph{Quantitative Monitor Construction} function that returns for a contrac
 \begin{enumerate}
 \item $Q \subset \cDL \times \emptc.$
 \item $q_0 = C.$
-\item $\delta(q_i, A):= \Prog(\trace{A},q_i).$
+\item For any $A\in \Gamma : \delta(q_i, A):= \Prog(\trace{A},q_i).$
 \item $\lambda(q_i, A):= \qsem{\trace{A}, q_i}.$
 \end{enumerate}
 
@@ -1127,7 +1128,7 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             \[
             \qscore(\qbm(C),\pi) := \sum_{i=0}^{n-1} \lambda_{\mathbb{N}^2}(q_i,A_i),
             \]
-            where $q_{i+1}:=\delta(q_i,A_i)$ and the sum is componentwise.
+            where $q_{i+1}:=\delta(q_i,A_i)$ and the sum is component-wise.
             \end{definition}
             
             \paragraph{Conformance to the quantitative blame semantics.}

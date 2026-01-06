@@ -64,7 +64,7 @@ In this sense, formal methods do not merely offer technical optimization. They a
 
 
 
-The digitalization of normative systems is an active field of development. According to market analytics from Legal Complex\footnote{https://www.legalcomplex.com/map/}, startups specializing in the digitalization of normative systems are present globally and have raised hundreds of millions of dollars in capital. \ref{fig:top3} illustrates results from the company's startup tracker focusing on the six largest global economies. A prominent example of success in this domain is Taxfix\footnote{https://taxfix.de/}, a widely adopted software solution that has digitalized the tax declaration process in Germany.
+The digitalization of normative systems is an active field of development. According to market analytics from Legal Complex, startups specializing in the digitalization of normative systems are present globally and have raised hundreds of millions of dollars in capital. \ref{fig:top3} illustrates results from the company's startup tracker focusing on the six largest global economies. A prominent example of success in this domain is Taxfix\footnote{https://taxfix.de/}, a widely adopted software solution that has digitalized the tax declaration process in Germany.
 
 
 
@@ -74,7 +74,7 @@ The digitalization of normative systems is an active field of development. Accor
 
     \includegraphics[scale=0.25]{e-law}
 
-    \caption{Funding raised in e-law and digital normative systems.}
+    \caption{Total funding raised by startups in e-law and digital normative systems.\\ Source: \url{https://www.legalcomplex.com/map/}.}
 
     \label{fig:top3}
 
@@ -96,7 +96,7 @@ To address the challenges of digitalization, the primary objective is to achieve
 
 \paragraph{Limitations of NLP approaches.}
 
-While accessible, statistical approaches suffer from reliability issues. According to the startup Truth Systems\footnote{https://www.truthsystems.ai/}, as of April 2024, the accuracy of ChatGPT-4 when used for legal reasoning was approximately $59.2\%$. This lack of precision is attributed to hallucinations in LLMs. \ref{Hallucination} presents an example of such hallucinations, where a prompt regarding four individuals (Lucas, Amelia, Benjamin, and Olivia) suing each other is analyzed. The response is evaluated using a hallucination detector tool: red highlights indicate proven hallucinations; green highlights indicate verified facts and arguments; and orange highlights indicate unverified facts due to tool limitations. The query concerns a complex jurisdictional matter regarding the U.S. Federal Court's ability to accept cases involving plaintiffs from different states with a specific claim amount. The model's inability to strictly adhere to jurisdictional logic underscores the risks of relying solely on probabilistic models for compliance.
+While accessible, statistical approaches suffer from reliability issues. According to the startup Truth Systems\footnote{\url{https://www.truthsystems.ai/}}, as presented on April 2024 \footnote{\url{https://law.stanford.edu/2024/04/02/youre-invited-codex-meeting-on-april-4-truth-systems-standard-draft/}}, the accuracy of ChatGPT-4 when used for legal reasoning was approximately $59.2\%$. This lack of precision is attributed to hallucinations in LLMs. \ref{Hallucination} presents an example of such hallucinations, where a prompt regarding four individuals (Lucas, Amelia, Benjamin, and Olivia) suing each other is analyzed. The response is evaluated using a hallucination detector tool: red highlights indicate proven hallucinations; green highlights indicate verified facts and arguments; and orange highlights indicate unverified facts due to tool limitations. The query concerns a complex jurisdictional matter regarding the U.S. Federal Court's ability to accept cases involving plaintiffs from different states with a specific claim amount. The model's inability to strictly adhere to jurisdictional logic underscores the risks of relying solely on probabilistic models for compliance.
 
 
 
@@ -104,7 +104,7 @@ While accessible, statistical approaches suffer from reliability issues. Accordi
 
     \centering
 
-    \includegraphics[scale=0.45]{hallucination.png}  
+    \includegraphics[scale=0.60]{hallucination.png}  
 
     \caption{Example of hallucination in ChatGPT 4 regarding normative reasoning.}
 
@@ -113,7 +113,9 @@ While accessible, statistical approaches suffer from reliability issues. Accordi
   \end{figure}
 
 
+  The tool relies on \emph{semi-formal} techniques to identify hallucinations. In particular, it applies lightweight programmatic checks, such as named-entity detection, to ensure that no additional names are introduced between the prompt and the generated response. While effective for spotting certain surface-level inconsistencies, this approach does not constitute a complete formal reasoning and cannot guarantee logical correctness of the underlying legal analysis.
 
+  In the scope of this dissertation, we are interested in fully formal methods.
   
 
 

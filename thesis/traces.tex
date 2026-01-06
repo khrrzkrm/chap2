@@ -294,7 +294,7 @@ The round-prefix is denoted \( \taust[0,r]:=\trace{(s_0),\dots,(s_r)} \) for \(0
 The objective of this subsection is to connect the three action-centric word models introduced above. Given a metric-timed word \(\taumt\), we introduce two canonical morphisms that deliberately discard part of the information: the \emph{logical-time projection} \(\LT\), which erases time stamps while preserving the order of events, and the \emph{synchronous padding} \(\ST\), which aligns events to a global round clock by inserting explicit stutter symbols ``\(-\)''. We set up the clock frequency of the synchronous-time word to correspond to a single unit of metric time.
 
 \noindent\textbf{Summary diagram.}
-Figure~\ref{fig:word-models-summary} summarizes the relationship between the three word models using a running toy example with two events. Starting from a metric-timed word, synchronous padding $\ST$ aligns events to a global round clock by inserting explicit stutters ``$-$'', and logical projection $\LT$ forgets timing information and retains only the event order. The diagram also makes explicit that the codomain changes across the mappings: $\ST$ moves from timed event pairs to round-indexed letters, whereas $\LT$ yields a pure order-only word.
+Figure~\ref{fig:word-models-summary} summarizes the relationship between the three word models using a running toy example with two events. Starting from a metric-timed word, synchronous padding $\ST$ aligns events to a global round clock by inserting explicit stutters ``$-$'', and logical projection $\LT$ forgets timing information and retains only the event order. The diagram also makes explicit that the co-domain changes across the mappings: $\ST$ moves from timed event pairs to round-indexed letters, whereas $\LT$ yields a pure order-only word.
 
 \begin{figure}[t]
 \centering
@@ -396,7 +396,7 @@ Let \(\taumt\) be a metric-timed word, and assume one synchronous tick per metri
 
 \begin{proof}
 \defn{Construction.}\;
-If \(|\taumt|=0\), set \(\ST(\taumt):=\emptytrace\). Otherwise let \(T:=\mathsf{last}(\taumt)\). For every \(t\in\{0,\dots,T\}\), define \(\ST(\taumt)[t]\) to be \(a_k\) if \(t=t_k\) for some \(k\), and \(-\) otherwise. Each property follows directly from this definition and the strict monotonicity of timestamps.
+If \(|\taumt|=0\), set \(\ST(\taumt):=\emptytrace\). Otherwise, let \(T:=\mathsf{last}(\taumt)\). For every \(t\in\{0,\dots,T\}\), define \(\ST(\taumt)[t]\) to be \(a_k\) if \(t=t_k\) for some \(k\), and \(-\) otherwise. Each property follows directly from this definition and the strict monotonicity of timestamps.
 \end{proof}
 
 \paragraph{On non-invertibility.}

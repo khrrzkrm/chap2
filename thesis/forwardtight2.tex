@@ -1,4 +1,4 @@
-\subsection{Forward-Looking Blaming Semantics}
+\subsection{Forward-Looking Blame Semantics}
 The tight semantics of \cDL identify when a contract is satisfied or violated, but do not explain \emph{who} caused a violation.  
 To attribute responsibility, we refine the violation verdicts based on which party failed to meet the relevant normative requirement.  
 We break down tight and post violations into those caused by agent 1, those caused by agent 2, those caused jointly by both, and those where neither party is responsible (blameless cases).  
@@ -91,7 +91,7 @@ A=\{a^{(1)}\} \quad: & \text{no violation} & \text{The prohibited action was not
 \begin{array}{lcl}
 A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \perm[1]{a} & \text{(subject asked, other party withheld)}\\
 A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(properly supported)}\\
-A\in\{\emptyset,\{a^{(2)}\}\}: & \text{no violation} & \text{(no unsupported subject attempt).}
+A=\{a^{(2)}\}: & \text{no violation} & \text{(no unsupported subject attempt).}
 \end{array}
 \]
 \end{example}
@@ -445,7 +445,7 @@ The proof proceeds by structural induction on $C$.
 
 \begin{example}[Blame Monitor for $C_2 \wedge C_3$]
   Let us recall that $C_2 = \perm[1]{\OCC}$ represents the tenant's power to occupy the property, and $C_3 = \obl[1]{\PAY} \repair \obl[1]{\PAYF}$ represents the obligation to pay rent, repaired by paying a fine.
-  The following figure shows the blame refinement of the monitor in Fig.~\ref{fig:c2andc3}. The generic violation state is partitioned into specific blame verdicts based on the cause of the failure.
+  The following figure shows the blame refinement of the monitor in Figure~\ref{fig:c2andc3}. The generic violation state is partitioned into specific blame verdicts based on the cause of the failure.
   
   \begin{figure}[h!]
   \centering
@@ -671,7 +671,7 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
       Consequently, any subsequent violations committed by other agents at later time steps are effectively masked by the first failure.
       
       This limitation is particularly evident in open-ended contracts involving the repetition operator. 
-      As illustrated by the monitor for $\repit{C_3}$ (Figure~\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
+      As illustrated by the monitor for $\repit{C_3}$ (\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
       Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
       Therefore, while this framework is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction. 
       This is a notable constraint, as in law and normative systems, one typically has to account for all violations to determine the full extent of liability or penalties.

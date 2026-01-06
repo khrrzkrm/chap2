@@ -629,7 +629,7 @@ $\bott$ if any conjunct tightly rejects, $\botp$ if any conjunct is post-reject,
 $\topt$ when one conjunct hits $\topt$ while the other is already at/past acceptance
 ($\topt$ or $\topp$), $\topp$ if both are post-accept, and $\mathsf{?}$ otherwise.
 
-Reading Fig.~\ref{fig:c2andc3} with the letter classes defined above: from $s_0$ (pre) there are three behaviors:
+Reading \ref{fig:c2andc3} with the letter classes defined above: from $s_0$ (pre) there are three behaviors:
 (i) If \,$\OCC^\surd \land \PAY^\surd$\ holds in the current letter, both conjuncts succeed (perm is respected, and the primary obligation is met), so the product emits $\topt$
 and moves to post-accept $\topp$.
 (ii) If \,$\OCC^{\times}$\ holds, the permission conjunct fails tightly, so the product
@@ -1366,7 +1366,7 @@ are shown in \ref{fig:one-per-line}.
 
 \medskip
 \noindent\textbf{(a) \(\tsmc(\repit{C_3})\)
-(Subfigure~\ref{fig:rep-c3_vertical}).}
+(Figure~\ref{fig:rep-c3_vertical}).}
 The monitor contains the states \(q_0/\mathsf{?}\), \(q_w/\mathsf{?}\), \(q_{\bott}/\bott\), and \(q_{\botp}/\botp\). The meaning of the transitions is as follows.
 
 A joint payment \(\PAY^\surd\) keeps the monitor at \(q_0\).
@@ -1383,7 +1383,7 @@ violation.
 \medskip
 \noindent\textbf{(b) \(\tsmc_{re}(re)\) for
 \(re = *^{+};\{\notifterm^{(1)}\}\)
-(Subfigure~\ref{fig:guard-}).}
+(Figure~\ref{fig:guard-}).}
 The monitor has states \(s_0/\mathsf{?}\), \(s_1/\mathsf{?}\), \(s^t/\topt\), and \(s^{+}/\topp\).
 
 The regular-expression part reads arbitrary letters:
@@ -1397,7 +1397,7 @@ and moves to \(s^t\). Any continuation moves to the post-acceptance state
 \medskip
 \noindent\textbf{(c) Guarded product
 \(\tsmc_\guardd(\tsmc_{re}(re),\tsmc(\repit{C_3})\)
-(Subfigure~\ref{fig:guard-repC3}).}
+(Figure~\ref{fig:guard-repC3}).}
 The product is organised by verdict class:
 violating states on the left, undecided states in the centre, and
 accepting states on the right.
@@ -1567,7 +1567,7 @@ $\overline{T} := \Gamma\!\setminus\! T$,\;
 \caption{Tight satisfaction monitor construction for $\guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$.}
 \label{fig:guard-repC3}
 \end{subfigure}
-\caption{Progressive construction for  $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$. Sub-figure (c) is obtained by applying $\tsmc_\guardd$ on sub-figure (b) and (a). }
+\caption{Progressive construction for  $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$. Figure (c) is obtained by applying $\tsmc_\guardd$ on Figure (b) and (a). }
 \label{fig:one-per-line}
 \end{figure}
 
