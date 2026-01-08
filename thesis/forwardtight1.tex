@@ -326,9 +326,9 @@ Let
 \]
 be the tight satisfaction monitors of $C$ and $C'$.  
 The tight satisfaction monitor for the sequential composition
-$C\,;\,C'$, written $\tsmc_{;}(C,C')$, is defined as:
+$C\,;\,C'$, written $\tsmc_{\bm{;}}(C,C')$, is defined as:
 \[
-\tsmc_{;}(\tsmc(C),\tsmc(C'))
+\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))
   = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;}).
 \]
 
@@ -386,7 +386,7 @@ trace.
 \begin{lemma}[Correctness of the sequential monitor construction]
 \label{lem:seq-correct}
 Let $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
-and let $\tsmc_{;}(\tsmc(C),\tsmc(C'))
+and let $\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))
 = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor outputs the same verdict according to the sequence semantics:
 \[
 \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)=
@@ -397,7 +397,7 @@ and let $\tsmc_{;}(\tsmc(C),\tsmc(C'))
 The proof is by induction on the length of the input trace $\pi$.
 
     \begin{proof}
-        Let $M:=\tsmc_{;}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$.
+        Let $M:=\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$.
         We prove by induction on $n:=|\pi|$ that
         \[
         \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
@@ -1009,7 +1009,7 @@ with
 \delta_{\guardd}((x,y),A)
   :=(\delta_r(x,A),\delta_c(y,A)).
 \]
-
+The output verdict of the guarded monitor is determined by jointly inspecting the current verdicts of the guard and the contract components, according to the following case distinction.
 \[
 \lambda_5^{\guardd}(x,y)=
 \begin{cases}

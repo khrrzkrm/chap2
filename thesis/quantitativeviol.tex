@@ -1,3 +1,5 @@
+% 
+
 \section{Quantitative Violation Semantics}
 The basic restriction of the forward-looking tight satisfaction semantics, as defined in the previous section, resides in its binary and prefix-closed nature.
 In that framework, the monitoring process halts definitively at the first tight violation.
@@ -25,11 +27,12 @@ This requires a structural tracking mechanism, which we formalize as the \emph{C
 The \CPM acts as a derivative function: given a contract $C$ and an incoming event, it computes the contract $C'$ that must be enforced in the next time step.
 Isolating the state of the contract (via the \CPM) from the evaluation of compliance (via a scoring function) enables a modular framework that can track active duties, handle contrary-to-duty (CTD) transitions, and attribute blame with precision over time. The scoring function is critical in this framework, as it provides a quantitative evaluation of compliance. This approach not only determines whether obligations have been met, but also assesses the degree of compliance or non-compliance. The interaction with the \CPM measures the magnitude of violations, presenting an in-depth and nuanced view of contractual adherence that improves accountability and enforcement precision.
 
+Regarding the computational complexity of this framework, we claim that the set of reachable residual contracts is finite. The size of this set is determined by the size of the regular expressions and contract literals within the original contract $C$, which implies that the set can be computed in finite time. We aim to provide the formal proofs of this finiteness property and the algorithm for exhaustive computation as future work.
 
 \subsection{Contract Progress Monitor}
 
 The core of our measurement framework is the \emph{progression function}, $\Prog$.
-The consumes the current one event  and the current \emph{state of a contract} to produce the \emph{residual contract} for the subsequent step.
+This function consumes the current single event and the current \emph{state of a contract} to produce the \emph{residual contract} for the subsequent step.
 
 \begin{definition}[Contract Progression Function]
 Let $\Gamma = 2^\Sigma$ be the event alphabet.
@@ -108,10 +111,11 @@ These constructs rely on regular expression matching.
 \]
 
 Where the regular progress function $\Prog_{re}: 2^\Gamma \times \cDL_{re} \to \cDL_{re} $ is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
- We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon$ 
+ We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon$.
+
  \paragraph{Atomic regular expressions}
  For a set of actions $A \in \Gamma$ we have:
-$Prog_{re}(\trace{A}, A') := \epsilon.$ 
+$\Prog_{re}(\trace{A}, A') := \epsilon.$ 
   
  \paragraph{Concatenation}
 For $\re \cdot \re'$, the progression is defined as:
@@ -130,7 +134,7 @@ For $re \mid re'$, the progression is defined by distinguishing cases based on v
 \end{cases}
 \]
 
-\paragraph{n-repition}
+\paragraph{n-repetition}
 For $\re^n$, with $n \in \mathbb{N}^*$ the progression is defined as:
 \[
 \Prog_{re}(\trace{A}, re^n) := \Prog_{re}(\trace{A},re)\cdot re^{n-1}.
@@ -158,7 +162,7 @@ $A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix. The
 The helper function $\Prog_{re}$ computes the residual regular expression following an idea from Brzozowski's derivative~\cite{brzozowski1964derivatives} of the regular expression. In our case, it is tuned for the tight semantics.
 
 \begin{lemma}[Termination]
-For each finite prefix $\pi$, $\Prog(\pi, C)$ terminates in at most $ min|\pi|$ recursive steps and the worst case is considering the worst regular expression such as the guard of the use case.
+For each finite prefix $\pi$, $\Prog(\pi, C)$ terminates in at most $\min |\pi|$ recursive steps and the worst case is considering the worst regular expression such as the guard of the use case.
 
 \end{lemma}
 To illustrate the \CPM, the evolution of the residual contract under different traces is examined. The evaluation initiates with the fundamental building block of normative enforcement: the reparation.
@@ -430,10 +434,17 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
   
 \end{example}
 
+We now turn to the notion of reachable residual contracts. This construction is essential for monitor synthesis under the quantitative semantics introduced above. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set captures precisely this state space.
+
 \begin{definition}[Reachable Residual Contract Set from a Contract]
 Let $C$ be a contract from \cDL, The \emph{reachable residual contract set} of $C$, written \rrcs{C}, is the set from $2^{\cDL \cup \emptc}$ capturing all the possible residual contracts obtainable from a contract $C$ by any trace $\pi \in \Gamma^*$ using the progress function
 \[\rrcs{C} := \{ C_r \mid \exists \tau \in \Gamma^*: \Prog(\pi,C)= C_r\}.\]
 \end{definition}
+\begin{claim}[Finiteness of Reachable Residual Contracts]\label{clm:rrcs-finite}
+  For every contract $C \in \cDL$, the reachable residual contract set $\rrcs{C}$ is finite.
+  \end{claim}
+  \paragraph{Justification (informal).}
+The claim follows from the finiteness of the syntactic structure of $C$ and the fact that the progression function $\Prog$ rewrites contracts using only subcontracts of $C$, residuals of regular expressions appearing in $C$, and the distinguished terminal contract $\emptc$. No new contract structure is generated beyond these components.
 
-
+We plan to make this argument constructive by defining, as future work, a function that computes $\rrcs{C}$ exhaustively and terminates after finitely many steps. This function will form the basis for an explicit monitor construction and for complexity bounds on the quantitative semantics.
 \input{qviol}
