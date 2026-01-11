@@ -37,26 +37,20 @@ The digitalization of human activity is becoming pervasive, influencing nearly e
 
 
 \subsection{The Cost of Compliance}
+The cost of compliance refers to the economic and operational burden that regulatory requirements impose on governments, businesses, and individuals. Beyond direct enforcement expenses, this burden also appears as administrative overhead, delays in decision making, reduced market access, and inefficiencies in organizational processes. Quantitative assessments suggest that these burdens can represent a substantial share of economic activity in highly regulated environments.
+For the European Union, the European Commission has reported an estimate that administrative burdens may amount to around $3.5\%$ of GDP, based on an extrapolation approach and a specific definition of administrative burden.\footnote{\url{https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX\%3A52006DC0691}}
+For the United States, economy-wide estimates of the aggregate annual cost of federal regulation have been reported in the trillion-dollar range in the literature, with one widely cited estimate reporting roughly \$2.0 trillion.\footnote{\url{https://www.congress.gov/crs-product/R44348} \; \url{https://conservativereform.com/files/data-and-reports/cost-of-federal-regulations/federal-regulation-executive-summary.pdf}}
+At the same time, official government reporting aggregates costs for a narrower subset of regulations with quantified impacts and therefore yields materially smaller totals, which highlights that published numbers differ substantially with scope and methodology.\footnote{\url{https://bidenwhitehouse.archives.gov/wp-content/uploads/2025/01/FY23-Benefit-Cost-Report.pdf}}
+At the firm level, regulatory costs per employee are often higher for small firms than for large firms, a pattern documented in analyses commissioned by the U.S. Small Business Administration.\footnote{\url{https://www.sba.gov/sites/default/files/The\%20Impact\%20of\%20Regulatory\%20Costs\%20on\%20Small\%20Firms\%20\%28Full\%29.pdf}}
 
+A large part of this burden does not arise from the substantive goals of regulation alone, but from its structural complexity. Normative systems are typically fragmented across jurisdictions, amended incrementally, and expressed in heterogeneous legal language. As a result, regulated entities must invest considerable effort in determining which obligations apply in a given situation, how they interact, and whether exceptions or compensatory clauses are triggered. This interpretive effort is repeated across organizations and over time, which leads to duplicated work and avoidable errors.
 
+Operational consequences are particularly visible in high-volume administrative processes. Procurement, licensing, certification, and eligibility checks often require extensive manual review, even when decisions follow well-defined rules. Minor deviations or misinterpretations can invalidate entire applications, wasting resources on both sides of the regulatory interface. From a systemic perspective, such processes scale poorly, since increasing regulatory detail can induce disproportionately higher verification and documentation costs.
 
-The cost of compliance refers to the economic and operational burden that regulatory requirements impose on governments, businesses, and individuals. Beyond direct enforcement expenses, this burden manifests in administrative overhead, delayed decision-making, reduced market access, and significant inefficiencies in organizational processes. Quantitative assessments consistently show that compliance costs represent a substantial share of economic activity in highly regulated environments. In the European Union, administrative compliance costs have been estimated at approximately $3$--$4\%$ of GDP, while in the United States the aggregate annual cost of federal regulation has been estimated in the range of $\$1.7$ to $\$2.1$ trillion, corresponding to roughly $7$--$10\%$ of GDP. For individual firms, especially small and medium-sized enterprises, regulatory compliance costs per employee are often several times higher than those of large corporations.
-
-
-
-A large part of this cost does not arise from the substance of regulation itself, but from its structural complexity. Normative systems are typically fragmented across jurisdictions, amended incrementally, and expressed in heterogeneous legal language. As a result, regulated entities must invest considerable effort in interpreting which obligations apply in a given situation, how they interact, and whether exceptions or compensatory clauses are triggered. This effort to interpret is repeated across organizations and over time, leading to duplicated work and avoidable errors.
-
-
-
-Operational consequences are particularly visible in high-volume administrative processes. Procurement, licensing, certification, and eligibility checks often require extensive manual review, even when the decisions follow well-defined rules. Minor deviations or misinterpretations can invalidate entire applications, wasting resources on both sides of the regulatory interface. From a systemic perspective, such processes scale poorly, as increasing regulatory detail leads to disproportionately higher verification costs.
-
-
-
-These observations motivate the growing interest in computational approaches to compliance. Encoding regulations in machine-interpretable form enables automated reasoning about obligations, prohibitions, and permissions, as well as the systematic detection of violations and the identification of applicable remedies. By shifting compliance assessment from ad hoc interpretation to formal analysis, significant cost reductions become possible while simultaneously improving transparency, predictability, and legal certainty.
-
-
+These observations motivate the growing interest in computational approaches to compliance. Encoding regulations in machine-interpretable form enables automated reasoning about obligations, prohibitions, and permissions, as well as systematic detection of violations and identification of applicable remedies. By shifting compliance assessment from ad hoc interpretation to formal analysis, cost reductions become possible while simultaneously improving transparency, predictability, and legal certainty.
 
 In this sense, formal methods do not merely offer technical optimization. They address a structural problem inherent in modern regulation, namely the gap between norm expression in natural language and the need for precise, repeatable, and auditable compliance decisions. Closing this gap is a prerequisite for scalable regulatory enforcement in increasingly complex socio-technical systems.
+
 
 
 
@@ -136,25 +130,25 @@ Formal methods can be broadly classified by the nature of their inputs and the t
 
 \paragraph{Model-based verification.}
 
-Model checking and automata-theoretic techniques operate on explicit or symbolic models of system behavior, such as finite-state machines, timed automata, or transition systems. Properties are specified in temporal or modal logics. The analysis is algorithmic and typically exhaustive. Either the model satisfies the property, or a concrete counterexample is produced. These methods are particularly effective for control systems, communication protocols, and reactive components, where behavior can be finitely represented or soundly abstracted.
+Model checking and automata-theoretic techniques operate on explicit or symbolic models of system behavior, such as finite-state machines, timed automata, or transition systems. Properties are specified in temporal or modal logics. The analysis is algorithmic and typically exhaustive. Either the model satisfies the property, or a concrete counterexample is produced. These methods are particularly effective for control systems, communication protocols, and reactive components, where behavior can be finitely represented or soundly abstracted \cite{DBLP:journals/cacm/ClarkeES09, DBLP:books/daglib/0020348}.
 
 
 
 \paragraph{Deductive and proof-based methods.}
 
-Theorem-proving and proof-carrying approaches reason at the level of logical theories rather than at the level of state exploration. Systems are described by axioms, inference rules, fix-points, or invariants, and correctness is established by constructing proofs in a formal calculus. These methods naturally handle infinite-state systems and rich data domains, but they depend more strongly on human guidance and appropriate abstraction choices.
+Theorem-proving and proof-carrying approaches reason at the level of logical theories rather than at the level of state exploration. Systems are described by axioms, inference rules, fix-points, or invariants, and correctness is established by constructing proofs in a formal calculus. These methods naturally handle infinite-state systems and rich data domains, but they depend more strongly on human guidance and appropriate abstraction choices \cite{DBLP:books/sp/93/Hoare93,DBLP:books/ph/Dijkstra76,DBLP:conf/popl/CousotC77}.
 
 
 
 \paragraph{Specification and system-contract methods.}
 
-Specification languages, design-by-contract techniques, and normative formalisms focus on what a system must provide. The primary objects of analysis are system contracts with formal semantics, depending on the system's domain of application.
+Specification languages, design-by-contract techniques, and normative formalisms focus on what a system must provide. The primary objects of analysis are system contracts with formal semantics, depending on the system's domain of application \cite{DBLP:phd/us/Romeo22,DBLP:journals/fteda/BenvenisteCNPRR18}.
 
 
 
 \paragraph{Runtime and monitor-based methods.}
 
-Runtime verification and monitoring techniques analyze executions as they are observed. Instead of establishing correctness for all possible behaviors, they evaluate concrete traces against a formal specification. The result may be a verdict that evolves over time, such as satisfaction, violation, or an inconclusive status. These methods sacrifice completeness for practicality and are effective when full system models are unavailable or when systems operate in open or partially observable environments.
+Runtime verification and monitoring techniques analyze executions as they are observed. Instead of establishing correctness for all possible behaviors, they evaluate concrete traces against a formal specification. The result may be a verdict that evolves over time, such as satisfaction, violation, or an inconclusive status. These methods sacrifice completeness for practicality and are effective when full system models are unavailable or when systems operate in open or partially observable environments \cite{DBLP:journals/jlp/LeuckerS09,bartocci2018introduction}.
 
 
 
@@ -172,31 +166,35 @@ The intersection of legal theory and computer science has consolidated into the 
 
 
 
-Within this discipline, the application of formal methods aims to bridge the structural gap between expressive natural languages—which are rich but ambiguous—and tractable automated analysis. By utilizing mathematical logic to create computer-processable representations of normative systems, Computational Law enables precise verification under the constraints of time and distributed interaction. Current applications span several domains:
+Within this discipline, the application of formal methods aims to bridge the structural gap between
+ expressive natural languages, which are rich but inherently ambiguous, and automated
+  analysis techniques that must remain decidable and precise. By relying on mathematical logic, formal methods provide computer-processable representations of normative systems that support unambiguous interpretation, systematic verification, and reproducible reasoning. This enables compliance analysis under realistic constraints, including explicit time bounds, concurrent actions, and distributed agency. Current applications of this approach span several domains:
+
 
 
 
 \paragraph{Automating Compliance and Requirements.}
 
-Formal methods enable computational systems to determine exactly which legal requirements apply to a specific situation. This includes determining obligations, prohibitions, and permissions, as well as detecting violations. Systems can automatically check if a set of facts violates a regulation and identify whether compensatory clauses (remedies) have been satisfied. This is vital for government services; for instance, experts estimate that $80$--$90\%$ of the 5 million annual checks performed by the National Police Checking Service could be fully automated through these methods.
+Formal methods enable computational systems to determine exactly which legal requirements apply to a specific situation. This includes determining obligations, prohibitions, and permissions, as well as detecting violations. Systems can automatically check if a set of facts violates a regulation and identify whether compensatory clauses (remedies) have been satisfied \cite{governatori2018compliance}.
 
 
 
 \paragraph{Business Process and Software Engineering.}
 
-Formal methods integrate legal compliance into the design phase of technical systems. Organizations can verify if business process blueprints comply with regulations (such as Anti-Money Laundering laws) before deployment. In software supply chains, these methods analyze software libraries to determine license compatibility and inheritance. Furthermore, formal methods are currently being used to develop "sandboxes" to certify AI systems against emerging regulations, such as the EU AI Act.
+Formal methods integrate legal compliance into the design phase of technical systems. Organizations can verify if business process blueprints comply with regulations (such as Anti-Money Laundering laws) before deployment \cite{vanDerAalst2011compliance}.
 
 
 
 \paragraph{Regulatory Analysis and Design.}
 
-Regulators use formal tools to improve the quality of legislation. Digital versions of legislation allow agencies to identify inconsistencies, logical loops, or redundant conditions. Through dependency graphs and impact analysis, lawmakers can visualize how changing a single definition ripples through the regulatory corpus. Countries such as Estonia, South Korea, and the UK are exploring "dual-form" legislation that exists simultaneously as natural language and machine-readable code.
+Regulators use formal tools to improve the quality of legislation. Digital versions of legislation allow agencies to identify inconsistencies, logical loops, or redundant conditions \cite{boella2010normative}.
 
 
 
 \paragraph{Safety and Autonomous Systems.}
 
-In real-time systems, formal methods encode complex rules for machine execution. For example, researchers have encoded overtaking clauses from Queensland road rules into logic to test how autonomous vehicles interpret safe distances and "clear views" in simulation. Because these systems are logic-based, every automated decision is accompanied by a full justification, tracing the specific rules that led to a conclusion.
+In real-time systems, formal methods encode complex rules for machine execution. For example, researchers have encoded overtaking clauses from Queensland road rules into logic to test how autonomous vehicles interpret safe distances and ``clear views'' in simulation \cite{DBLP:conf/jurix/BhuiyanGBDIR20}.
+
 
 
 
@@ -230,7 +228,7 @@ Existing approaches often treat norms as static constraints or verify them centr
 
  
 
-   \item We develop the first algorithmic account of responsibility attribution for non-compliance in the setting of two agents collaborating under a contract. The proposed logic and monitoring procedure distinguish between failure and lack of \emph{attempt}, allowing responsibility to be assigned even when collaborative actions fail due to delays, interference, or partial execution. This distinction, central in normative practice, is made formally precise and operationally verifiable.
+   \item We develop the first algorithmic account of responsibility/blame attribution for non-compliance in the setting of two agents collaborating under a contract. The proposed logic and monitoring procedure distinguish between failure and lack of \emph{attempt}, allowing responsibility to be assigned even when collaborative actions fail due to delays, interference, or partial execution. This distinction, central in normative practice, is made formally precise and operationally verifiable.
 
  \end{enumerate}
 

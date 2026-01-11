@@ -2696,161 +2696,162 @@ Note the two joint-failure cases: $(1,1)$ when the violations are blamed on diff
 
 
 
-%   \section{Related Work: A Comparative Analysis of Two-Agents Collaborative Normative Logic (TACNL) against State-of-the-Art Frameworks}
-%   \label{sec:related-work-tacnl}
-  
-%   \subsection{Introduction: The Imperative for Accountable Collaborative Monitoring}
-%   The governance of autonomous digital interactions has evolved from simple protocol compliance to complex, open-ended normative relationships. As agents, ranging from autonomous vehicles to financial trading bots and service-providing AI, enter long-term agreements, the mechanisms for verifying their behavior must evolve accordingly. Our setting targets bilateral contracts where compliance is often a joint achievement, attempted actions can be obstructed by counterparties, and violations are rarely binary events but instead accumulate over time.
-  
-%   This section situates TACNL within the broader landscape of formal methods, deontic reasoning, and multi-agent systems (MAS). We structure the comparison along three dimensions:
-  
-%   \begin{enumerate}
-%     \item \textbf{Responsibility and blame.} How formalisms distinguish internal agency (attempt) from external outcome, and how they attribute blame under interference, drawing on STIT-inspired analyses of action and failure~\cite{broersen2011probabilistic,broersen2011intentional,kuncova2025ability} and structural accounts of causality and responsibility~\cite{halpern2014structural,halpern2016causality,triantafyllou2022causality}.
-%     \item \textbf{Monitoring methodology.} The spectrum from offline model checking to online runtime monitoring, including monitor synthesis, verdict precision on prefixes, and stream-based runtime verification~\cite{leucker2011teaching,sanchez2018online,gorostiaga2021hlola,tessla2015language,kallwies2022anticipatory}.
-%     \item \textbf{Logical expressiveness for contracts.} The ability to represent synchronization, periodic recurrence, and contrary-to-duty (CTD) and reparation patterns, in relation to deontic reasoning traditions~\cite{carmo2001deontic,sep_deontic2018,governatori2005deontic,wyner2006sequences} and trace-based multiparty contract models~\cite{HvitvedKZ12}.
-%   \end{enumerate}
-  
-%   Throughout, we tag the role of a reference as \emph{Gap} (requirements not met), \emph{Method} (compatible technical approach), or \emph{Benchmark} (standard baseline).
-  
-%   \subsection{Interaction Models and Action Theory: The Ontology of Collaboration}
-%   The fundamental unit of analysis in multi-agent systems is the action. How a formalism models action, whether as an atomic transition, a joint move, or a distinction between attempt and outcome, determines how well it captures collaboration and interference.
-  
-%   \subsubsection{The agency gap in STIT-style reasoning}
-%   STIT logics are a central reference point for agency-centered formalization, including work focusing on intentional action and the modelling of failure and attempt~\cite{broersen2011intentional,broersen2011probabilistic}. A recurring issue is that many agency operators are oriented toward successful achievement, so an unfulfilled outcome does not retain an explicit, monitorable notion of attempted performance. Broersen’s probabilistic STIT treatment highlights the need to represent action failure directly when modelling intelligent agents in environments where outcomes can be thwarted~\cite{broersen2011probabilistic}. Related developments on abilities in labelled STIT models reinforce that agency and knowledge interact tightly with what agents can ensure~\cite{kuncova2025ability}. \emph{Tag: Gap.} These approaches are rich conceptually, but they typically require semantic machinery that is not directly aligned with black-box, event-based runtime monitoring.
-  
-%   \subsubsection{Atomic actions, joint moves, and strategic models}
-%   Strategic ability formalisms, including logics surveyed in the strategic reasoning literature, model interaction via joint choices and coalitional power~\cite{bulling2015strategic,belardinelli2015logic,atlas2024,imperfect2021strategy,caltais2014mcmas}. \emph{Tag: Benchmark.} They are strong baselines for feasibility and ability questions, but they tend to blur the operational distinction between (i) failing to act and (ii) being blocked, unless the model explicitly encodes pre-action attempts as separate observables.
-  
-%   \subsubsection{Synchronization paradigms: interleaving, lockstep, and handshake}
-%   Concurrency theory offers standard synchronization models that shape how one represents collaboration. Interleaving semantics, typical in many verification settings, represents concurrency as nondeterministic ordering rather than true simultaneity. Lockstep synchronous models align components on discrete rounds, which fits stream-based monitoring pipelines~\cite{sanchez2018online,gorostiaga2021hlola,tessla2015language}. Handshake synchronization is central in process-algebraic traditions and concurrency research venues, including those represented by CONCUR proceedings~\cite{concur2016}. \emph{Tag: Method.} TACNL is closest in spirit to handshake-style compatibility, but differs in treating interference and blocking as first-class monitorable outcomes rather than mere deadlock.
-  
-%   \paragraph{Insight (gap identification).}
-%   The core gap is operational accountability under interference: standard strategic models and process-algebraic handshakes can represent blocking, but they do not, by default, expose it as a trace-level object suitable for blame attribution in contract monitoring.
-  
-%   \begin{table}[t]
+\section{Related Work}
+\label{sec:related-work}
+
+The governance of autonomous digital interactions has evolved from simple protocol compliance to complex, open-ended normative relationships. Whether in financial trading, autonomous supply chains, or service-level agreements, agents require mechanisms to verify behavior that is often collaborative, prone to interference, and long-running.
+
+This section situates the proposed \textbf{Two-Agents Collaborative Normative Logic (\cDL)} within the broader landscape of formal methods, deontic logic, and multi-agent systems (MAS).\cite{bulling2015strategic,HvitvedKZ12} The distinguishing thesis is that existing frameworks either idealize away the \emph{bilateral} and \emph{interference-prone} character of contracts, or they do not turn their rich semantics into lightweight, trace-first monitoring artefacts for runtime accountability.\cite{broersen2011probabilistic,halpern2016causality,sanchez2018online}
+
+To make this contrast precise, the discussion is organized along four analytical dimensions:
+\begin{enumerate}
+  \item \textbf{Temporal scope (the ``when''):} From infinite-trace verification to persistent, prefix-based monitoring.
+  \item \textbf{Normative expressivity (the ``what''):} Handling contrary-to-duty (CTD) and reparation patterns without paradoxes.
+  \item \textbf{Agency and collaboration (the ``who''):} Distinguishing attempts from outcomes and making interference a first-class trace object.
+  \item \textbf{Quantitative evaluation (the ``how much''):} Moving from Boolean verdicts to cumulative, juridically motivated costs.
+\end{enumerate}
+
+\subsection{Temporal Scope: From Infinite Verification to Persistent Monitoring}
+
+Classical verification relies on Linear Temporal Logic (LTL), which interprets specifications over infinite traces and is typically evaluated by model checking.\cite{Pnueli1977} This is ill-suited to online scenarios where only a finite prefix of a potentially unbounded interaction is available.\cite{Bauer2011,de2013linear}
+
+Runtime verification (RV) adapts temporal reasoning to finite domains, introducing multi-valued semantics for prefixes and monitor synthesis pipelines.\cite{leucker2011teaching,Bauer2011}, while the semantics are 3 valued ($\top,\bot,?$) for finite prefixes, \cDL forward has a 5 semantics by decomposing $\bot$ to $\botp$ and $\bott$, and $\top$ to $\topt$ and $\topp$, as the requirement of the logic requires determintic satisfaction and violation points. 
+
+\paragraph{The main \cDL difference (persistence).}
+Standard RV monitors are often \emph{abortive}: once a property is definitively violated or satisfied, the monitor halts or issues a terminal verdict.\cite{leucker2011teaching,Bauer2011} \cDL instead adopts a \emph{persistent}, contract-centred view in which the Contract Progress Function $\Prog$ evolves a normative state machine that reacts to violations (e.g., by activating reparations) and continues monitoring the residual contract, thus supporting long-horizon accountability rather than one-shot property checking.
+
+\subsection{Contrary to duties Dynamic Contracts vs.\ Static Rules}
+
+Standard Deontic Logic (SDL) provides a modal foundation for obligations but notoriously struggles with CTD scenarios, such as the Chisholm paradox, where violations give rise to new obligations that can render the theory inconsistent.\cite{VonWright1951,Chisholm1963,carmo2001deontic} Dyadic deontic logics and Input/Output logic address CTDs by conditioning obligations on explicit contexts or input situations.\cite{DBLP:conf/deon/BenzmullerFP18,Makinson2000}
+
+In parallel, the AI and legal-informatics literature explores more operational perspectives: defeasible deontic reasoning, dynamic deontic operators, and trace-based contract models.\cite{PrisacariuS12,rohaninezhad2017defeasible,HvitvedKZ12,wyner2006sequences}. These approaches bring contracts closer to executable structures but still typically emphasize inference over evolution of a single monitored contract instance. \cDL adopts a similar approach.
+
+
+
+\subsection{Zero-sum vs Collaborative Interactions}
+
+Strategic logics such as ATL and Strategy Logic model coalitional ability and joint moves over game structures and underpin verification tools like MCMAS.\cite{Alur2002,Chatterjee2010,bulling2015strategic,belardinelli2015logic,caltais2014mcmas}. Their baseline semantics is game-theoretic: a coalition is evaluated by whether it can enforce a goal against the remaining agents or an environment. This perspective fits adversarial settings and many verification scenarios, but it is a poor match for bilateral contracts, where interaction is typically cooperative and compliance is a joint achievement rather than one side ``winning''.
+
+Even when these logics represent cooperation via coalitions, success is still defined against opposition: if a coalition $C \subseteq \mathcal{C}$ enforces a goal $G$, then the complement coalition $\mathcal{C}\setminus C$ failed to prevent $G$. This is not the notion of collaboration we need. In \cDL we fix exactly two parties, and collaborative actions are interpreted as synchronized attempts: a joint action succeeds only if both parties contribute their required part in the same contractual round. This trace-level view separates non-attempt from blocked attempt and turns interference into observable evidence, which is essential for contractual accountability.
+
+
+
+
+
+
+\subsection{Responsibility and Blame: Conterfactual Causality Vs Normative Causality}
+
+Structural causal models (SCM) provide a principled account of causality and responsibility based on counterfactual dependence and minimality. In this setting, an agent is responsible for an outcome if, under a suitable intervention, changing the agent’s action would change the outcome of interest. This framework supports fine-grained notions of actual causation and graded responsibility, and has been extended to decentralized and partially observable multi-agent systems.\cite{halpern2014structural,halpern2016causality,triantafyllou2022causality}
+
+The causal question addressed by SCM is inherently counterfactual. Responsibility is explained by asking what would have happened under alternative actions, for example whether a violation would still have occurred if the tenant had paid the rent in the second month. Such reasoning presupposes an explicit causal model of the environment and its dynamics, together with the ability to evaluate hypothetical interventions.
+
+In contrast, \cDL adopts a normative notion of causality grounded in the rules of the contract itself. Responsibility is not derived from hypothetical alternatives, but from compliance with, or deviation from, the obligations explicitly stated in the contract. A violation is explained by identifying which contractual rule was breached on the observed trace, and blame is assigned to the party whose required contribution was missing, delayed, or blocked according to that rule.
+
+This shift also applies to graded responsibility. While SCM derives degrees of responsibility from counterfactual minimality and causal contribution, \cDL defines degrees of responsibility internally, relative to the contract. Grading is computed from the contract structure and its progress semantics, for instance by counting or weighting violations along the progress-induced run. The resulting notion of responsibility is therefore contract-relative and trace-based: it answers who is responsible, and to what extent, according to the normative commitments the parties agreed upon, rather than according to an external causal model.
+
+
+
+\subsection{Monitoring Methodology: between Correct-by-Construction and  Stream Based Runtime Verification}
+
+Principled methodologies for compiling logical specifications into executable monitors have been a central focus of the runtime verification (RV) community. Foundational to this field is the automata-based approach of Leucker and Schallhart, where temporal specifications are systematically translated into monitors with verdicts that are provably aligned with the underlying logic \cite{leucker2011teaching}. Generalizing this paradigm to quantitative and data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa support expressive stream transformations and aggregation, making them well suited for monitoring numerical properties over evolving data streams \cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
+
+The \cDL framework synthesizes these perspectives through a dual-semantic approach. For its \textit{tight forward semantics}, the language adheres to the classical construction advocated by Leucker and Schallhart: monitors are derived as correct-by-construction Moore machines where every transition is strictly induced by the contract's semantic definition. And the formal semantics are of course studied and designed to have essential properties. However, the \textit{quantitative semantics} necessitates a hybrid methodology. While the monitor retains the rigorous structural skeleton of a deterministic state machine, its state valuations integrate stream-based computations similar to SRV. This synthesis allows the monitor to track evolving quantitative data without sacrificing the semantic faithfulness of the underlying automaton.
+
+
+% \subsection{Quantitative Evaluation: From Boolean to Juridical Cost}
+
+% To reason about resource consumption or robustness, quantitative extensions of temporal logics and weighted automata have introduced cost and reward structures into the verification process \cite{Droste2009,alvianotemporal}. Demonstrating that such measures can be added without incurring prohibitive complexity are works on cost-parameterized LTL and related calculi \cite{fionda2016ltl,cupcalculus2015costpltl}.
+
+% These existing approaches are typically tailored to physical or computational resources, such as energy, bandwidth, or response times \cite{Droste2009,alvianotemporal}. Often missing from this landscape is an explicitly juridical or contractual interpretation of cost. In most normative settings, deontic logics retain a purely qualitative treatment of violation and compliance, leaving a gap that \cDL aims to fill with its quantitative accounting of liability \cite{carmo2001deontic,sep_deontic2018}.
+
+% \subsection{Quantitative : Quantitative violation Semantics}
+
+% Quantitative extensions of temporal logics and weighted automata introduce cost and reward structures into verification, enabling reasoning about resource consumption, performance, or robustness.\cite{Droste2009,alvianotemporal} Work on cost-parameterized LTL and related calculi shows how to add such measures without incurring prohibitive complexity.\cite{fionda2016ltl,cupcalculus2015costpltl}
+
+% Most of these approaches, however, are tailored to physical or computational resources (e.g., energy, bandwidth, response times) and remain detached from explicitly juridical or contractual interpretations of cost.\cite{Droste2009,alvianotemporal} In normative settings, deontic logics often retain a purely qualitative treatment of violation and compliance.\cite{carmo2001deontic,sep_deontic2018}
+
+% \paragraph{The \cDL difference (juridical accumulation).}
+% \cDL defines a quantitative semantics $\qsem{\cdot}$ that aggregates \emph{normative} penalties over time, distinguishing repaired from unrepaired violations and assigning them different cost trajectories.\cite{HvitvedKZ12,carmo2001deontic} This accumulation is tightly coupled to the contract-progress semantics, enabling automated dispute analysis that goes beyond binary satisfaction and reflects legally motivated distinctions such as partial performance, remediation, and repeated minor breaches.\cite{rohaninezhad2017defeasible}
+
+% \subsection{Logical Expressiveness: Encoding the Complexity of Contracts}
+
+% Deontic traditions document the foundational difficulties of CTD obligations and related paradoxes, providing critical baselines for normative expressiveness.\cite{carmo2001deontic,sep_deontic2018,wyner2006sequences} Trace-based models for multiparty contracts demonstrate how contractual clauses can be compiled into trace properties amenable to algorithmic analysis while preserving domain structure.\cite{HvitvedKZ12}
+
+% Strategic logics and their verification tools privilege feasibility and ability analysis over direct compliance monitoring, and their complexity profiles reflect these goals.\cite{bulling2015strategic,caltais2014mcmas} From the perspective of executable contracts, they serve as benchmarks rather than immediate monitoring solutions.\cite{bulling2015strategic,HvitvedKZ12}
+
+% \begin{table}[t]
 %   \centering
-%   \caption{Comparison of interaction and action models.}
-%   \label{tab:interaction-models}
-%   \begin{tabular}{p{3.2cm}p{3.1cm}p{3.1cm}p{3.1cm}}
-%   \hline
-%   \textbf{Feature} & \textbf{TACNL (attempt-based)} & \textbf{STIT-style agency} & \textbf{Strategic models (ATL/SL family)} \\
-%   \hline
-%   Primary unit & Attempt vs.\ outcome observables & Agent choice and ensured outcomes~\cite{broersen2011intentional} & Joint choices, ability and power~\cite{bulling2015strategic} \\
-%   Action failure & Explicitly monitorable via observable conditions & Often outcome-oriented, failure requires extensions~\cite{broersen2011probabilistic} & Encoded as outcome state, attempt often implicit \\
-%   Interference & First-class object for accountability & Implicit via histories and choices & Implicit in transition outcomes \\
-%   Synchronization & Compatibility of simultaneous observables & Branching-time choice structures & Synchronous joint moves in game models \\
-%   Observability & Trace-first & Often semantics-first & Model-first \\
-%   \hline
-%   \end{tabular}
-%   \end{table}
-  
-%   \subsection{Responsibility and Blame Assignment: From Causality to Accountability}
-%   Once non-compliance is detected, the next question is attribution: who is responsible, and to what degree?
-  
-%   \subsubsection{Structural causal models as the benchmark}
-%   Halpern’s structural-model approach to causality and responsibility is the dominant reference point for formal responsibility analysis~\cite{halpern2014structural,halpern2016causality}. Extensions and applications to decentralized and partially observable decision processes further demonstrate the reach of structural causality in multi-agent settings~\cite{triantafyllou2022causality}. \emph{Tag: Benchmark.} These accounts provide principled counterfactual definitions, but their operational requirements are heavy for runtime monitoring, since they presuppose a causal model capable of evaluating counterfactual contingencies.
-  
-%   \subsubsection{Trace-based attribution versus counterfactual attribution}
-%   In runtime monitoring, one typically has only the observed execution trace. This creates an operational gap between counterfactual blame (which needs alternate-world reasoning) and trace-based blame (which assigns responsibility from observable enabling and blocking evidence). \emph{Tag: Gap.} TACNL aligns with the latter, prioritizing monitorability and online execution.
-  
-%   \subsubsection{Forward-looking accountability and cumulative non-compliance}
-%   Many ethical and legal discussions distinguish retrospective blame from prospective or forward-looking responsibility, especially when obligations evolve after violations. While this distinction is often treated informally, it matters for executable contract monitoring because contracts frequently include CTD and repair structures that change what must be monitored after a breach. The deontic literature documents the CTD difficulty at the logical level~\cite{carmo2001deontic,sep_deontic2018,wyner2006sequences}. \emph{Tag: Method.} TACNL’s approach can be viewed as pushing these distinctions into monitor states and verdict dynamics rather than purely static derivations.
-  
-%   \begin{table}[t]
-%   \centering
-%   \caption{Comparison of responsibility and blame models.}
-%   \label{tab:blame-models}
-%   \begin{tabular}{p{3.2cm}p{3.1cm}p{3.1cm}p{3.1cm}}
-%   \hline
-%   \textbf{Dimension} & \textbf{TACNL (quantitative, trace-based)} & \textbf{Structural causality (SCM)} & \textbf{STIT-style agency} \\
-%   \hline
-%   Core notion & Observable accountability signals & Counterfactual cause and responsibility~\cite{halpern2016causality} & Agency via ensured outcomes~\cite{broersen2011intentional} \\
-%   Orientation & Forward-looking monitoring plus accumulation & Retrospective explanation of completed outcomes & Often atemporal or branching-time \\
-%   Output type & Counts or scores over time & Degrees based on criticality~\cite{halpern2014structural} & Boolean agency claims \\
-%   Online suitability & High & Limited without strong models & Limited due to branching semantics \\
-%   \hline
-%   \end{tabular}
-%   \end{table}
-  
-%   \subsection{Monitoring Methodology: From Theory to Executable Artifacts}
-%   Runtime verification (RV) provides the core toolbox for moving from logical specifications to executable monitors.
-  
-%   \subsubsection{From RV pedagogy to monitor synthesis}
-%   The RV community has established standard pipelines from logical formalisms to monitor implementations~\cite{leucker2011teaching}. Monitoring synchronous systems, and the interplay between online and offline approaches, is explored in stream runtime verification work~\cite{sanchez2018online}. Tool-oriented contributions such as HLola provide extensible stream-based monitoring architectures~\cite{gorostiaga2021hlola}, and TeSSLa exemplifies temporal stream-based specification as a monitoring language~\cite{tessla2015language}. \emph{Tag: Method.}
-  
-%   \subsubsection{Uncertainty, assumptions, and anticipatory monitoring}
-%   Anticipatory monitoring under uncertainty and assumptions further emphasizes that practical monitoring often needs richer verdict layers than simply true or false~\cite{kallwies2022anticipatory}. \emph{Tag: Method.} TACNL’s setting similarly motivates verdict refinement, but oriented to contractual progress and accountability.
-  
-%   \subsubsection{Distributed and fault-tolerant monitoring}
-%   For deployment in multi-agent settings, distributed monitoring challenges arise, including robustness to partial failures and coordination costs~\cite{travers2016distributed}. \emph{Tag: Gap.} These issues interact directly with collaborative contracts, since interference and missing evidence can be caused either by adversarial behavior or by instrumentation limits.
-  
-%   \begin{table}[t]
-%   \centering
-%   \caption{Monitoring methodology comparison.}
-%   \label{tab:monitoring-methods}
-%   \begin{tabular}{p{3.1cm}p{3.2cm}p{3.2cm}p{3.0cm}}
-%   \hline
-%   \textbf{Feature} & \textbf{TACNL monitors} & \textbf{Stream RV tools} & \textbf{General RV practice} \\
-%   \hline
-%   Primary focus & Contract progress and accountability & Quantitative stream computations~\cite{gorostiaga2021hlola,tessla2015language} & Property monitoring~\cite{leucker2011teaching} \\
-%   Time model & Discrete rounds, periodic structure & Synchronous streams, clocks~\cite{sanchez2018online} & Varies by logic and tool \\
-%   Verdicts & Multi-valued, progress-sensitive & Arbitrary data streams & Often multi-valued, sometimes binary \\
-%   Deployment concerns & Two-party evidence and interference & Engineering-focused scalability & Includes distributed challenges~\cite{travers2016distributed} \\
-%   \hline
-%   \end{tabular}
-%   \end{table}
-  
-%   \subsection{Logical Expressiveness: Encoding the Complexity of Contracts}
-%   Contracts are structured objects, often periodic, and frequently CTD in nature. Standard deontic logic treatments document the foundational issues around CTD patterns and deontic paradoxes~\cite{carmo2001deontic,sep_deontic2018}. Governatori’s overview of deontic logic and normative reasoning, and CTD-focused discussion in deontic AI venues, provide representative baselines~\cite{governatori2005deontic,wyner2006sequences}. \emph{Tag: Benchmark.}
-  
-%   Trace-based contract modelling in the programming-languages and formal-methods community offers another baseline. In particular, trace-based models for multiparty contracts emphasize that contracts can be treated as trace properties, enabling algorithmic analysis while retaining domain structure~\cite{HvitvedKZ12}. \emph{Tag: Method.}
-  
-%   On the strategic side, expressive MAS logics target feasibility and ability, not compliance monitoring. Surveys and tool directions in strategic reasoning illustrate the verification-centric orientation and complexity costs~\cite{bulling2015strategic,caltais2014mcmas,atlas2024}. \emph{Tag: Benchmark.}
-  
-%   \begin{table}[t]
-%   \centering
-%   \caption{Logical expressiveness comparison.}
+%   \caption{Logical expressiveness: deontic and strategic baselines vs.\ \cDL.}
 %   \label{tab:expressiveness}
 %   \begin{tabular}{p{3.2cm}p{3.1cm}p{3.1cm}p{3.1cm}}
-%   \hline
-%   \textbf{Dimension} & \textbf{TACNL} & \textbf{Deontic traditions} & \textbf{Strategic logics} \\
-%   \hline
-%   CTD and repair structure & Native contract-level structure & Difficulties and paradoxes documented~\cite{carmo2001deontic,sep_deontic2018} & Encodable but not primary target \\
-%   Periodicity & First-class contract structuring & Typically requires temporal enrichment & Implicit via strategies \\
-%   Collaboration and interference & Explicit accountability signals & Often abstracted as modal constraints & Present as game interaction, not blame \\
-%   Primary use & Online compliance monitoring & Norm reasoning and paradox analysis~\cite{governatori2005deontic,wyner2006sequences} & Ability and feasibility verification~\cite{bulling2015strategic} \\
-%   \hline
+%     \hline
+%     \textbf{Dimension} & \textbf{\cDL} & \textbf{Deontic traditions} & \textbf{Strategic logics} \\
+%     \hline
+%     CTD and repair structure &
+%     Native contract-level operators &
+%     Paradoxes and CTD issues documented~\cite{carmo2001deontic,sep_deontic2018} &
+%     Encodable but not primary focus \\
+%     Periodicity and recurrence &
+%     First-class contract patterns &
+%     Requires temporal enrichment &
+%     Implicit in strategies \\
+%     Collaboration and interference &
+%     Explicit accountability signals in traces &
+%     Modal abstraction of obligations &
+%     Interaction as game play, not blame \\
+%     Primary use &
+%     Online compliance monitoring &
+%     Norm reasoning and paradox analysis~\cite{wyner2006sequences} &
+%     Ability/feasibility verification~\cite{bulling2015strategic} \\
+%     \hline
 %   \end{tabular}
-%   \end{table}
-  
-%   \subsection{Closest Competitors: Gap, Method, Benchmark}
-%   \paragraph{Gap papers.}
-%   STIT-inspired analyses identify the conceptual need to represent attempts and action failure~\cite{broersen2011probabilistic,broersen2011intentional}, but they do not directly deliver trace-first, operational blame attribution. Structural causal models provide principled blame benchmarks~\cite{halpern2014structural,halpern2016causality}, but they are expensive to apply online without strong causal modelling assumptions.
-  
-%   \paragraph{Method papers.}
-%   Runtime verification work provides the synthesis and execution mindset that TACNL builds upon~\cite{leucker2011teaching,sanchez2018online}. Stream RV tools and languages offer practical monitoring infrastructures and quantitative aggregation mechanisms~\cite{gorostiaga2021hlola,tessla2015language}. Trace-based contract modelling supports the trace-theoretic viewpoint required for compilation into monitors~\cite{HvitvedKZ12}.
-  
-%   \paragraph{Benchmark papers.}
-%   Deontic logic surveys and CTD discussions are the baseline for normative expressiveness and paradox awareness~\cite{sep_deontic2018,carmo2001deontic,governatori2005deontic,wyner2006sequences}. Strategic reasoning surveys and model-checking tools benchmark the ability-centric alternative to monitoring-centric frameworks~\cite{bulling2015strategic,caltais2014mcmas,atlas2024}.
-  
-%   \subsection{Conclusions}
-%   The literature positions TACNL as a synthesis that targets a niche not well covered by existing frameworks. Agency-centered logics motivate attempt and failure modelling but are not optimized for trace-first online accountability~\cite{broersen2011probabilistic}. Structural causal models provide the gold standard for explanatory blame but are difficult to deploy for runtime attribution without strong counterfactual modelling assumptions~\cite{halpern2016causality}. Runtime verification and stream monitoring provide the implementability route from logic to executable artifacts~\cite{leucker2011teaching,sanchez2018online,gorostiaga2021hlola}, while deontic traditions and CTD analyses remain the baseline for normative expressiveness and paradox management~\cite{carmo2001deontic,sep_deontic2018,wyner2006sequences}. In that space, TACNL prioritizes monitorable accountability under interference and long-horizon contract evolution.
-  
-%   \begin{table}[t]
-%   \centering
-%   \caption{Global framework comparison (summary).}
-%   \label{tab:global-summary}
-%   \begin{tabular}{p{3.0cm}p{3.2cm}p{3.2cm}p{3.2cm}}
-%   \hline
-%   \textbf{Feature} & \textbf{TACNL} & \textbf{Deontic baselines} & \textbf{Strategic verification} \\
-%   \hline
-%   Primary goal & Monitoring compliance and accountability & Norm reasoning and CTD analysis~\cite{sep_deontic2018} & Ability and feasibility checking~\cite{bulling2015strategic} \\
-%   Evidence model & Trace-first, observable signals & Modal or rule-level abstractions & Model-first game structures \\
-%   Interference & Explicitly representable and attributable & Typically indirect & Encoded as interaction outcomes \\
-%   Implementability & RV-oriented compilation mindset & Usually proof or inference oriented & Model checking oriented \\
-%   \hline
-%   \end{tabular}
-%   \end{table}
+% \end{table}
+
+\subsection{Closest Competitors: Gap, Method, Benchmark}
+
+\paragraph{Gap references.}
+STIT-inspired analyses articulate the conceptual need to represent attempts and failures but are not designed as lightweight, trace-first monitoring frameworks for bilateral contracts.\cite{broersen2011probabilistic,broersen2011intentional,kuncova2025ability} Structural causal models provide principled counterfactual blame but presuppose rich causal models and offline reasoning that are difficult to maintain in an online monitoring architecture.\cite{halpern2014structural,halpern2016causality,triantafyllou2022causality}
+
+\paragraph{Method references.}
+Runtime verification and stream-based monitoring offer the compilation mindset and infrastructures that \cDL leverages: monitor synthesis from logical specifications, synchronous and asynchronous stream processing, and quantitative aggregation mechanisms.\cite{leucker2011teaching,sanchez2018online,gorostiaga2021hlola,tessla2015language} Trace-based models for multiparty contracts supply the trace-theoretic foundation for turning contract clauses into monitorable properties.\cite{HvitvedKZ12}
+
+\paragraph{Benchmark references.}
+Deontic logic surveys and CTD-focused work benchmark normative expressiveness and paradox management, against which \cDL’s operational handling of reparations can be evaluated.\cite{sep_deontic2018,carmo2001deontic,wyner2006sequences} Strategic reasoning surveys and model-checking tools provide the ability-centric alternative to monitoring-centric approaches and highlight the different complexity and semantic trade-offs.\cite{bulling2015strategic,caltais2014mcmas}
+
+\subsection{Positioning \cDL}
+
+Within this landscape, \cDL can be viewed as a synthesis that targets a niche not well covered by existing frameworks: \emph{monitorable accountability under interference for long-running bilateral contracts}.\cite{HvitvedKZ12,broersen2011probabilistic} Agency-centred logics motivate explicit notions of attempt and failure but do not natively provide trace-level, implementation-ready monitors; SCM-based causality offers rigorous blame definitions but is counterfactual and model-heavy; and RV/SRV, while operational, are typically agnostic about normative structure and bilateral blame.\cite{halpern2016causality,leucker2011teaching,sanchez2018online,gorostiaga2021hlola}
+
+\cDL occupies the intersection of these lines of work: it borrows the contract structuring and trace orientation of trace-based models, the attention to CTD and reparation from deontic traditions, the agency sensitivity of STIT-style accounts, and the implementability ethos of RV, but reorients them around persistent, quantitative, and interference-aware monitoring for collaborative contracts.\cite{HvitvedKZ12,carmo2001deontic,broersen2011intentional,sanchez2018online}
+
+\begin{table}[t]
+  \centering
+  \caption{Global framework comparison.}
+  \label{tab:global-summary}
+  \begin{tabular}{p{3.0cm}p{3.2cm}p{3.2cm}p{3.2cm}}
+    \hline
+    \textbf{Feature} & \textbf{\cDL} & \textbf{Deontic baselines} & \textbf{Strategic / verification frameworks} \\
+    \hline
+    Primary goal &
+    Monitoring compliance and accountability &
+    Norm reasoning and CTD analysis~\cite{sep_deontic2018} &
+    Ability and feasibility checking~\cite{bulling2015strategic} \\
+    Evidence model &
+    Trace-first, observable attempts and blocks &
+    Modal or rule-level abstractions &
+    Game- or model-based structures \\
+    Interference &
+    Explicitly representable and attributable &
+    Typically indirect or abstract &
+    Encoded in interaction outcomes \\
+    Implementability &
+    RV-oriented compilation to monitors &
+    Proof or inference oriented &
+    Model checking oriented \\
+    \hline
+  \end{tabular}
+\end{table}
+
 \subsection{Conclusion and Limitations}
 
 In this section, we established a quantitative semantics that transforms the verification of open-ended contracts from a binary decision into a cumulative cost assessment. By synthesizing the contract logic into a deterministic Moore machine, we achieved a monitor that outputs granular, instantaneous violation scores. This enables a more refined dispute-resolution process in which penalties are proportional to the severity and frequency of non-compliance, rather than a simple pass/fail verdict.

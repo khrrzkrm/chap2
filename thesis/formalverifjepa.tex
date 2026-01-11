@@ -1,0 +1,267 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- UNIVERSAL PREAMBLE BLOCK ---
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+\usepackage{fontspec}
+
+\usepackage[english, provide=*]{babel}
+
+\babelprovide[import, onchar=ids fonts]{english}
+
+% Set default/Latin font to Sans Serif in the main (rm) slot
+\babelfont{rm}{Noto Sans}
+
+% --- USER PACKAGES ---
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{problem}{Research Problem}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\title{Formalizing Conditions for Safe and Verifiable JEPA Models\\
+\large A Research Agenda on Structural Constraints for Energy-Based Abstractions}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Learning-based agents increasingly rely on internal representations to support planning in complex environments. While Joint Embedding Predictive Architectures (JEPA) offer a scalable alternative to generative world models, the theoretical conditions under which their latent spaces admit formal verification remain distinctively unclear. This paper outlines a research agenda to bridge this gap. We formalize the problem of aligning energy-based predictive objectives with probabilistic bisimulation metrics. Through a running example of an autonomous braking system, we identify the specific structural assumptions, on auxiliary tasks, metric regularization, and topology, required to treat a learned representation as a sound abstraction for reachability analysis.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Formal verification of autonomous systems typically presupposes a discrete or low-dimensional model of the environment. In contrast, modern deep reinforcement learning operates on high-dimensional sensory inputs. To manage this complexity, agents compress inputs into \emph{latent representations}: vectors $z$ that populate a continuous, lower-dimensional \emph{latent space} $\mathcal{Z}$. The geometry of this space is shaped by optimization rather than semantic rigor.
+
+A promising development in this landscape is the \emph{Joint Embedding Predictive Architecture} (JEPA) \cite{Assran23IJEPA}. Unlike generative world models, which learn by reconstructing observations (e.g., predicting every pixel of the next video frame), JEPA learns by predicting the \emph{representation} of the future. This approach avoids modeling task-irrelevant details, such as the chaotic motion of background clouds, allowing the model to focus on semantic dynamics. However, this efficiency comes at a cost for verification: without a decoder mapping representations back to pixels, the semantics of the latent space are opaque. A latent space may minimize prediction error while collapsing critical safety distinctions or creating topological artifacts. This paper proposes a formalization of this problem. We define the necessary preliminaries alongside a motivating example (Section~\ref{sec:prelims}), state the central research problem regarding the misalignment of energy-based learning and bisimulation (Section~\ref{sec:problem}), and outline a theoretical exploration to derive verifiable conditions for JEPA models (Section~\ref{sec:exploration}).
+
+\section{Preliminaries and Motivating Example}
+\label{sec:prelims}
+
+We introduce the mathematical foundations of the project, grounding each definition immediately in a concrete running example.
+
+\subsection*{Running Example: The Pedestrian Crossing}
+Consider an autonomous car approaching a crosswalk.
+\begin{itemize}[leftmargin=*]
+  \item \emph{Scenario:} A pedestrian (girl) is either waiting or crossing.
+  \item \emph{Safety:} The car must stop if the pedestrian is crossing.
+  \item \emph{Input:} High-dimensional camera frames.
+\end{itemize}
+
+\subsection{Markov Decision Processes (MDPs)}
+\label{subsec:mdp}
+
+To formalize the decision-making context, we first assume the existence of a ground truth environment governing the physics of the scene.
+
+\begin{definition}[MDP]
+\label{def:mdp}
+An MDP is a tuple $\mathcal{M} = (S, A, P, R)$, where $S$ is the state space, $A$ is the action space, $P: S \times A \to \Delta(S)$ is the transition kernel, and $R: S \times A \to \mathbb{R}$ is the reward function (or safety labeling).
+\end{definition}
+
+\paragraph{Example Context.}
+In our scenario, a state $s \in S$ includes the physical position and velocity of the car and the pedestrian. The action space is $A = \{\textsf{brake}, \textsf{maintain}\}$. The transition $P(\cdot \mid s, \textsf{brake})$ describes the physics of deceleration. Crucially, the agent does not observe $s$ directly but receives an observation $o \in \Omega$ (pixels). This necessitates mapping inputs to a learned \emph{latent space} to perform planning.
+
+\subsection{Latent Space, Representations, and JEPA}
+\label{subsec:jepa}
+
+Pixel-level models are computationally expensive and brittle to visual noise. To overcome this, we map high-dimensional observations to a compact manifold where dynamics are easier to predict.
+
+\begin{definition}[Latent Space and Dynamics]
+\label{def:latent_space}
+We define the \emph{latent space} $\mathcal{Z} \subseteq \mathbb{R}^d$ as the vector space of possible encodings.
+A \emph{latent representation} $z_t \in \mathcal{Z}$ is the specific embedding of an observation $o_t$ produced by an encoder $E: \Omega \to \mathcal{Z}$.
+A JEPA model learns a latent predictor $F: \mathcal{Z} \times A \to \mathcal{Z}$ such that:
+\[
+F(z_t, a_t) \approx E(o_{t+1}) \quad \text{where} \quad z_t = E(o_t).
+\]
+\end{definition}
+
+\paragraph{Example Context.}
+In the car scenario, $\Omega$ is the set of all possible pixel arrays. The \emph{latent space} $\mathcal{Z}$ is the abstract coordinate system where the agent thinks. Ideally, this space filters out the lighting (nuisance) and retains the geometry of the scene. A single point $z \in \mathcal{Z}$ represents the abstract state ``pedestrian on curb, car fast''. The predictor $F$ predicts the next \emph{vector} $\hat{z}_{t+1}$, allowing the model to ignore safe background details like wind-blown leaves.
+
+To train this architecture without ground-truth state labels, we rely on minimizing the discrepancy between the predicted representation and the actual future representation.
+
+\begin{definition}[Energy-Based Objective]
+\label{def:energy}
+Learning minimizes an energy function $\mathcal{E}$ over a dataset $\mathcal{D}$:
+\[
+\min_{E, F} \mathbb{E}_{(o_t, a_t, o_{t+1}) \sim \mathcal{D}} \left[ \text{dist}(F(E(o_t), a_t), E(o_{t+1})) \right]
+\]
+where $\text{dist}$ is a metric in the latent space $\mathcal{Z}$ (e.g., Euclidean distance).
+\end{definition}
+
+\paragraph{Example Context.}
+If the car chooses \textsf{brake}, the predictor $F$ outputs a vector $\hat{z}$ representing the expected future state. The energy function penalizes the distance between this prediction and the vector $z'$ obtained by encoding the actual next camera frame. Minimizing this energy forces the internal model to align with physical reality.
+
+\subsection{Probabilistic Bisimulation and Metrics}
+\label{subsec:bisim}
+
+Verification requires identifying which states are safely indistinguishable. The standard formal notion for grouping states with identical probabilistic behavior is bisimulation.
+
+\begin{definition}[Probabilistic Bisimulation]
+\label{def:bisim}
+An equivalence relation $\sim$ on $S$ is a probabilistic bisimulation if for all $s \sim s'$ and all $a \in A$:
+\begin{enumerate}
+    \item $R(s, a) = R(s', a)$
+    \item $P(\cdot \mid s, a)(C) = P(\cdot \mid s', a)(C)$ for all equivalence classes $C \in S / \sim$.
+\end{enumerate}
+\end{definition}
+
+Since strict equivalence is brittle in continuous spaces, we use \emph{bisimulation metrics}. Let $d_\sim(s, s')$ be a pseudometric measuring how behaviorally distinct two states are \cite{Ferns04Metrics,Ferns12Metrics}.
+
+\paragraph{Example Context.}
+Two different camera frames showing the pedestrian on the sidewalk should correspond to representations $z, z'$ that are "close" in terms of $d_\sim$ because the safety requirement (maintain speed is okay) is identical. Conversely, a frame showing the pedestrian on the curb and one showing her on the road must have a large $d_\sim$, even if the pixels look similar, because the required action changes from \textsf{maintain} to \textsf{brake}.
+
+\section{Research Problem: The Metric Mismatch}
+\label{sec:problem}
+
+The fundamental tension driving this research is that JEPA optimizes for \emph{predictability} (low energy, Definition~\ref{def:energy}), while verification requires \emph{behavioral equivalence} (low bisimulation distance, Definition~\ref{def:bisim}). To formalize this mismatch, let $s, s' \in S$ be two ground-truth states characterized by a bisimulation distance $d_\sim(s, s')$, and let $z, z' \in \mathcal{Z}$ be their corresponding learned representations separated by a latent Euclidean distance $d_\mathcal{Z}(z, z') = \|z - z'\|$.
+
+\begin{problem}[Formalizing Safe Abstraction]
+\label{prob:safe_abstraction}
+Under what conditions does the learned metric $d_\mathcal{Z}(z, z')$ in the latent space approximate the true bisimulation metric $d_\sim(s, s')$?
+\end{problem}
+
+Specifically, we observe a structural gap:
+\begin{itemize}
+    \item \emph{Representation Collapse:} The trivial solution $E(o) = \text{cst}$ minimizes prediction error perfectly (zero energy) but destroys all safety distinctions ($d_\mathcal{Z} = 0 \neq d_\sim$).
+    \item \emph{Nuisance Encoding:} A model might perfectly predict the background clouds (high energy if missed) while ignoring the pedestrian (low pixel mass), leading to a latent space where distance reflects weather rather than safety.
+\end{itemize}
+
+This leads to the central question guiding our proposal: what specific loss components and structural constraints are necessary to bridge this gap?
+
+\section{Suggested Research Exploration}
+\label{sec:exploration}
+
+We propose a three-stage exploration to rigorously connect JEPA objectives with verification guarantees.
+
+\subsection{Exploration 1: Formalizing Regularization Against Collapse}
+\label{subsec:exp1}
+
+A major failure mode of energy-based learning is the collapse to a trivial constant representation. To prevent this while retaining the benefits of non-generative learning, we must enforce geometric constraints on the embedding distribution.
+
+\begin{definition}[Metric Regularization]
+We augment the energy objective with a regularization term $\mathcal{R}(E)$ that forces the variance of the embeddings to be bounded away from zero. A typical form, inspired by VICReg \cite{Bardes21VICReg}, is:
+\[
+\mathcal{R}(E) = \sum_{j=1}^d \max(0, \gamma - \text{Var}(E(O)_j)) + \text{Cov}(E(O)),
+\]
+where $\gamma$ is a target variance and the covariance term forces decorrelation between dimensions.
+\end{definition}
+
+\paragraph{Mathematical Formulation.}
+We aim to derive bounds showing that if the latent variance along specific dimensions is bounded below by $\gamma$, then the encoder cannot map distinct safety classes (e.g., \emph{safe} vs. \emph{collision}) to the same point $z$.
+\[
+\text{Var}(E(O)) \ge \gamma \implies \exists \epsilon, \forall s \in S_{\text{safe}}, s' \in S_{\text{danger}}, \|E(s) - E(s')\| > \epsilon
+\]
+
+\paragraph{Example Context.}
+This ensures that the vector $z$ representing ``pedestrian crossing'' cannot be identical to the vector for ``empty road.'' Without this variance constraint, the predictor $F$ could simply output a constant ``road'' vector, minimizing energy but failing to alert the planner.
+
+\subsection{Exploration 2: Connecting Energy to Wasserstein Distances}
+\label{subsec:exp2}
+
+Bisimulation requires comparing future state distributions, not just single-point predictions. To lift the latent metric to the space of distributions while respecting the underlying geometry, we employ optimal transport.
+
+\begin{definition}[Wasserstein Distance]
+\label{def:wasserstein}
+Given a metric space $(M, d)$ and two probability distributions $\mu, \nu$ on $M$, the $1$-Wasserstein distance $W_1$ is defined as:
+\[
+W_1(\mu, \nu) := \inf_{\gamma \in \Gamma(\mu, \nu)} \int_{M \times M} d(x, y) \, d\gamma(x, y)
+\]
+where $\Gamma(\mu, \nu)$ is the set of all joint distributions (couplings) with marginals $\mu$ and $\nu$.
+\end{definition}
+
+Intuitively, $W_1$ measures the minimum ``work'' required to transport the probability mass of $\mu$ to match $\nu$, where cost is mass times distance. With a metric for comparing distributions established, we can now define the stability requirement for the latent space. For verification to generalize from a single point to a region, the dynamics must be smooth.
+
+\begin{definition}[Lipschitz Continuity of Latent Dynamics]
+\label{def:lipschitz}
+The learned transition dynamics are $L$-Lipschitz continuous if the distance between future distributions is bounded by the distance between current representations, scaled by a constant $L$:
+\[
+W_1(P_\mathcal{Z}(\cdot \mid z, a), P_\mathcal{Z}(\cdot \mid z', a)) \le L \cdot d_\mathcal{Z}(z, z').
+\]
+\end{definition}
+
+\paragraph{Example Context.}
+In the car scenario, if the latent representation of the pedestrian shifts slightly (e.g., representing a 10cm movement), the distribution of their predicted future positions should also shift by a commensurate amount. If the dynamics were not Lipschitz (e.g., a small shift causes the prediction to jump from "curb" to "middle of road"), the error in a discrete abstraction could be unbounded, making safety guarantees impossible. This smoothness ($L < \infty$, ideally $L \approx 1$) allows us to bound the error when abstracting a cluster of states into a single point.
+
+\paragraph{Mathematical Formulation.}
+We hypothesize that minimizing the predictive energy, combined with an auxiliary task loss $\mathcal{L}_{aux}$, enforces this Lipschitz condition (Definition~\ref{def:lipschitz}) on the transition kernel:
+\[
+W_1(P_\mathcal{Z}(\cdot \mid z, a), P_\mathcal{Z}(\cdot \mid z', a)) \le L \cdot \|z - z'\| + \text{error}(\mathcal{L}_{JEPA}).
+\]
+If this inequality holds, the latent distance $\|z-z'\|$ becomes a valid proxy for bisimulation (addressing Problem~\ref{prob:safe_abstraction}).
+
+\subsection{Exploration 3: Abstract Regular Model Checking (ARMC)}
+\label{subsec:exp3}
+
+Finally, to prove properties over the continuous, infinite latent space, we must abstract it into a finite structure amenable to algorithmic verification. We adopt the framework of \emph{Abstract Regular Model Checking} (ARMC) \cite{Bouajjani04ARMC}, which provides a rigorous automata-theoretic foundation for analyzing infinite-state systems.
+
+\begin{definition}[Symbolic State Representation]
+Let $\Sigma$ be a finite alphabet representing a partition of the latent space $\mathcal{Z}$ (e.g., a quantization grid). We represent a (potentially infinite) set of latent states $Z \subseteq \mathcal{Z}$ as a regular language $L \subseteq \Sigma^*$ recognized by a finite automaton $\mathcal{A}$. The geometric concretization $\gamma(L)$ maps words in $L$ back to regions in $\mathbb{R}^d$.
+\end{definition}
+
+This symbolic representation allows us to manipulate complex, non-convex sets of latent states using standard automata operations like intersection and union. To model the system's evolution, we lift the neural predictor to a relation on languages.
+
+\begin{definition}[Abstract Transition Transducer]
+The learned dynamics $F(\cdot, a)$ are abstracted into a \emph{Finite State Transducer} (FST) $\mathcal{T}_a$ over $\Sigma \times \Sigma$. A transition $(u, v) \in \mathcal{T}_a$ implies that for latent states $z \in \gamma(u)$, the prediction $F(z, a)$ maps to the region $\gamma(v)$. The verification problem then reduces to computing the set of reachable states $Post^*(\mathcal{L}_{init})$ using the transducer, checking if $Post^*(\mathcal{L}_{init}) \cap \mathcal{L}_{unsafe} = \emptyset$.
+\end{definition}
+
+Since exact reachability in infinite systems is undecidable, ARMC typically relies on acceleration techniques or abstraction-refinement loops. We focus on the latter, specifically Counterexample-Guided Abstraction Refinement (CEGAR).
+
+\paragraph{Mathematical Formulation (Refinement).}
+We start with a coarse alphabet $\Sigma_0$. If verification fails, we obtain an abstract counterexample trace $\tau = \sigma_0 \xrightarrow{a_0} \sigma_1 \dots \xrightarrow{a_k} \sigma_{error}$. We validate $\tau$ against the concrete JEPA predictor $F$. If $\tau$ is spurious (i.e., the concrete dynamics $F$ do not actually traverse this sequence of regions due to geometric constraints), we invoke a refinement operator $\text{Refine}(\Sigma, \tau)$. This operator splits the abstract symbol (region) responsible for the spurious transition into finer symbols, updating the alphabet to $\Sigma'$, thereby excluding the false positive.
+
+\paragraph{Example Context.}
+Consider the alphabet $\Sigma = \{ \text{Sidewalk}, \text{Road} \}$. The automaton $\mathcal{A}_{init}$ accepts just "Sidewalk". The transducer $\mathcal{T}_{\text{maintain}}$ might include a transition $(\text{Sidewalk}, \text{Road})$ because the JEPA predicts that *some* states in the Sidewalk region (those at the edge) transition to the Road.
+This abstraction might yield a false counterexample: "Car maintains speed $\to$ Pedestrian on Road $\to$ Collision".
+However, concretely, only pedestrians *already stepping off* (a subset of Sidewalk) move to Road. The "waiting" pedestrians stay.
+The refinement step detects this divergence by analyzing the Lipschitz bounds (Exploration~\ref{subsec:exp2}) inside the "Sidewalk" region. It splits "Sidewalk" into $\Sigma' = \{ \text{Waiting}, \text{SteppingOff}, \text{Road} \}$. The refined transducer now has $(\text{Waiting}, \text{Waiting})$ and $(\text{SteppingOff}, \text{Road})$, allowing the verifier to prove safety for the "Waiting" case.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper outlines a foundational approach to making learned world models verifiable. By moving beyond empirical reconstruction quality and focusing on the mathematical alignment between energy-based objectives (Definition~\ref{def:energy}) and bisimulation metrics (Definition~\ref{def:bisim}), we aim to provide the structural guarantees necessary for deploying JEPA-based agents in safety-critical domains.
+
+\begin{thebibliography}{10}
+
+\bibitem{Assran23IJEPA}
+Mahmoud Assran et al.
+\newblock Self-Supervised Learning from Images with a Joint-Embedding Predictive Architecture.
+\newblock \emph{CVPR}, 2023.
+
+\bibitem{Bardes21VICReg}
+Adrien Bardes, Jean Ponce, and Yann LeCun.
+\newblock VICReg: Variance-Invariance-Covariance Regularization for Self-Supervised Learning.
+\newblock \emph{ICLR}, 2022.
+
+\bibitem{Ferns04Metrics}
+Norm Ferns, Prakash Panangaden, and Doina Precup.
+\newblock Metrics for Finite Markov Decision Processes.
+\newblock \emph{UAI}, 2004.
+
+\bibitem{Ferns12Metrics}
+Norm Ferns, Prakash Panangaden, and Doina Precup.
+\newblock Bisimulation Metrics for Continuous Markov Decision Processes.
+\newblock \emph{SIAM J. Comput.}, 2011.
+
+\bibitem{Bouajjani04ARMC}
+Ahmed Bouajjani, Peter Habermehl, and Tom{\'a}{\v{s}} Vojnar.
+\newblock Abstract Regular Model Checking.
+\newblock \emph{CAV}, 2004.
+
+\end{thebibliography}
+
+\end{document}
