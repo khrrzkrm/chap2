@@ -595,24 +595,24 @@ This semantics guarantees key stability properties essential for contract monito
 
       % Column 2: Eager Frontiers
       \node[region, fill=green!40] (eal) at (8.5, 5.0) 
-          {$\EAL{L}$ \\ $\semfive{v \vDash L}=\topt$};
+          {$\EAL{L}$ \\ $\semfive{u \circ x \vDash L}=\topt$};
       \node[region, fill=red!40] (erl) at (8.5, 1.5) 
-          {$\ERL{L}$ \\ $\semfive{v' \vDash L}=\bott$};
+          {$\ERL{L}$ \\ $\semfive{u \circ x' \vDash L}=\bott$};
 
       % Column 3: Irrelevant Extensions
-      \node[region, fill=green!15] (ial) at (13.5, 5.0) 
-          {$\IAL{L}$ \\ $\semfive{w\vDash L}=\topp$};
-      \node[region, fill=red!15] (irl) at (13.5, 1.5) 
-          {$\IRL{L}$ \\ $\semfive{w' \vDash L}=\botp$};
+      \node[region, fill=green!15,text width=3.5cm] (ial) at (13.5, 5.0) 
+          {$\IAL{L}$ \\ $\semfive{u \circ x \circ \Sigma^+ \vDash L}=\topp$};
+      \node[region, fill=red!15,text width=3.55cm] (irl) at (13.5, 1.5) 
+          {$\IRL{L}$ \\ $\semfive{u \circ x' \circ \Sigma^+ \vDash L}=\botp$};
   
       % Arrows
-      \draw[->, ultra thick, gray] (pre) -- (eal) node[midway, sloped, above, font=\scriptsize, text=black] {Possible $\Sigma^+$};
-      \draw[->, ultra thick, gray] (pre) -- (erl) node[midway, sloped, below, font=\scriptsize, text=black] {Possible $\Sigma^+$};
+      \draw[->, ultra thick, gray, dashed] (pre) -- (eal) node[midway, sloped, above, font=\scriptsize, text=black] {  $x \in\Sigma^+$};
+      \draw[->, ultra thick, gray,dashed] (pre) -- (erl) node[midway, sloped, below, font=\scriptsize, text=black] {$x' \in \Sigma^+$};
       \draw[->, ultra thick, gray] (eal) -- (ial) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
       \draw[->, ultra thick, gray] (erl) -- (irl) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
   
   \end{tikzpicture}
-  \caption{Visualizing the five-way semantic partition (Theorem \ref{prop:tightness-obligations-unindexed}). The diagram illustrates the irreversible flow of a trace from the undecided state (Yellow) to a decisive frontier (Eager Acceptance in Green or Eager Rejection in Red) and subsequently to an irrelevant post-verdict state. Arrows indicate possible transitions via trace extension; missing arrows imply that no direct transition is possible (e.g., one cannot jump from rejection to acceptance).}
+  \caption{Visualizing the five-way semantic partition (Theorem \ref{prop:tightness-obligations-unindexed}). The diagram illustrates the irreversible flow of a trace from the undecided state (Yellow) to a decisive frontier (Eager Acceptance in Green or Eager Rejection in Red) and subsequently to an irrelevant post-verdict state. Arrows indicate possible transitions via trace extension; dashed arrows stands for the possible existence of a suffix; plain arrows stands for any non-empty suffix leads to the next verdict;  missing arrows imply that no direct transition is possible.}
   \label{fig:five-way-partition}
 \end{figure}
 

@@ -1,280 +1,179 @@
 \chapter{Reasoning about Blame in Multi-Party Collaborative Contracts}\label{chap:monitoring}
+This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents. Unlike traditional monitoring approaches that view system events as atomic and indisputable, we propose a framework that distinguishes between individual attempts and collective outcomes, enabling a more nuanced analysis of responsibility. By formalizing the interaction between agents as a collaborative process rather than a zero-sum game, we establish a rigorous basis for attributing blame when contractual obligations are not met. This foundation supports the development of a logic and a runtime verification pipeline capable of handling the temporal complexities, reparable violations, and open-ended nature of realistic multi-party contracts.
+
 \section{Overview}
+In this section, we outline the theoretical and practical necessity for a blame-aware monitoring framework. We begin by motivating the problem through the lens of open-ended normative interactions, where simple binary verdicts of satisfaction or violation are insufficient for dispute resolution. We then detail the specific research questions that guide our inquiry and describe the constructive methodology used to answer them. Finally, we summarize the chapter's core contributions, including the novel Attempt-Based Interaction Model and the Two-Agents Collaborative Normative Logic (\cDL), which collectively enable precise, automated accountability in digital contracts.
+\chapter{Reasoning about Blame in Multi-Party Collaborative Contracts}\label{chap:monitoring}
+
+This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents. Unlike traditional monitoring approaches that view system events as atomic and indisputable, we propose a framework that distinguishes between individual attempts and collective outcomes, enabling a more nuanced analysis of responsibility. By formalizing the interaction between agents as a collaborative process rather than a zero-sum game, we establish a rigorous basis for attributing blame when contractual obligations are not met. This foundation supports the development of a logic and a runtime verification pipeline capable of handling the temporal complexities, reparable violations, and open-ended nature of realistic multi-party contracts.
+
+\section{Overview}
+
+In this section, we outline the theoretical and practical necessity for a blame-aware monitoring framework. We begin by motivating the problem through the lens of open-ended normative interactions, where simple binary verdicts of satisfaction or violation are insufficient for dispute resolution. We then detail the specific research questions that guide our inquiry and describe the constructive methodology used to answer them. Finally, we summarize the chapter's core contributions, including the novel Attempt-Based Interaction Model and the Two-Agents Collaborative Normative Logic (\cDL), which collectively enable precise, automated accountability in digital contracts.
+
 \subsection{Motivation}
 
-Normative specifications are often presented as constraints on what an agent must do or must avoid.
-
-In many practical contexts, however, compliance is not achieved solely by individual agents.
-
-Instead, compliance results from interactions in which each party may enable, disregard, or obstruct the other party's actions.
-
-This chapter examines collaborative normative settings in which agents are not engaged in zero-sum games, yet strategic behavior and conflicting incentives may still arise.
-
-The analysis focuses on two agents, as the fundamental challenges are already present in the simplest bilateral contracts.
-
-
+Normative specifications are typically presented as constraints on what an individual agent must do or avoid. In many practical contexts, however, compliance is not achieved solely by individual agents but results from interactions where parties may enable, disregard, or obstruct each other. This chapter examines collaborative normative settings where, even without zero-sum competition, strategic behavior and conflicting incentives arise. Our analysis focuses on two agents, as the fundamental challenges of collaboration are fully present even in bilateral contracts.
 
 \paragraph{Interactions and collaboration.}
-
-The standard deontic formalism describes the duties and prohibitions of a single agent in isolation.
-
-In contrast, many norms require that a desired outcome be realized only through the contributions of both parties.
-
-For instance, a tenant may attempt to pay rent, but the payment may succeed only if the landlord provides a payment channel or accepts the transfer.
-
-Similarly, occupancy is meaningful only if one party grants access while the other actually attempts to occupy.
-
-A robust model must therefore distinguish between (i) attempts made by each agent and (ii) successful collaboration that results from a compatible combination of these attempts.
-
-Additionally, the model must account for non-interference, in which compliance requires one party to refrain from actions that would prevent the other from fulfilling its obligations.
-
-
+Standard deontic formalism describes duties in isolation, yet many norms require that a desired outcome be realized through the joint contributions of both parties. For instance, a tenant's payment succeeds only if the landlord provides a channel to receive it; similarly, occupancy requires both the tenant's attempt to occupy and the landlord's permission. A robust model must therefore distinguish between the \emph{attempts} made by each agent and the \emph{successful collaboration} resulting from their compatibility. Additionally, the model must account for \emph{non-interference}, ensuring that compliance involves refraining from actions that obstruct the counterparty.
 
 \paragraph{Open-ended normative interactions.}
-
-Normative specifications may govern long-term collaborations.
-
-For instance, contracts typically govern interactions that can persist indefinitely unless properly terminated, often with a periodic structure.
-
-A rental agreement, for example, imposes recurring monthly obligations, conditional repairs triggered by requests, and contrary-to-duty obligations that arise after non-compliance.
-
-This motivates the development of a trace model that supports (a) aggregation at the level specified by the norm (e.g., months) and (b) prefix-based evaluation, as monitoring and dispute resolution depend on partial observations of ongoing relationships.
-
-
+Contracts often govern long-term collaborations that persist indefinitely unless terminated. A rental agreement, for example, imposes recurring obligations and conditional repairs that repeat over time. This motivates the development of a trace model that supports aggregation at the granularity of the norm (e.g., monthly periods) and allows for \emph{prefix-based evaluation}, as monitoring depends on partial observations of ongoing relationships.
 
 \paragraph{Blame and accountability.}
-
-When a collaborative norm is breached, it is insufficient to merely state that the contract has been violated.
-
-It is necessary to identify who is responsible for the violation and to provide justification for this attribution.
-
-This requirement is equally important in contractual disputes and regulatory contexts, where enforcement decisions depend on explicit accounts of causation and justification.
-
-In bilateral scenarios such as landlord–tenant disputes, courts typically reconstruct a timeline to determine which party obstructed the other: for example, whether the tenant failed to pay while entitled to possession, whether the landlord denied access without adhering to legal procedures (such as notice, deadlines, or court orders), or whether the landlord's denial of access justified rent withholding or reduction. In many real-life scenarios, both parties contribute to escalation, and resolution depends on allocating remedies proportionate to the harms caused at each stage, including restoring access, ordering payment of arrears, granting rent reductions for unusable periods, awarding damages for proven losses, and verifying compliance with termination and eviction (expulsion) procedures. In addition to qualitative attribution, practical compliance analysis requires a quantitative assessment of the extent of non-compliance, such as the number of months' rent unpaid, frequency of denied access, or missed repair obligations. A blame concept suitable for compliance tools must therefore be formally defined, operationally verifiable, and robust under incremental observation. This chapter develops such a notion, implements executable monitors, and extends the framework with quantitative measures that surpass the traditional first-failure perspective.
-
-
+When a collaborative norm is breached, it is insufficient to merely state that a violation occurred; it is necessary to identify \emph{who} is responsible and provide justification. This is critical in disputes where enforcement depends on explicit accounts of causation. For example, courts must reconstruct timelines to determine if a landlord's obstruction justified a tenant's non-payment. Furthermore, practical analysis requires a \emph{quantitative assessment} of non-compliance—counting unpaid months or denied access—rather than a simple binary verdict. A blame concept suitable for compliance tools must therefore be formally defined, operationally verifiable, and robust under incremental observation.
 
 \paragraph{Research questions.}
-
-These considerations motivate the following research questions from a formal method perspective:
-
+These considerations motivate the following questions from a formal methods perspective:
 \begin{enumerate}
-
 \item How can collaboration be modeled as a first-class semantic object, distinguishing individual attempts from jointly successful outcomes?
-
-\item Which trace abstractions effectively capture both cooperative behavior and non-interference at the granularity defined by contractual periods?
-
-\item How can open-ended, potentially infinite, streams of duties and rights be specified and monitored within a contractual framework?
-
-\item How can blame and quantitative accountability be defined to more accurately reflect real-world legal reasoning and support automated monitoring?
-
+\item Which trace abstractions effectively capture cooperative behavior and non-interference at the granularity of contractual periods?
+\item How can open-ended \emph{repetitions} of duties be specified and monitored within a contractual framework?
+\item How can blame and quantitative accountability be defined to reflect legal reasoning and support automated monitoring?
 \end{enumerate}
-
-
 
 \subsection{Methodology}
 
-To address the research questions, we adopt a \emph{constructive formal methods} approach.
-Our methodology is predicated on the rigorous separation of \emph{specification} (the denotational meaning of a contract) from \emph{implementation} (the operational mechanism of monitoring).
-This separation ensures that the resulting tools are correct-by-construction rather than ad-hoc scripts.
-
-The research follows a four-phase structural pipeline:
+To address these questions, we adopt a \emph{constructive formal methods} approach. Our methodology is predicated on the rigorous separation of \emph{specification} (the denotational meaning) from \emph{implementation} (the operational mechanism), ensuring tools are correct-by-construction. The research follows a four-phase structural pipeline:
 
 \paragraph{Phase 1: Semantic Abstraction.}
-We begin by abstracting the domain of interaction.
-Methodologically, we reject standard atomic trace models in favor of a \emph{multi-layered} approach.
-We model interaction not as a given sequence of events, but as the semantic intersection of independent agent strategies.
-This allows us to reason formally about causal concepts like obstruction and interference before defining normative rules.
+We abstract the domain of interaction by rejecting atomic trace models in favor of a \emph{multi-layered} approach. Interaction is modeled as the semantic intersection of independent strategies, allowing us to reason formally about obstruction and interference.
 
 \paragraph{Phase 2: Denotational Specification.}
-We adopt a \emph{semantics-first} strategy.
-Rather than defining the logic in terms of its execution (e.g., how an automaton processes it), we first define its abstract truth conditions.
-Our approach prioritizes \emph{tightness}, the ability to render progressive and precise verdicts on finite prefixes and distinguish exact (tight) prefixes for violation/satisfaction from their equivalent post continuation.
-We start with binary compliance semantics, refine it into a blame-assignment model, and finally extend it to the quantitative domain.
-This layering ensures that complex accountability metrics remain consistent with the fundamental notion of compliance.
+We adopt a \emph{semantics-first} strategy, defining abstract truth conditions before execution mechanisms. We prioritize \emph{tightness}—the ability to render precise verdicts on finite prefixes. We start with binary compliance, refine it into a blame-assignment model, and extend it to the quantitative domain.
 
 \paragraph{Phase 3: Structural Synthesis.}
-To bridge theory and practice, we employ \emph{automata-theoretic synthesis}.
-We treat the logic as a blueprint for generating deterministic Moore machines.
-Our methodology relies on structural induction: we define an operational transformation for each logical operator, ensuring that the monitor's structure mirrors the contract's.
+We bridge theory and practice using \emph{automata-theoretic synthesis}. We treat the logic as a blueprint for generating deterministic Moore machines, employing structural induction to ensure the monitor's structure mirrors the contract.
 
 \paragraph{Phase 4: Formal Verification.}
-Finally, we validate the pipeline through \emph{conformance proofs}.
-We do not merely test the monitors; we prove that the synthesized automata are logically isomorphic to the denotational semantics defined in Phase 2.
-This closes the loop, guaranteeing that the executable artifacts faithfully represent the normative intent.
+We validate the pipeline through \emph{conformance proofs}. We prove that the synthesized automata are logically isomorphic to the denotational semantics, guaranteeing that the executable artifacts faithfully represent the normative intent.
 
 \subsection{Contributions}
 
-This chapter establishes a comprehensive framework for the specification and runtime verification of collaborative normative systems.
-The primary contribution is a fully verified pipeline bridging high-level normative abstractions and low-level executable monitors.
-
-The specific theoretical and technical contributions are:
+This chapter establishes a comprehensive framework for the specification and runtime verification of collaborative normative systems. The primary contribution is a verified pipeline bridging high-level normative abstractions and low-level executable monitors. The specific contributions are:
 
 \begin{enumerate}[Con1]
 
 \item \textbf{Attempt-Based Interaction Model.}
-We introduce a formal algebra that distinguishes between an agent's \emph{attempt} and the \emph{interaction outcome}.
-Unlike standard models that conflate ``failure to act'' with ``blocked action,'' our model treats non-interference as a first-class semantic property.
-This enables the formal verification of ``active participation'', determining whether an agent did everything in their power to fulfill a duty.
+We introduce a formal algebra that distinguishes an agent's \emph{attempt} from the \emph{interaction outcome}. Unlike models that conflate failure to act with blocked action, we treat non-interference as a first-class semantic property, enabling the verification of ``active participation''.
 
 \item \textbf{The Two-Agents Collaborative Normative Logic (\cDL).}
-We formalize \cDL, a logic tailored for bilateral, periodic contracts over atomic actions.
-It extends standard deontic specifications with:
-\begin{itemize}
-  \item \emph{Atomic Responsibility and Power Modalities:} Explicit constructs for Obligation, Prohibition, and Power, parameterized by the responsible/beneficiary agent,  and the target action.
-  \item \emph{Regular Expression Control Flow:} The use of regular expressions to define complex temporal \emph{triggers} for activating duties and \emph{guards} for termination conditions.
-  \item \emph{Contrary-to-duty operators} that handle reparable violations.
-  \item \emph{Explicit Repetition Operator:} A dedicated operator for modeling periodic, recurring obligations (e.g., "pay rent every month"). Unlike Linear Temporal Logic (LTL), which typically encodes repetition through nested "Always" ($\square$) and "Next" ($\bigcirc$) operators that flatten the temporal structure, our repetition operator preserves the \emph{periodicity} as a first-class structural element.
-\end{itemize}
-Crucially, \cDL is defined over the attempt-based model, allowing it to capture the collaborative nuances of real-world contracts.
+We formalize \cDL, a logic tailored for bilateral, periodic contracts. It extends standard deontic specifications with atomic responsibility modalities, regular expression control flow for triggers and guards, and explicit operators for repetition and contrary-to-duty reparations.
 
 \item \textbf{Theory of Tight and Quantitative Semantics.}
-We introduce a family of \emph{Forward Tight Semantics} designed for online monitoring.
-\begin{itemize}
-    \item We define a \textbf{5-valued verdict domain} that distinguishes between eager (first) violations and irrelevant post-violation extensions.
-    \item We extend this to a \textbf{Quantitative Blame Semantics} that accumulates violations over time, allowing for the calculation of cumulative penalties in open-ended contracts.
-\end{itemize}
+We introduce a \emph{Forward Tight Semantics} for online monitoring. This includes a 5-valued verdict domain that distinguishes eager violations from post-violation extensions and a \emph{Quantitative Blame Semantics} that accumulates penalties over time for open-ended contracts.
 
 \item \textbf{Correct-by-Construction Monitor Synthesis.}
-We provide a compilation algorithm that transforms any \cDL specification into a deterministic Moore machine.
-We provide structural proofs demonstrating that this monitor is \emph{operationally equivalent} to the tight semantics.
-This result eliminates the need to verify the monitoring tool itself, as correctness is guaranteed by the synthesis process.
+We provide a compilation algorithm that transforms \cDL specifications into deterministic Moore machines. We provide structural proofs that this monitor is operationally equivalent to the tight semantics, guaranteeing correctness by synthesis.
 
 \item \textbf{Formalization of Accountability.}
-Beyond binary compliance, we contribute a formal definition of \emph{blame assignment} in cooperative settings.
-We prove that our blame semantics is a consistency-preserving refinement of the standard violation semantics, providing a mathematical basis for dispute resolution and liability assessment.
+We contribute a formal definition of \emph{blame assignment} in cooperative settings. We prove that our blame semantics is a consistency-preserving refinement of standard violation semantics, providing a mathematical basis for liability assessment.
 
 \end{enumerate}
 
-
-
 \paragraph{Organization.}
+We first ground the problem in a rental-agreement example and extract the modeling requirements. We then develop the trace and synchronization layer for collaborative interaction, introduce \cDL, and finally present the monitor-based semantics, blame attribution, and quantitative extensions.
 
-We first ground the problem in a rental-agreement example and extract the modeling requirements.
+\section{Use Case: Flat Rental Contract}
+\label{sec:motivating-example}
 
-We then develop the trace and synchronization layer for collaborative interaction, introduce \cDL, and finally present the monitor-based semantics, blame attribution, and quantitative extensions.
+To ground the theoretical development in a concrete setting, we examine a simplified residential flat rental agreement. This agreement is abstracted to exclude legal boilerplate, retaining only the core structural elements relevant to our analysis. This abstraction isolates the essential logical phenomena, specifically the collaborative interactions between agents and the temporal evolution of their duties.
 
+\begin{example}\label{ME}
+    We present the structure of this simplified rental contract in Figure~\ref{fig:ucd}, involving a tenant (agent~1) and a landlord (agent~2). The clauses illustrate cooperative actions such as paying rent and granting occupancy: payment requires both the tenant's offer and the landlord's acceptance, while occupancy requires both the tenant's willingness to occupy and the landlord's permission. The contract also includes a reparation clause and a termination condition, all of which are regulated on a monthly basis and repeat over time.
 
-  \section{Use Case: Flat Rental Contract}
-  \label{sec:motivating-example}
-
-
-  To ground the theoretical development in a concrete setting, we consider a simplified residential flat rental agreement. The contract is intentionally abstracted to remove legal boilerplate and retain only the core structure relevant to our analysis. This allows us to isolate the essential logical phenomena, in particular the collaborative interaction between agents and the temporal evolution of their duties, without distracting legal detail.
-  
-  \begin{example}\label{ME}
-    We present a simplified rental contract in \ref{fig:ucd} between a tenant (agent~1) and a landlord (agent~2).
-    The clauses illustrate cooperative actions such as paying rent and granting occupancy:
-    payment requires both the tenant’s offer and the landlord’s acceptance, while occupancy requires
-    both the tenant’s willingness to occupy and the landlord’s permission.
-    The contract also includes a reparation clause and a termination condition.
-    All clauses are monthly regulated and repeat over time.
-    \begin{figure}[H]
-    \begin{adjustbox}{varwidth=\textwidth,fbox,center}
-    \textbf{Occupancy and Rent Payment}
-    \begin{enumerate}[(C1)]
-    \item The Tenant shall pay the full monthly rent on or before the due date.
-    \item The Landlord shall guarantee the Tenant’s right to quiet enjoyment and occupancy of the premises, provided the Tenant complies with the agreement.
-    \item In the event of non-payment or late payment of rent:
-    \begin{enumerate}[(i)]
-    \item If the Tenant fails to pay by the due date, a late fee of 10\% of the monthly rent shall be assessed.
-    \item This late fee shall be due and payable along with the next month’s rent.
-    \item The late fee does not waive any other rights or remedies available to the Landlord under this agreement or the law.
-    \end{enumerate}
-    \item If the Tenant submits a formal request for necessary repairs, the Landlord shall carry out the required repairs within one (1) month of receiving the request.
-    \end{enumerate}
-    
-    \textbf{Termination Notice and Continued Occupancy}
-    \begin{enumerate}[(C5)]
-    \item The Tenant may terminate this rental agreement by giving written notice at least three (3) months prior to the intended termination date. Upon doing so, the Tenant shall:
-    \begin{enumerate}[(i)]
-    \item Continue to pay the full monthly rent during the three-month notice period.
-    \item Retain the right to occupy the premises for the entirety of the notice period.
-    \item Comply with all other terms of the rental agreement during the notice period.
-    \item Vacate the premises no later than the final day of the notice period, unless otherwise agreed in writing.
-    \end{enumerate}
-    \end{enumerate}
-    \end{adjustbox}
+    \begin{figure}[h!]
+    \centering
+    \fbox{
+    \begin{minipage}{0.95\textwidth}
+        \small
+        \textbf{Occupancy and Rent Payment}
+        \begin{enumerate}
+            \item[(C1)] The Tenant shall pay the full monthly rent on or before the due date.
+            \item[(C2)] The Landlord shall guarantee the Tenant's right to quiet enjoyment and occupancy of the premises, provided the Tenant complies with the agreement.
+            \item[(C3)] In the event of non-payment or late payment of rent:
+            \begin{enumerate}
+                \item[(i)] If the Tenant fails to pay by the due date, a late fee of 10\% of the monthly rent shall be assessed.
+                \item[(ii)] This late fee shall be due and payable along with the next month's rent.
+                \item[(iii)] The late fee does not waive any other rights or remedies available to the Landlord under this agreement or the law.
+            \end{enumerate}
+            \item[(C4)] If the Tenant submits a formal request for necessary repairs, the Landlord shall carry out the required repairs within one (1) month of receiving the request.
+        \end{enumerate}
+        
+        \vspace{0.5em}
+        \textbf{Termination Notice and Continued Occupancy}
+        \begin{enumerate}
+            \item[(C5)] The Tenant may terminate this rental agreement by giving written notice at least three (3) months prior to the intended termination date. Upon doing so, the Tenant shall:
+            \begin{enumerate}
+                \item[(i)] Continue to pay the full monthly rent during the three-month notice period.
+                \item[(ii)] Retain the right to occupy the premises for the entirety of the notice period.
+                \item[(iii)] Comply with all other terms of the rental agreement during the notice period.
+                \item[(iv)] Vacate the premises no later than the final day of the notice period, unless otherwise agreed in writing.
+            \end{enumerate}
+        \end{enumerate}
+    \end{minipage}
+    }
     \caption{Use Case: Simplified Rental Contract between a Landlord and a Tenant}
     \label{fig:ucd}
    \end{figure}
-    \end{example}
-    
-  
-    \subsection*{Informal Projection of Interaction Scenarios on the Contract}
-    To ground these challenges in concrete behavior, let us consider three hypothetical execution traces (scenarios) over a timeline of months $t=1, 2, \dots$.
-    These scenarios highlight the divergence between simple observation (what happened) and normative analysis (who is responsible).
-    
-    \paragraph{Scenario 1: Obstruction (The ``Handshake'' Problem).}
-    Consider the obligation to pay rent (Clause C1) at month $t=1$.
-    \begin{itemize}
-        \item \textbf{Action:} The Tenant attempts to initiate the bank transfer.
-        \item \textbf{Reaction:} The Landlord, wishing to manufacture a reason for eviction, closes the receiving bank account or refuses the check.
-        \item \textbf{Observable Outcome:} No money is transferred.
-        \item \textbf{Normative Analysis:} A naive monitor observing only ``payment status'' would flag a violation by the Tenant. However, in our collaborative framework, the Tenant has fulfilled their duty by \emph{attempting} the act. The failure is attributed to the Landlord's interference. This necessitates distinguishing \emph{attempted payment} from \emph{successful payment}.
-    \end{itemize}
-    
-    \paragraph{Scenario 2: Violation and Reparation (The CTD Chain).}
-    Consider a scenario where the Tenant genuinely runs out of funds.
-    \begin{itemize}
-        \item \textbf{Month 1:} Tenant fails to pay rent.
-        \item \textbf{Immediate Verdict:} Violation of C1. The contract enters a ``violated'' state.
-        \item \textbf{Normative Shift:} Clause C3 (Reparation) activates. The Tenant now holds a \emph{secondary obligation}: pay Month 1 Rent + Month 2 Rent + 10\% Fee at Month 2.
-        \item \textbf{Month 2:} Tenant pays the total accumulated amount.
-        \item \textbf{Final Verdict:} The violation is considered \emph{repaired}. The contract returns to a compliant state. The monitor must track this ``state recovery'' rather than permanently aborting at the first failure.
-    \end{itemize}
-    
-    \paragraph{Scenario 3: Termination and Temporal Reconfiguration.}
-    Consider the Tenant exercising the power to terminate (Clause C5).
-    \begin{itemize}
-        \item \textbf{Month 5:} Tenant issues a formal written notice to terminate.
-        \item \textbf{Normative Shift:} This is not a violation, but a \emph{state change}. The contract, previously open-ended, is now fixed to terminate at Month 8 ($5+3$).
-        \item \textbf{Month 6--8:} The Tenant stops paying rent, assuming the notice ended the contract immediately.
-        \item \textbf{Verdict:} Violation. The monitor must enforce that the \emph{obligations persist} during the notice period (Clause C5-i). The exercising of power did not delete the obligations but merely set a horizon for their expiration.
-    \end{itemize}
-    
-    \subsection*{Formal Modeling Challenges}
-    \label{subsec:formal-challenges}
-    While conceptually straightforward, formalizing this contract requires resolving several semantic challenges that standard specification languages (such as LTL or standard Deontic Logic) fail to address adequately.
-    
-    \paragraph{1. The ``Handshake'' Semantics (Attempts vs.\ Outcomes).}
-    Clauses C1 and C2 illustrate that compliance is a \emph{joint achievement}.
-    For example, ``Rent Payment'' (C1) semantically implies that the Tenant offers the money \emph{and} the Landlord accepts it.
-    Standard trace models often represent this as a single atomic event $pay$.
-    However, in a dispute, we must distinguish between:
-    \begin{itemize}
-        \item The Tenant failing to offer rent (Tenant violation).
-        \item The Tenant offering, but the Landlord blocking the transfer (Landlord interference).
-    \end{itemize}
-    \textbf{Challenge:} The formalism must treat \emph{attempts} and \emph{successful outcomes} as distinct semantic layers to correctly attribute blame.
-    
-    \paragraph{2. Contrary-to-Duty Structures (Reparation).}
-    Clause C3 introduces non-monotonicity. If C1 is violated, the contract does not simply evaluate to $\mathit{false}$ (breach). Instead, it transitions to a sub-ideal state where a secondary obligation (the late fee) becomes active.
-    This creates a \emph{reparation chain}: Primary Duty $\rightarrow$ Violation $\rightarrow$ Secondary Duty.
-    \textbf{Challenge:} The logic must support \emph{recoverable violations}, allowing the monitoring status to fluctuate between ``violated'' and ``repaired'' over time.
-    
-    \paragraph{3. Reactive Triggers and Monitoring Horizons.}
-    Clause C4 (Repairs) imposes a duty with a relative deadline: ``within one month of request.''
-    From a monitoring perspective, this requires \emph{forward-looking tightness}.
-    We cannot wait for an infinite trace to determine if the repair happened.
-    \textbf{Challenge:} The semantics must identify the \emph{exact finite prefix} where the deadline is missed to trigger a verdict immediately (eager rejection).
-    
-    \paragraph{4. Hohfeldian Powers and Structural Change.}
-    Clause C5 (Termination) represents a \emph{Power} rather than a simple duty.
-    By exercising this power, the Tenant unilaterally alters the normative landscape, changing an open-ended/infinite contract into a finite one (ending in 3 months).
-    \textbf{Challenge:} The framework must model agents not only as actors within the rules but as entities capable of modifying the rules (or their duration) dynamically.
-    \subsection*{Summary}
-    This motivates the need for a new logic of collaboration, one that can:
-    \begin{enumerate}
-    \item represents the strategies of multiple agents acting in tandem rather than in opposition,
-    \item expresses obligations, powers, reparations, and triggers in a uniform framework,
-    \item capture open-ended dynamics where obligations evolve over time, and
-    \item supports the analysis of compliance, blame, and verification of strategies against contract clauses.
-    \end{enumerate}
-    Such a framework requires both a formal model of interacting agent behaviors and a language with syntax and semantics suited to normative reasoning in collaborative, time-sensitive contracts.
-  
-  
-  
-The subsequent section introduces a formal model of interaction. We define the collaborative outcome as a trace derived from the synchronization of two independent traces, each capturing the behavior of a distinct agent.
+\end{example}
+
+\subsection{Illustrative Interaction Scenarios}
+To illustrate the practical implications of these clauses, we analyze three hypothetical execution traces over a timeline of months $t=1, 2, \dots$. These scenarios highlight the divergence between simple observation (what happened) and normative analysis (who is responsible).
+
+\paragraph{Scenario 1: Obstruction (The ``Handshake'' Problem).}
+Consider the obligation to pay rent (Clause C1) at month $t=1$.
+\begin{itemize}
+    \item \textbf{Action:} The Tenant attempts to initiate the bank transfer.
+    \item \textbf{Reaction:} The Landlord, wishing to manufacture a reason for eviction, closes the receiving bank account or refuses the check.
+    \item \textbf{Observable Outcome:} No money is transferred.
+    \item \textbf{Normative Analysis:} A naive monitor observing only ``payment status'' would flag a violation by the Tenant. However, in a collaborative framework, the Tenant has fulfilled their duty by \emph{attempting} the act. The failure is attributed to the Landlord's interference, necessitating a distinction between \emph{attempted payment} and \emph{successful payment}.
+\end{itemize}
+
+\paragraph{Scenario 2: Violation and Reparation (The CTD Chain).}
+Consider a scenario where the Tenant genuinely runs out of funds.
+\begin{itemize}
+    \item \textbf{Month 1:} Tenant fails to pay rent.
+    \item \textbf{Immediate Verdict:} Violation of C1. The contract enters a ``violated'' state.
+    \item \textbf{Normative Shift:} Clause C3 (Reparation) activates. The Tenant now holds a \emph{secondary obligation}: pay Month 1 Rent + Month 2 Rent + 10\% Fee at Month 2.
+    \item \textbf{Month 2:} Tenant pays the total accumulated amount.
+    \item \textbf{Final Verdict:} The violation is considered \emph{repaired}, and the contract returns to a compliant state. The monitor must track this ``state recovery'' rather than permanently aborting at the first failure.
+\end{itemize}
+
+\paragraph{Scenario 3: Termination and Temporal Reconfiguration.}
+Consider the Tenant exercising the power to terminate (Clause C5).
+\begin{itemize}
+    \item \textbf{Month 5:} Tenant issues a formal written notice to terminate.
+    \item \textbf{Normative Shift:} This is not a violation but a \emph{state change}. The contract, previously open-ended, is now fixed to terminate at Month 8 ($5+3$).
+    \item \textbf{Month 6--8:} The Tenant stops paying rent, assuming the notice ended the contract immediately.
+    \item \textbf{Verdict:} Violation. The monitor must enforce that the \emph{obligations persist} during the notice period (Clause C5-i). The exercising of power did not delete the obligations but merely set a horizon for their expiration.
+\end{itemize}
+
+\subsection{Formal Modeling Challenges}
+\label{subsec:formal-challenges}
+
+While conceptually straightforward, formalizing this contract requires resolving several semantic challenges that standard specification languages (such as LTL or standard Deontic Logic) fail to address adequately.
+
+\paragraph{1. The ``Handshake'' Semantics (Attempts vs.\ Outcomes).}
+Clauses C1 and C2 illustrate that compliance is a \emph{joint achievement}. For example, ``Rent Payment'' (C1) semantically implies that the Tenant offers the money \emph{and} the Landlord accepts it. Standard trace models often represent this as a single atomic event $pay$. However, in a dispute, we must distinguish between the Tenant failing to offer rent (Tenant violation) and the Tenant offering but the Landlord blocking the transfer (Landlord interference).
+\textbf{Challenge:} The formalism must treat \emph{attempts} and \emph{successful outcomes} as distinct semantic layers to correctly attribute blame.
+
+\paragraph{2. Contrary-to-Duty Structures (Reparation).}
+Clause C3 introduces non-monotonicity. If C1 is violated, the contract does not simply evaluate to $\mathit{false}$ (breach). Instead, it transitions to a sub-ideal state where a secondary obligation (the late fee) becomes active. This creates a \emph{reparation chain}: Primary Duty $\to$ Violation $\to$ Secondary Duty.
+\textbf{Challenge:} The logic must support \emph{recoverable violations}, allowing the monitoring status to fluctuate between ``violated'' and ``repaired'' over time.
+
+\paragraph{3. Reactive Triggers and Monitoring Horizons.}
+Clause C4 (Repairs) imposes a duty with a relative deadline: ``within one month of request''. From a monitoring perspective, this requires \emph{forward-looking tightness}. We cannot wait for an infinite trace to determine if the repair happened.
+\textbf{Challenge:} The semantics must identify the \emph{exact finite prefix} where the deadline is missed to trigger a verdict immediately (eager rejection).
+
+\paragraph{4. Hohfeldian Powers and Structural Change.}
+Clause C5 (Termination) represents a \emph{Power} rather than a simple duty. By exercising this power, the Tenant unilaterally alters the normative landscape, changing an open-ended/infinite contract into a finite one (ending in 3 months).
+\textbf{Challenge:} The framework must model agents not only as actors within the rules but as entities capable of modifying the rules or their duration dynamically.
+
+\subsection*{Summary}
+These scenarios motivate the need for a new logic of collaboration. This logic must represent strategies of multiple agents acting in tandem rather than in opposition, express obligations and powers in a uniform framework, capture open-ended dynamics, and support the analysis of compliance and blame. Such a framework requires both a formal model of interacting agent behaviors and a language with syntax and semantics suited to normative reasoning in collaborative, time-sensitive contracts.
+
   
 \section{Abstractions for Collaborative Interaction}
 \label{sec:multiagent-sync}
@@ -802,50 +701,6 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
 
   The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encoding in Figure~\ref{fig:moore-tenant-prod} and Figure~\ref{fig:moore-landlord-prods}, respectively.
   
-  % \begin{figure}[h]
-  % \centering
-  % \begin{subfigure}[t]{0.70\textwidth}
-  % \centering
-  % \scalebox{0.9}{
-  % \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
-  %   % Tenant machine M_1^1
-  %   \node[state,initial] (s_0) {$s_0/\mathrm{A_1}$};
-  %   \node[state,right=of s_0] (s_1) {$s_1/\mathrm{B_1}$};
-  %   \node[state,right=of s_1] (s_2) {$s_2/\mathrm{C_1}$};
-  
-  %   \path[->]
-  %     (s_0) edge[bend left=10] node {$\OCC^{(2)}$} (s_1)
-  %     (s_1) edge[loop above] node {$\OCC^{(2)}$} ()
-  %           edge[bend left=10] node {$\overline{\OCC^{(2)}}$} (s_2);
-  % \end{tikzpicture}}
-  % \caption{$M_1^1$ (tenant).\\ $\mathrm{A_1}=\{\PAY^{(1)}\}$, $\mathrm{B_1}=\{\OCC^{(1)},\PAY^{(1)}\}$, $\mathrm{C_1}=\emptyset$.}
-  % \label{fig:moore-tenant}
-  % \end{subfigure}
-  
-  % \begin{subfigure}[t]{0.70\textwidth}
-  % \centering
-  % \scalebox{0.9}{
-  % \begin{tikzpicture}[shorten >=1pt,node distance=4cm,on grid,auto]
-  %   % Landlord machine M_2^1
-  %   \node[state,initial] (s_0) {$s_0/\mathrm{A_2}$};
-  %   \node[state,right=of s_0] (s_1) {$s_1/\mathrm{A_2}$};
-  %   \node[state,right=of s_1] (s_2) {$s_2/\mathrm{B_2}$};
-  
-  %   \path[->]
-  %     (s_0) edge[loop above] node {$\PAY^{(1)}$} ()
-  %           edge[bend left=10] node {$\overline{\PAY^{(1)}}$} (s_1)
-  %     (s_1) edge[bend left=10] node {$\PAYF^{(1)}$} (s_0)
-  %           edge[bend left=10] node {$\PAY^{(1)}$} (s_2);
-  % \end{tikzpicture}}
-  % \caption{$M_2^1$ (landlord). Outputs: $\mathrm{A_2}=\{\OCC^{(2)},\PAY^{(2)}\}$, $\mathrm{B_2}=\emptyset$.}
-  % \label{fig:moore-landlord}
-  % \end{subfigure}
-  
-  % \caption{Moore machines for the tenant and landlord representing their strategies over tagged $\Sigma_C$.
-  % In the transition, the $\overline{\PAY^{1}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{1}$, similarly $\PAY^{1}$ is a shorthand for any input set containing $\PAY^{1}$}. 
-  % \label{fig:moore-strategies}
-  % \end{figure}
-  
   
   \[
   \begin{aligned}
@@ -1168,13 +1023,16 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
     \]
   
     \item \textbf{C5 (Termination and continuation):}  
-    The tenant may terminate the contract unilaterally by issuing a termination notice.  
-    After this notice, the contract’s active obligations (rent, occupancy, repairs) 
-    persist for three additional months before ending.  
-    This behavior is captured with a guarded contract:
-    \[
-    C_5 := \guard[\,\Gamma^+ \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}\,] (\ C_3\ \wedge\ C_2\ \wedge\ C_4\ ).
-    \]
+    The tenant may terminate the contract unilaterally by issuing a termination notice.
+    Semantically, this action imposes a temporal limit on the otherwise open-ended obligations defined in the previous clauses.
+    Specifically, once the termination notice is issued, the duties to guarantee occupancy ($C_2$), pay rent or reparations ($C_3$), and perform repairs ($C_4$) must persist for exactly three additional months before ceasing.
+    To capture this behavior in \cDL, we do not define a single global guard; rather, we apply the guarding condition individually to each relevant sub-contract\footnote{The reason is that these clauses operate on distinct cycles; this concept will be clarified later in this section.}.
+    This ensures that each specific duty is correctly terminated after the notice period:
+    \begin{align}
+      C_{5\to2} &:= \guard[\,\Gamma^+ \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}\,]\big( C_2 \big),\\
+      C_{5\to3} &:= \guard[\,\Gamma^+ \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}\,]\big( C_3 \big),\\
+      C_{5\to4} &:= \guard[\,\Gamma^+ \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}\,]\big( C_4 \big).
+    \end{align}
   \end{itemize}
   
   \medskip

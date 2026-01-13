@@ -2693,171 +2693,124 @@ Note the two joint-failure cases: $(1,1)$ when the violations are blamed on diff
 %   \end{figure}
 
 
+\subsection{Conclusion and Limitations}
 
+This section introduced a quantitative extension of the forward-looking tight contract semantics, addressing a fundamental limitation of binary, prefix-closed monitoring.
+While well suited for early stopping and safety enforcement, binary tight semantics collapses all non-compliant executions into a single failure point.
+This collapse causes a loss of information essential for post-hoc analysis, auditing, and responsibility assessment.
+To recover this information, the quantitative framework developed here explicitly separates temporal progression from violation measurement.
+This separation allows contracts to be monitored beyond the first violation while preserving a precise account of how and when non-compliance occurs.
+
+The structural backbone of this approach is provided by the Contract Progress Monitor.
+By evolving contracts into residual contracts after each observed event, the monitor captures the exact normative state at every time step, including sequencing, reparations, repetitions, guards, and triggers.
+Crucially, this progression is defined independently of scoring.
+Violations do not halt execution but rather guide structural evolution, such as activating repair clauses or advancing repetitions.
+This architectural choice ensures that temporal behavior remains faithful to the contract structure while enabling quantitative reasoning on top.
+
+Building directly on this progression, the quantitative violation semantics assigns a local, instantaneous penalty to each event with respect to the currently active residual contract.
+These penalties are accumulated along the trace to form a quantitative score.
+Concurrency is treated additively to ensure that parallel obligations cannot mask each other, while structural constructs rely on the underlying tight violation relation.
+The resulting quantitative score refines classical satisfaction and violation judgments.
+A zero score characterizes fully compliant executions, including those still pending, while any positive score witnesses the existence and persistence of violations, even when they are later repaired.
+
+A key technical insight is that this framework admits a finite operational realization whenever the set of reachable residual contracts is finite.
+This reachable set captures exactly the state space induced by progression under arbitrary traces.
+Finiteness of this set follows from the syntactic finiteness of contracts and the derivative-style evolution of regular expressions.
+Such an observation justifies monitor construction and bounds the complexity of quantitative monitoring, remaining independent of trace length.
+
+Overall, the quantitative semantics developed here strictly subsumes the forward-looking tight semantics.
+While preserving the decisiveness and structural clarity of the original, it augments the logic with a cumulative notion of cost that exposes hidden violations and supports comparison between alternative executions.
+These capabilities lay the groundwork for agent-level attribution in multi-agent settings.
+Consequently, the framework is suitable not only for runtime enforcement but also for legal analysis, compliance auditing, and optimization scenarios where binary notions of satisfaction are insufficient.
+
+However, the current scoring mechanism abstracts away various important distinctions found in real-world legal systems.
+A primary limitation is that the semantics currently conflate the cost of a violation with the cost of a reparation.
+In our model, a non-zero score simply indicates that the ideal path was not taken, without distinguishing whether the agent is paying a penalty (secondary obligation) or persistently violating the contract.
+Yet, legal theory emphasizes the fundamental difference between \emph{primary rules} of obligation and \emph{secondary rules} of recognition and adjudication~\cite{Hart1961}.
+Consistency with this legal convention requires a refinement where the reparation operator $C \repair C'$ treats the violation of $C$ differently from the execution of $C'$.
+Distinguishing these cases could be achieved by introducing a distinct ``reparation score'' or by masking the violation score of $C$ when $C'$ is successfully executed, ensuring that ``repaired compliance'' is semantically distinct from ``unrepaired violation.''
+
+Furthermore, our framework currently assumes that all failures are directly attributable to the agents.
+This assumption ignores that real-world contracts regularly experience the \emph{impossibility of performance} due to unenforceable events, such as natural disasters or regulatory changes that render performance illegal~\cite{Taylor1863}.
+Our model penalizes an agent for failing to act even if the environment prevents the action.
+Addressing this limitation requires extending the trace model to include a third component: an \emph{environment trace}.
+Such an extension would allow the semantics to distinguish between unwillingness to perform (fault) and inability to perform (impossibility).
+This distinction opens the door to new verdict types, such as ``shared loss'' or ``frustration of purpose,'' where the burden of reparation is distributed between agents rather than assigned to a single defaulter.
+
+Finally, the current reparation operator is agnostic regarding the party responsible for the violation.
+In a contract $C_1 \repair C_2$, the secondary contract $C_2$ is triggered regardless of which specific clause in $C_1$ was violated or which agent was responsible.
+This agnosticism does not reflect legal practice, where the remedy always depends on the specific breach and the party at fault.
+A necessary extension of this work requires a \emph{parametrized reparation operator} that assigns different secondary obligations depending on the specific agent blamed for the initial violated contract.
+For instance, if a joint project fails because Agent A did not pay, the reparation should differ from the case where Agent B did not work.
+Distinguishing these scenarios requires a richer syntax that propagates blame information into the reparation phase.
 
 
 \section{Related Work}
 \label{sec:related-work}
+Having successfully established the formal semantics and automata-theoretic constructions for \cDL, we now move to discuss the broader research landscape. In this section, we situate our framework against its closest progenitors, specifically \logic{STIT} logic and the \logic{CSL} specification language, and contrast it with orthogonal approaches in runtime verification and causal reasoning. This comparison clarifies how \cDL’s synthesis of collaborative agency and state-based reparation addresses a gap in the governance of autonomous digital interactions. We begin by examining the two formalisms that most directly study responsibility in multi-agent settings and contract specifications, before broadening the analysis to complementary notions of causality and algorithmic verification.
+\subsection{Closest Formalisms: \logic{STIT} and \logic{CSL}}
+\paragraph{Inspiration and Context.}
+The development of \cDL has been significantly inspired by the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. In the following section, we aim to highlight the main differences between these formalisms and \cDL in the most faithful way possible, focusing on the specific divergence in their treatment of agency, reparation, and blame assignment.
 
-The governance of autonomous digital interactions has evolved from simple protocol compliance to complex, open-ended normative relationships. Whether in financial trading, autonomous supply chains, or service-level agreements, agents require mechanisms to verify behavior that is often collaborative, prone to interference, and long-running.
+\paragraph{\cDL vs. \logic{STIT}.}
+Both \cDL and \logic{STIT} model simultaneous interaction through discrete rounds, structurally analogous to a game of ``Rock-Paper-Scissors''; however, they diverge significantly in their constraints on agency and reparation.
+(i) \emph{Agency Structure:} In \logic{STIT}, interaction is governed by the \textsf{Independence of Agents} condition \cite{belnap2001facing}, which treats the choice structure at a moment $m$ as a strict \textit{partition} of histories. This axiom asserts that for any set of agents, the intersection of their respective choices is non-empty, but it restricts each agent to exactly one choice partition per moment. Conversely, \cDL is more flexible regarding action composition: since a round is encoded as a set of moments within a window, agents are permitted to perform multiple actions simultaneously.
+(ii) \emph{Semantic Faithfulness:} A deeper divergence appears in the handling of reparation. The \logic{STIT} encoding of reparation via temporal disjunction proves overly permissive, as it lacks the state memory to distinguish between a valid reparation and a spontaneous ``fine payment'' unrelated to any breach. In contrast, \cDL{} enforces the strict procedural semantics of the \textsf{repair} operator ($\repair$) through its state-based transition structure ($\Prog$), where the secondary obligation $\obl[1]{\PAYF}$ appears as a residual \textit{only} after a transition on the violation branch of $\obl[1]{\PAY}$. This mechanism ensures that reparation actions are not globally admissible propositions, but are causally enabled only by a specific antecedent failure, thereby ruling out anomalous traces like $\langle \PAYF, \PAYF \dots \rangle$ where fines are discharged without activation.
+Consequently, while the \cDL contract $C_7 := \guard[(\Gamma^+ \cdot \notifterm)]{\repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}}$ can be approximated in \logic{STIT} as $\phi_7 := [ \{1,2\} \text{ dstit }: ((\PAY \lor \PAYF)\ \mathcal{U}\ \notifterm^{(1)})]$, the latter fails to enforce the causal link between violation and fine.
 
-This section situates the proposed \textbf{Two-Agents Collaborative Normative Logic (\cDL)} within the broader landscape of formal methods, deontic logic, and multi-agent systems (MAS).\cite{bulling2015strategic,HvitvedKZ12} The distinguishing thesis is that existing frameworks either idealize away the \emph{bilateral} and \emph{interference-prone} character of contracts, or they do not turn their rich semantics into lightweight, trace-first monitoring artefacts for runtime accountability.\cite{broersen2011probabilistic,halpern2016causality,sanchez2018online}
+\paragraph{\cDL vs. \logic{CSL}.}
+While \logic{CSL} also formalizes multi-party contracts through an abstract trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:
+(i) \emph{Action Semantics:} \logic{STIT} models the causal ``attempt'' and potential interference (blocking) through simultaneous choice partitions. In contrast, \logic{CSL} abstracts away action generation entirely, assuming a fixed input trace of timestamped events. Consequently, \logic{CSL} does not account for blocked actions; the success of an obligation depends solely on whether the assigned agent performs the action on the trace, ignoring external interference.
+(ii) \emph{Blame and Quantification:} While \logic{STIT} evaluates the entire history, allowing for properties like ``repeatedly seeing to it'', \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously (i.e., $|B| > 1$) if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach.
 
-To make this contrast precise, the discussion is organized along four analytical dimensions:
+\subsection{Broader Landscape and Orthogonal Approaches}
+Having established the precise relationship between \cDL and its closest formalisms, we now broaden our scope. This section situates the proposed \textbf{Two-Agents Collaborative Normative Logic (\cDL)} within the wider landscape of formal methods, deontic logic, and multi-agent systems (MAS) \cite{bulling2015strategic,HvitvedKZ12}.
+
+The distinguishing thesis is that existing frameworks either idealize away the \emph{bilateral} and \emph{interference-prone} character of contracts, or they fail to translate their rich semantics into lightweight, trace-first monitoring artefacts suitable for runtime accountability \cite{broersen2011probabilistic,halpern2016causality,sanchez2018online}.
+
+To make this contrast precise, the discussion is organized along five analytical dimensions:
 \begin{enumerate}
-  \item \textbf{Temporal scope (the ``when''):} From infinite-trace verification to persistent, prefix-based monitoring.
-  \item \textbf{Normative expressivity (the ``what''):} Handling contrary-to-duty (CTD) and reparation patterns without paradoxes.
-  \item \textbf{Agency and collaboration (the ``who''):} Distinguishing attempts from outcomes and making interference a first-class trace object.
-  \item \textbf{Quantitative evaluation (the ``how much''):} Moving from Boolean verdicts to cumulative, juridically motivated costs.
+  \item \textbf{Temporal scope:} From infinite-trace verification to persistent, prefix-based monitoring.
+  \item \textbf{Normative expressivity:} Handling contrary-to-duty (CTD) patterns and dynamic contract evolution without paradoxes.
+  \item \textbf{Agency and collaboration:} Shifting from zero-sum strategic games to bilateral, synchronized cooperation.
+  \item \textbf{Responsibility attribution:} Contrasting counterfactual causality with trace-based normative accountability.
+  \item \textbf{Monitoring methodology:} Synthesizing automata-theoretic correctness with quantitative stream processing.
 \end{enumerate}
 
-\subsection{Temporal Scope: From Infinite Verification to Persistent Monitoring}
+\subsubsection{Temporal Scope: From Infinite Verification to Persistent Monitoring}
+Classical verification relies on Linear Temporal Logic (LTL), which interprets specifications over infinite traces and is typically evaluated by model checking \cite{Pnueli1977}. This is ill-suited to online scenarios where only a finite prefix of a potentially unbounded interaction is available \cite{Bauer2011,de2013linear}.
 
-Classical verification relies on Linear Temporal Logic (LTL), which interprets specifications over infinite traces and is typically evaluated by model checking.\cite{Pnueli1977} This is ill-suited to online scenarios where only a finite prefix of a potentially unbounded interaction is available.\cite{Bauer2011,de2013linear}
-
-Runtime verification (RV) adapts temporal reasoning to finite domains, introducing multi-valued semantics for prefixes and monitor synthesis pipelines.\cite{leucker2011teaching,Bauer2011}, while the semantics are 3 valued ($\top,\bot,?$) for finite prefixes, \cDL forward has a 5 semantics by decomposing $\bot$ to $\botp$ and $\bott$, and $\top$ to $\topt$ and $\topp$, as the requirement of the logic requires determintic satisfaction and violation points. 
-
-\paragraph{The main \cDL difference (persistence).}
-Standard RV monitors are often \emph{abortive}: once a property is definitively violated or satisfied, the monitor halts or issues a terminal verdict.\cite{leucker2011teaching,Bauer2011} \cDL instead adopts a \emph{persistent}, contract-centred view in which the Contract Progress Function $\Prog$ evolves a normative state machine that reacts to violations (e.g., by activating reparations) and continues monitoring the residual contract, thus supporting long-horizon accountability rather than one-shot property checking.
-
-\subsection{Contrary to duties Dynamic Contracts vs.\ Static Rules}
-
-Standard Deontic Logic (SDL) provides a modal foundation for obligations but notoriously struggles with CTD scenarios, such as the Chisholm paradox, where violations give rise to new obligations that can render the theory inconsistent.\cite{VonWright1951,Chisholm1963,carmo2001deontic} Dyadic deontic logics and Input/Output logic address CTDs by conditioning obligations on explicit contexts or input situations.\cite{DBLP:conf/deon/BenzmullerFP18,Makinson2000}
-
-In parallel, the AI and legal-informatics literature explores more operational perspectives: defeasible deontic reasoning, dynamic deontic operators, and trace-based contract models.\cite{PrisacariuS12,rohaninezhad2017defeasible,HvitvedKZ12,wyner2006sequences}. These approaches bring contracts closer to executable structures but still typically emphasize inference over evolution of a single monitored contract instance. \cDL adopts a similar approach.
+Runtime verification (RV) adapts temporal reasoning to finite domains, introducing multi-valued semantics for prefixes and monitor synthesis pipelines \cite{leucker2011teaching,Bauer2011}. However, while standard anticipatory semantics typically utilize a three-valued domain ($\top, \bot, ?$) over finite prefixes, \cDL employs a five-valued semantics. By decomposing the definitive verdicts into temporal variants ($\bot$ is split into permanent violation $\botp$ and temporary violation $\bott$, and similarly for satisfaction $\topt, \topp$), \cDL supports deterministic satisfaction and violation points essential for contract state tracking.
 
 
+\paragraph{The persistence distinction.}
+Standard RV monitors are often \emph{abortive}: once a property is definitively violated or satisfied, the monitor halts or issues a terminal verdict \cite{leucker2011teaching,Bauer2011}. \cDL instead adopts a \emph{persistent}, contract-centred view. The Contract Progress Function $\Prog$ evolves a normative state machine that reacts to violations (e.g., by activating reparations) and continues monitoring the residual contract, thus supporting long-horizon accountability rather than one-shot property checking.
 
-\subsection{Zero-sum vs Collaborative Interactions}
+\subsubsection{Normative Contrary to Duty handling: From Kripke Models to Trace Decomposition}
+Standard Deontic Logic (SDL) provides a modal foundation for obligations but notoriously struggles with CTD scenarios, such as the Chisholm paradox, where violations give rise to new obligations that can render the theory inconsistent \cite{VonWright1951,Chisholm1963,carmo2001deontic}. Dyadic deontic logics and Input/Output logic address CTDs by conditioning obligations on explicit contexts or input situations \cite{DBLP:conf/deon/BenzmullerFP18,Makinson2000}.
 
-Strategic logics such as ATL and Strategy Logic model coalitional ability and joint moves over game structures and underpin verification tools like MCMAS.\cite{Alur2002,Chatterjee2010,bulling2015strategic,belardinelli2015logic,caltais2014mcmas}. Their baseline semantics is game-theoretic: a coalition is evaluated by whether it can enforce a goal against the remaining agents or an environment. This perspective fits adversarial settings and many verification scenarios, but it is a poor match for bilateral contracts, where interaction is typically cooperative and compliance is a joint achievement rather than one side ``winning''.
+In parallel, the AI and legal-informatics literature explores more operational perspectives: defeasible deontic reasoning, dynamic deontic operators, and trace-based contract models \cite{PrisacariuS12,rohaninezhad2017defeasible,HvitvedKZ12,wyner2006sequences}. While these approaches bring contracts closer to executable structures, they often emphasize inference over the temporal evolution of a single monitored contract instance. \cDL aligns with the executable perspective but distinctively integrates the \emph{collaborative} and \emph{interference} aspects of the interactions directly into the trace semantics.
 
-Even when these logics represent cooperation via coalitions, success is still defined against opposition: if a coalition $C \subseteq \mathcal{C}$ enforces a goal $G$, then the complement coalition $\mathcal{C}\setminus C$ failed to prevent $G$. This is not the notion of collaboration we need. In \cDL we fix exactly two parties, and collaborative actions are interpreted as synchronized attempts: a joint action succeeds only if both parties contribute their required part in the same contractual round. This trace-level view separates non-attempt from blocked attempt and turns interference into observable evidence, which is essential for contractual accountability.
+\subsubsection{Agency: Zero-sum vs Collaborative Interactions}
+Strategic logics such as ATL and Strategy Logic model coalitional ability and joint moves over game structures and underpin verification tools like MCMAS \cite{Alur2002,Chatterjee2010,bulling2015strategic,belardinelli2015logic,caltais2014mcmas}. Their baseline semantics is game-theoretic: a coalition is evaluated by whether it can enforce a goal against the remaining agents or an environment. This perspective fits adversarial settings and many verification scenarios, but it is a poor match for bilateral contracts, where interaction is typically cooperative and compliance is a joint achievement rather than one side ``winning''.
 
+Even when these logics represent cooperation via coalitions, success is still defined against opposition: if a coalition $C \subseteq \mathcal{C}$ enforces a goal $G$, then the complement coalition $\mathcal{C}\setminus C$ failed to prevent $G$. This is not the notion of collaboration required for contracts. In \cDL, we fix exactly two parties, and collaborative actions are interpreted as synchronized attempts: a joint action succeeds only if both parties contribute their required part in the same contractual round. This trace-level view separates non-attempt from blocked attempt and turns interference into observable evidence, which is essential for contractual accountability.
 
+\subsubsection{Responsibility: Counterfactual vs.\ Normative Causality}
+Structural causal models (SCM) provide a principled account of causality and responsibility based on counterfactual dependence and minimality. In this setting, an agent is responsible for an outcome if, under a suitable intervention, changing the agent’s action would change the outcome \cite{halpern2014structural,halpern2016causality,triantafyllou2022causality}.
 
+The causal question addressed by SCM is inherently counterfactual: explaining responsibility by asking what \emph{would} have happened under alternative actions. Such reasoning presupposes an explicit causal model of the environment and its dynamics. In contrast, \cDL adopts a \emph{normative} notion of causality grounded in the rules of the contract itself. Responsibility is not derived from hypothetical alternatives, but from compliance with, or deviation from, the obligations explicitly stated in the contract. A violation is explained by identifying which contractual rule was breached on the observed trace, and blame is assigned to the party whose required contribution was missing, delayed, or blocked according to that rule.
 
+This shift also applies to graded responsibility. While SCM derives degrees of responsibility from counterfactual minimality, \cDL defines degrees of responsibility internally. Grading is computed from the contract structure and its progress semantics—for instance, by counting or weighting violations along the progress-induced run. The resulting notion of responsibility is contract-relative and trace-based: it answers who is responsible, and to what extent, according to the agreed normative commitments rather than an external causal model.
 
-
-\subsection{Responsibility and Blame: Conterfactual Causality Vs Normative Causality}
-
-Structural causal models (SCM) provide a principled account of causality and responsibility based on counterfactual dependence and minimality. In this setting, an agent is responsible for an outcome if, under a suitable intervention, changing the agent’s action would change the outcome of interest. This framework supports fine-grained notions of actual causation and graded responsibility, and has been extended to decentralized and partially observable multi-agent systems.\cite{halpern2014structural,halpern2016causality,triantafyllou2022causality}
-
-The causal question addressed by SCM is inherently counterfactual. Responsibility is explained by asking what would have happened under alternative actions, for example whether a violation would still have occurred if the tenant had paid the rent in the second month. Such reasoning presupposes an explicit causal model of the environment and its dynamics, together with the ability to evaluate hypothetical interventions.
-
-In contrast, \cDL adopts a normative notion of causality grounded in the rules of the contract itself. Responsibility is not derived from hypothetical alternatives, but from compliance with, or deviation from, the obligations explicitly stated in the contract. A violation is explained by identifying which contractual rule was breached on the observed trace, and blame is assigned to the party whose required contribution was missing, delayed, or blocked according to that rule.
-
-This shift also applies to graded responsibility. While SCM derives degrees of responsibility from counterfactual minimality and causal contribution, \cDL defines degrees of responsibility internally, relative to the contract. Grading is computed from the contract structure and its progress semantics, for instance by counting or weighting violations along the progress-induced run. The resulting notion of responsibility is therefore contract-relative and trace-based: it answers who is responsible, and to what extent, according to the normative commitments the parties agreed upon, rather than according to an external causal model.
-
-
-
-\subsection{Monitoring Methodology: between Correct-by-Construction and  Stream Based Runtime Verification}
-
+\subsubsection{Monitoring Methodology: Correct-by-Construction meets Stream Processing}
 Principled methodologies for compiling logical specifications into executable monitors have been a central focus of the runtime verification (RV) community. Foundational to this field is the automata-based approach of Leucker and Schallhart, where temporal specifications are systematically translated into monitors with verdicts that are provably aligned with the underlying logic \cite{leucker2011teaching}. Generalizing this paradigm to quantitative and data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa support expressive stream transformations and aggregation, making them well suited for monitoring numerical properties over evolving data streams \cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
 
-The \cDL framework synthesizes these perspectives through a dual-semantic approach. For its \textit{tight forward semantics}, the language adheres to the classical construction advocated by Leucker and Schallhart: monitors are derived as correct-by-construction Moore machines where every transition is strictly induced by the contract's semantic definition. And the formal semantics are of course studied and designed to have essential properties. However, the \textit{quantitative semantics} necessitates a hybrid methodology. While the monitor retains the rigorous structural skeleton of a deterministic state machine, its state valuations integrate stream-based computations similar to SRV. This synthesis allows the monitor to track evolving quantitative data without sacrificing the semantic faithfulness of the underlying automaton.
+
+The \cDL framework synthesizes these perspectives through a dual-semantic approach. For its \textit{tight forward semantics}, the language adheres to the classical construction advocated by Leucker and Schallhart: monitors are derived as correct-by-construction Moore machines where every transition is strictly induced by the contract's semantic definition. However, the \textit{quantitative semantics} necessitates a hybrid methodology. While the monitor retains the rigorous structural skeleton of a deterministic state machine, its state valuations integrate stream-based computations similar to SRV. This synthesis allows the monitor to track evolving quantitative data without sacrificing the semantic faithfulness of the underlying automaton.
 
 
-% \subsection{Quantitative Evaluation: From Boolean to Juridical Cost}
 
-% To reason about resource consumption or robustness, quantitative extensions of temporal logics and weighted automata have introduced cost and reward structures into the verification process \cite{Droste2009,alvianotemporal}. Demonstrating that such measures can be added without incurring prohibitive complexity are works on cost-parameterized LTL and related calculi \cite{fionda2016ltl,cupcalculus2015costpltl}.
+In conclusion, \cDL occupies a distinct niche within this landscape. While it draws foundational inspiration from the agency axioms of \logic{STIT} and the trace-based specifications of \logic{CSL}, it departs from them to address the specific needs of runtime accountability. By prioritizing persistent monitoring over one-shot verification, and normative causality over counterfactual reasoning, \cDL bridges the gap between abstract deontic theory and the operational reality of interference-prone collaborative interactions.
 
-% These existing approaches are typically tailored to physical or computational resources, such as energy, bandwidth, or response times \cite{Droste2009,alvianotemporal}. Often missing from this landscape is an explicitly juridical or contractual interpretation of cost. In most normative settings, deontic logics retain a purely qualitative treatment of violation and compliance, leaving a gap that \cDL aims to fill with its quantitative accounting of liability \cite{carmo2001deontic,sep_deontic2018}.
 
-% \subsection{Quantitative : Quantitative violation Semantics}
-
-% Quantitative extensions of temporal logics and weighted automata introduce cost and reward structures into verification, enabling reasoning about resource consumption, performance, or robustness.\cite{Droste2009,alvianotemporal} Work on cost-parameterized LTL and related calculi shows how to add such measures without incurring prohibitive complexity.\cite{fionda2016ltl,cupcalculus2015costpltl}
-
-% Most of these approaches, however, are tailored to physical or computational resources (e.g., energy, bandwidth, response times) and remain detached from explicitly juridical or contractual interpretations of cost.\cite{Droste2009,alvianotemporal} In normative settings, deontic logics often retain a purely qualitative treatment of violation and compliance.\cite{carmo2001deontic,sep_deontic2018}
-
-% \paragraph{The \cDL difference (juridical accumulation).}
-% \cDL defines a quantitative semantics $\qsem{\cdot}$ that aggregates \emph{normative} penalties over time, distinguishing repaired from unrepaired violations and assigning them different cost trajectories.\cite{HvitvedKZ12,carmo2001deontic} This accumulation is tightly coupled to the contract-progress semantics, enabling automated dispute analysis that goes beyond binary satisfaction and reflects legally motivated distinctions such as partial performance, remediation, and repeated minor breaches.\cite{rohaninezhad2017defeasible}
-
-% \subsection{Logical Expressiveness: Encoding the Complexity of Contracts}
-
-% Deontic traditions document the foundational difficulties of CTD obligations and related paradoxes, providing critical baselines for normative expressiveness.\cite{carmo2001deontic,sep_deontic2018,wyner2006sequences} Trace-based models for multiparty contracts demonstrate how contractual clauses can be compiled into trace properties amenable to algorithmic analysis while preserving domain structure.\cite{HvitvedKZ12}
-
-% Strategic logics and their verification tools privilege feasibility and ability analysis over direct compliance monitoring, and their complexity profiles reflect these goals.\cite{bulling2015strategic,caltais2014mcmas} From the perspective of executable contracts, they serve as benchmarks rather than immediate monitoring solutions.\cite{bulling2015strategic,HvitvedKZ12}
-
-% \begin{table}[t]
-%   \centering
-%   \caption{Logical expressiveness: deontic and strategic baselines vs.\ \cDL.}
-%   \label{tab:expressiveness}
-%   \begin{tabular}{p{3.2cm}p{3.1cm}p{3.1cm}p{3.1cm}}
-%     \hline
-%     \textbf{Dimension} & \textbf{\cDL} & \textbf{Deontic traditions} & \textbf{Strategic logics} \\
-%     \hline
-%     CTD and repair structure &
-%     Native contract-level operators &
-%     Paradoxes and CTD issues documented~\cite{carmo2001deontic,sep_deontic2018} &
-%     Encodable but not primary focus \\
-%     Periodicity and recurrence &
-%     First-class contract patterns &
-%     Requires temporal enrichment &
-%     Implicit in strategies \\
-%     Collaboration and interference &
-%     Explicit accountability signals in traces &
-%     Modal abstraction of obligations &
-%     Interaction as game play, not blame \\
-%     Primary use &
-%     Online compliance monitoring &
-%     Norm reasoning and paradox analysis~\cite{wyner2006sequences} &
-%     Ability/feasibility verification~\cite{bulling2015strategic} \\
-%     \hline
-%   \end{tabular}
-% \end{table}
-
-\subsection{Closest Competitors: Gap, Method, Benchmark}
-
-\paragraph{Gap references.}
-STIT-inspired analyses articulate the conceptual need to represent attempts and failures but are not designed as lightweight, trace-first monitoring frameworks for bilateral contracts.\cite{broersen2011probabilistic,broersen2011intentional,kuncova2025ability} Structural causal models provide principled counterfactual blame but presuppose rich causal models and offline reasoning that are difficult to maintain in an online monitoring architecture.\cite{halpern2014structural,halpern2016causality,triantafyllou2022causality}
-
-\paragraph{Method references.}
-Runtime verification and stream-based monitoring offer the compilation mindset and infrastructures that \cDL leverages: monitor synthesis from logical specifications, synchronous and asynchronous stream processing, and quantitative aggregation mechanisms.\cite{leucker2011teaching,sanchez2018online,gorostiaga2021hlola,tessla2015language} Trace-based models for multiparty contracts supply the trace-theoretic foundation for turning contract clauses into monitorable properties.\cite{HvitvedKZ12}
-
-\paragraph{Benchmark references.}
-Deontic logic surveys and CTD-focused work benchmark normative expressiveness and paradox management, against which \cDL’s operational handling of reparations can be evaluated.\cite{sep_deontic2018,carmo2001deontic,wyner2006sequences} Strategic reasoning surveys and model-checking tools provide the ability-centric alternative to monitoring-centric approaches and highlight the different complexity and semantic trade-offs.\cite{bulling2015strategic,caltais2014mcmas}
-
-\subsection{Positioning \cDL}
-
-Within this landscape, \cDL can be viewed as a synthesis that targets a niche not well covered by existing frameworks: \emph{monitorable accountability under interference for long-running bilateral contracts}.\cite{HvitvedKZ12,broersen2011probabilistic} Agency-centred logics motivate explicit notions of attempt and failure but do not natively provide trace-level, implementation-ready monitors; SCM-based causality offers rigorous blame definitions but is counterfactual and model-heavy; and RV/SRV, while operational, are typically agnostic about normative structure and bilateral blame.\cite{halpern2016causality,leucker2011teaching,sanchez2018online,gorostiaga2021hlola}
-
-\cDL occupies the intersection of these lines of work: it borrows the contract structuring and trace orientation of trace-based models, the attention to CTD and reparation from deontic traditions, the agency sensitivity of STIT-style accounts, and the implementability ethos of RV, but reorients them around persistent, quantitative, and interference-aware monitoring for collaborative contracts.\cite{HvitvedKZ12,carmo2001deontic,broersen2011intentional,sanchez2018online}
-
-\begin{table}[t]
-  \centering
-  \caption{Global framework comparison.}
-  \label{tab:global-summary}
-  \begin{tabular}{p{3.0cm}p{3.2cm}p{3.2cm}p{3.2cm}}
-    \hline
-    \textbf{Feature} & \textbf{\cDL} & \textbf{Deontic baselines} & \textbf{Strategic / verification frameworks} \\
-    \hline
-    Primary goal &
-    Monitoring compliance and accountability &
-    Norm reasoning and CTD analysis~\cite{sep_deontic2018} &
-    Ability and feasibility checking~\cite{bulling2015strategic} \\
-    Evidence model &
-    Trace-first, observable attempts and blocks &
-    Modal or rule-level abstractions &
-    Game- or model-based structures \\
-    Interference &
-    Explicitly representable and attributable &
-    Typically indirect or abstract &
-    Encoded in interaction outcomes \\
-    Implementability &
-    RV-oriented compilation to monitors &
-    Proof or inference oriented &
-    Model checking oriented \\
-    \hline
-  \end{tabular}
-\end{table}
-
-\subsection{Conclusion and Limitations}
-
-In this section, we established a quantitative semantics that transforms the verification of open-ended contracts from a binary decision into a cumulative cost assessment. By synthesizing the contract logic into a deterministic Moore machine, we achieved a monitor that outputs granular, instantaneous violation scores. This enables a more refined dispute-resolution process in which penalties are proportional to the severity and frequency of non-compliance, rather than a simple pass/fail verdict.
-
-However, our current scoring mechanism abstracts away various important distinctions found in real-world legal systems. A primary limitation is that the semantics currently conflate the cost of a violation with the cost of a reparation. In our model, a non-zero score simply indicates that the ideal path was not taken, without distinguishing whether the agent is paying a penalty (secondary obligation) or persistently violating the contract. Legal theory emphasizes the fundamental difference between \emph{primary rules} of obligation and \emph{secondary rules} of recognition and adjudication~\cite{Hart1961}. To be consistent with this legal reality, our logic requires a refinement where the reparation operator $C \repair C'$ treats the violation of $C$ differently from the execution of $C'$. This could be achieved by introducing a distinct ``reparation score'' or by masking the violation score of $C$ when $C'$ is successfully executed, ensuring that ``repaired compliance'' is semantically distinct from ``unrepaired violation.''
-
-Furthermore, our framework assumes that all failures are attributable to the agents. Real-world contracts regularly experience the \emph{impossibility of performance} due to unenforceable events (e.g., force majeure), such as natural disasters or regulatory changes that render performance illegal \cite{Taylor1863}. Currently, our model penalizes an agent for failing to act, even if the environment prevents the action. To address this, next versions of the logic must extend the trace model to include a third component: an \emph{environment trace}. This would allow the semantics to distinguish between unwillingness to perform (fault) and inability to perform (impossibility). Such a distinction opens the door to new verdict types, such as ``shared loss'' or ``frustration of purpose,'' where the burden of reparation is distributed between agents rather than assigned to a single defaulter.
-
-Finally, the current reparation operator is agnostic regarding the source of the failure. In a complex contract $C_1 \repair C_2$, the secondary contract $C_2$ is triggered regardless of which specific clause in $C_1$ was violated or which agent was responsible. This does not reflect legal practice, where the remedy always depends on the specific breach and the party at fault. A necessary extension of this work requires a \emph{parametrized reparation operator} that assigns different secondary obligations depending on the specific cause of the failure. For instance, if a joint project fails because Agent A did not pay, the reparation should differ from that if Agent B did not work. Distinguishing these cases requires a richer syntax that propagates blame information into the reparation phase.

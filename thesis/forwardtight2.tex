@@ -325,46 +325,35 @@ We now define the construction function $\bmc(C)$ inductively. This follows the 
 The \emph{blame monitor construction} is a function $\bmc(C)$ defined inductively on the structure of the contract $C$.
 
 \paragraph{Base Case: Literals ($\ell$).}
-For a literal $\ell = \obl[p]{a}$, the monitor must distinguish between subject failure (blame $p$) and counterparty interference (blame $\bar{p}$).
+For any literal $\ell$ (including obligations, permissions, and constants $\top, \bot$), the monitor is defined as:
 \[
 \bmc_{\mathit{lit}}(\ell) = (Q_{\ell}, q_0, \Gamma, \mathbb{V}_{11}, \delta_{\ell}, \lambda_{11}).
 \]
 \begin{itemize}
-    \item The state set splits the generic violation state into two distinct blame states:
+    \item \textbf{State Space:} The set $Q_{\ell}$ contains a start state, success states, and specific blame states for any valid blame set $S$ associated with $\ell$ (where $S=\emptyset$ for $\bot$):
     \[
-    Q_{\ell} = \{q_0, q_s, q_{ps}\} \cup \{q_{\bott}^p, q_{\botp}^p\} \cup \{q_{\bott}^{\bar{p}}, q_{\botp}^{\bar{p}}\}.
+    Q_{\ell} = \{q_0, q_s, q_{ps}\} \cup \bigcup_{S} \{q_{\bott}^S, q_{\botp}^S\}.
     \]
-    \item The transition function $\delta_{\ell}$ directs the violation to the correct state based on the input letter $A$:
+    \item \textbf{Transitions:} The initial transition is determined directly by the denotational blame rules on the input letter $A$:
     \[
     \delta_{\ell}(q_0, A) = 
     \begin{cases}
-        q_s & \text{if } A \satt \ell, \\
-        q_{\bott}^p & \text{if } A \violt \ell \text{ and } a^{(p)} \notin A, \\
-        q_{\bott}^{\bar{p}} & \text{if } A \violt \ell \text{ and } a^{(p)} \in A \land a^{(\bar{p})} \notin A.
+        q_s & \text{if } \trace{A} \satt \ell \quad (\text{always true for } \top), \\
+        q_{\bott}^S & \text{if } \trace{A} \vDash_{\bottp{S}} \ell.
     \end{cases}
     \]
-    Transitions from success states ($q_s$) go to $q_{ps}$. Transitions from tight blame states ($q_{\bott}^S$) go to their corresponding post-blame states ($q_{\botp}^S$).
-    
-    \item The output function $\lambda_{11}$ maps $q_{\bott}^S \mapsto \bottp{S}$ and $q_{\botp}^S \mapsto \botpp{S}$.
+    Subsequent transitions capture the irrevocability of the verdicts:
+    \[
+    \delta_{\ell}(q_s, \Gamma) = q_{ps}, \quad \delta_{\ell}(q_{ps}, \Gamma) = q_{ps}, \quad \text{and} \quad
+    \delta_{\ell}(q_{\bott}^S, \Gamma) = q_{\botp}^S, \quad \delta_{\ell}(q_{\botp}^S, \Gamma) = q_{\botp}^S.
+    \]
+    \item \textbf{Outputs:} $\lambda_{11}$ maps states to their corresponding verdicts:\\
+    $q_0 \mapsto \mathsf{?}$, ~~
+    $q_s \mapsto \topt$, ~~
+    $q_{ps} \mapsto \topp$, ~~
+    $q_{\bott}^S \mapsto \bottp{S}$, and ~~
+    $q_{\botp}^S \mapsto \botpp{S}$.
 \end{itemize}
-(The construction for $\frb[p]{a}$ and $\perm[p]{a}$ is analogous, with transitions defined by their respective blame rules).
-
-\paragraph{Inductive Step: Conjunction ($C_1 \wedge C_2$).}
-Let $\bmc(C_1)$ and $\bmc(C_2)$ be the blame monitors for the sub-contracts. The blame monitor for the conjunction is the synchronous product:
-\[
-\bmc_{\wedge}(C_1, C_2) = (Q_1 \times Q_2, (q_0^1, q_0^2), \Gamma, \mathbb{V}_{11}, \delta_{\times}, \lambda_{11}^{\wedge}).
-\]
-The transition function $\delta_{\times}$ is the standard synchronous product of $\delta_1$ and $\delta_2$. The output function $\lambda_{11}^{\wedge}$ implements the union of blame sets when multiple violations occur. Let $v_1 = \lambda_{11}^1(q_1)$ and $v_2 = \lambda_{11}^2(q_2)$.
-\[
-\lambda_{11}^{\wedge}(q_1, q_2) = 
-\begin{cases}
-  \bottp{S_1 \cup S_2} & \text{if } v_1 = \bottp{S_1} \text{ and } v_2 = \bottp{S_2}, \\
-  \bottp{S_1} & \text{if } v_1 = \bottp{S_1} \text{ and } v_2 \in \{\mathsf{?}, \topt, \topp\}, \\
-  \bottp{S_2} & \text{if } v_2 = \bottp{S_2} \text{ and } v_1 \in \{\mathsf{?}, \topt, \topp\}, \\
-  \lambda_{11}^{\textsf{comb}}(v_1, v_2) & \text{otherwise (non-violating combination)}.
-\end{cases}
-\]
-Post-violations ($\botpp{S}$) follow the same logic.
 
 \paragraph{Inductive Step: Other Operators.}
 For Sequence ($C_1 ; C_2$), Reparation ($C_1 \repair C_2$), Repetition ($\nrep(n,C), \repit{C}$), and Guarded contracts, the construction follows the exact same topological logic as the Tight Satisfaction Monitor constructions (Definitions \ref{def:moore-seq} to \ref{def:moore-repeat-unbounded}), with one key adaptation:
