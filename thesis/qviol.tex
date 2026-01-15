@@ -1507,19 +1507,19 @@ Figure~\ref{fig:eval-reparation-piprime} summarizes the pointwise valuation for 
   \node at (0,-4)  {$\semfive{\pi_i,C_3}$};
   % Row 1: time
   \node[cell] at (1.2,0) (t1) {$1$};
-  \node[cell] at (2.2,0) (t2) {$2$};
+  \node[cell] at (2.3,0) (t2) {$2$};
   % Row 2: events
   \node[cell] at (1.2,-1) (e1) {$\{\OCC^{(1)}\}$};
-  \node[cell] at (2.2,-1) (e2) {$\{\PAYF^{(12)}\}$};
+  \node[cell] at (2.3,-1) (e2) {$\{\PAYF^{(12)}\}$};
   % Row 3: residuals
   \node[cell] at (1.2,-2) (r1) {$\obl[1]{\PAYF}$};
-  \node[cell] at (2.2,-2) (r2) {\emptc};
+  \node[cell] at (2.3,-2) (r2) {\emptc};
   % Row 4: instantaneous score
   \node[cell] at (1.2,-3) (s1) {$1$};
-  \node[cell] at (2.2,-3) (s2) {$0$};
+  \node[cell] at (2.3,-3) (s2) {$0$};
   % Row 5: V5 verdict
   \node[cell] at (1.2,-4) (v1) {$?$};
-  \node[cell] at (2.2,-4) (v2) {$\topt$};
+  \node[cell] at (2.3,-4) (v2) {$\topt$};
   % Horizontal lines
   \draw (t1)--(t2);
   \draw (e1)--(e2);
@@ -1567,20 +1567,20 @@ Thus, $\pi \postviol \repit{C_3}$ while $\qsem{\pi,\repit{C_3}}=1$.
 A longer trace that later satisfies the fine would increase satisfaction without decreasing the accumulated score, illustrating monotonicity.
 Figure~\ref{fig:eval-repetition} summarizes the pointwise valuation for this trace.
 
-\boxalignfigure{\resizebox{0.75\textwidth}{!}{%
+\boxalignfigure{\resizebox{0.94\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.0cm]
   \tikzset{
     cell/.style={
-      draw, rectangle, text width=34mm,
+      draw, rectangle, text width=36mm,
       minimum height=7mm, align=center, font=\small
     }
   }
   % Labels
-  \node at (0,0)   {Month $i$};
-  \node at (0,-1)  {Event at i $A_i$};
-  \node at (0,-2)  {$\Prog(\pi_{i},\repit{C_3})$};
-  \node at (0,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},\repit{C_3})}$};
-  \node at (0,-4)  {$\semfive{\pi_i,\repit{C_3}}$};
+  \node at (-0.1,0)   {Month $i$};
+  \node at (-0.1,-1)  {Event at i $A_i$};
+  \node at (-0.1,-2)  {$\Prog(\pi_{i},\repit{C_3})$};
+  \node at (-0.1,-3)  {$\qsem{\trace{A_i},\Prog(\pi_{i},\repit{C_3})}$};
+  \node at (-0.1,-4)  {$\semfive{\pi_i,\repit{C_3}}$};
   % Row 1: time
   \node[cell] at (1.5,0) (t1) {$1$};
   \node[cell] at (3,0) (t2) {$2$};
@@ -1639,11 +1639,11 @@ C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}.
 Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
 Figure~\ref{fig:eval-guard-pi} summarizes the pointwise valuation for $\pi$.
 
-\boxalignfigure{\resizebox{0.9\textwidth}{!}{%
+\boxalignfigure{\resizebox{0.8\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.2cm]
   \tikzset{
     cell/.style={
-      draw, rectangle, text width=32mm,
+      draw, rectangle, text width=26mm,
       minimum height=7mm, align=center, font=\small
     }
   }
@@ -1865,15 +1865,15 @@ The \emph{Quantitative Monitor Construction} function, denoted $\qmc(C)$, takes 
     \centering
     \begin{tikzpicture}[node distance=32mm, on grid, auto]
       \tikzset{
-        every node/.style={font=\scriptsize},
+        every node/.style={font=\footnotesize},
         state/.style={draw, rectangle, rounded corners, align=center, inner sep=3pt},
         accepting/.style={double}
       }
 
       \node[state,initial] (q0) {$\lceil \Gamma^+ \cdot \notifterm^{(1)} \rceil $\\${\repit{C_3}}$};
-      \node[state, right=7cm of q0] (q2) {$\lceil \notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)} \rceil$\\${\repit{C_3}}$};
-      \node[state, below=of q0] (q1) {$\lceil \notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)} \rceil$\\$(\obl[1]{\PAYF};\repit{C_3})$};
-      \node[state, below =of q2] (qe) {\qquad$\emptc$ \qquad};
+      \node[state, right=9cm of q0] (q2) {$\lceil \notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)} \rceil$\\${\repit{C_3}}$};
+      \node[state, below= 5cm of q0] (q1) {$\lceil \notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)} \rceil$\\$(\obl[1]{\PAYF};\repit{C_3})$};
+      \node[state, below = 5cm of q2] (qe) {\qquad$\emptc$ \qquad};
 
       % q0 transitions
       \path[->]
@@ -1883,15 +1883,15 @@ The \emph{Quantitative Monitor Construction} function, denoted $\qmc(C)$, takes 
 
       % q1 transitions
       \path[->]
-        (q1) edge[bend left =22] node[above,sloped] {$\PAYF^{(12)} \wedge \overline{\notifterm^{(1)}}\,/\,0$} (q2)
-        (q1) edge[bend left =8] node[above,sloped] {$(\overline{\PAYF^{(12)}} \wedge \overline{\notifterm})\,/\,1$} (q2)
-        (q1) edge node {$\notifterm^{(1)} \wedge \PAYF^{(12)}\,/\,0$} (qe)
+        (q1) edge[bend left =24] node[above,sloped] {$\PAYF^{(12)} \wedge \overline{\notifterm^{(1)}}\,/\,0$} (q2)
+        (q1) edge[bend left =8] node[above,sloped, pos=0.6] {$(\overline{\PAYF^{(12)}} \wedge \overline{\notifterm})\,/\,1$} (q2)
+        (q1) edge[bend left =8] node[pos=0.557] {$\notifterm^{(1)} \wedge \PAYF^{(12)}\,/\,0$} (qe)
         (q1) edge[bend right =8] node[below]  {$\notifterm^{(1)} \wedge \overline{\PAYF^{(12)}}\,/\,1$} (qe);
        % q1 transitions  
        \path[->]
        (q2) edge[loop above] node[align=center]
 {$\overline{\notifterm^{(1)}} \wedge\PAY^{(12)}$\\$/\,0$} (q2)
-(q2) edge node[left, align=center] {$\notifterm^{(1)} \wedge $\\$\PAY^{(12)}/\,0$} (qe)
+(q2) edge [bend right =15] node[left, align=center,pos=0.58] {$\notifterm^{(1)} \wedge $\\$\PAY^{(12)}/\,0$} (qe)
 (q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(1)}} \wedge \overline{\PAY^{(12)}}\,/\,1$} (q1) 
         (q2) edge[bend left =20] node [align=center] {$\notifterm^{(1)} \wedge $\\$\overline{\PAY^{(12)}}/\,1$} (qe);
     \end{tikzpicture}
@@ -2363,22 +2363,22 @@ In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ yields $
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=16mm,minimum height=7mm,
-    inner sep=2pt,font=\scriptsize,align=center
+    inner sep=2pt,font=\footnotesize,align=center
   },
   initial text={}
 ]
 
 \node[initial,state] (q0) {$\perm[1]{\OCC}\ \wedge\ \obl[1]{\PAY}$};
-\node[state, right=of q0] (qe) {$\emptc$};
+\node[state, right= 7cm of q0] (qe) {$\emptc$};
 
 
 \path
-  (q0) edge[bend left=36] node[above] {\scriptsize $\OCC^\surd \land \PAY^\surd\,/\,(0,0)$} (qe)
-  (q0) edge[bend left=12] node[above] {\scriptsize $\OCC^\times \land \PAY^{\text{fail}}\,/\,(1,1)$} (qe)
-  (q0) edge node[below]       {\scriptsize $\OCC^\surd \land \PAY^{\text{fail}}\,/\,(1,0)$} (qe)
-  (q0) edge[bend right=15] node[below] {\scriptsize $\OCC^\times \land \PAY^\surd\,/\,(0,1)$} (qe)
-  (q0) edge[bend right=35] node[below] {\scriptsize $\OCC^\surd \land \PAY^{\text{blk}}\,/\,(0,1)$} (qe)
-  (q0) edge[bend right=60] node[below] {\scriptsize $\OCC^\times \land \PAY^{\text{blk}}\,/\,(0,2)$} (qe);
+  (q0) edge[bend left=36] node[above] {\footnotesize $\OCC^\surd \land \PAY^\surd\,/\,(0,0)$} (qe)
+  (q0) edge[bend left=12] node[above] {\footnotesize $\OCC^\times \land \PAY^{\text{fail}}\,/\,(1,1)$} (qe)
+  (q0) edge node[below]       { \footnotesize $\OCC^\surd \land \PAY^{\text{fail}}\,/\,(1,0)$} (qe)
+  (q0) edge[bend right=15] node[below] { \footnotesize $\OCC^\times \land \PAY^\surd\,/\,(0,1)$} (qe)
+  (q0) edge[bend right=35] node[below] { \footnotesize $\OCC^\surd \land \PAY^{\text{blk}}\,/\,(0,1)$} (qe)
+  (q0) edge[bend right=60] node[below] { \footnotesize $\OCC^\times \land \PAY^{\text{blk}}\,/\,(0,2)$} (qe);
 
 \end{tikzpicture}
 \caption{Quantitative blame monitor fragment for $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$.
@@ -2759,7 +2759,7 @@ Both \cDL and \logic{STIT} model simultaneous interaction through discrete round
 Consequently, while the \cDL contract $C_7 := \guard[(\Gamma^+ \cdot \notifterm)]{\repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}}$ can be approximated in \logic{STIT} as $\phi_7 := [ \{1,2\} \text{ dstit }: ((\PAY \lor \PAYF)\ \mathcal{U}\ \notifterm^{(1)})]$, the latter fails to enforce the causal link between violation and fine.
 
 \paragraph{\cDL vs. \logic{CSL}.}
-While \logic{CSL} also formalizes multi-party contracts through an abstract trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:
+While \logic{CSL} also formalizes multi-party contracts through an trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:
 (i) \emph{Action Semantics:} \logic{STIT} models the causal ``attempt'' and potential interference (blocking) through simultaneous choice partitions. In contrast, \logic{CSL} abstracts away action generation entirely, assuming a fixed input trace of timestamped events. Consequently, \logic{CSL} does not account for blocked actions; the success of an obligation depends solely on whether the assigned agent performs the action on the trace, ignoring external interference.
 (ii) \emph{Blame and Quantification:} While \logic{STIT} evaluates the entire history, allowing for properties like ``repeatedly seeing to it'', \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously (i.e., $|B| > 1$) if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach.
 

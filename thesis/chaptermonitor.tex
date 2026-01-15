@@ -1,12 +1,6 @@
 \chapter{Reasoning about Blame in Multi-Party Collaborative Contracts}\label{chap:monitoring}
-This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents. Unlike traditional monitoring approaches that view system events as atomic and indisputable, we propose a framework that distinguishes between individual attempts and collective outcomes, enabling a more nuanced analysis of responsibility. By formalizing the interaction between agents as a collaborative process rather than a zero-sum game, we establish a rigorous basis for attributing blame when contractual obligations are not met. This foundation supports the development of a logic and a runtime verification pipeline capable of handling the temporal complexities, reparable violations, and open-ended nature of realistic multi-party contracts.
 
-\section{Overview}
-In this section, we outline the theoretical and practical necessity for a blame-aware monitoring framework. We begin by motivating the problem through the lens of open-ended normative interactions, where simple binary verdicts of satisfaction or violation are insufficient for dispute resolution. We then detail the specific research questions that guide our inquiry and describe the constructive methodology used to answer them. Finally, we summarize the chapter's core contributions, including the novel Attempt-Based Interaction Model and the Two-Agents Collaborative Normative Logic (\cDL), which collectively enable precise, automated accountability in digital contracts.
-\chapter{Reasoning about Blame in Multi-Party Collaborative Contracts}\label{chap:monitoring}
-
-This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents. Unlike traditional monitoring approaches that view system events as atomic and indisputable, we propose a framework that distinguishes between individual attempts and collective outcomes, enabling a more nuanced analysis of responsibility. By formalizing the interaction between agents as a collaborative process rather than a zero-sum game, we establish a rigorous basis for attributing blame when contractual obligations are not met. This foundation supports the development of a logic and a runtime verification pipeline capable of handling the temporal complexities, reparable violations, and open-ended nature of realistic multi-party contracts.
-
+This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents, building on a corrected and reformulated syntax and semantics of our earlier work \cite{Kharraz23}. The central technical novelty lies in treating collaboration itself as a semantic object. Unlike traditional runtime verification and temporal logic frameworks, which evaluate compliance solely in terms of realized events, the framework developed here distinguishes between what each agent attempted, what was obstructed, and what jointly succeeded. This distinction is essential for responsibility attribution in collaborative contracts and cannot be reconstructed from standard trace semantics after the fact. By formalizing interaction as a collaborative process rather than a zero-sum game, we establish a rigorous basis for blame attribution when contractual obligations are not met. This foundation supports the development of a logic and a runtime verification pipeline capable of handling temporal constraints, reparable violations, and the open-ended structure of real-cases of legal multi-party contracts.
 \section{Overview}
 
 In this section, we outline the theoretical and practical necessity for a blame-aware monitoring framework. We begin by motivating the problem through the lens of open-ended normative interactions, where simple binary verdicts of satisfaction or violation are insufficient for dispute resolution. We then detail the specific research questions that guide our inquiry and describe the constructive methodology used to answer them. Finally, we summarize the chapter's core contributions, including the novel Attempt-Based Interaction Model and the Two-Agents Collaborative Normative Logic (\cDL), which collectively enable precise, automated accountability in digital contracts.
@@ -25,11 +19,11 @@ Contracts often govern long-term collaborations that persist indefinitely unless
 When a collaborative norm is breached, it is insufficient to merely state that a violation occurred; it is necessary to identify \emph{who} is responsible and provide justification. This is critical in disputes where enforcement depends on explicit accounts of causation. For example, courts must reconstruct timelines to determine if a landlord's obstruction justified a tenant's non-payment. Furthermore, practical analysis requires a \emph{quantitative assessment} of non-compliance—counting unpaid months or denied access—rather than a simple binary verdict. A blame concept suitable for compliance tools must therefore be formally defined, operationally verifiable, and robust under incremental observation.
 
 \paragraph{Research questions.}
-These considerations motivate the following questions from a formal methods perspective:
+These considerations motivate the following questions from a formal methods' perspective:
 \begin{enumerate}
 \item How can collaboration be modeled as a first-class semantic object, distinguishing individual attempts from jointly successful outcomes?
 \item Which trace abstractions effectively capture cooperative behavior and non-interference at the granularity of contractual periods?
-\item How can open-ended \emph{repetitions} of duties be specified and monitored within a contractual framework?
+\item How can open-ended clauses, specifically \emph{repetitions} of duties be specified and monitored within a contractual framework?
 \item How can blame and quantitative accountability be defined to reflect legal reasoning and support automated monitoring?
 \end{enumerate}
 
@@ -216,7 +210,7 @@ An agent must \emph{contribute} and perform actions that make the objective of t
  For example, the landlord should provide/confirm \(\textsf{account\_info}\), \(\textsf{ack\_pay}\), and \(\textsf{grant\_occ}\) upon settlement; symmetrically, the tenant should \(\textsf{pay\_rent}\) and not \(\textsf{return\_payment}\).
 \end{itemize}
 
-\noindent These performance aspects are common in normative / contract settings but are underexplored by classical synchronization operators (interleaving, lockstep, handshake), which specify \emph{how} events align rather than whether agents \emph{refrain} from harmful actions or \emph{contribute} enabling ones.
+\noindent These performance aspects are common in normative / contract settings but are underexplored by classical synchronization operators (interleaving, lockstep), which specify \emph{how} events align rather than whether agents \emph{refrain} from harmful actions or \emph{contribute} enabling ones.
 
 \subsection{From Metric-Timed to Collaborative Periodic Synchronized Set Traces}
 
@@ -270,54 +264,56 @@ the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the 
 within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
 
 \begin{definition}[Periodic synchronized set trace]\label{def:periodic}
-A \defn{periodic synchronized set trace} over an alphabet $\Sigma_i$ for agent $i$ over a global clock with a fixed period length is an infinite sequence of sets of actions indexed from $1$, that is,
-\[
-\pi_i \;=\; \trace{\Aik{i}{1},\ \Aik{i}{2},\ \Aik{i}{3},\ \dots}
-\ \in\ \wordsets{\Sig{i}}^{\infty}.
-\]
-Each $\Aik{i}{k}\subseteq \Sig{i}$ represents the set of actions attributed to agent $i$ during period $k$
-(empties allowed).
-\end{definition}
+  A \defn{periodic synchronized set trace} for agent $i$ over the alphabet $\Sigma_i$, relative to a global clock with a fixed period length, is an infinite sequence of action sets indexed from $1$:
+  \[
+  \pi_i \;=\; \trace{\Aik{i}{1},\ \Aik{i}{2},\ \Aik{i}{3},\ \dots}
+  \ \in\ (2^{\Sigma_i})^{\infty}.
+  \]
+  Each element $\Aik{i}{k}\subseteq \Sigma_i$ represents the set of actions attributed to agent $i$ during period $k$ (where $\emptyset$ denotes inactivity).
+  \end{definition}
 
-\begin{definition}[Aggregation to periodic synchronized set trace]
-Let $x \in \mathbb{N}$ be a fixed period length.
-Define the aggregation function
-\[
-\AGGI_{x} : (\Sigma \times \mathbb{N})^{*} \longrightarrow (2^{\Sigma})^{*}
-\]
-as follows.
-
-Given a finite metric-timed trace
-\[
-\taumt = \trace{(a_1,t_1),\dots,(a_n,t_n)}
-\quad\text{with } a_j \in \Sigma,\ t_j \in \mathbb{N}\ \text{for all } j\in\{1,\dots,n\},
-\]
-we partition time into period windows
-\[
-  I_k \;:=\; [(k-1)(x+1),\ k(x+1)-1]
-  \qquad (k \ge 1).
-\]
-The aggregated periodic synchronized set trace
-\[
-\AGGI_x(\taumt) := \pi = \trace{A_1,\dots,A_K}
-\]
-is defined by
-\[
-A_k := \{\, a \in \Sigma \mid \exists\, t \in I_k:\ (a,t) \in \taumt \,\},
-\]
-where
-\[
-K := \max\{\, k \mid I_k \cap \{t_1,\dots,t_n\} \neq \emptyset \,\}.
-\]
-\end{definition}
-\begin{proof}
-By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
-$t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
-Since $k<\ell$ and the windows are disjoint and ordered, we have
-$\max(I_k) < \min(I_{\ell})$,
-we obtain $t_a < t_b$.
-\end{proof}
-
+\noindent Having defined the target domain of period-based set traces, we now establish the link to the concrete observations.
+Since our starting point are metric-time traces of individual events (as seen in Example~\ref{ex:timed-words-only}), we must map these timestamps into the discrete calendar defined by the contract.
+The following definition formalizes this abstraction process by partitioning the timeline into fixed-size windows and aggregating all events occurring within each window into a single set.
+  
+  \begin{definition}[Aggregation to periodic synchronized set trace]
+  Let $x \in \mathbb{N}$ be a fixed period length.
+  Define the aggregation function
+  \[
+  \AGGI_{x} : (\Sigma \times \mathbb{N})^{*} \longrightarrow (2^{\Sigma})^{*}
+  \]
+  as follows.
+  
+  Given a finite metric-timed trace
+  \[
+  \taumt = \trace{(a_1,t_1),\dots,(a_n,t_n)}
+  \quad\text{with } a_j \in \Sigma,\ t_j \in \mathbb{N}\ \text{for all } j\in\{1,\dots,n\},
+  \]
+  we partition time into period windows of length $x$:
+  \[
+    I_k \;:=\;
+    [(k-1)x + 1,\ kx]
+    \qquad (k \ge 1).
+  \]
+  The aggregated periodic synchronized set trace
+  \[
+  \AGGI_x(\taumt) := \pi = \trace{A_1,\dots,A_K}
+  \]
+  is defined by
+  \[
+  A_k := \{\, a \in \Sigma \mid \exists\, t \in I_k:\ (a,t) \in \taumt \,\},
+  \]
+  where
+  \[
+  K := \max\{\, k \mid I_k \cap \{t_1,\dots,t_n\} \neq \emptyset \,\}.
+  \]
+  \end{definition}
+  
+  \begin{proof}
+  By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
+  $t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
+  Since $k < \ell$, the windows are disjoint and strictly ordered (i.e., $\max(I_k) < \min(I_{\ell})$), which implies $t_a < t_b$.
+  \end{proof}
 
 \begin{lemma}[Order preservation under aggregation]
 \label{lem:agg-to-periodic}
@@ -346,11 +342,11 @@ Then aggregation preserves inter-period order in the following sense:
 
 Nevertheless, aggregation has a cost, as it loses intra-period order, action multiplicity, and exact timestamps. Therefore, selecting the appropriate period normalization is crucial.
 
-\begin{example}[Transforming timed words into periodic set traces, continued from Example. \ref{ex:timed-words-only}]
+\begin{example}[Transforming timed words into periodic set traces, continued from Example~\ref{ex:timed-words-only}]
 \label{ex:agg-30-locked}
 By fixing the period to 30, we can decompose the 120 days into 4 horizons:
 \[
-\Ik{1}=[0,30],\qquad \Ik{2}=[31,60],\qquad \Ik{3}=[61,90],\qquad \Ik{4}=[91,120].
+\Ik{1}=[1,30],\qquad \Ik{2}=[31,60],\qquad \Ik{3}=[61,90],\qquad \Ik{4}=[91,120].
 \]
 The two timed traces $\taumt_1$ and $\taumt_2$ are transformed using the function $\AGGI_{30}$ transformation respectively into:
 \[
@@ -374,12 +370,12 @@ $\textsf{pay\_rent\_f}\in \Aik{1}{4}$ (witness times $35<95$), and similarly for
 \subsubsection{Step 2: Abstraction to a Collaboration Alphabet}
 The second aspect of the abstraction is the notion of interaction alphabets. The action alphabets of both agents are merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, the absence of an action in the event at Set $I_k$ indicates that the agent either did not perform it or actively performed a blocking action to prevent it. This abstraction is demonstrated using the running example, showing that it maintains the same meaning while reducing the number of action types. An operator is then introduced to compute the successful interaction at each period of the synchronized trace. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
 
-We consider three collaborative objectives that are identified in the Example.\ref{ME}:
+We consider three collaborative objectives that are identified in the Example~\ref{ME}:
 \(\PAY\) (rent payment), \(\PAYF\) (penalty/late-fee payment), and \(\OCC\) (tenant’s occupancy).
 We write \(\Sigma_C=\{\PAY,\PAYF,\OCC\}\).
 
 In the next step, we need to define how the actions of the agents, namely $\Sigma_1$ and $\Sigma_2$, relate to collaborative action over $\Sigma_C$, more specifically, whether they are enabler or interference actions. We do not take the union \(\Sigma_1\cup\Sigma_2\) as a synchronization operator discussed in the \ref {operators}. Instead, we define a many-to-one \emph{abstraction} from concrete per-agent actions to the collaboration alphabet \(\Sigma_C\).
-On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. A chargeback \textsf{return\_payment} and \textsf{return\_payment\_f}  is blocking: it nullifies the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
+On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. A chargeback \textsf{return\_payment} and \textsf{return\_payment\_f} are blocking: they nullify the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
 
 
 \paragraph{Distinguishing enabling from Blocking actions} For each agent \(i\in\{1,2\}\) we partition the alphabet into
@@ -479,16 +475,18 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \begin{definition}[Successful collaboration operator]\label{successcomb}
   Let  $\Sigma$ be an alphabet and let $\Sigma^{(1)}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
   $\Sigma^{(2)}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
-  The \emph{successful collaboration operator}, written $\mathsf{Succ}$ of two periodic synchronous trace $\pi_1$ over $\Sigma^{(1)}$ and $\pi_2$ over $\Sigma^{(2)}$ on the same maximum horizon $T$ is defined eventwise by:
+  The \emph{successful collaboration operator}, written $\mathsf{Succ}$ of two periodic synchronous traces $\pi_1$ over $\Sigma^{(1)}$ and $\pi_2$ over $\Sigma^{(2)}$ on the same maximum horizon $T$ is defined event-wise by:
   \[\forall k\in\{1,\dots,T\},
   \mathrm{Succ}(\pi_1,\pi_2)[k]
   \ := \unlab\!\big(\pi_1[k]\big) \cap\ \unlab\!\big(\pi_2[k]\big).
   \]
   where the function $\unlab$ is removing any of the agent identifiers tag from an event, \eg  $\unlab(\{\OCC^{2}\})=\{\OCC\}$ .
   \end{definition}
-  \begin{example}[Successful collaboration ]
-  From the two transformed traces  $\pi_1^{C}$ and $\pi_2^{C}$ from the Example.\ref{ex:collab}
+  \begin{example}[Successful collaboration]
+  From the two transformed traces  $\pi_1^{C}$ and $\pi_2^{C}$ from the Example~\ref{ex:collab}
   We illustrate \(\mathrm{Succ}(\pi_1^{C},\pi_2^{C})\)  in \ref{example:succ-meet}
+  \end{example}
+
   \boxalignfigure{ \resizebox{0.96\textwidth}{!}{
   \begin{tikzpicture}[y=2cm,x=3cm]
     % Uniform rectangle nodes for all events (no colors)
@@ -496,8 +494,10 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
       event/.style={
         draw,
         rectangle,    % fixed width for all nodes
-        minimum height=9mm,  % fixed height for all nodes
+        minimum height=9mm, 
+        minimum width=20mm, % fixed height for all nodes
         align=center,
+        rounded corners=2pt,
         font=\small
       }
     }
@@ -506,20 +506,21 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
     \node[event] at (1,0)   (t1) {$\{\pay{1}\}$};
     \node[event] at (2.5,0)   (t2) {$\{\occ{1},\pay{1}\}$};
     \node[event] at (3.7,0)   (t3) {$\{\occ{1}\}$};
-    \node[event] at (4.5,0)   (t4) {$\{\payf{1}\}$};
+    \node[event] at (4.8,0)   (t4) {$\{\payf{1}\}$};
   
     % middle row: agent 2 (tagged)
     \node[event] at (1,-1)  (l1) {$\{\occ{2},\pay{2}\}$};
     \node[event] at (2.5,-1)  (l2) {$\{\occ{2},\pay{2}\}$};
     \node[event] at (3.7,-1)  (l3) {$\{\occ{2}\}$};
-    \node[event] at (4.5,-1)  (l4) {$\emptyset$};
+    \node[event] at (4.8,-1)  (l4) {$\emptyset$};
   
     % bottom row: success = unlabel + intersection
     \node[event] at (1,-2) (h1) {$\{\PAY\}$};
     \node[event] at (2.5,-2) (h2) {$\{\OCC,\PAY\}$};
     \node[event] at (3.7,-2) (h3) {$\{\OCC\}$};
-    \node[event] at (4.5,-2) (h4) {$\emptyset$};
+    \node[event] at (4.8,-2) (h4) {$\emptyset$};
   
+
     % time/progression connectors
     \path[shorten >=0pt]
       (0,0) node[left] {$\pi_1^{C}$} edge[|-]
@@ -527,13 +528,10 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
       (0,-1) node[left] {$\pi_2^{C}$} edge[|-]
       (l1) (l1) edge (l2) (l2) edge (l3) (l3) edge (l4) (l4) edge[->] +(1,0)
       (0,-2) node[left, align=center] {$\mathrm{Succ}(\pi_1^{C}, \pi_2^{C})$ } edge[|-]
-      (h1) (h1) edge (h2) (h2) edge (h3) (h3) edge (h4) (h4) edge[->] +(1,0)
-      (0,-3);
+      (h1) (h1) edge (h2) (h2) edge (h3) (h3) edge (h4) (h4) edge[->] +(1,0);
   \end{tikzpicture}}}
   {Example: successful collaboration computation example}
   {example:succ-meet}
-  {\vspace{10pt}}{\vspace{-18pt}}
-  \end{example}
   
   \noindent\textbf{Basic properties.}
   Since \(\mathrm{Succ}\) is pointwise set intersection after tag erasure,
@@ -558,7 +556,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \(A^{(i)}_k\) as the multiset of letters occurring “at that round” and apply
   \(\parallel_{\mathrm{hs}}^{A}\) round-wise, then after collapsing paired
   handshakes to a single shared symbol (via \(\mathsf{coll}_A\)) and unlabeling,
-  We obtain exactly the success:
+  we obtain exactly the success:
   \[
   \mathrm{Succ}(\pi_1,\pi_2)
   \ =\
@@ -570,7 +568,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   However, this abstraction masks the specific source of interference, effectively hiding the agent responsible for the failure. As our framework aims to explicitly assign blame, we introduce this operator primarily as an optional view to characterize joint success.
   We now move to reasoning about strategies from agents, where each agent makes a plan based on the other agent's past behavior.
   \subsection{Interaction Strategies as Moore Machines}
-  Instead of reconstructing compliance post hoc from past events, the approach models how agents intend to behave in the future. Agents may wish to run their intended strategies against the contract to determine compliance, prevent future violations, and identify how other parties may potentially obstruct or exploit the contract.
+  Most monitoring approaches analyse compliance only after an execution has occurred. This chapter goes further by modelling how agents plan their interaction in anticipation of each other’s behavior. By representing strategies as Moore machines, we make responsibility analyzable as an ex ante property of interacting plans, not merely as a retrospective judgement over completed traces.
   
   
 

@@ -9,7 +9,7 @@ This chapter studies those conflicts in \emph{ought-to-do} specifications with e
 \subsection{Motivation}
 Norms are rarely timeless: they are activated, suspended, or expire under explicit temporal conditions.  
 This temporal structure has motivated a long line of research in \emph{temporal deontic logics} and \emph{contract specification languages}.  
-Early works such as~\cite{DBLP:conf/hicss/DignumK98,broersen2004designing} formalized temporal deontic constraints by linking obligations to deadlines.  
+Early works such as~\cite{DBLP:conf/hicss/DignumK98,DBLP:conf/deon/BroersenDDM04} formalized temporal deontic constraints by linking obligations to deadlines.  
 A second wave of studies~\cite{BroersenBrunel2007} examined how unmet obligations propagate over time, capturing the principle that “what I fail to do today, I must do tomorrow,” which formalizes the continuation of obligations after a missed deadline.  
 In parallel, \cite{governatori2007characterising,governatori2011justice} introduced a temporal defeasible logic that characterizes different types of deadlines, offering a flexible framework for representing and reasoning about time-sensitive norms.  
 This line of research enabled the modeling of norms that become active or expire at specific points in time, the idea that a rule is \emph{in force} at a given instant due to a reparation clause following a violation or a triggering event.  
@@ -44,7 +44,7 @@ We then bridge the gap between this operational detection and theoretical logic.
 Finally, we address the practical trade-off between automation and conciseness. Eliminating conflicts automatically can sometimes result in verbose specifications. To mitigate this, we complement our algorithms with a \emph{conflict calculus}. This set of inference rules allows for high-level symbolic reasoning. It enables designers to resolve conflicts manually and simplify specifications without needing to decompose the entire formula.
 \subsection{Contribution}
 
-In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions are as follows:
+In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions, building up on our previous work \cite{kharraz2021timed,DBLP:conf/jurix/KharrazSL24} are as follows:
 
 \begin{itemize}[C1]
     \item \textbf{Formal Machinery:} We define a compact, action-based logic over finite interval sets. We provide algorithms for punctual and disjunctive normalization (\dpnf) and a proof-theoretic calculus for conflict detection.
@@ -506,7 +506,7 @@ Conjunction ($\sqcap$) adds more duties, and disjunction ($\sqcup$) offers the a
 \end{itemize}
 \end{example}
 \begin{remark}[Kinds of obligations and probihitions]
- Note that there are many different ways to capture the idea of obligation and prohibition in ways such as achievement and maintenance related to the timed interpretation as defined in \cite{broersen2004designing}, \cite{governatori2011justice}: Achievement refers to successfully achieving a task at least once before a specific deadline, like submitting a report on time. Once this task is accomplished, the achievement constraint is relieved. In contrast, maintenance involves consistently upholding a property over a specific \emph{period} of time. It is not enough to do it just once; it must be sustained over time.
+ Note that there are many different ways to capture the idea of obligation and prohibition in ways such as achievement and maintenance related to the timed interpretation as defined in \cite{DBLP:conf/deon/BroersenDDM04,governatori2011justice}: Achievement refers to successfully achieving a task at least once before a specific deadline, like submitting a report on time. Once this task is accomplished, the achievement constraint is relieved. In contrast, maintenance involves consistently upholding a property over a specific \emph{period} of time. It is not enough to do it just once; it must be sustained over time.
  Our definition of obligation fits the definition of \emph{achievement obligations} from \cite{DBLP:conf/hicss/DignumK98}. 
 Likewise, we understand our definition of prohibition as \emph{negative achievement} over a set of time points, despite its similarity with maintenance prohibition, as both require full coverage on the prohibited specified timed points. The key difference resides in the fact that the prohibited event must \emph{never} occur rather than maintaining a continuous state.
 \end{remark}

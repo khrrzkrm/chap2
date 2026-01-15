@@ -11,7 +11,7 @@ We begin by establishing three word models depending on their timing settings an
 For the remainder of this dissertation, let \(\Sigma\) denote a non-empty set of discrete \emph{actions}. Before introducing the specific timing models, we fix a small algebraic core shared by all discrete-action words, specifically the basic sequence structure and standard operators.
 
 \paragraph{Events and Words.}
-An \emph{event}, denoted by $e$, is an element of an event domain $\mathbb{E}$. The specific structure of $\mathbb{E}$ depends on the timing model derived from $\Sigma$ (e.g., $\mathbb{E} = \Sigma$ for untimewords).
+An \emph{event}, denoted by $e$, is an element of an event domain $\mathbb{E}$. The specific structure of $\mathbb{E}$ depends on the timing model derived from $\Sigma$ (e.g., $\mathbb{E} = \Sigma$ for untimed words).
 We denote the set of \emph{finite words} over $\mathbb{E}$ by $\mathbb{E}^*$, the set of \emph{infinite words} by $\mathbb{E}^\omega$, and the set of all words by $\mathbb{E}^\infty := \mathbb{E}^* \cup \mathbb{E}^\omega$.
 
 
@@ -157,16 +157,16 @@ The next operator abstracts from positions and records how often a given action 
 
 \subsection{Metric-Timed Words}
 \noindent\textbf{Context.}
-Metric-timewords extend the previous model by recording \emph{which} action occurs and \emph{when} it occurs. They are defined in research works on timeautomata \cite{DBLP:journals/tcs/AlurD94}.
+Metric-time words extend the previous model by recording \emph{which} action occurs and \emph{when} it occurs. They are defined in research works on automata with time \cite{DBLP:journals/tcs/AlurD94}.
 
 \begin{definition}[Finite \timedwords of actions] \label{timedwords} 
-    A \emph{finite \timedword} $\tau$ is defined as a finite sequence of timeevents, $\tau \in ({\timedevents})^*$.
+    A \emph{finite \timedword} $\tau$ is defined as a finite sequence of time events, $\tau \in ({\timedevents})^*$.
      \[\tau := \trace{(a_1,t_1), (a_2,t_2), \ \dots, \ (a_{n},t_{n}) }\]
      with \(a_k\in\Sigma\), \(t_k\in\mathbb{N}\), and strictly increasing timestamps \(0\le t_1<\cdots<t_{n}\).
 \end{definition}
 
 % NOTE: The definition name is left as is, but the surrounding prose and references should use "words"
-\begin{definition}[Auxiliary operators on metric-timewords]
+\begin{definition}[Auxiliary operators on metric-time words]
   Let $\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})}\in(\Sigma\times\mathbb{N})^{*}$.
   \begin{itemize}
     \item The \defn{label} and \defn{timestamp} projections of the $k$th event are defined by
@@ -200,12 +200,10 @@ Metric-timewords extend the previous model by recording \emph{which} action occu
   \end{itemize}
 \end{definition}
 
-    We refer by $\domtr$ to the domain of finite \timedwords. Unlike the logical-time setting, where one can only compare events by their order, metric-timewords support quantitative reasoning about timing. In particular, the operators on logical-time words, such as concatenation and counting, do not determine any numerical distance between events. The next two definitions exploit the additional timestamp component: $\Delta$ measures the elapsed time between two positions, while $\rho$ looks up which action, if any, occurs at a given absolute time point.
-
-
+We denote the set of all finite metric-timed words by $\domtr := (\Sigma \times \mathbb{N})^*$. Unlike the logical-time setting, where events are compared solely by order, this model supports quantitative reasoning about the precise timing between events. This added expressiveness, however, restricts algebraic composition: concatenation is not defined for arbitrary pairs of words, as the combined sequence must respect the strictly increasing order of timestamps. To formalize these timing properties, the next definitions introduce two auxiliary operators: $\Delta$ measures the elapsed time between positions, while $\rho$ retrieves the action occurring at a specific absolute time.
     \begin{definition}[Timed distance between two events]
-        Let $\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})}\in(\Sigma\times\mathbb{N})^{*}$ be a metric-timeword.
-        For any two indices $i,j\in\mathsf{pos}(\taumt)$ with $i<j$, the \defn{timedistance} between event $i$ and event $j$ is
+        Let $\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})}\in(\Sigma\times\mathbb{N})^{*}$ be a metric-time word.
+        For any two indices $i,j\in\mathsf{pos}(\taumt)$ with $i<j$, the \defn{time distance} between event $i$ and event $j$ is
         \[
           \Delta(\taumt,(i,j))\;:=\; t_j-t_i.
         \]
@@ -213,7 +211,7 @@ Metric-timewords extend the previous model by recording \emph{which} action occu
     
      \begin{definition}[Action Lookup Function]\label{defrho}
      
-     The \emph{action lookup function} $\rho : \domtr \times \mathbb{N} \to \Sigma \cup \{ \Undef \}$ returns the action performed at absolute time $t$ in a metric-timeword; if no event occurs at time $t$, it returns the special symbol $\Undef$:
+     The \emph{action lookup function} $\rho : \domtr \times \mathbb{N} \to \Sigma \cup \{ \Undef \}$ returns the action performed at absolute time $t$ in a metric-time word; if no event occurs at time $t$, it returns the special symbol $\Undef$:
         \[
         \rho\big(\trace{(a_1,t_1), \dots, (a_{n},t_{n})}, t\big) := 
         \begin{cases} 		
@@ -229,7 +227,7 @@ For \(A\subseteq\Sigma\), projection \( \taumt{\upharpoonright}A\in(A\times\math
 Prefixes can be defined by \emph{length} \( \taumt[1,k] \), or by \emph{time} \( \taumt{\upharpoonright}\{t\le T\} \) (shorthand: \( \taumt\{t\le T\}\)).\\
 
 
-\begin{example}[Metric-timeoperators]
+\begin{example}[Metric-timeo perators]
   Consider an alphabet $\Sigma=\{\textsf{badge\_tapped},\textsf{door\_open}\}$.
   \[
   \taumt=\trace{(\textsf{badge\_tapped},1),(\textsf{door\_open},3)}.
@@ -241,7 +239,7 @@ Prefixes can be defined by \emph{length} \( \taumt[1,k] \), or by \emph{time} \(
   \emph{Timed distance}: the distance between event $1$ and event $2$ is $\Delta(\taumt,(1,2))=3-1=2$.
 \end{example}
 
-Metric-timewords provide \emph{precise} quantitative information, in particular the exact timedistance between any two events in the same word, captured by differences of their timestamps.
+Metric-time words provide \emph{precise} quantitative information, in particular the exact time distance between any two events in the same word, captured by differences of their timestamps.
 For this model, concatenation is not defined for arbitrary pairs of words: if two words both contain an event at the same time point, then concatenating them would violate the requirement of strictly increasing timestamps. Hence, concatenation is only defined when the timestamp sets are disjoint and the last time point of the first word is strictly smaller than the first time point of the second word.
 
 
@@ -255,12 +253,12 @@ The synchronous hypothesis fixes the intended abstraction level: within one cloc
   Fix an alphabet \(\Sigma\) and a stutter symbol ``\(-\)'' with \( -\notin\Sigma \).
   A (finite) \emph{synchronous-time word} is a finite sequence of events over $(\Sigma\cup\{-\})$
   \[
-  \taust \;=\; \trace{(s_0),\,(s_1),\,\dots,\,(s_T)} \ \in\ (\Sigma\cup\{-\})^{*},
+  \taust \;=\; \trace{(s_1),\,(s_2),\,\dots,\,(s_T)} \ \in\ (\Sigma\cup\{-\})^{*},
   \]
   where \(s_t\in\Sigma\cup\{-\}\) represents the observation at round \(t\) and \(T\) is called the \defn{horizon}.
 \end{definition}
 
-Synchronous-time words sit between logical-time words and metric-timewords. Like logical time, they are discrete sequences, but they come with an explicit global round index that plays the role of a coarse clock. Like metric time, one can talk about \emph{when} something happens, but only in terms of round numbers rather than absolute timestamps. The crucial difference to both earlier models is that the \emph{absence} of an action is itself observable, represented by the stutter symbol ``$-$''.
+Synchronous-time words sit between logical-time words and metric-time words. Like logical time, they are discrete sequences, but they come with an explicit global round index that plays the role of a coarse clock. Like metric time, one can talk about \emph{when} something happens, but only in terms of round numbers rather than absolute timestamps. The crucial difference to both earlier models is that the \emph{absence} of an action is itself observable, represented by the stutter symbol ``$-$''.
 
 
   
@@ -272,7 +270,7 @@ For \(A\subseteq\Sigma\):
   \item \defn{Logical (stutter-erasing) projection} \( \erase_{-}(\taust{\upharpoonright}A)\in A^{*} \) drops all ``\(-\)''.
 \end{itemize}
 For $a\in\Sigma$, the \defn{count} of $a$ in $\taust$ is $\#(a,\taust):=\big|\{\, t\in\mathsf{pos}(\taust)\mid \taust[t]=a \,\}\big|$, and the set of \defn{active rounds} is $\mathsf{act}(\taust):=\{\, t\in\mathsf{pos}(\taust)\mid \taust[t]\neq - \,\}$.
-The round-prefix is denoted \( \taust[0,r]:=\trace{(s_0),\dots,(s_r)} \) for \(0\le r\le T\).
+
 
 \begin{example}[controller at 1\,Hz, illustrating all operators]
     Consider HVAC (Heating, Ventilation, and Air Conditioning) actuator (1) and a security Sensor (2), both controlled by a synchronous controller:
@@ -287,13 +285,13 @@ The round-prefix is denoted \( \taust[0,r]:=\trace{(s_0),\dots,(s_r)} \) for \(0
     \]
     
     \noindent\emph{Size, positions, indexing:}\\
-    \(|\taust_1|=|\taust_2|=3\) with horizon \(T=2\),  
-    \(\mathsf{pos}(\taust_1)=\{0,1,2\}\),  
-    \(\taust_1[2]=\textsf{heat\_on}\).
+    \(|\taust_1|=|\taust_2|=3\) with horizon \(T=3\),  
+    \(\mathsf{pos}(\taust_1)=\{1,2,3\}\),  
+    \(\taust_1[3]=\textsf{heat\_on}\).
     
     \noindent\emph{Counts and active rounds:}\\
     \(\#(\textsf{heat\_on},\taust_1)=1\),  
-    \(\mathsf{act}(\taust_1)=\{2\}\).
+    \(\mathsf{act}(\taust_1)=\{3\}\).
     
     \noindent\emph{Stutter-preserving projection:}\\
     with \(A=\emptyset\),  
@@ -304,17 +302,17 @@ The round-prefix is denoted \( \taust[0,r]:=\trace{(s_0),\dots,(s_r)} \) for \(0
     while \(\erase_{-}(\taust_1)=\trace{(\textsf{heat\_on})}\).
     
     \noindent\emph{Round-prefix:}\\
-    \(\taust_2[0,1]=\trace{(-),(\textsf{door\_lock})}\).
+    \(\taust_2[1,2]=\trace{(-),(\textsf{door\_lock})}\).
     
     \end{example}
   
 
 % --- Summary diagram and explanation inserted here ---
 \subsection{Connecting the Three Action Word Models}
-The objective of this subsection is to connect the three action-centric word models introduced above. Given a metric-timeword \(\taumt\), we introduce two canonical morphisms that deliberately discard part of the information: the \emph{logical-time projection} \(\LT\), which erases time stamps while preserving the order of events, and the \emph{synchronous padding} \(\ST\), which aligns events to a global round clock by inserting explicit stutter symbols ``\(-\)''. We set up the clock frequency of the synchronous-time word to correspond to a single unit of metric time.
+The objective of this subsection is to connect the three action-centric word models introduced above. Given a metric-time word \(\taumt\), we introduce two canonical morphisms that deliberately discard part of the information: the \emph{logical-time projection} \(\LT\), which erases time stamps while preserving the order of events, and the \emph{synchronous padding} \(\ST\), which aligns events to a global round clock by inserting explicit stutter symbols ``\(-\)''. We set up the clock frequency of the synchronous-time word to correspond to a single unit of metric time.
 
 \noindent\textbf{Summary diagram.}
-\ref{fig:word-models-summary} summarizes the relationship between the three word models using a running toy example with two events. Starting from a metric-timeword, synchronous padding $\ST$ aligns events to a global round clock by inserting explicit stutters ``$-$'', and logical projection $\LT$ forgets timing information and retains only the event order. The diagram also makes explicit that the co-domain changes across the mappings: $\ST$ moves from timeevent pairs to round-indexed letters, whereas $\LT$ yields a pure order-only word.
+\ref{fig:word-models-summary} summarizes the relationship between the three word models using a running toy example with two events. Starting from a metric-time word, synchronous padding $\ST$ aligns events to a global round clock by inserting explicit stutters ``$-$'', and logical projection $\LT$ forgets timing information and retains only the event order. The diagram also makes explicit that the co-domain changes across the mappings: $\ST$ moves from time event pairs to round-indexed letters, whereas $\LT$ yields a pure order-only word.
 
 \begin{figure}[t]
 \centering
@@ -337,7 +335,7 @@ The objective of this subsection is to connect the three action-centric word mod
     \node[event, label=above:{$t=3$}] (m2) at (6, 0) {$b$};
 
     \foreach \x in {0,1,2,3,4} \draw[gray] (\x*2, 0.1) -- (\x*2, -0.1);
-    \node[below, gray, font=\tiny] at (0,0) {0};
+    %\node[below, gray, font=\tiny] at (0,0) {0};
     \node[below, gray, font=\tiny] at (4,0) {2};
     \node[below, gray, font=\tiny] at (8,0) {4};
 
@@ -346,7 +344,7 @@ The objective of this subsection is to connect the three action-centric word mod
 
     \draw[axis] (0,-2.5) -- (8,-2.5) node[right] {rounds};
 
-    \node[stutter, label=below:{\scriptsize 0}] (s0) at (0, -2.5) {$-$};
+    %\node[stutter, label=below:{\scriptsize 0}] (s0) at (0, -2.5) {$-$};
     \node[event, label=below:{\scriptsize 1}]  (s1) at (2, -2.5) {$a$};
     \node[stutter, label=below:{\scriptsize 2}] (s2) at (4, -2.5) {$-$};
     \node[event, label=below:{\scriptsize 3}]  (s3) at (6, -2.5) {$b$};
@@ -376,7 +374,7 @@ The objective of this subsection is to connect the three action-centric word mod
          Preserves order only};
 
 \end{tikzpicture}
-\caption{Relationship between metric-timed, synchronous-time, and logical-time word models, and the forgetful morphisms $\ST$ and $\LT$ on a running example.}
+\caption{Relationship between metric-time, synchronous-time, and logical-time word models, and the forgetful morphisms $\ST$ and $\LT$ on a running example.}
 \label{fig:word-models-summary}
 \end{figure}
 
@@ -385,7 +383,7 @@ The objective of this subsection is to connect the three action-centric word mod
 The map \(\LT\) drops time stamps but preserves labels and their order. It is the coarsest view that still distinguishes different event sequences.
 
 \begin{lemma}[Logical-time projection \(\LT\): order-only view]
-Let \(\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})} \) be a timeword. There exists a unique logical word \(\tault=\LT(\taumt)\in\Sigma^{*}\) satisfying:
+Let \(\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})} \) be a time word. There exists a unique logical word \(\tault=\LT(\taumt)\in\Sigma^{*}\) satisfying:
 \begin{itemize}
   \item \textbf{Number of event preservation}: \( |\tault| = |\taumt| = n \).
   \item \textbf{Action occurrence preservation}: \( \forall a\in\Sigma, \#(a,\tault) = \#(a,\taumt) \).
@@ -400,23 +398,41 @@ Let \(\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})} \) be a timeword. There exist
 Define \(\LT(\taumt):=\trace{(a_1),\,(a_2),\,\dots,\,(a_{n})}\). All properties follow from erasing time stamps while preserving labels and their order.
 \end{proof}
 
+
 \paragraph{From metric time to synchronous time.}
 The map \(\ST\) aligns events to a global round clock by inserting ``\(-\)'' at rounds with no event; erasing ``\(-\)'' brings us back to logical time.
 
 \begin{lemma}[Synchronous padding \(\ST\): round-indexed view]
-Let \(\taumt\) be a metric-timeword, and assume one synchronous tick per metric unit. There exists a unique synchronous word \(\taust=\ST(\taumt)\in(\Sigma\cup\{-\})^{*}\) such that, writing \(T:=\mathsf{last}(\taumt)\) when \(|\taumt|>0\):
+Let \(\taumt\) be a metric-time word. There exists a unique synchronous word \(\taust=\ST(\taumt)\in(\Sigma\cup\{-\})^{*}\) such that, writing \(T:=\mathsf{last}(\taumt)\) (with \(T=0\) if \(\taumt=\emptytrace\)):
 \begin{itemize}
-  \item \textbf{Size / horizon relation}: If \(|\taumt|>0\), \(|\ST(\taumt)| = T+1\) and \(\mathsf{pos}(\ST(\taumt))=\{0,\dots,T\}\).
-  \item \textbf{Exact time-of-occurrence}: For any \(t\), \(\ST(\taumt)[t] = \mathsf{lab}(\taumt,k)\) if \(t=\mathsf{ts}(\taumt,k)\), otherwise it is \(-\).
-  \item \textbf{Active rounds}: \(\mathsf{act}(\ST(\taumt)) = \mathsf{time}(\taumt)\).
-  \item \textbf{Preservation of occurrences}: \(\forall a\in\Sigma, \#(a,\ST(\taumt)) = \#(a,\taumt)\).
+  \item \textbf{Size / horizon relation}: If \(|\taumt|>0\), then \(|\ST(\taumt)| = T+1\) and \(\mathsf{pos}(\ST(\taumt))=\{1,\dots,T+1\}\).
+  \item \textbf{Exact time-of-occurrence}: For any timestamp \(t \in \{0, \dots, T\}\), the synchronous event at index \(t+1\) is determined by:
+  \[
+  \ST(\taumt)[t+1] = 
+  \begin{cases}
+    \mathsf{lab}(\taumt,k) & \text{if } \exists k: \mathsf{ts}(\taumt,k) = t, \\
+    - & \text{otherwise.}
+  \end{cases}
+  \]
+  \item \textbf{Active rounds}: \(\mathsf{act}(\ST(\taumt)) = \{\, t+1 \mid t\in\mathsf{time}(\taumt)\,\}\).
+ \item \textbf{Preservation of occurrences}: \(\forall a\in\Sigma, \#(a,\ST(\taumt)) = \#(a,\taumt)\).
   \item \textbf{Equivalence to logical time}: \(\erase_{-}(\ST(\taumt)) = \LT(\taumt)\).
 \end{itemize}
 \end{lemma}
 
 \begin{proof}
 \defn{Construction.}\;
-If \(|\taumt|=0\), set \(\ST(\taumt):=\emptytrace\). Otherwise, let \(T:=\mathsf{last}(\taumt)\). For every \(t\in\{0,\dots,T\}\), define \(\ST(\taumt)[t]\) to be \(a_k\) if \(t=t_k\) for some \(k\), and \(-\) otherwise. Each property follows directly from this definition and the strict monotonicity of timestamps.
+If \(|\taumt|=0\), set \(\ST(\taumt):=\emptytrace\). Otherwise, let \(T:=\mathsf{last}(\taumt)\). 
+We construct the word of length \(T+1\).
+For every integer \(t \in \{0, \dots, T\}\) (representing the metric time), we define the event at index \(t+1\) as:
+\[
+\ST(\taumt)[t+1] :=
+\begin{cases}
+    a_k & \text{if } \exists k \text{ s.t. } t_k = t, \\
+    - & \text{otherwise.}
+\end{cases}
+\]
+Since metric timestamps are strictly increasing, there is at most one \(k\) for any \(t\), making this well-defined. All properties follow from this construction.
 \end{proof}
 
 \paragraph{On non-invertibility.}
@@ -473,16 +489,16 @@ As a result, we have that every $w\in \tault_1 \shuffle \tault_2$ satisfies the 
 
 \subsubsection{Synchronous (Lockstep) Operator on Synchronous Time}
 
-The \emph{lockstep} operator combines two synchronous words by aligning them round by round under a shared global clock. If the two words have different horizons, the shorter one is right-padded with the stutter symbol ``$-$'' so that both align on the common index set $[0,T]$, where $T=\max(T_1,T_2)$.
+The \emph{lockstep} operator combines two synchronous words by aligning them round by round under a shared global clock. If the two words have different horizons, the shorter one is right-padded with the stutter symbol ``$-$'' so that both align on the common index set $\{1,\dots,T\}$, where $T=\max(T_1,T_2)$.
 
 \begin{definition}[Lockstep zip on $\taust$]
-  Let $\taust_1=\trace{(s_0),\dots,(s_{T_1})}$ and $\taust_2=\trace{(r_0),\dots,(r_{T_2})}$ be two synchronous words. Extend the shorter word with stutters ``$-$'' up to $T:=\max(T_1,T_2)$. The \emph{lockstep zip} operator is defined by:
+  Let $\taust_1=\trace{(s_1),\dots,(s_{T_1})}$ and $\taust_2=\trace{(r_1),\dots,(r_{T_2})}$ be two synchronous words. Extend the shorter word with stutters ``$-$'' up to $T:=\max(T_1,T_2)$. The \emph{lockstep zip} operator is defined by:
   \[
   \taust_1 \parallel_{\mathrm{lock}} \taust_2
   \ :=\
-  \trace{\, (s_0,r_0),\ (s_1,r_1),\ \dots,\ (s_T,r_T)\, }.
+  \trace{\, (s_1,r_1),\ (s_2,r_2),\ \dots,\ (s_T,r_T)\, }.
   \]
-  Each position $t$ of the result records the simultaneous round of both agents.
+  Each position $t\in\{1,\dots,T\}$ of the result records the simultaneous round of both agents.
 \end{definition}
 The result is a synchronous word over the product alphabet $(\Sigma_1\cup\{-\})\times(\Sigma_2\cup\{-\})$.
 
@@ -493,13 +509,13 @@ In many systems, certain actions can only be executed \emph{jointly} and must oc
 \begin{definition}[Lockstep with handshakes on synchronous words]\label{def:lockstep-hs}
 Let $A\subseteq \Sigma_1\cap\Sigma_2$ be a nonempty set of handshake actions. The lockstep with handshakes operator, written \( \taust_1 \parallel_{\mathrm{hs}}^{A} \taust_2 \), takes two synchronous words \(\taust_1\) and \(\taust_2\), extends them to the same length $T$, and applies the handshake constraint.
   
-For the operator to be defined, the following condition must be true for every round \( t \in \{0, \dots, T\} \) and every \( a \in A \):
+For the operator to be defined, the following condition must be true for every round \( t \in \{1, \dots, T\} \) and every \( a \in A \):
   \[
   (s_t=a\ \lor\ r_t=a)\;\Rightarrow\; (s_t=r_t=a).
   \]
 If this condition is met, the result is a sequence of pairs from the product alphabet:
   \[
-  \taust_1 \parallel_{\mathrm{hs}}^{A} \taust_2 \;=\; \trace{(s_0,r_0),\,(s_1,r_1),\,\dots,\,(s_T,r_T)}.
+  \taust_1 \parallel_{\mathrm{hs}}^{A} \taust_2 \;=\; \trace{(s_1,r_1),\,(s_2,r_2),\,\dots,\,(s_T,r_T)}.
   \]
 If the condition is not met, the operator is undefined, which means a deadlock or an invalid execution.
 \end{definition}
@@ -527,23 +543,48 @@ The collapsed lockstep with handshakes is found by applying the function \(\math
 \end{definition}
 
 \begin{example}[Handover as handshake, failures and successes]
-Let \(\Sigma_1=\{\textsf{pick},\textsf{handover}\}\), \(\Sigma_2=\{\textsf{scan},\textsf{handover}\}\), and \(A=\{\textsf{handover}\}\).
+  Let \(\Sigma_1=\{\textsf{pick},\textsf{handover}\}\), \(\Sigma_2=\{\textsf{scan},\textsf{handover}\}\), and \(A=\{\textsf{handover}\}\).
   The private sets are \( P_1=\{\textsf{pick}\} \) and \( P_2=\{\textsf{scan}\} \).
-  
   \begin{itemize}
-    \item \emph{Success (aligned handshake).}
-    \(\taust_1=\trace{(\textsf{pick}),-,\textsf{handover}}\), \(\taust_2=\trace{-,\textsf{scan},\textsf{handover}}\).
-The collapse gives \(\trace{(\textsf{pick}^{(1)}),\ (\textsf{scan}^{(2)}),\ (\textsf{handover})}\).
-    
-    \item \emph{Failure (mismatched handshake).}
-    \(\taust_1=\trace{-,\textsf{handover},-}\), \(\taust_2=\trace{\textsf{handover},-,-}\).
-The constraint fails at \( t=0 \) when Agent 2 is ready but Agent 1 is not, and at \( t=1 \) when the situation is reversed. In this case, the operator is undefined.
-    
-    \item \emph{Private simultaneous actions (non-handshake).}
-    \(\taust_1=\trace{-,\textsf{pick},-}\), \(\taust_2=\trace{-,\textsf{scan},-}\).
-At \( t=1 \), \( s_1=\textsf{pick} \) is in $P_1$ and \( r_1=\textsf{scan} \) is in $P_2$.\\
-    The collapsed result is \(\trace{-,\ (\textsf{pick}^{(1)}, \textsf{scan}^{(2)}),\ -}\).
+      \item \emph{Success (aligned handshake).}
+      \(\taust_1=\trace{(\textsf{pick}),-,\textsf{handover}}\), \(\taust_2=\trace{-,\textsf{scan},\textsf{handover}}\).
+      The collapse gives \(\trace{(\textsf{pick}^{(1)}),\ (\textsf{scan}^{(2)}),\ (\textsf{handover})}\).
+  
+      \item \emph{Failure (mismatched handshake).}
+      \(\taust_1=\trace{-,\textsf{handover},-}\), \(\taust_2=\trace{\textsf{handover},-,-}\).
+      The constraint fails at \( t=1 \) when Agent 2 is ready but Agent 1 is not, and at \( t=2 \) when the situation is reversed.
+      In this case, the operator is undefined.
+      
+      \item \emph{Private simultaneous actions (non-handshake).}
+      \(\taust_1=\trace{-,\textsf{pick},-}\), \(\taust_2=\trace{-,\textsf{scan},-}\).
+      At round \( t=2 \) (metric time 1), \( s_2=\textsf{pick} \) is in $P_1$ and \( r_2=\textsf{scan} \) is in $P_2$.\\
+      The collapsed result is \(\trace{-,\ (\textsf{pick}^{(1)}, \textsf{scan}^{(2)}),\ -}\).
   \end{itemize}
-\end{example}
+  \end{example}
 
-To sum up, this section presented three models for discrete-action words and explained how they relate to each other. We started by setting up an abstract algebraic framework for both finite and infinite words. Then, we described three specific word types: (i) logical-time words, which only keep the order of actions, (ii) metric-timewords, which capture better timing order using strictly increasing timestamps, and (iii) synchronous-time words, which organize observations by rounds and show inactivity through stuttering. We linked these models using the forgetful morphisms $\LT$ and $\ST$, which let us view a metric-timeexecution in (i) terms of order only, or (ii) as round-synchronous. Next, we introduced three ways for two agents to synchronize: asynchronous interleaving $\shuffle$ for logical time, lockstep zip $\parallel_{\mathrm{lock}}$ for synchronous time, and lockstep with handshakes $\parallel_{\mathrm{hs}}^{A}$, plus a version that combines everything into a single word. These tools form the basis for interpreting multi-agent contracts and for defining how monitoring and verdicts work under different synchrony settings.
+  To sum up, this section presented three models for discrete-action words and explained how they relate to each other, as summarized in \ref{tab:word-models-summary}. We started by setting up an abstract algebraic framework for both finite and infinite words. Then, we described three specific word types: (i) logical-time words, which only keep the order of actions, (ii) metric-time words, which capture better timing order using strictly increasing timestamps, and (iii) synchronous-time words, which organize observations by rounds and show inactivity through stuttering. We linked these models using the forgetful morphisms $\LT$ and $\ST$, which let us view a metric-time execution in (i) terms of order only, or (ii) as round-synchronous. Next, we introduced three ways for two agents to synchronize: asynchronous interleaving $\shuffle$ for logical time, lockstep zip $\parallel_{\mathrm{lock}}$ for synchronous time, and lockstep with handshakes $\parallel_{\mathrm{hs}}^{A}$, plus a version that combines everything into a single word. These tools form the basis for interpreting multi-agent contracts and for defining how monitoring and verdicts work under different synchrony settings.
+\begin{table}[h!]
+  \centering
+  \caption{Summary of discrete-action word models, morphisms, and synchronization operators.}
+  \label{tab:word-models-summary}
+  \renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{@{}l c l l@{}}
+  \toprule
+  \textbf{Model / Concept} & \textbf{Symbol} & \textbf{Domain} & \textbf{Key Characteristics} \\
+  \midrule
+  \multicolumn{4}{l}{\textit{Word Models}} \\
+  Logical-Time & $\tault$ & $\Sigma^*$ & Order only; no timing info. \\
+  Metric-Timed & $\taumt$ & $(\Sigma \times \mathbb{N})^*$ & Precise timestamps; quantitative timing. \\
+  Synchronous-Time & $\taust$ & $(\Sigma \cup \{-\})^*$ & Round-based; explicit stutters ($-$). \\
+  \midrule
+  \multicolumn{4}{l}{\textit{Canonical Morphisms}} \\
+  Logical Projection & $\LT$ & $\taumt \to \tault$ & Forgets timestamps, preserves order. \\
+  Synchronous Padding & $\ST$ & $\taumt \to \taust$ & Aligns events to rounds, inserts $-$. \\
+  \midrule
+  \multicolumn{4}{l}{\textit{Synchronization Operators}} \\
+  Async. Interleaving & $\shuffle$ & $\tault \times \tault$ & All order-preserving shuffles (interleaving). \\
+  Lockstep Zip & $\parallel_{\mathrm{lock}}$ & $\taust \times \taust$ & Aligns rounds strictly. \\
+  Handshake & $\parallel_{\mathrm{hs}}^{A}$ & $\taust \times \taust$ & Synchronizes shared $A$, interleaves private. \\
+  \bottomrule
+  \end{tabular}
+  \end{table}

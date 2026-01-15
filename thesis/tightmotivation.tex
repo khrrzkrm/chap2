@@ -584,10 +584,10 @@ This semantics guarantees key stability properties essential for contract monito
       x=1cm, y=1cm, scale=0.9,
       every node/.style={font=\small\sffamily},
       region/.style={draw, thick, fill opacity=1.0, align=center, inner sep=5pt, 
-                     text width=3cm, minimum height=2cm}
+                     text width=3cm, minimum height=2cm, rounded corners=2pt}
   ]
-      % Bounding Box
-      \draw[thick] (0,0) rectangle (16.5, 6.5);
+      % % Bounding Box
+      % \draw[thick] (0,0) rectangle (16.5, 6.5);
       
       % Region: PRE
       \node[region, fill=yellow!20] (pre) at (3, 3.25) 
@@ -606,10 +606,10 @@ This semantics guarantees key stability properties essential for contract monito
           {$\IRL{L}$ \\ $\semfive{u \circ x' \circ \Sigma^+ \vDash L}=\botp$};
   
       % Arrows
-      \draw[->, ultra thick, gray, dashed] (pre) -- (eal) node[midway, sloped, above, font=\scriptsize, text=black] {  $x \in\Sigma^+$};
-      \draw[->, ultra thick, gray,dashed] (pre) -- (erl) node[midway, sloped, below, font=\scriptsize, text=black] {$x' \in \Sigma^+$};
-      \draw[->, ultra thick, gray] (eal) -- (ial) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
-      \draw[->, ultra thick, gray] (erl) -- (irl) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
+      \draw[->, ultra thick, gray, dashed, shorten >= 1pt] (pre) -- (eal) node[midway, sloped, above, font=\scriptsize, text=black] {  $x \in\Sigma^+$};
+      \draw[->, ultra thick, gray,dashed, shorten >= 1pt] (pre) -- (erl) node[midway, sloped, below, font=\scriptsize, text=black] {$x' \in \Sigma^+$};
+      \draw[->, ultra thick, gray, shorten >= 1pt] (eal) -- (ial) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
+      \draw[->, ultra thick, gray, shorten >= 1pt] (erl) -- (irl) node[midway, sloped, below, font=\scriptsize, text=black] {$\Sigma^+$};
   
   \end{tikzpicture}
   \caption{Visualizing the five-way semantic partition (Theorem \ref{prop:tightness-obligations-unindexed}). The diagram illustrates the irreversible flow of a trace from the undecided state (Yellow) to a decisive frontier (Eager Acceptance in Green or Eager Rejection in Red) and subsequently to an irrelevant post-verdict state. Arrows indicate possible transitions via trace extension; dashed arrows stands for the possible existence of a suffix; plain arrows stands for any non-empty suffix leads to the next verdict;  missing arrows imply that no direct transition is possible.}
@@ -749,16 +749,16 @@ Consider the language $L=\{a,ab,bb\}$ over $\Sigma=\{a,b\}$. The minimized five-
 \begin{tikzpicture}[
   ->, >=Stealth, node distance=20mm, semithick,
   every state/.style={rectangle,rounded corners,draw,minimum width=11mm,
-    minimum height=7mm,inner sep=2pt,font=\scriptsize,align=center}
+    minimum height=7mm,inner sep=5pt,font=\footnotesize,align=center}
 ]
 
 % --- Nodes with embedded verdicts ---
-\node[initial,state,fill=gray!10]    (s0) {$s_0$\\$\mathsf{?}$};
-\node[state,fill=green!18,right=26mm of s0]  (sa) {$s_a$\\$\topt$};
-\node[state,fill=green!10,right=26mm of sa]  (sp) {$s_+$\\$\topp$};
-\node[state,fill=gray!10,below=18mm of s0]   (sb) {$s_b$\\$\mathsf{?}$};
-\node[state,fill=red!18,below=18mm of sa]    (sv) {$s_v$\\$\bott$};
-\node[state,fill=red!10,below=18mm of sp]    (sm) {$s_-$\\$\botp$};
+\node[initial,state,fill=gray!10]    (s0) {$s_0$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=green!18,right=26mm of s0]  (sa) {$s_a$\\[0.2pt]$\topt$};
+\node[state,fill=green!10,right=26mm of sa]  (sp) {$s_+$\\[0.2pt]$\topp$};
+\node[state,fill=gray!10,below=18mm of s0]   (sb) {$s_b$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=red!18,below=18mm of sa]    (sv) {$s_v$\\[0.2pt]$\bott$};
+\node[state,fill=red!10,below=18mm of sp]    (sm) {$s_-$\\[0.2pt]$\botp$};
 
 % --- Transitions ---
 \path
@@ -1108,17 +1108,17 @@ Continuing Example~\ref{ex:end-to-end-C5}, Figure~\ref{fig:moore-C5-tight-compac
   ->, >=Stealth, node distance=17mm, semithick,
   every state/.style={rectangle,rounded corners,draw,
     minimum width=11mm,minimum height=7mm,
-    inner sep=2pt,font=\scriptsize,align=center}
+    inner sep=5pt,font=\footnotesize,align=center}
 ]
 
 % --- Nodes with embedded verdicts ---
-\node[initial,state,fill=gray!10]  (s0)  {$s_0$\\$\mathsf{?}$};
-\node[state,fill=gray!10,below=of s0]  (g)   {$s_g$\\$\mathsf{?}$};
-\node[state,fill=gray!10,right=23mm of g] (t0) {$s_0^T$\\$\mathsf{?}$};
-\node[state,fill=gray!10,right=19mm of t0] (t1) {$s_1^T$\\$\mathsf{?}$};
-\node[state,fill=gray!10,right=19mm of t1] (t2) {$s_2^T$\\$\mathsf{?}$};
-\node[state,fill=green!18,above=16mm of t2] (acc) {$s_3^T$\\$\topt$};
-\node[state,fill=green!10,left=19mm of acc] (ap) {$s_{+}$\\$\topp$};
+\node[initial,state,fill=gray!10]  (s0)  {$s_0$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=gray!10,below=of s0]  (g)   {$s_g$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=gray!10,right=23mm of g] (t0) {$s_0^T$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=gray!10,right=19mm of t0] (t1) {$s_1^T$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=gray!10,right=19mm of t1] (t2) {$s_2^T$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=green!18,above=16mm of t2] (acc) {$s_3^T$\\[0.2pt]$\topt$};
+\node[state,fill=green!10,left=19mm of acc] (ap) {$s_{+}$\\[0.2pt]$\topp$};
 
 % --- Transitions ---
 \path

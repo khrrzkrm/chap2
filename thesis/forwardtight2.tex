@@ -46,8 +46,8 @@ Blame occurs only when the subject of the power attempts and the other party wit
 \trace{A}\ \vDash_{\bottp{\{\barp\}}}\ \perm[p]{a}\ \;\mydef\;\ a^{(p)}\in A\ \land\ a^{(\barp)}\notin A.
 \]
 
-\paragraph{ invalid ($\bot$) is blameless}
-\(\lnot(\trace{A}\vDash_{\bottp{S}}\top)\) for all $S$.  
+\paragraph{Invalid ($\bot$) is blameless.}
+\(\lnot(\trace{A}\vDash_{\bottp{S}}\top)\) for all $S$. 
 \(\trace{A}\vDash_{\bottp{\emptyset}}\bot\) by convention (unsatisfiable literal with no party subject).
 
 \paragraph{Post violation (prefix closure of blame).}
@@ -71,8 +71,8 @@ By fixing $p=1$, $\barp=2$. Consider the following letters $A\in\Gamma$:
 \noindent\emph{Obligation \(\obl[1]{a}\).}
 \[
 \begin{array}{lcl}
-A=\emptyset: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
-A=\{a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
+A=\emptyset: & \trace{A}\ \vDash_{\bottp{\{1\}}}\ \obl[1]{a} & \text{(subject of the obligation did not attempt)}\\
+A=\{a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{\{1\}}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
 A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \obl[1]{a} & \text{(other party did not cooperate)}\\
 A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(joint execution present).}
 \end{array}
@@ -81,7 +81,7 @@ A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(joint execution present).}
 \noindent\emph{Prohibition \(\frb[1]{a}\).}
 \[
 \begin{array}{lcl}
-A=\{a^{(1)},a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \frb[1]{a} & \text{(subject should have refrained)}\\
+A=\{a^{(1)},a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{\{1\}}}\ \frb[1]{a} & \text{(subject should have refrained)}\\
 A=\{a^{(1)}\} \quad: & \text{no violation} & \text{The prohibited action was not successful}
 \end{array}
 \]
@@ -152,11 +152,11 @@ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
 \[
 \pi_1=\langle A_0\rangle,\quad A_0=\{\OCC^{(1)}\}
 \]
-Here, $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdict are:
+Here, $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdicts are:
 \begin{itemize}
-\item The tenant (1) gets blamed for violating the obligation to pay rent:\\ $\pi_1 \vDash_{\bottp{\{2\}}} \obl[1]{\PAY}$. 
+\item The tenant (1) gets blamed for violating the obligation to pay rent:\\ $\pi_1 \vDash_{\bottp{\{1\}}} \obl[1]{\PAY}$. 
 \item The landlord (2) gets blamed for violating the power of the tenant to occupy the flat:\\
-$\pi_1 \vDash_{\bottp{\{2\}}} \perm[1]{\PAY}$.
+$\pi_1 \vDash_{\bottp{\{2\}}} \perm[1]{\OCC}$.
 \end{itemize}
 But the specification allows for the reparation $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$. So consequently, no tight violation can be diagnosed at $T=1$:\\
 $\pi_1 \presat \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.$
@@ -171,10 +171,10 @@ Here:
 \begin{itemize}
 \item The landlord gets the blame at $T=2$ for violating the power of the tenant to occupy the flat in the second month:\\
 $\pi_3 \vDash_{\bottp{\{2\}}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
-\item For the reparation clause $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ we must distinguish two different situations in which the fine is not honoured:
+\item For the reparation clause $\obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ we must distinguish two different situations in which the fine is not honored:
   \begin{itemize}
     \item if the tenant never attempts to pay the fine, that is, no letter of the trace contains $\PAYF^{(1)}$, then the blame goes to agent 1:\\
-    $\pi \vDash_{\bottp{\{2\}}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$,
+    $\pi \vDash_{\bottp{\{1\}}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$,
     \item if instead the tenant attempts to pay the fine and the landlord does not cooperate, for example, in a letter $A$ with $\PAYF^{(1)}\in A$ and $\PAYF^{(2)}\notin A$, then the fine obligation is violated, and the blame goes to agent 2:\\
     $\pi \vDash_{\bottp{\{2\}}} \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$.
   \end{itemize}
@@ -309,7 +309,7 @@ where:
 \begin{enumerate}
   \item The output alphabet is
   \[
-  \mathbb{V}_{11} = \{\mathsf{?},\topt,\topp\} \cup \{\bot^{t}_{S},\bot^{p}_{S} \mid S\subseteq \{1,2\}\}.
+    \mathbb{V}_{11} = \{\mathsf{?},\topt,\topp\} \cup \{\bot^{t}_{S},\bot^{p}_{S} \mid S\subseteq \{1,2\}\}.
   \]
   \item $Q$ is the set of states and $q_0\in Q$ is the initial state,
   \item $\Gamma = 2^\Sigma$ is the input event alphabet,
@@ -443,7 +443,7 @@ The proof proceeds by structural induction on $C$.
     every state/.style={
       rectangle,rounded corners,draw,
       minimum width=12mm,minimum height=7mm,
-      inner sep=2pt,font=\scriptsize,align=center
+      inner sep=5pt,font=\footnotesize,align=center
     },
     initial text={}
   ]
@@ -456,45 +456,45 @@ The proof proceeds by structural induction on $C$.
   
   % --- Blame States (Split) ---
   % Blame 2 (Landlord) - e.g., blocking permission or fine
-  \node[state,fill=red!18,below=25mm of q0] (qv2) {$s_{\bott}^2$\\$\bottp{\{2\}}$};
-  \node[state,fill=red!10,below=15mm of qv2] (qpv2) {$s_{\botp}^2$\\$\botpp{2}$};
+  \node[state,fill=red!18,below=25mm of q0] (qv2) {$s_{\bott}^2$\\[2pt]$\bottp{\{2\}}$};
+  \node[state,fill=red!10,left=10mm of qv2] (qpv2) {$s_{\botp}^2$\\ [2pt]$\botpp{\{2\}}$};
   
   % Blame 1 (Tenant) - e.g., failing to pay fine
-  \node[state,fill=red!18,right=50mm of qv2] (qv1) {$s_{\bott}^1$\\$\bottp{\{2\}}$};
-  \node[state,fill=red!10,below=15mm of qv1] (qpv1) {$s_{\botp}^1$\\$\botpp{1}$};
+  \node[state,fill=red!18,right=50mm of qv2] (qv1) {$s_{\bott}^1$\\[2pt]$\bottp{\{2\}}$};
+  \node[state,fill=red!10,right=10mm of qv1] (qpv1) {$s_{\botp}^1$\\[2pt]$\botpp{\{1\}}$};
   
   % --- Transitions ---
   
   % 1. Success paths (Unchanged)
   \path
-    (q0) edge[bend left=10] node[above,pos=0.6] {\scriptsize$\OCC^\surd \land \PAY^{\surd}$} (qs)
-    (q0) edge[bend left=12] node[pos=0.6,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
-    (q1) edge[bend left=8] node[right,pos=0.4] {\scriptsize$\PAYF^\surd$} (qs)
-    (qs) edge node[above] {$\Gamma$} (qps)
-    (qps) edge[loop right] node {$\Gamma$} ();
+    (q0) edge[bend left=10] node[above,pos=0.6] {\footnotesize$\OCC^\surd \land \PAY^{\surd}$} (qs)
+    (q0) edge[bend left=12] node[pos=0.6,sloped,above] {\footnotesize$\OCC^\surd \land \PAY^{\times}$} (q1)
+    (q1) edge[bend left=8] node[right,pos=0.4] {\footnotesize$\PAYF^\surd$} (qs)
+    (qs) edge node[above] {\footnotesize$\Gamma$} (qps)
+    (qps) edge[loop right] node {\footnotesize$\Gamma$} ();
   
   % 2. Violation: Landlord Fault (Blame 2)
   % From s0: Landlord blocks occupation (Violation of P_1(OCC))
   \path
-    (q0) edge[bend right=20] node[left,pos=0.5] {\scriptsize$\OCC^{\times}$} (qv2);
+    (q0) edge[bend right=20] node[left,pos=0.5] {\footnotesize$\OCC^{\times}$} (qv2);
   
   % From s1: Landlord blocks fine payment (Violation of O_1(PAY_F))
   % Define specific label for blocked fine: Tenant tries, Landlord blocks
   \path
-    (q1) edge[bend left=15] node[above,sloped] {\scriptsize$\PAYF^{\text{blk}}$} (qv2);
+    (q1) edge[bend left=15] node[above,sloped] {\footnotesize$\PAYF^{\text{blk}}$} (qv2);
   
   % 3. Violation: Tenant Fault (Blame 1)
   % From s1: Tenant fails to pay fine (Violation of O_1(PAY_F))
   % Define specific label for passive failure: Tenant doesn't try
   \path
-    (q1) edge[bend right=15] node[above,sloped] {\scriptsize$\PAYF^{\text{fail}}$} (qv1);
+    (q1) edge[bend right=15] node[above,sloped] {\footnotesize$\PAYF^{\text{fail}}$} (qv1);
   
   % 4. Post-Violation Loops
   \path
-    (qv2) edge node[left] {$\Gamma$} (qpv2)
-    (qv1) edge node[right] {$\Gamma$} (qpv1)
-    (qpv2) edge[loop left] node {$\Gamma$} ()
-    (qpv1) edge[loop right] node {$\Gamma$} ();
+    (qv2) edge node[auto] {\footnotesize$\Gamma$} (qpv2)
+    (qv1) edge node[auto] {\footnotesize$\Gamma$} (qpv1)
+    (qpv2) edge[loop left] node {\footnotesize$\Gamma$} ()
+    (qpv1) edge[loop right] node {\footnotesize$\Gamma$} ();
   
   \end{tikzpicture}
   \caption{Blame Monitor $\mathcal{BM}(C_2 \wedge C_3)$.
@@ -524,57 +524,57 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
       every state/.style={
         rectangle,rounded corners,draw,
         minimum width=12mm,minimum height=7mm,
-        inner sep=2pt,font=\scriptsize,align=center
+        inner sep=5pt,font=\footnotesize,align=center
       },
       initial text={}
     ]
     
     % --- Initial State ---
-    \node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
+    \node[initial,state,fill=gray!10] (q0) {$s_0$\\[2pt]$\mathsf{?}$};
     
     % --- Success State ---
-    \node[state,fill=green!18,right=35mm of q0] (qs) {$s_{\topt}$\\$\topt$};
-    \node[state,fill=green!10,right=20mm of qs] (qps) {$s_{\topp}$\\$\topp$};
+    \node[state,fill=green!18,right=35mm of q0] (qs) {$s_{\topt}$\\[2pt]$\topt$};
+    \node[state,fill=green!10,right=20mm of qs] (qps) {$s_{\topp}$\\[2pt]$\topp$};
     
     % --- Violation States ---
     
     % 1. Joint Blame (Top Path)
-    \node[state,fill=purple!18,above right=7mm and 35mm of q0] (q12) {$s_{\bott}^{12}$\\$\bottp{12}$};
-    \node[state,fill=purple!10,right=20mm of q12] (qp12) {$s_{\botp}^{12}$\\$\botpp{12}$};
+    \node[state,fill=purple!18,above right=7mm and 35mm of q0] (q12) {$s_{\bott}^{12}$\\[2pt]$\bottp{12}$};
+    \node[state,fill=purple!10,right=20mm of q12] (qp12) {$s_{\botp}^{12}$\\[2pt]$\botpp{12}$};
     
     % 2. Tenant Blame (Middle/Right Path)
-    \node[state,fill=red!18,below=7mm of qs] (q1) {$s_{\bott}^{1}$\\$\bottp{\{2\}}$};
-    \node[state,fill=red!10,right=20mm of q1] (qp1) {$s_{\botp}^{1}$\\$\botpp{1}$};
+    \node[state,fill=red!18,below=7mm of qs] (q1) {$s_{\bott}^{1}$\\[2pt]$\bottp{\{2\}}$};
+    \node[state,fill=red!10,right=20mm of q1] (qp1) {$s_{\botp}^{1}$\\[2pt]$\botpp{1}$};
     
     % 3. Landlord Blame (Bottom Path)
-    \node[state,fill=red!18,below=7mm of q1] (q2) {$s_{\bott}^{2}$\\$\bottp{\{2\}}$};
-    \node[state,fill=red!10,right=20mm of q2] (qp2) {$s_{\botp}^{2}$\\$\botpp{2}$};
+    \node[state,fill=red!18,below=7mm of q1] (q2) {$s_{\bott}^{2}$\\[2pt]$\bottp{\{2\}}$};
+    \node[state,fill=red!10,right=20mm of q2] (qp2) {$s_{\botp}^{2}$\\[2pt]$\botpp{2}$};
     
     % --- Transitions ---
     
     % Success: Tenant pays AND Landlord allows occupation
     \path
-      (q0) edge node[above] {\scriptsize$\OCC^\surd \land \PAY^\surd$} (qs)
-      (qs) edge node[above] {$\Gamma$} (qps)
-      (qps) edge[loop right] node {$\Gamma$} ();
+      (q0) edge node[above] {\footnotesize$\OCC^\surd \land \PAY^\surd$} (qs)
+      (qs) edge node[above] {\footnotesize$\Gamma$} (qps)
+      (qps) edge[loop right] node {\footnotesize$\Gamma$} ();
     
     % Joint Violation: Tenant doesn't pay AND Landlord blocks occupation
     \path
-      (q0) edge[bend left=20] node[sloped,above] {\scriptsize$\OCC^\times \land \PAY^{\text{fail}}$} (q12)
-      (q12) edge node[above] {$\Gamma$} (qp12)
-      (qp12) edge[loop right] node {$\Gamma$} ();
+      (q0) edge[bend left=20] node[sloped,above] {\footnotesize$\OCC^\times \land \PAY^{\text{fail}}$} (q12)
+      (q12) edge node[above] {\footnotesize$\Gamma$} (qp12)
+      (qp12) edge[loop right] node {\footnotesize$\Gamma$} ();
     
     % Tenant Violation: Landlord allows occupation, BUT Tenant doesn't pay
     \path
-      (q0) edge[bend right=5] node[sloped,above,pos=0.6] {\scriptsize$\OCC^\surd \land \PAY^{\text{fail}}$} (q1)
-      (q1) edge node[above] {$\Gamma$} (qp1)
-      (qp1) edge[loop right] node {$\Gamma$} ();
+      (q0) edge[bend right=5] node[sloped,above,pos=0.6] {\footnotesize$\OCC^\surd \land \PAY^{\text{fail}}$} (q1)
+      (q1) edge node[above] {\footnotesize$\Gamma$} (qp1)
+      (qp1) edge[loop right] node {\footnotesize$\Gamma$} ();
     
     % Landlord Violation: Tenant pays, BUT Landlord blocks occupation
     \path
-      (q0) edge[bend right=30] node[sloped,below] {\scriptsize$\OCC^\times \vee \PAY^{\text{blk}}$} (q2)
-      (q2) edge node[above] {$\Gamma$} (qp2)
-      (qp2) edge[loop right] node {$\Gamma$} ();
+      (q0) edge[bend right=30] node[sloped,below] {\footnotesize$\OCC^\times \vee \PAY^{\text{blk}}$} (q2)
+      (q2) edge node[above] {\footnotesize$\Gamma$} (qp2)
+      (qp2) edge[loop right] node {\footnotesize$\Gamma$} ();
     
     \end{tikzpicture}
     \caption{Blame Monitor for $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$.\\
@@ -597,50 +597,50 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
         every state/.style={
           rectangle,rounded corners,draw,
           minimum width=12mm,minimum height=7mm,
-          inner sep=2pt,font=\scriptsize,align=center
+          inner sep=5pt,font=\footnotesize,align=center
         },
         initial text={}
       ]
       
       % --- Active States ---
-      \node[initial,state,fill=gray!10]          (q0)  {$q_0$\\$\mathsf{?}$};
-      \node[state,fill=gray!10,below=of q0]      (qw)  {$q_w$\\$\mathsf{?}$};
+      \node[initial,state,fill=gray!10]          (q0)  {$s_0$\\[2pt]$\mathsf{?}$};
+      \node[state,fill=gray!10,below=of q0]      (qw)  {$s_w$\\[2pt]$\mathsf{?}$};
       
       % --- Split Violation States ---
       
       % Path 1: Tenant Blame (Most common case)
-      \node[state,fill=red!18,above right= 4 mm and 20mm of qw]       (qv1)  {$s_{\bott}^1$\\$\bottp{\{2\}}$};
-      \node[state,fill=red!10,right=20mm of qv1]       (qpv1) {$s_{\botp}^1$\\$\botpp{1}$};
+      \node[state,fill=red!18,above right= 4 mm and 20mm of qw]       (qv1)  {$s_{\bott}^1$\\[2pt]$\bottp{\{2\}}$};
+      \node[state,fill=red!10,right=20mm of qv1]       (qpv1) {$s_{\botp}^1$\\[2pt]$\botpp{\{1\}}$};
       
       % Path 2: Landlord Blame (Blocking the fine)
-      \node[state,fill=red!18,below right= 4 mm and 20mm of qw]       (qv2)  {$s_{\bott}^2$\\$\bottp{\{2\}}$};
-      \node[state,fill=red!10,right=20mm of qv2]       (qpv2) {$s_{\botp}^2$\\$\botpp{2}$};
+      \node[state,fill=red!18,below right= 4 mm and 20mm of qw]       (qv2)  {$s_{\bott}^2$\\[2pt]$\bottp{\{2\}}$};
+      \node[state,fill=red!10,right=20mm of qv2]       (qpv2) {$s_{\botp}^2$\\[2pt]$\botpp{\{2\}}$};
       
       % --- Transitions ---
       
       % 1. In-cycle behavior
       \path
-          (q0) edge[loop above] node[above,pos=0.5] {\scriptsize $\PAY^\surd$} ()
-          (q0) edge[bend right=15] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
-          (qw) edge[bend right=15] node[right,pos=0.5] {\scriptsize $\PAYF^\surd$} (q0); % Restart on repair
+          (q0) edge[loop above] node[above,pos=0.5] {\footnotesize $\PAY^\surd$} ()
+          (q0) edge[bend right=15] node[left,pos=0.45] {\footnotesize $\PAY^\times$} (qw)
+          (qw) edge[bend right=15] node[right,pos=0.7] {\footnotesize $\PAYF^\surd$} (q0); % Restart on repair
       
       % 2. Violation: Tenant Fault
       % Tenant fails to pay the fine (no blocking)
       \path
-          (qw) edge node[above] {\scriptsize $\PAYF^{\text{fail}}$} (qv1);
+          (qw) edge[bend left=15] node[below,sloped] {\footnotesize $\PAYF^{\text{fail}}$} (qv1);
       
       % 3. Violation: Landlord Fault
       % Tenant attempts fine, Landlord blocks
       \path
-          (qw) edge[bend right=15] node[below,sloped] {\scriptsize $\PAYF^{\text{blk}}$} (qv2);
+          (qw) edge[bend right=15] node[below,sloped] {\footnotesize $\PAYF^{\text{blk}}$} (qv2);
       
       % 4. Sinks (The Limitation)
       % Once in a sink, the monitor loops forever, ignoring future events
       \path
-          (qv1)  edge node[above] {$\Gamma$} (qpv1)
-          (qpv1) edge[loop right] node {$\Gamma$} ()
-          (qv2)  edge node[above] {$\Gamma$} (qpv2)
-          (qpv2) edge[loop right] node {$\Gamma$} ();
+          (qv1)  edge node[above] {\footnotesize$\Gamma$} (qpv1)
+          (qpv1) edge[loop right] node {\footnotesize$\Gamma$} ()
+          (qv2)  edge node[above] {\footnotesize$\Gamma$} (qpv2)
+          (qpv2) edge[loop right] node {\footnotesize$\Gamma$} ();
       
       \end{tikzpicture}
       \caption{Blame Monitor for $\repit{C_3}$.
@@ -748,8 +748,8 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 %     (q0) edge[bend right=13] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
 %     (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0)
 %     (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
-%     (qv)  edge node[left] {$\Gamma$} (qpv)
-%     (qpv) edge[loop right] node {$\Gamma$} ();
+%     (qv)  edge node[left] {\footnotesize$\Gamma$} (qpv)
+%     (qpv) edge[loop right] node {\footnotesize$\Gamma$} ();
 % \end{tikzpicture}
 % \caption{Blame monitor for $\repit{C_3}$. All unrepaired violations of $C_3$ are blamed on agent 1.}
 % \label{fig:rep-c3-blame}
@@ -781,10 +781,10 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 %   (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
 %   (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
 %   (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
-%   (qs) edge node[above] {$\Gamma$} (qps)
-%   (qv) edge node[below] {$\Gamma$} (qpv)
-%   (qps) edge[loop right] node {$\Gamma$} ()
-%   (qpv) edge[loop right] node {$\Gamma$} ();
+%   (qs) edge node[above] {\footnotesize$\Gamma$} (qps)
+%   (qv) edge node[below] {\footnotesize$\Gamma$} (qpv)
+%   (qps) edge[loop right] node {\footnotesize$\Gamma$} ()
+%   (qpv) edge[loop right] node {\footnotesize$\Gamma$} ();
 % \end{tikzpicture}}
 % \caption{Blame monitor for $C_2\wedge C_3$. $S$ denotes the blame set prescribed by the conjunction blame rules.}
 % \label{fig:c2andc3-blame}

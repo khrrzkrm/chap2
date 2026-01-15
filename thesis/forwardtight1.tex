@@ -138,17 +138,17 @@ Definition~\ref{def:lattsat} but refines it with explicit prefix continuity.
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[
-  >=stealth',shorten >=1pt,auto,node distance=20mm,semithick,
+  >=stealth',shorten >=1pt,auto,node distance=28mm,semithick,
   every state/.style={rectangle,rounded corners,draw,minimum width=11mm,
-    minimum height=7.5mm,inner sep=2pt,font=\scriptsize,align=center}
+    minimum height=7.5mm,inner sep=5pt,font=\footnotesize,align=center}
 ]
 
 % --- states ---------------------------------------------------
-\node[initial,state,fill=gray!10] (q0)  {$q_0$\\$\mathsf{?}$};
-\node[state,fill=green!18,right=of q0] (qs)  {$q_s$\\$\topt$};
-\node[state,fill=red!18,below=of q0]   (qv)  {$q_v$\\$\bott$};
-\node[state,fill=green!10,right=of qs] (qps) {$q_{ps}$\\$\topp$};
-\node[state,fill=red!10,below=of qps]  (qpv) {$q_{pv}$\\$\botp$};
+\node[initial,state,fill=gray!10] (q0)  {$q_0$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=green!18,right=of q0] (qs)  {$q_s$\\[0.2pt]$\topt$};
+\node[state,fill=red!18,below=of q0]   (qv)  {$q_v$\\[0.2pt]$\bott$};
+\node[state,fill=green!10,right=of qs] (qps) {$q_{ps}$\\[0.2pt]$\topp$};
+\node[state,fill=red!10,below=of qps]  (qpv) {$q_{pv}$\\[0.2pt]$\botp$};
 
 % --- transitions ----------------------------------------------
 \path[->]
@@ -656,7 +656,7 @@ Thus, the decisive index for the conjunction is the latter of the two successes 
 \begin{tikzpicture}[
   ->, >=Stealth, node distance=16mm,
   every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
-                      minimum height=6mm,inner sep=2pt,font=\scriptsize,align=center}
+                      minimum height=6mm,inner sep=4pt,font=\footnotesize,align=center}
 ]
 \node[initial, initial where=above,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
 \node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\$\topt$};
@@ -672,7 +672,7 @@ Thus, the decisive index for the conjunction is the latter of the two successes 
   (qps) edge[loop right] node {$\Gamma$} ()
   (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
-\caption{$\obl[1]{\PAY}$.
+\caption{$\tsmc_\ell (\obl[1]{\PAY})$
 Satisfaction occurs when both agents perform $\PAY$.}
 \label{fig:obl-pay}
 \end{subfigure}
@@ -683,7 +683,7 @@ Satisfaction occurs when both agents perform $\PAY$.}
 \begin{tikzpicture}[
   ->, >=Stealth, node distance=16mm,
   every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
-                      minimum height=6mm,inner sep=2pt,font=\scriptsize,align=center}
+                      minimum height=6mm,inner sep=4pt,font=\footnotesize,align=center}
 ]
 \node[initial,initial where=above,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
 \node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\$\topt$};
@@ -699,7 +699,7 @@ Satisfaction occurs when both agents perform $\PAY$.}
   (qps) edge[loop right] node {$\Gamma$} ()
   (qpv) edge[loop right] node {$\Gamma$} ();
 \end{tikzpicture}}
-\caption{$\obl[1]{\PAYF}$.
+\caption{$\tsmc_\ell (\obl[1]{\PAYF})$
 Satisfaction occurs when both agents perform $\PAYF$.}
 \label{fig:obl-payf}
 \end{subfigure}
@@ -713,28 +713,28 @@ Satisfaction occurs when both agents perform $\PAYF$.}
 \centering
 \scalebox{0.9}{
 \begin{tikzpicture}[
-  ->, >=Stealth, node distance=17mm,
+  ->, >=Stealth, node distance=25mm,
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=11mm,minimum height=7mm,
-    inner sep=2pt,font=\scriptsize,align=center}
+    inner sep=5pt,font=\footnotesize,align=center}
 ]
 \node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
-\node[state,fill=gray!10,below=of q0] (qwait) {$s_{\mathsf{?2}}$\\$\mathsf{?}$};
-\node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\$\topt$};
-\node[state,fill=red!18,right=of qwait] (qv) {$s_{\bott}$\\$\bott$};
-\node[state,fill=green!10,right=of qs] (qps) {$s_{\topp}$\\$\topp$};
-\node[state,fill=red!10,below=of qps] (qpv) {$s_{\botp}$\\$\botp$};
+\node[state,fill=gray!10,below=of q0] (qwait) {$s_{\mathsf{?2}}$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=green!18,right=of q0] (qs) {$s_{\topt}$\\[0.2pt]$\topt$};
+\node[state,fill=red!18,right=of qwait] (qv) {$s_{\bott}$\\[0.2pt]$\bott$};
+\node[state,fill=green!10,right=of qs] (qps) {$s_{\topp}$\\[0.2pt]$\topp$};
+\node[state,fill=red!10,below=of qps] (qpv) {$s_{\botp}$\\[0.2pt]$\botp$};
 
 \path[->]
-  (q0) edge[bend left=10]  node[above,pos=0.45] {\scriptsize$\PAY^{\surd}$} (qs)
-  (q0) edge[bend right=10] node[left,pos=0.45]  {\scriptsize$\PAY^{\times}$} (qwait)
-  (qwait) edge[bend left=8] node[right,pos=0.45] {\scriptsize$\PAYF^{\surd}$} (qs)
-  (qwait) edge[bend right=10] node[below,pos=0.45] {\scriptsize$\PAY^{\times}$} (qv)
-  (qs) edge node[above] {$\Gamma$} (qps)
-  (qv) edge node[below] {$\Gamma$} (qpv)
-  (qps) edge[loop right] node {$\Gamma$} ()
-  (qpv) edge[loop right] node {$\Gamma$} ();
+  (q0) edge[bend left=10]  node[above,pos=0.45] {\footnotesize$\PAY^{\surd}$} (qs)
+  (q0) edge[bend right=10] node[left,pos=0.45]  {\footnotesize$\PAY^{\times}$} (qwait)
+  (qwait) edge[bend left=8] node[right,pos=0.45] {\footnotesize$\PAYF^{\surd}$} (qs)
+  (qwait) edge[bend right=10] node[below,pos=0.45] {\footnotesize$\PAY^{\times}$} (qv)
+  (qs) edge node[above] {\footnotesize$\Gamma$} (qps)
+  (qv) edge node[below] {\footnotesize$\Gamma$} (qpv)
+  (qps) edge[loop right] node {\footnotesize$\Gamma$} ()
+  (qpv) edge[loop right] node {\footnotesize$\Gamma$} ();
 \end{tikzpicture}}
 \caption{Reparation composition $\tsmc_\repair (\obl[1]{\PAY},\obl[1]{\PAYF})$.
 The monitor activates $\PAYF$ after tight failure of $\PAY$.}
@@ -754,28 +754,28 @@ The monitor activates $\PAYF$ after tight failure of $\PAY$.}
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=12mm,minimum height=7mm,
-    inner sep=2pt,font=\scriptsize,align=center
+    inner sep=5pt,font=\footnotesize,align=center
   }
 ]
 % States
-\node[initial,state,fill=gray!10] (q0) {$s_0$\\$\mathsf{?}$};
-\node[state, fill=gray!10, below right=16mm and 17mm of q0] (q1) {$s_1$\\$\mathsf{?}$};
-\node[state,fill=green!18,right=22mm of q0] (qs) {$s_{\topt}$\\$\topt$};
-\node[state,fill=red!18,below=28mm of q0] (qv) {$s_{\bott}$\\$\bott$};
-\node[state,fill=green!10,right=22mm of qs] (qps) {$s_{\topp}$\\$\topp$};
-\node[state,fill=red!10,below=28mm of qps] (qpv) {$s_{\botp}$\\$\botp$};
+\node[initial,state,fill=gray!10] (q0) {$s_0$\\[2pt]$\mathsf{?}$};
+\node[state, fill=gray!10, below right=16mm and 17mm of q0] (q1) {$s_1$\\[2pt]$\mathsf{?}$};
+\node[state,fill=green!18,right=38mm of q0] (qs) {$s_{\topt}$\\[2pt]$\topt$};
+\node[state,fill=red!18,below=38mm of q0] (qv) {$s_{\bott}$\\[2pt]$\bott$};
+\node[state,fill=green!10,right=38mm of qs] (qps) {$s_{\topp}$\\[2pt]$\topp$};
+\node[state,fill=red!10,below=38mm of qps] (qpv) {$s_{\botp}$\\[2pt]$\botp$};
 
 % Transitions
 \path[->]
-  (q0) edge[bend left=10] node[above,pos=0.5] {\scriptsize$\OCC^\surd \land \PAY^{\surd}$} (qs)
-  (q0) edge[bend right=14] node[left,pos=0.5] {\scriptsize$\OCC^{\times}$} (qv)
-  (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\scriptsize$\OCC^\surd \land \PAY^{\times}$} (q1)
-  (q1) edge[bend left=8] node[right] {\scriptsize$\PAYF^\surd$} (qs)
-  (q1) edge[bend left=10] node[above,pos=0.7] {\scriptsize$\PAYF^{\times}$} (qv)
-  (qs) edge node[above] {$\Gamma$} (qps)
-  (qv) edge node[below] {$\Gamma$} (qpv)
-  (qps) edge[loop right] node {$\Gamma$} ()
-  (qpv) edge[loop right] node {$\Gamma$} ();
+  (q0) edge[bend left=10] node[above,pos=0.5] {\footnotesize$\OCC^\surd \land \PAY^{\surd}$} (qs)
+  (q0) edge[bend right=14] node[left,pos=0.5] {\footnotesize$\OCC^{\times}$} (qv)
+  (q0) edge[bend left=12] node[pos=0.45,sloped,above] {\footnotesize$\OCC^\surd \land \PAY^{\times}$} (q1)
+  (q1) edge[bend left=8] node[right] {\footnotesize$\PAYF^\surd$} (qs)
+  (q1) edge[bend left=10] node[sloped,pos=0.5,above] {\footnotesize$\PAYF^{\times}$} (qv)
+  (qs) edge node[above] {\footnotesize$\Gamma$} (qps)
+  (qv) edge node[below] {\footnotesize$\Gamma$} (qpv)
+  (qps) edge[loop right] node {\footnotesize$\Gamma$} ()
+  (qpv) edge[loop right] node {\footnotesize$\Gamma$} ();
 \end{tikzpicture}}
 \caption{Conjunctive composition $\tsmc_{\wedge}(C_2,C_3)$, where $C_2=\perm[1]{\OCC}$.}
 \label{fig:c2andc3}
@@ -1453,7 +1453,7 @@ from that point on, for the global verdict to be tight or post acceptance.
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=12mm,minimum height=7mm,
-    inner sep=2pt,font=\scriptsize,align=center}
+    inner sep=5pt,font=\footnotesize,align=center}
 }
 
 % M(rep(C3)) — full width
@@ -1461,16 +1461,16 @@ from that point on, for the global verdict to be tight or post acceptance.
 \centering
 \begin{tikzpicture}
   \node[initial,state,fill=gray!10]          (q0)  {$q_0$\\$\mathsf{?}$};
-  \node[state,fill=gray!10,below=of q0]      (qw)  {$q_w$\\$\mathsf{?}$};
-  \node[state,fill=red!18,right=of qw]       (qv)  {$q_{\bott}$\\$\bott$};
-  \node[state,fill=red!10,above=of qv]       (qpv) {$q_{\botp}$\\$\botp$};
+  \node[state,fill=gray!10,below=3cm of q0]      (qw)  {$q_w$\\$\mathsf{?}$};
+  \node[state,fill=red!18,right=3cm of qw]       (qv)  {$q_{\bott}$\\$\bott$};
+  \node[state,fill=red!10,above= 3cm of qv]       (qpv) {$q_{\botp}$\\$\botp$};
 
   \path
     % In-cycle behavior:
-    (q0) edge[loop above] node[above,pos=0.5] {\scriptsize $\PAY^\surd$} ()
-    (q0) edge[bend right=13] node[left,pos=0.45] {\scriptsize $\PAY^\times$} (qw)
-    (qw)  edge[bend right=13] node[right,pos=0.45] {\scriptsize $\PAYF^\surd$} (q0) % restart on tight success
-    (qw)  edge[bend right=10] node[below,pos=0.45] {\scriptsize $\PAYF^\times$} (qv)
+    (q0) edge[loop above] node[above,pos=0.5] {\footnotesize $\PAY^\surd$} ()
+    (q0) edge[bend right=13] node[left,pos=0.45] {\footnotesize $\PAY^\times$} (qw)
+    (qw)  edge[bend right=13] node[right,pos=0.45] {\footnotesize $\PAYF^\surd$} (q0) % restart on tight success
+    (qw)  edge[bend right=10] node[below,pos=0.45] {\footnotesize $\PAYF^\times$} (qv)
     % Failure sink:
     (qv)  edge node[left] {$\Gamma$} (qpv)
     (qpv) edge[loop right] node {$\Gamma$} ();
@@ -1485,10 +1485,10 @@ from that point on, for the global verdict to be tight or post acceptance.
 \begin{subfigure}[t]{0.94\textwidth}
 \centering
 \begin{tikzpicture}
-\node[initial,state,fill=gray!10]  (s0)  {$s_0$\\$\mathsf{?}$};
-\node[state,fill=gray!10,right=of s0]  (g)   {$s_1$\\$\mathsf{?}$};
-\node[state,fill=green!18,right=16mm of g] (acc) {$s^t$\\$\topt$};
-\node[state,fill=green!10,right=19mm of acc] (ap) {$s^{+}$\\$\topp$};
+\node[initial,state,fill=gray!10]  (s0)  {$s_0$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=gray!10,right=of s0]  (g)   {$s_1$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=green!18,right=16mm of g] (acc) {$s^t$\\[0.2pt]$\topt$};
+\node[state,fill=green!10,right=19mm of acc] (ap) {$s^{+}$\\[0.2pt]w$\topp$};
 
 % --- Transitions ---
 \path
@@ -1499,11 +1499,6 @@ from that point on, for the global verdict to be tight or post acceptance.
   (acc) edge node[above] {$\Gamma$} (ap)
   (ap) edge[loop above] node {$\Gamma$} ();
 
-% --- Legend ---
-\node[below=10mm of g,align=center] (leg){
-$T := \{\,A\in\Gamma\mid \notifterm^{(1)}\in A\,\}$,\;
-$\overline{T} := \Gamma\!\setminus\! T$,\;
-};
 \end{tikzpicture}
 \caption{Monitor for the regular expression  $\Gamma^+ \cdot  \ \{terminate^{(1)}\}$.}
 \label{fig:guard-}
@@ -1522,52 +1517,58 @@ $\overline{T} := \Gamma\!\setminus\! T$,\;
 % --- Columns: Bad (x=-3) | ? (x=0) | Accept (x=+3) ---
 
 % ? column (Open, undecided)
-\node[initial,state,fill=gray!10]  (Oq0)  at (0, 0) {$s_0\times q_0$\\$\mathsf{?}$};
-\node[state,fill=gray!10]          (Oqw)  at (0,-2) {$s_1\times q_w$\\$\mathsf{?}$};
+\node[initial,state,fill=gray!10]  (Oq0)  at (0, 0) {$s_0\times q_0$\\[0.2pt]$\mathsf{?}$};
+\node[state,fill=gray!10]          (Oqw)  at (0,-2.6) {$s_1\times q_w$\\[0.2pt]$\mathsf{?}$};
 
-\node[state,fill=gray!10]  (Oqq00)  at (4, 0) {$s_1\times q_0$\\$\mathsf{?}$};
+\node[state,fill=gray!10]  (Oqq00)  at (4, 0) {$s_1\times q_0$\\[0.2pt]$\mathsf{?}$};
 %\node[state,fill=gray!10]          (Oqw0)  at (3,-2) {$\text{Open}\times q_w$\\$\mathsf{?}$};
 
 % Bad column (left): tight/post violation sinks
-\node[state,fill=red!18]           (Oqv)  at (-3,-2) {$(s_0,s_1)\times q_{\bott}$\\$\bott$};
-\node[state,fill=red!10]           (Oqpv) at (-3, 0) {$S \times q_{\botp}$\\$\botp$};
+\node[state,fill=red!18]           (Oqv)  at (-3.4,-2.6) {$(s_0,s_1)\times q_{\bott}$\\[0.2pt]$\bott$};
+\node[state,fill=red!10]           (Oqpv) at (-3.4, 0) {$S \times q_{\botp}$\\[0.2pt]$\botp$};
 
 % Accept column (right): guard impossible (vacuous accept)
-\node[state,fill=green!18]         (Iq0t) at (4, -2) {$s^t\times (q_0,q_w)$\\$\topt$};
-\node[state,fill=green!10]         (Iqwt) at (6,-2) {$s^+\times Q$\\$\topp$};
+\node[state,fill=green!18]         (Iq0t) at (4, -2.6) {$s^t\times (q_0,q_w)$\\[0.2pt]$\topt$};
+\node[state,fill=green!10]         (Iqwt) at (6.4,-2.6) {$s^+\times Q$\\[0.2pt]$\topp$};
 
 % --- Open-region transitions (guard open; C repeats) ---
 \path
   %(Oq0) edge[loop above] node {\scriptsize $\overline T$ or $\PAY^\surd$} ()
-  (Oq0) edge node[left]        {\scriptsize $\PAY^\times$} (Oqw)
-  (Oqw) edge[bend left=14] node[below]{\scriptsize $\PAYF^\times$} (Oqv)
+  (Oq0) edge node[left, inner sep=2pt]{\footnotesize$\PAY^\times$} (Oqw)
+  (Oqw) edge[bend left=14] node[below, inner sep=2pt]{\footnotesize $\PAYF^\times$} (Oqv)
  % (Oqw) edge[bend left=12] node[left]{\scriptsize $\PAYF^\surd$} (Oq0)
-  (Oqv) edge              node[left] {$\Gamma$} (Oqpv)
-  (Oqpv) edge[loop left]  node {$\Gamma$} ();
+  (Oqv) edge              node[left] {\footnotesize$\Gamma$} (Oqpv)
+  (Oqpv) edge[loop left]  node {\footnotesize$\Gamma$} ();
 
 % --- Mode switches: Open -> Imposs (guard hits bott/botp) ---
 \path
-  (Oq0) edge[bend left=10]  node[above]        {\scriptsize $\PAY^\surd$} (Oqq00)
-  (Oqw) edge [bend left=20] node[sloped,above]{\scriptsize $\PAYF^\surd \wedge \overline{T}$} (Oqq00)
-  (Oqq00) edge  [bend left=20] node[sloped,below] {\scriptsize $\PAY^\times \wedge \overline{T}$} (Oqw)
+  (Oq0) edge[bend left=10]  node[above, inner sep=2pt]{\footnotesize$\PAY^\surd$} (Oqq00)
+  (Oqw) edge [bend left=7] node[sloped,above, inner sep=2pt,pos=0.4]{\footnotesize $\PAYF^\surd \wedge \overline{T}$} (Oqq00)
+  (Oqq00) edge  [bend left=7] node[sloped,below,inner sep=2pt,pos=0.4] {\footnotesize $\PAY^\times \wedge \overline{T}$} (Oqw)
   
   (Oqq00) edge  node[right] {$T$} (Iq0t)
-  (Oqw) edge[bend right=12]  node[below] {\scriptsize $\PAYF^\surd \wedge T$} (Iq0t)
-  (Iq0t) edge[bend right=12]  node[below] {\scriptsize $*$} (Iqwt);
+  (Oqw) edge[bend right=12]  node[below, inner sep=2pt]{\footnotesize $\PAYF^\surd \wedge T$} (Iq0t)
+  (Iq0t) edge[bend right=12]  node[below, inner sep=2pt]{\footnotesize $\Gamma$} (Iqwt);
   %(Oq0) edge[bend left=14]  node[below,sloped] {\scriptsize guard $\botp$} (Iqwt)
   %(Oqw) edge[bend left=16]  node[below,sloped] {\scriptsize guard $\botp$} (Iqwt);
 
 % --- Imposs region loops ---
 \path
  % (Iq0t) edge[loop right] node {$\Gamma$} ()
-  (Iqwt) edge[loop right] node {$\Gamma$} ()
-  (Oqq00) edge[loop right] node {\scriptsize$\PAY^\surd \wedge \overline{T}$} ();
+  (Iqwt) edge[loop right] node {\footnotesize$\Gamma$} ()
+  (Oqq00) edge[loop right] node {\footnotesize$\PAY^\surd \wedge \overline{T}$} ();
 
 \end{tikzpicture}
 \caption{Tight satisfaction monitor construction for $\guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$.}
 \label{fig:guard-repC3}
 \end{subfigure}
-\caption{Progressive construction for  $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$. Figure (c) is obtained by applying $\tsmc_\guardd$ on Figure (b) and (a). }
+\caption{%
+Progressive construction for $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$.
+Figure (c) is obtained by applying $\tsmc_\guardd$ to Figures (b) and (a).
+Here, roughly speaking, $\PAY^\surd := \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}$ denotes a joint payment event,$\PAY^\times := \Gamma \setminus \PAY^\surd $ denotes failure of payement.
+$T := \{\,A\in\Gamma \mid \notifterm^{(1)}\in A\,\}$ denotes the occurrence of a termination notice by agent~1,
+and $\overline{T} := \Gamma\setminus T$ denotes its absence.
+}
 \label{fig:one-per-line}
 \end{figure}
 

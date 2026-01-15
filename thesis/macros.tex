@@ -18,6 +18,7 @@
 \usepackage{bm}
 \usepackage{apxproof}
 \usepackage{mathtools}
+\usepackage{booktabs}
 
 \usepackage{slashed}
 \usepackage{stmaryrd}
@@ -118,18 +119,10 @@
   \begin{figure}[t] % Define a figure environment
     \centering
      % Adjust padding between box and content
-    \fbox{%
-      \vbox{% Use \vbox to reduce vertical space
  % Adjust this value to control space before the first line
-        \hbox{%
-          \begin{minipage}{\textwidth}
-            #1 % Insert the align content
-          \end{minipage}%
-        }%
-      }%
-    }
-    \caption{#2} % Insert the caption provided as the second argument
-    \label{#3} % Insert the label provided as the third argument
+            #1% Insert the align content
+    \caption{#2}% Insert the caption provided as the second argument
+    \label{#3}% Insert the label provided as the third argument
   \end{figure}
 }
 %right relation

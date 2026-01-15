@@ -17,3 +17,4 @@ pointwise
 Additivity
 Decidability
 pointwise
+periodize
