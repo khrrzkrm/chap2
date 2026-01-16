@@ -132,7 +132,7 @@ Hence, identifying conflicts cannot rely solely on the surface structure of a fo
 
 \subsubsection{Why Naive Equivalence-Based Detection Fails}
 
-A first idea would be to declare that a formula “has a conflict’’ whenever it is semantically equivalent to another formula that visibly contains a punctual conflict as defined in \cite{DBLP:conf/jurix/KharrazSL24}. This criterion is too weak: Boolean manipulations can erase genuine conflicts or introduce spurious ones.
+A first idea would be to declare that a formula “has a conflict’’ whenever it is semantically equivalent to another formula that visibly contains a punctual conflict as defined in \cite{DBLP:conf/jurix/KharrazSL24}. This criterion is too weak: Boolean equivalences can \emph{erase} genuine conflicts or \emph{introduce} spurious ones.
 
 \begin{example}[Illustration of problems with naive equivalence-based detection]
 We demonstrate equivalences by erasing or introducing conflicts using the absorption properties of disjunction of an unsatisfiable formula with any other formula, as shown in Lemma~.\ref{empty_inter_union}.
@@ -145,13 +145,12 @@ is equivalent to $\phi'$, so naive equivalence would falsely conclude that $\phi
 
 \item \textbf{Creating a spurious conflict.}
 \[
-  \phi' := \phi \;\sqcup\; (\ob{\{[3,3]\}}{a} \sqcap \forb{\{[3,3]\}}{a})
+  \phi' := \phi \;\sqcup\; (\ob{\{[3,3]\}}{a} \sqcap \forb{\{[3,3]\}}{a}).
 \]
 is equivalent to $\phi$, but naive equivalence would now falsely conclude that $\phi$ has a conflict.
 \end{inparaenum}
 \end{example}
-
-To avoid such pathologies, conflict extraction must respect the syntactic structure of the formula.
+In this section, the notion of conflict is treated primarily as a syntactic phenomenon, rather than as a property defined over the full semantic domain, that is, the set of models. The goal is not merely to determine whether a specification admits some compliant execution, but to identify incompatible normative prescriptions directly at the level of their formal structure. By focusing on syntax, conflicts can be detected compositionally, prior to model construction, and in a way that scales with the size of the specification. This shift is deliberate: semantic emptiness of the model set is too coarse a signal, as it obscures where and why a specification becomes problematic.
 
 \subsubsection{Syntax-Aware Conflict Detection: LUCO and LAP}
 

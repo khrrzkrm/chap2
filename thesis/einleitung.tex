@@ -38,10 +38,10 @@ The digitalization of human activity is becoming pervasive, influencing nearly e
 
 \subsection{The Cost of Compliance}
 The cost of compliance refers to the economic and operational burden that regulatory requirements impose on governments, businesses, and individuals. Beyond direct enforcement expenses, this burden also appears as administrative overhead, delays in decision making, reduced market access, and inefficiencies in organizational processes. Quantitative assessments suggest that these burdens can represent a substantial share of economic activity in highly regulated environments.
-For the European Union, the European Commission has reported an estimate that administrative burdens may amount to around $3.5\%$ of GDP, based on an extrapolation approach and a specific definition of administrative burden.\footnote{\url{https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX\%3A52006DC0691}}
-For the United States, economy-wide estimates of the aggregate annual cost of federal regulation have been reported in the trillion-dollar range in the literature, with one widely cited estimate reporting roughly \$2.0 trillion.\footnote{\url{https://www.congress.gov/crs-product/R44348} \; \url{https://conservativereform.com/files/data-and-reports/cost-of-federal-regulations/federal-regulation-executive-summary.pdf}}
-At the same time, official government reporting aggregates costs for a narrower subset of regulations with quantified impacts and therefore yields materially smaller totals, which highlights that published numbers differ substantially with scope and methodology.\footnote{\url{https://bidenwhitehouse.archives.gov/wp-content/uploads/2025/01/FY23-Benefit-Cost-Report.pdf}}
-At the firm level, regulatory costs per employee are often higher for small firms than for large firms, a pattern documented in analyses commissioned by the U.S. Small Business Administration.\footnote{\url{https://www.sba.gov/sites/default/files/The\%20Impact\%20of\%20Regulatory\%20Costs\%20on\%20Small\%20Firms\%20\%28Full\%29.pdf}}
+For the European Union, the European Commission has reported an estimate that administrative burdens may amount to around $3.5\%$ of GDP, based on an extrapolation approach and a specific definition of administrative burden.\footnote{Source (visited on 25 December 2025) \url{https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX\%3A52006DC0691}}
+For the United States, economy-wide estimates of the aggregate annual cost of federal regulation have been reported in the trillion-dollar range in the literature, with one widely cited estimate reporting roughly \$2.0 trillion.\footnote{Sources (visited on 25 December 2025)~\url{https://www.congress.gov/crs-product/R44348} \; \\  \url{https://conservativereform.com/files/data-and-reports/cost-of-federal-regulations/federal-regulation-executive-summary.pdf}}
+At the same time, official government reporting aggregates costs for a narrower subset of regulations with quantified impacts and therefore yields materially smaller totals, which highlights that published numbers differ substantially with scope and methodology.\footnote{Source (visited on 25 December 2025) \url{https://bidenwhitehouse.archives.gov/wp-content/uploads/2025/01/FY23-Benefit-Cost-Report.pdf}}
+At the firm level, regulatory costs per employee are often higher for small firms than for large firms, a pattern documented in analyses commissioned by the U.S. Small Business Administration.\footnote{Source (visited on 25 December 2025) \url{https://www.sba.gov/sites/default/files/The\%20Impact\%20of\%20Regulatory\%20Costs\%20on\%20Small\%20Firms\%20\%28Full\%29.pdf}}
 
 A large part of this burden does not arise from the substantive goals of regulation alone, but from its structural complexity. Normative systems are typically fragmented across jurisdictions, amended incrementally, and expressed in heterogeneous legal language. As a result, regulated entities must invest considerable effort in determining which obligations apply in a given situation, how they interact, and whether exceptions or compensatory clauses are triggered. This interpretive effort is repeated across organizations and over time, which leads to duplicated work and avoidable errors.
 
@@ -116,7 +116,7 @@ While accessible, statistical approaches suffer from reliability issues. Accordi
 
 \section{What are formal methods?}
 
-Formal methods rest on a simple but demanding principle. System descriptions and their expected behavior are treated as mathematical objects, and questions about their behavior are formulated as precise logical or algebraic problems. Rather than relying on informal reasoning about expected behavior, one commits to an explicit syntax, a formal semantics, and a notion of correctness that admits proof or algorithmic analysis. This shift increases the modeling effort, but it replaces persuasive arguments with verifiable outcomes such as theorems, counterexamples, or computed verdicts.
+Formal methods rest on a simple but demanding principle \cite{woodcock2009formal}. System descriptions and their expected behavior are treated as mathematical objects, and questions about their behavior are formulated as precise logical or algebraic problems. Rather than relying on informal reasoning about expected behavior, one commits to an explicit syntax, a formal semantics, and a notion of correctness that admits proof or algorithmic analysis. This shift increases the modeling effort, but it replaces persuasive arguments with verifiable outcomes such as theorems, counterexamples, or computed verdicts.
 
 
 
@@ -136,7 +136,7 @@ Model checking and automata-theoretic techniques operate on explicit or symbolic
 
 \paragraph{Deductive and proof-based methods.}
 
-Theorem-proving and proof-carrying approaches reason at the level of logical theories rather than at the level of state exploration. Systems are described by axioms, program contracts, inference rules, fix-points, or invariants, and correctness is established by constructing proofs in a formal calculus. These methods naturally handle infinite-state systems and rich data domains, but they depend more strongly on human guidance and appropriate abstraction choices  \cite{DBLP:books/sp/93/Hoare93,DBLP:books/ph/Dijkstra76,DBLP:conf/popl/CousotC77}.
+Theorem-proving and proof carrying approaches reason at the level of logical theories rather than at the level of state exploration. Systems are described by axioms, program contracts, inference rules, fix-points, or invariants, and correctness is established by constructing proofs in a formal calculus. These methods naturally handle infinite-state systems and rich data domains, but they depend more strongly on human guidance and appropriate abstraction choices  \cite{DBLP:books/sp/93/Hoare93,DBLP:books/ph/Dijkstra76,DBLP:conf/popl/CousotC77}.
 
 
 
@@ -162,7 +162,7 @@ Across all these categories, the unifying feature is not a particular logic or a
 
 
 
-The intersection of legal theory and computer science has consolidated into the discipline of \emph{Computational Law}. This field concerns the mechanization of legal reasoning and the representation of laws, regulations, and contracts as executable code. 
+The intersection of legal theory and computer science has consolidated into the discipline of \emph{Computational Law} \cite{love2005computational}. This field concerns the mechanization of legal reasoning and the representation of laws, regulations, and contracts as executable code. 
 
 
 
@@ -198,7 +198,7 @@ In real-time systems, formal methods encode complex rules for machine execution.
 
 
 
-\section*{Scope of the Dissertation}
+\section{Scope and Contributions of the Dissertation}
 
 
 
@@ -206,7 +206,7 @@ While the general application of formal methods to law is promising, significant
 
 
 
-Existing approaches often treat norms as static constraints or verify them centrally. However, real-world contracts and regulations involve multiple agents operating asynchronously, where the timing of actions (e.g., deadlines, durations) is as critical as the actions themselves.
+Existing approaches often treat norms as static constraints or verify them centrally. However, real-world contracts, laws, and regulations involve multiple agents operating asynchronously, where the timing of actions (e.g., deadlines, durations) is as critical as the actions themselves.
 
  Furthermore, in distributed settings, agents may have different or conflicting understandings of their normative state.
 
@@ -220,17 +220,19 @@ Existing approaches often treat norms as static constraints or verify them centr
 
  
 
- To the best of our knowledge, the main contributions are the following:
+ The main contributions are the following:
 
  \begin{enumerate}[Con1]
 
-   \item We introduce the first logical framework that treats \emph{timed normative conflicts} as explicit semantic objects. The framework provides a precise notion of conflict between time-constrained obligations and prohibitions, a quantitative measure of the degree of conflict within a normative specification, and an automatic conflict-elimination procedure that preserves semantic equivalence whenever repair is possible. This moves normative analysis beyond binary consistency checks, enabling graded reasoning about normative incoherence.
+   \item We introduce a logical framework that treats \emph{timed normative conflicts} as explicit semantic objects. The framework provides a precise notion of conflict between time-constrained obligations and prohibitions, a quantitative measure of the degree of conflict within a normative specification, and an automatic conflict-elimination procedure that preserves semantic equivalence whenever repair is possible. This moves normative analysis beyond binary consistency checks, enabling graded reasoning about normative incoherence.
 
  
 
-   \item We develop the first algorithmic account of responsibility/blame attribution for non-compliance in the setting of two agents collaborating under a contract. The proposed logic and monitoring procedure distinguish between failure and lack of \emph{attempt}, allowing responsibility to be assigned even when collaborative actions fail due to delays, interference, or partial execution. This distinction, central in normative practice, is made formally precise and operationally verifiable.
+   \item We develop an algorithmic account of responsibility/blame attribution for non-compliance in the setting of two agents collaborating under a contract. The proposed logic and monitoring procedure distinguish between failure and lack of \emph{attempt}, allowing responsibility to be assigned even when collaborative actions fail due to delays, interference, or partial execution. This distinction, central in normative practice, is made formally precise and operationally verifiable.
 
  \end{enumerate}
+
+During my PhD, I also worked on related works the following papers:\cite{kharraz2021timed,DBLP:conf/jurix/KharrazSL24,Kharraz23}.
 
  
 
@@ -248,15 +250,13 @@ This thesis is structured into the following three chapters:
 
 \begin{description}
 
-  \item[\ref{chapter:preliminaries}] Introduces the basic data structures, logical concepts, and notation necessary for the understanding of this dissertation.
+  \item[\ref{chapter:preliminaries}] Introduces the basic data structures, logical concepts, and notation necessary for the understanding of this dissertation. This chapter fixes terminology and formal conventions used throughout the thesis, ensuring that later definitions and results can be stated precisely. It also establishes common ground between concepts from logic, formal methods, and normative reasoning that are otherwise introduced inconsistently in the literature.
 
-  \item[\ref{chap:conflict}] Presents the static analysis of normative specifications under metric time and studies the formal notion of timed normative conflicts.
+  \item[\ref{chap:conflict}] Presents the static analysis of normative specifications under metric time and studies the formal notion of timed normative conflicts. The chapter defines when time-constrained obligations and prohibitions are incompatible and how such conflicts can be detected syntactically and semantically. It further introduces measures and rewriting techniques that allow conflicting specifications to be analyzed and, when possible, repaired without altering their intended meaning.
 
-  \item[\ref{chap:monitoring}] Addresses the monitoring of normative interactions between two agents in the context of contracts, focusing on collaboration and blame assignment.
+  \item[\ref{chap:monitoring}] Addresses the monitoring of normative interactions between two agents in the context of contracts, focusing on collaboration and blame assignment. This chapter develops a runtime semantics that distinguishes between individual attempts, joint outcomes, and external interference during execution. Based on this distinction, it provides monitor constructions that support principled attribution of responsibility in cases of partial or failed compliance.
 
-  \item[\ref{chapter:conclusion}] The results of the overall work are summed up and discussed again.
-
-  Additionally, directions for future research are identified.
+  \item[\ref{chapter:conclusion}] The results of the overall work are summed up and discussed again. This chapter revisits the main technical contributions in light of the initial research questions and situates them within the broader landscape of formal methods for normative systems. It also reflects on the limitations of the proposed approaches and their implications for future developments.
 
 \end{description}
 

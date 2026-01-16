@@ -33,7 +33,7 @@ Although existing approaches successfully expose when a formula contains a confl
 
 \subsection{Methodology}
 
-To address these challenges, we first formalize the potential behavior of agents as finite timed words by structuraly encoding it as a sequence of timed events formed by \emph{a unique action} per event. The  We introduce a light logic, $\TDDLfm$, allowing us to formalize normative specifications where time conditions are represented as finite interval sets. This trace-based semantics serves as the ground truth for our analysis.
+To address these challenges, we first formalize the potential behavior of agents as finite timed words by structuraly encoding it as a sequence of timed events formed by \emph{a unique action} per event. We introduce a light logic, $\TDDLfm$, allowing us to formalize normative specifications where time conditions are represented as finite interval sets. This trace-based semantics serves as the ground truth for our analysis.
 
 We then narrow down the abstract notion of conflict into two fundamental types. The first is \emph{deontic}, where rules contradict each other. The second is \emph{ontic}, where rules demand more than the agent can physically perform. We show that these clashes often hide within complex time intervals. To expose them, we develop a rigorous transformation process that unfolds specifications into their atomic components. Crucially, we prove that this process is structure-preserving. It reveals strictly those conflicts present in the original design without creating spurious ones or erasing existing ones.
 
@@ -46,7 +46,7 @@ Finally, we address the practical trade-off between automation and conciseness. 
 
 In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions, building up on our previous work \cite{kharraz2021timed,DBLP:conf/jurix/KharrazSL24} are as follows:
 
-\begin{itemize}[C1]
+\begin{enumerate}[Con1]
     \item \textbf{Formal Machinery:} We define a compact, action-based logic over finite interval sets. We provide algorithms for punctual and disjunctive normalization (\dpnf) and a proof-theoretic calculus for conflict detection.
     
     \item \textbf{Conflict Characterization:} We offer precise definitions for conflicts and conditions for their correct detection. We prove that deontic and ontic conflicts correspond precisely to Minimal Unsatisfiable Subsets (MUS) in our logic. Conversely, we show that any MUS is necessarily an instance of one of these conflict types.
@@ -54,7 +54,7 @@ In this chapter, we provide a logical framework for \emph{metric-time normative 
     \item \textbf{Quantitative Metrics:} We introduce the concept of \emph{conflict density}, which measures the ratio of conflicting to total punctual obligations. We show that a conflict density of 1 implies unsatisfiability, while a density below 1 allows for a conflict-free, semantics-preserving pruning.
     
     \item \textbf{Elimination and Guarantees:} We provide sound and complete methods for equivalence-preserving conflict elimination. We analyze the verbosity induced by this process, demonstrating that while eliminating conflicts can increase the syntactic size of the specification, the blow-up remains bounded under well-defined structural conditions.
-\end{itemize}
+\end{enumerate}
 
 Altogether, this framework allows us to identify conflicts in a specification, explain their causes via interval arithmetic, measure their density, and eliminate them without altering the intended compliant behaviors.
 \section{Use Case: Goods Delivery Contract}\label{sec:usecase}
@@ -108,7 +108,7 @@ The Delivery Clause (\DC) specifies the designated delivery location and time fr
 
 
 Let us now reconsider the contract and perform a more conceptual analysis: 
-Individuals and legal entities affected by the normative system are called \emph{agents}. These agents are required to follow the prescriptions and rules of the contract or agreement, which are collectively termed \emph{norms}. In this paper, we focus on formalizing norms concerning a \emph{single} agent, leaving multi-agent scenarios for future work. 
+Individuals and legal entities affected by the normative system are called \emph{agents}. These agents are required to follow the prescriptions and rules of the contract or agreement, which are collectively termed \emph{norms}. In this dissertation, we focus on formalizing norms concerning a \emph{single} agent, leaving multi-agent scenarios for future work. 
 Norms stipulate what the different agents are permitted, obliged or forbidden to do, as well as the penalties to be applied in case of non-compliance. As explained in the introduction, we focus here not on \emph{full} normative systems but on a subset of normative statements.
 
 An agent is typically not bound by just one norm but must comply with several norms simultaneously (all the norms in the given normative system(s) under consideration). The norms may be distributed over several documents.
@@ -312,7 +312,7 @@ In practice, the driver has the option to adopt the following \textbf{practical 
     \item Schedule delivery at parking only during permitted times: The driver must choose to deliver to the parking area either between 09:00 and 10:00 or between 14:00 and 16:00 to comply with both the \textit{Delivery Clause} and the \textit{Safety Regulations}.
 \end{enumerate}
 
-In the following sections, we introduce the formal definitions and notations necessary to construct a logical language for analyzing potential normative conflicts. Building on this foundation, we develop a reasoning framework grounded in the syntax and semantics of the logic. This framework serves three key purposes:  to determine whether a viable strategy exists for complying with the normative specification; (ii) to formally identify conflicting time points where some norms from the normative system are incompatible; and (iii) to derive a refined version of the specification that eliminates such conflicts while preserving the normative intent, thereby providing the agent with a clear and streamlined formula to support its planning and reasoning. Throughout the paper, we illustrate these components using a running use case.
+In the following sections, we introduce the formal definitions and notations necessary to construct a logical language for analyzing potential normative conflicts. Building on this foundation, we develop a reasoning framework grounded in the syntax and semantics of the logic. This framework serves three key purposes:  to determine whether a viable strategy exists for complying with the normative specification; (ii) to formally identify conflicting time points where some norms from the normative system are incompatible; and (iii) to derive a refined version of the specification that eliminates such conflicts while preserving the normative intent, thereby providing the agent with a clear and streamlined formula to support its planning and reasoning. Throughout the chapter, we illustrate these components using a running use case.
 
 \section{The Micro Metric-Time  Normative Logic (\TDDLfm)}
 
@@ -1166,8 +1166,8 @@ The converse behavior is also true for disjunction: if at least one sub-formula 
 For any two formulas $\phi$ and $\phi'$ from \TDDLfm: if $\phi$ is satisfiable then $\phi \sqcup \phi'$ is satisfiable.
 \end{lemma}
 \begin{proof}
-We have by Lemma \ref{lemma:characdl} : $\dutyclass{\phi \sqcup \phi'}\equiv \dutyclass{\phi} \cup \dutyclass{\phi'}$. \\
-Assume $\phi$ is satisfiable, then $\dutyclass{\phi}\neq \emptyset$.\\
+We have by Lemma \ref{lemma:characdl} : $\dutyclass{\phi \sqcup \phi'}\equiv \dutyclass{\phi} \cup \dutyclass{\phi'}$.
+Assume $\phi$ is satisfiable, then $\dutyclass{\phi}\neq \emptyset$.
 By the definition of union, we have:\\
 $\dutyclass \phi \subseteq (\dutyclass{\phi} \cup \dutyclass{\phi'})$, thus by the assumption we obtain: $(\dutyclass{\phi} \cup \dutyclass{\phi'})\neq \emptyset$.\\
  We conclude $\dutyclass{\phi \sqcup \phi'} \neq \emptyset$, which mean that if $\phi$ is satisfiable then $\phi \sqcup \phi'$ is satisfiable

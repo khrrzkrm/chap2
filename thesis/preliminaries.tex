@@ -30,7 +30,7 @@ We define  the order relations for  $\mathbb{N}^\infty$ : $<_\infty$ and  $\leq_
 
 \begin{definition}[Interval]
 A \emph{non-empty interval} is a pair $[\tmin,\tmax]$ with $\tmin \in \mathbb{N}$, $\tmax \in \mathbb{N}^\infty$, and $\tmin \leq_\infty \tmax$. The \emph{empty interval}, written $\varnothing$, contains no elements.
-The set of all valid intervals is
+The domain of intervals is
 %\[
 defined as $
 \mathbb{I} := \{[\tmin,\tmax] \mid \tmin \leq_\infty \tmax\} \cup \{\varnothing\}.
@@ -44,7 +44,7 @@ The \emph{size} of an interval $I$, written $\size{I}$, relates to the cardinali
 \[
 \size{[a,b]} :=
 \begin{cases}
-b-a-1 & \text{if } b\!\in\!\mathbb{N},\\
+b-a+1 & \text{if } b\!\in\!\mathbb{N},\\
 \infty & \text{if } b=\infty.
 \end{cases}
 \]
@@ -52,19 +52,19 @@ b-a-1 & \text{if } b\!\in\!\mathbb{N},\\
   \begin{example} 
   Consider the following examples of intervals:
 \begin{itemize}
-    \item If \(\tmin := 2\) and \(\tmax := 5\), then \(I := [2, 5] \text{ represents } \{ 2, 3, 4, 5 \}\).
-    \item If \(\tmin := 3\) and \(\tmax := \infty\), then \(I := [3, \infty] \text{ represents }\{ t \in \mathbb{N} \mid t \geq 3 \}\).
-    \item If \(\tmin := 3\) and \(\tmax := 3\), then \(I := [3, 3] \text{ represents } \{ 3\}\).
-     \item If \(\tmin := 3\) and \(\tmax := 0\), then $I:=[3,0]$ is not a valid interval.
-\\
-
-     We transform the timed constraints from the  use case to intervals:
-     \begin{enumerate}
-         \item Let $I_1:=[9,16]$ represent the timed constraint between 9:00 and 16:00 from the Delivery Clause (Table~\ref{tab:contract}).
-         \item Let $I_2:=[8, 24]$ represent the constraint between 8:00 and 24 from the Maintenance Announcement (Table~\ref{tab:ma}).
-         \item Let $I_3:=[10,14]$ represent the constraint between 10:00 and 14:00 from the Safety regulation (Table \ref{tab:contract}).
-     \end{enumerate}
+    \item If \(\tmin := 2\) and \(\tmax := 5\), then \(I := [2, 5] \text{ represents } \{ 2, 3, 4, 5 \}\), with size $\size{[2,5]}=4$.
+    \item If \(\tmin := 3\) and \(\tmax := \infty\), then \(I := [3, \infty] \text{ represents }\{ t \in \mathbb{N} \mid t \geq 3 \}\), with $\size{[3, \infty]}= \infty$.
+    \item If \(\tmin := 3\) and \(\tmax := 3\), then \(I := [3, 3] \text{ represents } \{ 3\}\), with $\size{[3,3]}=1$.
+    % \item If \(\tmin := 3\) and \(\tmax := 0\), then $I:=[3,0]$ is not a valid interval.
 \end{itemize}
+
+We transform the following timed constraints to intervals:
+\begin{enumerate}
+    \item Let $I_1:=[9,16]$ represent the timed constraint between 9:00 and 16:00.
+    \item Let $I_2:=[8, 24]$ represent the constraint between 8:00 and 24.
+    \item Let $I_3:=[10,14]$ represent the constraint between 10:00 and 14:00.
+\end{enumerate}
+
 \end{example}
 
 
@@ -270,7 +270,7 @@ $$[a,b] \ominus [c,d] := \begin{cases}
 		[a,b] & \text{iff   } [a,b] \cap [c,d]= \emptyset,\\
   \varnothing & \text{iff   } [a,b] \subseteq [c,d],\\
   [a,c-1] & \text{iff   } [a,b] \text{ meets or overlaps or finished by } [c,d],\\
-  [d+1,b] & \text{iff   } [c,d] \text{ meets or overlaps or starts by } [a,b].\\
+  [d+1,b] & \text{iff   } [c,d] \text{ meets or overlaps or starts by } [a,b],\\
 	\end{cases}$$
 
 \begin{example}
@@ -279,7 +279,7 @@ Let us consider some examples concerning the operator $\ominus$:
 
     \begin{itemize}
     \item $
-    [2, 8] \ominus [4, 6] = \text{undefined} \quad \text{(during)}$
+    [2, 8] \ominus [4, 6] $ is undefined.
     
     \item $
     [0, 3] \ominus [5, 7] = [0, 3] \quad \text{(empty intersection)}$
@@ -293,7 +293,7 @@ Let us consider some examples concerning the operator $\ominus$:
 \end{itemize}
 
 
-We use now the difference operator on the three-time intervals from our use case:
+We use now the difference operator on the three-time intervals:
 $I_1 \ominus I_2 = [9,16]\ominus [12,\infty]= [9,11]$. 
 On the other hand,
 $I_1 \ominus I_3 = [9,16] \ominus [10,14]$ is undefined as $[10,14]$ during $[9,16]$.
@@ -301,9 +301,8 @@ $I_1 \ominus I_3 = [9,16] \ominus [10,14]$ is undefined as $[10,14]$ during $[9,
 \end{example}
 
 \subsection{Interval Sets}
-As demonstrated in the previous subsection, the interval domain $\mathbb{I}$ is not closed under union and difference operations. To address this limitation, we introduce the concept of interval sets.
-An \emph{interval set}, denoted as $\is$, is a finite set of intervals equipped with a condition to ensure minimal representation.
-This condition is called the \emph{canonical form}, which ensures that the interval set contains the smallest number of non-overlapping and non-adjacent intervals necessary to represent a given set of time points.
+The interval domain $\mathbb{I}$ is not closed under union and difference operations, as demonstrated in the previous subsection. 
+To address this structural limitation, we introduce the concept of interval sets. An \emph{interval set}, denoted as $\is$, represents a collection of time points using a finite set of intervals. To ensure this representation is unique and minimal, we enforce a condition known as the \emph{canonical form}. This form guarantees that the set is composed of the smallest possible number of intervals by requiring that no two intervals in the set are overlapping or adjacent.
 
 
 \begin{definition}[Canonical Interval Set]\label{def:canonis}
@@ -313,7 +312,7 @@ An \defn{interval set} $\is$ is said to be in \emph{canonical form} if no two in
 \]
 where $\overline{U}(I, I')$ denotes that $I$ and $I'$ are not unifiable (i.e., $I \cup I'$ is not an interval from $\mathbb{I}$).
 
-For the remainder of this paper, we adopt the following notational convention: we use $\is^*$ to refer to interval sets composed exclusively of finite (bounded) intervals. In contrast, we use $\is$ to denote interval sets that may contain infinite intervals, such as those extending to $+\infty$. 
+For the remainder of this dissertation, we adopt the following notational convention: we use $\is^*$ to refer to interval sets composed exclusively of finite (bounded) intervals. In contrast, we use $\is$ to denote interval sets that may contain infinite intervals, such as those extending to $+\infty$. 
 
 The \emph{size of a set of intervals} $\is$, written $\size{\is}$, is defined as the sum of the sizes of the individual intervals it contains:
 \[
@@ -332,11 +331,11 @@ Consider the interval set $\is':= \{ [0, 2], [3, 6] \}$. The two intervals formi
 Consider the interval set $\is:= \{ [0, 2], [5, 7], [10, \infty] \}$.\\ The pair $[0, 2]$ and $[5, 7]$ satisfy $\overline{U}([0, 2], [5, 7])$.\\ Similarly, $[5, 7]$ and $[10, \infty]$ satisfy $\overline{U}([5, 7], [10, \infty])$.\\ Finally, $[0, 2]$ and $[10, \infty]$ also satisfy $\overline{U}([0, 2], [10, \infty])$.
 \end{example}
 
-These representations enable a symbolic encoding of timed constraints, such as those described in our use case. For instance, the obligations from \MA, as shown in Table~\ref{tab:contract}, that an action is permitted \textit{between 02:00 and 04:00, and between 08:00 and 24:00}—can be expressed as the canonical interval set:
+These representations enable a symbolic encoding of timed constraints.  Consider
 \[
 \is_3 := \{ [2,4], [8,24] \}.
 \]
-Similarly, constraints from \DC and \SR can each be represented using singleton interval sets. The constraint \textit{between 09:00 and 16:00}, for example, corresponds to:
+Similarly, other constraints  could be represented using singleton interval sets. The constraint \textit{between 09:00 and 16:00}, for example, corresponds to:
 \[
 \is_1 := \{ [9,16] \},
 \]
@@ -411,8 +410,7 @@ Showing a large blow-up, mainly caused by the large intervals.
         \item $[6, 9] \subseteq [6, \infty] \in \mathfrak{I'}$.
     \end{itemize}
     
-    For the sets of intervals $\is_1:= \{[9,16]\}$ and $\is_3:=\{[2,4],[8,24]\}$ from 
-    our use case we have: $\is_1 \subset \is_3$.
+    For the sets of intervals $\is_1:= \{[9,16]\}$ and $\is_3:=\{[2,4],[8,24]\}$ we have: $\is_1 \subset \is_3$.
     \end{example}
 
     \paragraph{Intersection} The intersection of two sets of intervals $\mathfrak{I}$ and $\mathfrak{I}'$ is the set of intervals containing all the intervals present in both interval sets. The operator is commutative and is defined as:
@@ -427,10 +425,10 @@ Showing a large blow-up, mainly caused by the large intervals.
     \begin{itemize}
         \item If $\mathfrak{I}:= \{ [1, 5], [8, 10], [19,\infty] \}$ and $\mathfrak{I}':= \{ [3, 7], [9, 12] \}$, we have $\mathfrak{I}\cap \mathfrak{I}' = \{ [3, 5], [9, 10] \}$,\\ as $[1, 5] \cap [3, 7] = [3, 5]$ and $[8, 10] \cap [9, 12] = [9, 10]$.
         \item If $\mathfrak{I} := \{ [1, 5], [8, 10] \}$ and $\mathfrak{I}':= \{ [6, 7], [12, \infty] \}$ then $\mathfrak{I}\cap \mathfrak{I}' = \emptyset$ (as none of the intervals from $\mathfrak{I}$ intersect with any interval from $\mathfrak{I}'$).
+        \item If $\mathfrak{I} := \{ [0, 4], [6, 10] \}$ and $\mathfrak{I}':= \{ [3, 7] \}$ then $\mathfrak{I}\cap \mathfrak{I}' = \{[3,4],[6,7]\}$.
     \end{itemize}
 
-    For the intervals $\is_1$, $\is_2$, and $\is_3$ related respectively to $\DC$, $\SR$, and $\MA$ from 
-    the use case:
+    For the intervals $\is_1$, $\is_2$, and $\is_3$ related to the previous examples:
     \begin{itemize}
         \item $\is_1 \cap \is_2= \{[9,16]\} \cap \{[10,14]\}= \{[10,14]\}$.
         \item $\is_1 \cap \is_3 = \{[9,16]\} \cap \{[2,4],[8, 24]\}= \{[9,16]\}$.
@@ -457,15 +455,15 @@ where $\circ$ denotes set concatenation, and the subset of unifiable and non uni
 U(I, \is) &:= \{ I_i \in \is \mid I_i \notin \overline{U}(I, \is) \}.
 \end{align*}
 
-\begin{example} Let \(\is := \{ [1, 5], [9, 11] \}\) and \(\is' := \{ [3, 7], [9, 12] \}\):
-\begin{align*}
-\is \cup \is' &= \big(\{ [1, 5], [9, 11] \}\cup [1,7]\big) \cup [9,12] &\text(unrolling)\\
-&= \big( \{ [1,5] \cup [3,7]\} \circ\{ [9,11]\}\big) \cup [9,12]  & (\text{as~}  \overline{U}([9,11], [3,7]))\\
-&=\{[1,7],[9,11]\} \cup [9,12] & \text{(simplification)}\\
-&= \{ [9,11] \cup [9,12] \} \circ \{[1,7]\}  & (\text{as~}\overline{U}([9,12], [1,7]))\\
-&= \{[1,7],[9,12]\}
-\end{align*}
-\end{example}
+\begin{example} Let $\is := \{ [1, 5], [9, 11] \}$ and $\is' := \{ [3, 7], [9, 12] \}$. The union is computed as follows:
+    \begin{align*}
+    \is \cup \is' &= \big({ [1, 5], [9, 11] } \cup [3, 7]\big) \cup [9, 12] && \text{(expansion)}\\
+    &= \big( { [1, 5] \cup [3, 7] } \cup { [9, 11] } \big) \cup [9, 12] && (\text{as } \overline{U}([9, 11], [3, 7]))\\
+    &= { [1, 7], [9, 11] } \cup [9, 12] && \text{(simplification)}\\
+    &= { [9, 11] \cup [9, 12] } \cup { [1, 7] } && (\text{as } \overline{U}([1, 7], [9, 12]))\\
+    &= { [1, 7], [9, 12] } && \text{(final result)}
+    \end{align*}
+    \end{example}
 
 \subsubsection{Difference (Reduction)}\label{differenceop}
 
@@ -495,7 +493,7 @@ An alternative definition could be $I \ominus I' := \{I_i \mid I_i \subseteq I \
 
 Thus, $\is \ominus \is' = \{ [1, 2],\ [6, 6],\ [9, 10] \}$.
 
-From the intervals $\is_1, \is_2, \is_3$ related to our three normative systems from the use case, we have:
+From the intervals $\is_1, \is_2, \is_3$ studied before, we have:
 \begin{itemize}
     \item $\is_1 \ominus \is_2= \{[9,16]\} \ominus \{[10,14]\}= \{[9,9],[15,16]\}.$
     \item $\is_1 \ominus \is_3 = \{[9,16]\} \ominus \{[2,4],[8, 24]\}= \emptyset. $

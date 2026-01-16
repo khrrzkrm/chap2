@@ -8,11 +8,16 @@ When we speak of traces, we mean recorded words obtained from concrete execution
 We begin by establishing three word models depending on their timing settings and the canonical morphisms between them. Subsequently, we study how to synchronize two words of the same type.
 
 \subsection{Notations on Discrete-Action Words}
-For the remainder of this dissertation, let \(\Sigma\) denote a non-empty set of discrete \emph{actions}. Before introducing the specific timing models, we fix a small algebraic core shared by all discrete-action words, specifically the basic sequence structure and standard operators.
+For the remainder of this dissertation, let \(\Sigma\) denote a non-empty set of discrete \footnote{instantaneous, with no durations} \emph{actions}. Before introducing the specific timing models, we fix a small algebraic core shared by all discrete-action words, specifically the basic sequence structure and standard operators.
 
 \paragraph{Events and Words.}
-An \emph{event}, denoted by $e$, is an element of an event domain $\mathbb{E}$. The specific structure of $\mathbb{E}$ depends on the timing model derived from $\Sigma$ (e.g., $\mathbb{E} = \Sigma$ for untimed words).
-We denote the set of \emph{finite words} over $\mathbb{E}$ by $\mathbb{E}^*$, the set of \emph{infinite words} by $\mathbb{E}^\omega$, and the set of all words by $\mathbb{E}^\infty := \mathbb{E}^* \cup \mathbb{E}^\omega$.
+We formalize the universe of atomic occurrences of an action as a type called the \emph{event domain}, denoted by $\mathbb{E}$.
+An individual object of this type is an \emph{event}, denoted by $e$.
+The specific structure of these events is determined by the timing model applied to the alphabet $\Sigma$ (e.g., $\mathbb{E} = \Sigma$ for untimed words).
+Sequences of these events form the set of \emph{finite words}, denoted by $\mathbb{E}^*$, and the set of \emph{infinite words}, denoted by $\mathbb{E}^\omega$.
+The set of all words is defined as the union $\mathbb{E}^\infty := \mathbb{E}^* \cup \mathbb{E}^\omega$.
+% An \emph{event}, denoted by $e$, is an element of an event domain $\mathbb{E}$. The specific structure of $\mathbb{E}$ depends on the timing model derived from $\Sigma$ (e.g., $\mathbb{E} = \Sigma$ for untimed words).
+% We denote the set of \emph{finite words} over $\mathbb{E}$ by $\mathbb{E}^*$, the set of \emph{infinite words} by $\mathbb{E}^\omega$, and the set of all words by $\mathbb{E}^\infty := \mathbb{E}^* \cup \mathbb{E}^\omega$.
 
 
 The empty word, denoted by $\emptytrace$, is the unique finite word containing no events. The set of non-empty finite words is $\Sigma^+$, we have $\Sigma^*= \emptytrace \cup \Sigma^+$.
@@ -43,8 +48,8 @@ We adopt \emph{1-based indexing} where indices correspond to the position of eve
 
 
 
-\paragraph{Words vs. Traces.}
-We conceptually distinguish a \emph{finite word} (conceptual model) from a \emph{finite trace} (an observed behavior of a system/agent). However, formally, both are finite sequences of events in $\mathbb{E}^*$. In this dissertation, we use "word" as the default technical term and "trace" when emphasizing that the sequence is the result of a recorded observation.
+\paragraph{Words vs Traces.}
+We conceptually distinguish a \emph{finite word} (conceptual model) from a \emph{finite trace} (an observed behavior of a system/agent). However, formally, both are finite sequences of events in $\mathbb{E}^*$. In this dissertation, we use \emph{word} as the default technical term and \emph{trace} when emphasizing that the sequence is the result of a recorded observation.
 
 \paragraph{Omega notation.}
 For any non-empty finite word $u \in \mathbb{E}^{+}$, written $u=\langle e_1,\dots,e_n \rangle$ with $n\ge 1$, we write
@@ -73,7 +78,7 @@ For any finite word \(u \in \mathbb{E}^*\) and any word
 If additionally \(u \neq v\), we write \(u \prec v\).
 
 
-\noindent\textbf{Generic Projection.}
+\paragraph{Generic Projection.}
 For a subset of events $S \subseteq E$, the projection $w{\upharpoonright}S$ is the subsequence obtained by deleting all events $e_k$ such that $e_k \notin S$.
 
 
@@ -84,7 +89,7 @@ Logical-time words capture \emph{order only}, abstracting away any notion of spe
 \begin{definition}[Logical-time word, notation \(\tault\)]
   A (finite) logical-time word over an alphabet \(\Sigma\) is a sequence:
   \[
-  \tault\;=\; \trace{(a_1),\,(a_2),\,\dots,\,(a_{n})}\ \in\ \Sigma^{*},
+  \tault\;=\; \trace{a_1,\, a_2,\,\dots,\,a_{n}}\ \in\ \Sigma^{*},
   \]
   where \(a_k\in\Sigma\) for all \(k\in\{1,\dots,n\}\).
 \end{definition}
@@ -131,7 +136,7 @@ Additionally, the following holds for the concatenation of any two logical-time 
 The next operator abstracts from positions and records how often a given action occurs in a word.
 
 \begin{definition}[Counting function on logical-time words]
-  Let $a\in\Sigma$ and let $\tault=\trace{(a_1),\dots,(a_{n})}\in\Sigma^{*}$ be a logical-time word.
+  Let $a\in\Sigma$ and let  $\tault$ be a logical-time word $\tault=\trace{(a_1),\dots,(a_{n})}\in\Sigma^{*}$ .
   The \defn{count} of $a$ in $\tault$, written $\#(a,\tault)$, is defined by
   \[
     \#(a,\tault)
@@ -200,7 +205,7 @@ Metric-time words extend the previous model by recording \emph{which} action occ
   \end{itemize}
 \end{definition}
 
-We denote the set of all finite metric-timed words by $\domtr := (\Sigma \times \mathbb{N})^*$. Unlike the logical-time setting, where events are compared solely by order, this model supports quantitative reasoning about the precise timing between events. This added expressiveness, however, restricts algebraic composition: concatenation is not defined for arbitrary pairs of words, as the combined sequence must respect the strictly increasing order of timestamps. To formalize these timing properties, the next definitions introduce two auxiliary operators: $\Delta$ measures the elapsed time between positions, while $\rho$ retrieves the action occurring at a specific absolute time.
+We denote the set of all finite metric-timed words by $\domtr$. Unlike the logical-time setting, where events are compared solely by order, this model supports quantitative reasoning about the precise timing between events. This added expressiveness, however, restricts algebraic composition: concatenation is not defined for arbitrary pairs of words, as the combined sequence must respect the strictly increasing order of timestamps. To formalize these timing properties, the next definitions introduce two auxiliary operators: $\Delta$ measures the elapsed time between positions, while $\rho$ retrieves the action occurring at a specific absolute time.
     \begin{definition}[Timed distance between two events]
         Let $\taumt=\trace{(a_1,t_1),\dots,(a_{n},t_{n})}\in(\Sigma\times\mathbb{N})^{*}$ be a metric-time word.
         For any two indices $i,j\in\mathsf{pos}(\taumt)$ with $i<j$, the \defn{time distance} between event $i$ and event $j$ is
@@ -223,8 +228,8 @@ We denote the set of all finite metric-timed words by $\domtr := (\Sigma \times 
 
 
 \noindent\textbf{Basic operators and short hands.}
-For \(A\subseteq\Sigma\), projection \( \taumt{\upharpoonright}A\in(A\times\mathbb{N})^{*} \) keeps exactly the pairs \((a,t)\) where \(a\in A\).\\
-Prefixes can be defined by \emph{length} \( \taumt[1,k] \), or by \emph{time} \( \taumt{\upharpoonright}\{t\le T\} \) (shorthand: \( \taumt\{t\le T\}\)).\\
+For \(A\subseteq\Sigma\), projection \( \taumt{\upharpoonright}A\in(A\times\mathbb{N})^{*} \) keeps exactly the pairs \((a,t)\) where \(a\in A\).
+Prefixes can be defined by \emph{length} \( \taumt[1,k] \), or by \emph{time} \( \taumt{\upharpoonright}\{t\le T\} \) (shorthand: \( \taumt\{t\le T\}\)).
 
 
 \begin{example}[Metric-timeo perators]
@@ -258,7 +263,7 @@ The synchronous hypothesis fixes the intended abstraction level: within one cloc
   where \(s_t\in\Sigma\cup\{-\}\) represents the observation at round \(t\) and \(T\) is called the \defn{horizon}.
 \end{definition}
 
-Synchronous-time words sit between logical-time words and metric-time words. Like logical time, they are discrete sequences, but they come with an explicit global round index that plays the role of a coarse clock. Like metric time, one can talk about \emph{when} something happens, but only in terms of round numbers rather than absolute timestamps. The crucial difference to both earlier models is that the \emph{absence} of an action is itself observable, represented by the stutter symbol ``$-$''.
+Synchronous-time words timing model is between logical-time words and metric-time words. Like logical time, they are discrete sequences, but they come with an explicit global round index that plays the role of a coarse clock. Like metric time, one can talk about \emph{when} something happens, but only in terms of round numbers rather than absolute timestamps. The crucial difference to both earlier models is that the \emph{absence} of an action is itself observable, represented by the stutter symbol ``$-$''.
 
 
   

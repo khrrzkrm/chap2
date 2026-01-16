@@ -1864,7 +1864,7 @@ The \emph{Quantitative Monitor Construction} function, denoted $\qmc(C)$, takes 
     \boxalignfigure{{%
     \centering
     \begin{tikzpicture}[node distance=32mm, on grid, auto]
-      \tikzset{
+      \tikzset{shorten >=1pt,
         every node/.style={font=\footnotesize},
         state/.style={draw, rectangle, rounded corners, align=center, inner sep=3pt},
         accepting/.style={double}
@@ -2359,7 +2359,7 @@ In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ yields $
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[
-  ->, >=Stealth, node distance=45mm,
+  ->,shorten >=1pt, node distance=45mm,
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=16mm,minimum height=7mm,

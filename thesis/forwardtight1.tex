@@ -138,7 +138,7 @@ Definition~\ref{def:lattsat} but refines it with explicit prefix continuity.
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[
-  >=stealth',shorten >=1pt,auto,node distance=28mm,semithick,
+shorten >=1pt,auto,node distance=28mm,semithick,
   every state/.style={rectangle,rounded corners,draw,minimum width=11mm,
     minimum height=7.5mm,inner sep=5pt,font=\footnotesize,align=center}
 ]
@@ -654,7 +654,7 @@ Thus, the decisive index for the conjunction is the latter of the two successes 
 \centering
 \scalebox{0.82}{
 \begin{tikzpicture}[
-  ->, >=Stealth, node distance=16mm,
+  ->,shorten >=1pt, node distance=16mm,
   every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
                       minimum height=6mm,inner sep=4pt,font=\footnotesize,align=center}
 ]
@@ -681,7 +681,7 @@ Satisfaction occurs when both agents perform $\PAY$.}
 \centering
 \scalebox{0.82}{
 \begin{tikzpicture}[
-  ->, >=Stealth, node distance=16mm,
+  ->, node distance=16mm,
   every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
                       minimum height=6mm,inner sep=4pt,font=\footnotesize,align=center}
 ]
@@ -713,7 +713,7 @@ Satisfaction occurs when both agents perform $\PAYF$.}
 \centering
 \scalebox{0.9}{
 \begin{tikzpicture}[
-  ->, >=Stealth, node distance=25mm,
+  ->,shorten >=1pt, node distance=25mm,
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=11mm,minimum height=7mm,
@@ -750,7 +750,7 @@ The monitor activates $\PAYF$ after tight failure of $\PAY$.}
 \centering
 \scalebox{0.9}{
 \begin{tikzpicture}[
-  ->, >=Stealth, node distance=20mm and 18mm,
+  ->, node distance=20mm and 18mm,
   every state/.style={
     rectangle,rounded corners,draw,
     minimum width=12mm,minimum height=7mm,
@@ -1448,7 +1448,7 @@ from that point on, for the global verdict to be tight or post acceptance.
 \begin{figure}[h!]
 \centering
 \tikzset{
-  ->, >=Stealth, semithick,
+  ->,shorten >=1pt, semithick,
   node distance=17mm,
   every state/.style={
     rectangle,rounded corners,draw,
