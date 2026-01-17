@@ -299,9 +299,9 @@ In the previous subsection, we defined a denotational blame semantics that refin
 Unlike the tight satisfaction monitor, which groups all violations into a single generic $\bott$ verdict, the blame monitor must distinguish between different causes of violation.
 Therefore, we cannot simply relabel the outputs of the existing monitor; we must construct a new monitor whose state space explicitly encodes these distinctions.
 
-\begin{definition}[Blame monitor]
+\begin{definition}[Moore machine on blame verdicts]
 \label{def:blamemonitor}
-The \emph{blame monitor}, written $\mathcal{M}_{11}$, is a Moore machine whose output alphabet is the eleven-valued blame verdict set $\mathbb{V}_{11}$. Formally,
+A \emph{Moore machine on blame verdicts}, written $\mathcal{M}_{11}$, is a Moore machine whose output alphabet is the eleven-valued blame verdict set $\mathbb{V}_{11}$. that is:
 \[
 \mathcal{M}_{11} = (Q,q_0,\Gamma,\mathbb{V}_{11},\delta,\lambda_{11}),
 \]
@@ -356,7 +356,7 @@ For any literal $\ell$ (including obligations, permissions, and constants $\top,
 \end{itemize}
 
 \paragraph{Inductive Step: Other Operators.}
-For Sequence ($C_1 ; C_2$), Reparation ($C_1 \repair C_2$), Repetition ($\nrep(n,C), \repit{C}$), and Guarded contracts, the construction follows the exact same topological logic as the Tight Satisfaction Monitor constructions (Definitions \ref{def:moore-seq} to \ref{def:moore-repeat-unbounded}), with one key adaptation:
+For Sequence ($C_1 ; C_2$), Reparation ($C_1 \repair C_2$), Repetition ($C^n, \repit{C}$), and Guarded contracts, the construction follows the exact same mapping and redirection to states as the Tight Satisfaction Monitor constructions (Definitions \ref{def:moore-seq} to \ref{def:moore-repeat-unbounded}), with one key adaptation:
 \begin{itemize}
     \item \textbf{Matching Blame States:} Wherever the tight monitor construction redirects a generic violation state (outputting $\bott$), the blame monitor construction redirects \emph{all} corresponding specific blame states (outputting $\bottp{S}$ for any $S$).
     \item \textbf{Example (Reparation):} In $\tsmc_{\repair}$, transitions to any state $q$ where $\lambda_5(q)=\bott$ are redirected to the initial state of $C_2$. In $\bmc_{\repair}$, transitions to \emph{any} state $q$ where $\lambda_{11}(q)=\bottp{S}$ (regardless of $S$) are redirected to the initial state of $C_2$.

@@ -432,12 +432,18 @@ To ensure this evaluation is robust, the partitioning must be exact. We must ide
 Without a mechanism to ``lock in'' a verdict at the earliest instance, significant semantic ambiguities arise. If we simply tag a prefix as ``accepted'' whenever it belongs to the target language $L$,
 we lose the distinction between the \emph{moment} credit is earned and subsequent irrelevant behavior.
 
-We illustrate this notion on regular languages. The Chomsky hierarchy\cite{chomskySchutzenberger1963} classifies formal languages according to their generative and computational complexity, ranging from unrestricted languages down to regular ones. At the bottom of this hierarchy lie regular languages, which can be equivalently characterized by regular expressions, deterministic and nondeterministic finite automata, and monadic second-order logic over words. This equivalence is well understood and forms the backbone of automata-theoretic reasoning.
+We illustrate this notion on regular languages. The Chomsky hierarchy \cite{chomskySchutzenberger1963} classifies formal languages according to their generative and computational complexity, ranging from unrestricted languages down to regular ones. At the bottom of this hierarchy lie regular languages, which can be equivalently characterized by regular expressions, deterministic and nondeterministic finite automata, and monadic second-order logic over words. This equivalence is well understood and forms the backbone of automata-theoretic reasoning \cite{Thomas1997}.
 
-Consider the regular language $L=\{a\}$ (``seeing $a$ once is success'') over $\Sigma=\{a,b\}$.
+\paragraph{Trivial example} Consider the regular language $L=\{a\}$ over $\Sigma=\{a,b\}$ interpreted as ``seeing $a$ once is success''.
 \begin{itemize}
     \item \textbf{Acceptance:} Reading $a$ at the first position decides compliance immediately. Longer words like $aa$ or $ab$ must be treated as occurring \emph{after} the decision, not as new acceptances. Without this distinction, we risk ``double counting'' compliance.
     \item \textbf{Rejection:} Conversely, reading $b$ first establishes the earliest failure. Extensions like $ba$ or $bb$ are merely continuations of an already broken contract.
+\end{itemize}
+
+\paragraph{Illustrating prefix ambiguity.} The distinction becomes critical for languages containing prefixes of other member words, such as $L'=\{a, aba\}$ over $\Sigma=\{a,b\}$. In standard language theory, the entire word $aba$ is a valid member of $L'$. However, under a tight behavioral interpretation, success is achieved the moment the initial $a$ is observed. Consequently, the suffix $ba$ is treated as irrelevant post-acceptance behavior.
+\begin{itemize}
+\item \textbf{Acceptance:} The satisfaction frontier is reached after reading the first symbol $a$. Although $aba \in L'$, recognizing this later membership as a new success would imply that a single execution contains multiple distinct ``acceptance points''.
+\item \textbf{Rejection:} Reading $b$ at the first position triggers an eager rejection because no word in $L'$ starts with $b$. The trace has effectively left the prefix closure of $L'$. By contrast, once the system commits to acceptance at the initial $a$, strict extensions can never become rejections; they remain classified as post-acceptance.
 \end{itemize}
 Our proposed five-valued semantics guarantees determinacy by identifying exactly one verdict per prefix: the earliest acceptance, the earliest rejection, post-acceptance, post-rejection, or pre-verdict (undecided).
 
@@ -452,28 +458,26 @@ Our objective is to partition $\Sigma^*$ into regions that isolate these boundar
 
 We first identify candidate boundaries using standard topological operators.
 
-\begin{definition}[Closures and Frontiers]\label{def:closure-bad}
-    For a regular language $L \subseteq \Sigma^*$, we define:
-    \begin{enumerate}
-        \item $\closureclass{L}$: The set of all prefixes of words in $L$
-        $$
-\closureclass{L}
-:=
-\{ u \in \Sigma^* \mid \exists v \in L:\ u \preceq v \}.
-$$
-  \item $\badclass{L} = \Sigma^* \setminus \closureclass{L}$: The set of prefixes that cannot be extended to acceptance.
-        $$
-\badclass{L}
-:=
-\{ u \in \Sigma^* \mid u \notin \closureclass{L} \}.$$
-        \item $\minlang{L}$: The set of the shortest elements from $L$.
-        $$
-\minlang{L}
-:
-\{ u \in L \mid \forall u’ \in :\ u \preceq u' \}.
-$$
-    \end{enumerate}
-\end{definition}
+\begin{definition}[Closures and Frontiers]
+  \label{def:closure-bad}
+  For a regular language $L \subseteq \Sigma^*$, we define the following characteristic sets:
+  \begin{enumerate}
+      \item \textbf{Prefix Closure} ($\closureclass{L}$): The set of all prefixes of words in $L$.
+      \[
+      \closureclass{L} := \{ u \in \Sigma^* \mid \exists v \in L : u \preceq v \}.
+      \]
+      
+      \item \textbf{Bad Prefixes} ($\badclass{L}$): The set of prefixes that cannot be extended to any word in $L$, defined as the complement of the prefix closure.
+      \[
+      \badclass{L} := \Sigma^* \setminus \closureclass{L}.
+      \]
+  
+      \item \textbf{Minimal Language} ($\minlang{L}$): The set of the shortest words in $L$, containing those elements of $L$ that have no proper prefix in $L$.
+      \[
+      \minlang{L} := \{ u \in L \mid \nexists v \in L : v \prec u \}.
+      \]
+  \end{enumerate}
+  \end{definition}
 
 Using $\minlang{\cdot}$, we obtain candidates for eager acceptance ($\minlang{L}$) and eager rejection ($\minlang{\badclass{L}}$). However, overlaps may occur; a word can be a minimal bad prefix while extending a minimal accepted word (e.g., $aa$ for $L=\{a\}$). To enforce the Priority of Acceptance, we define the canonical partition such that once acceptance is reached, extensions are permanently classified as irrelevant, even if they technically deviate from $L$.
 
@@ -842,7 +846,7 @@ Having defined the general construction, we now illustrate it on \cDL regular ex
 This subsection fixes the semantics of the regular expressions that act as temporal guards in \cDL.
 
 \subsubsection{Semantics for Regular Expressions from \cDL}
-We fix $\Sigma_C$ as the collaboration alphabet and $\Sigma_C^{(p)}$, the tagged collaboration alphabet of agent $p \in \{1, 2\}$, and the \emph{letter alphabet} $\Gamma := 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}}$ from the syntax in Figure~\ref{fig:cdl-syntax}, ranging over all possible sets of agent indexed actions that may occur jointly within a single contractual period.
+We fix $\Sigma_C$ as the collaboration alphabet and $\Sigma_C^{(p)}$, the tagged collaboration alphabet of agent $p \in \{1, 2\}$, and the \emph{letter alphabet} $\Gamma := 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}}$ from the syntax in \ref{fig:cdl-syntax}, ranging over all possible sets of agent indexed actions that may occur jointly within a single contractual period.
 
 \begin{definition}[Semantics of regular expressions]\label{def:re-semantics}
   The satisfaction relation for a regular expression $\re$, written

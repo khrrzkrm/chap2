@@ -1,14 +1,12 @@
 \subsection{Monitor Construction for Tight Contract Satisfaction}
 
-\paragraph{From semantics to monitors.}
-The definitions in Section~\ref{forwardsatsem} specify, for each contract $C$, which trace prefixes are tight satisfaction and tight violation frontiers, and how the remaining verdicts are derived from them.
-In this section we turn these clauses into finite-state monitors that compute the same verdicts incrementally along a trace.
-The construction is Moore-style: each state summarizes exactly the information needed to determine the current five-valued verdict, and each new letter updates this summary by a deterministic transition.
-We prove that the monitor output agrees with the denotational semantics at every prefix, which enables algorithmic compliance checking and serves as the basis for the responsibility-aware extensions developed next.
-\begin{definition}[Tight satisfaction monitor]
+In the previous section, we established the mathematical rules that define exactly when a contract is satisfied or violated. 
+Now, we turn those abstract definitions into an operational implementation: a finite-state monitor that tracks compliance step-by-step as events occur. 
+We design these as Moore-style machines, which means the monitor maintains a running summary of the interaction; every state corresponds directly to one of the five possible verdicts (such as "tight satisfaction" or "undecided"). By ensuring these monitors update deterministically with every new event, we create a reliable, automated way to check compliance that matches our theoretical rules perfectly.
+\begin{definition}[Moore machine on tight satisfaction verdicts]
     \label{def:tightsatmon}
-    The \emph{tight satisfaction monitor}, written $\tmon$, is a Moore machine whose output alphabet is the five-valued verdict set $\tightverdicts$.
-    Formally,
+    The \emph{Moore machine on tight satisfaction verdicts}, written $\tmon$, is a Moore machine whose output alphabet is the five-valued verdict set $\tightverdicts$.
+    That is:
     \[
     \tmon = (Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_{5}),
     \]
@@ -128,12 +126,10 @@ For a literal $\ell$ from \cDL, the \emph{Tight Satisfaction monitor constructio
 \end{itemize}
 \end{definition}
 
-Hence, for every atomic literal,
-the machine emits $\mathsf{?}$ at the initial state,
-switches to $\topt$ or $\bott$ at the next state by consuming the event forming $\trace{A}$,
-and then permanently outputs $\topp$ or $\botp$ for all remaining events.
-This Moore representation is equivalent to the tight semantics of
-Definition~\ref{def:lattsat} but refines it with explicit prefix continuity.
+\paragraph{Intuition.} For every atomic literal, the monitor construction initializes at $q_0$, emitting the undecided verdict $\mathsf{?}$ to reflect the absence of decisive information.
+Upon consuming the first event, the execution crosses the decisive frontier, transitioning to either $q_s$ (success at frontier) with verdict $\topt$ if the literal is satisfied, or $q_v$ (violation at frontier) with verdict $\bott$ if it is violated.
+Immediately following this decision, the monitor enters the stable regions $q_{ps}$ (post-success) or $q_{pv}$ (post-violation), where it permanently emits $\topp$ or $\botp$ respectively.
+These indices explicitly encode the temporal relationship to the frontier, distinguishing the exact moment of decision from the immutable history of the trace.
 
 \begin{figure}[h!]
 \centering
@@ -352,9 +348,9 @@ $C\,;\,C'$, written $\tsmc_{\bm{;}}(C,C')$, is defined as:
   \begin{cases}
     q'_0 
       & \text{if } q\in Q \text{ and } \lambda_5(\delta(q,A)) = \topt, \\[4pt]
-    \delta(x,A)
+    \delta(q,A)
       & \text{if } q\in Q \text{ and } \lambda_5(\delta(q,A)) \notin \{\topt,\topp\}, \\[4pt]
-    \delta'(x,A)
+    \delta'(q,A)
       & \text{if } q\in Q'. \\
   \end{cases}
   \]
@@ -575,29 +571,15 @@ Since all other transitions are unchanged and no ambiguity about the switching p
 
 
 \begin{remark}[Relation to Control Phases and Prior Work]
-\label{rem:control-phases}
-The structural constructions of Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair}
-can be seen as the static counterpart of the \emph{control-phase} view
-used in runtime-verification frameworks.
-Instead of introducing an explicit control variable
-$m \in \{\mathbf{L}, \mathbf{R}\}$, with $\mathbf{L}$ for left-hand side and $\mathbf{R}$ for the right, to determine which component is active, our transformation achieves the same effect directly on the transition graph deleting the terminal states of the left monitor
-and redirecting the transitions that reach a decisive verdict
-($\topt$ for sequence, $\bott$ for reparation)
-to the initial state of the right monitor. This compile-time construction encodes the same operational behavior as a mode-augmented monitor that switches from $\mathbf{L}$ to $\mathbf{R}$
-when the switching condition is met.
-
-This idea parallels the phase-based runtime semantics proposed in the runtime verification literature~\cite{falcone2009runtime,bartocci2018rv},
-where control modes are used to synchronize sub-monitors
-for sequential patterns such as ``\emph{after $C$ succeeds, check $C'$}''.
-In contrast, the reparation composition corresponds to the
-``\emph{compensatory phase}'' discussed in
-\cite{governatori2006formal},
-where a secondary clause is activated after the primary obligation fails.
-Hence, the constructions in Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair}
-realize at the automaton level the same phase shifts
-($\mathbf{L}\!\to\!\mathbf{R}$ after tight success or tight failure)
-that those frameworks handle explicitly through control variables.
-\end{remark}
+  \label{rem:control-phases}
+  The structural constructions in Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair} serve as the static counterpart to the \emph{control-phase} view described in runtime verification frameworks such as \cite{falcone2009runtime,bartocci2018rv}.
+  While these standard frameworks often rely on an explicit control variable $m \in \{\mathbf{L}, \mathbf{R}\}$ to dynamically track whether the left ($\mathbf{L}$) or right ($\mathbf{R}$) component is active, our transformation embeds this logic directly into the transition graph.
+  We achieve this by eliminating the terminal states of the left monitor and redirecting the decisive transitions—$\topt$ for sequence and $\bott$ for reparation—to the initial state of the right monitor.
+  Consequently, this compile-time structure effectively encodes the operational behavior of a mode-augmented monitor that switches phases only when specific conditions are met.
+  This design parallels the phase-based semantics where control modes synchronize sub-monitors for sequential patterns like ``\emph{after $C$ succeeds, check $C'$}''.
+  Similarly, our reparation composition aligns with the ``\emph{compensatory phase}'' discussed in \cite{governatori2006formal}, where a secondary clause activates only after the primary obligation fails.
+  Thus, our constructions realize these phase shifts ($\mathbf{L} \to \mathbf{R}$) at the automaton level, eliminating the need for the explicit control variables used in prior work.
+  \end{remark}
 
 
 
@@ -629,7 +611,7 @@ $\bott$ if any conjunct tightly rejects, $\botp$ if any conjunct is post-reject,
 $\topt$ when one conjunct hits $\topt$ while the other is already at/past acceptance
 ($\topt$ or $\topp$), $\topp$ if both are post-accept, and $\mathsf{?}$ otherwise.
 
-Reading \ref{fig:c2andc3} with the letter classes defined above: from $s_0$ (pre) there are three behaviors:
+Reading Subfigure~\ref{fig:c2andc3} with the letter classes defined above: from $s_0$ (pre) there are three behaviors:
 (i) If \,$\OCC^\surd \land \PAY^\surd$\ holds in the current letter, both conjuncts succeed (perm is respected, and the primary obligation is met), so the product emits $\topt$
 and moves to post-accept $\topp$.
 (ii) If \,$\OCC^{\times}$\ holds, the permission conjunct fails tightly, so the product
@@ -916,7 +898,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\emptytrace)\bigr)
       = \lambda_5^r(r_0) = \mathsf{?}
     \]
-    coincides with the tight semantics of $\trigg[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
+    coincides with the tight semantics of $\trig[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
     
     \smallskip
     \emph{Inductive step.}
@@ -971,7 +953,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     If the trigger fires at some earliest index $k$ and the suffix $\pi^{k+1}$
     violates $C$ tightly or post, the monitor is in the contract-active region and
     outputs the corresponding $\bott$ or $\botp$, which is exactly
-    $\semfive{\pi \vDash \trigg[re]{C}}$ in this case.
+    $\semfive{\pi \vDash \trig[re]{C}}$ in this case.
     If the trigger never fires and the guard becomes impossible, the monitor
     outputs $\topt$ and then $\topp$, which matches vacuous satisfaction.
     In all other cases the output remains $\mathsf{?}$, as the semantics of
@@ -985,7 +967,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     \(
     \lambda_5^{\trigg}(\delta_{\trigg}(q_0^{\trigg},\pi))
     \)
-    coincides with the five-valued tight semantics of $\trigg[re]{C}$.
+    coincides with the five-valued tight semantics of $\trig[re]{C}$.
     \qed
 
 
@@ -1174,12 +1156,12 @@ tight success.
 
 \medskip
 The following constructions make these ideas explicit.
-\begin{definition}[Tight monitor construction for finite repetition $\nrep(n,C)$]
+\begin{definition}[Tight monitor construction for finite repetition $\tsmc_\nrep(n,C)$]
 \label{def:moore-repeat-finite}
 \[\text{Let } \tsmc(C)=(Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)\]
 be the five-valued tight satisfaction monitor for $C$.  
 For $n\in\mathbb{N}^*$, the tight monitor for the finite repetition contract
-$\nrep(n,C)$ is defined as
+$\tsmc_\nrep(n,C)$ is defined as
 \[
 \tsmc_{\nrep}(n,C)
   := (Q_{\nrep},q_0^{\nrep},\Gamma,\tightverdicts,\delta_{\nrep},\lambda_5^{\nrep}).
@@ -1256,7 +1238,7 @@ For sink states:
 
 \medskip
 \noindent
-This completes the construction of the five-valued monitor for $\nrep(n,C)$.
+This completes the construction of the five-valued monitor for $C^n$.
 \end{definition}
 
 \begin{lemma}[Correctness of the finite repetition monitor]
@@ -1350,13 +1332,10 @@ Otherwise, it remains in the undecided verdict $\mathsf{?}$.
 
 
 \begin{example}[Open ended contract monitor construction]
-
-
-W\begin{example}[Open ended contract monitor construction]
 \label{ex:open-ended}
 
 We illustrate the constructions for the guarded open-ended contract \(\guard[re]{\repit{C_3}}\) where
-\(re = *^{+};\{\notifterm^{(1)}\}\) and
+\(re = \Gamma^{+};\{\notifterm^{(1)}\}\) and
 \(C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}\).
 The construction proceeds in three steps:
 the unbounded-repetition monitor for \(C_3\),
@@ -1382,7 +1361,7 @@ violation.
 
 \medskip
 \noindent\textbf{(b) \(\tsmc_{re}(re)\) for
-\(re = *^{+};\{\notifterm^{(1)}\}\)
+\(re = \Gamma^{+};\{\notifterm^{(1)}\}\)
 (Figure~\ref{fig:guard-}).}
 The monitor has states \(s_0/\mathsf{?}\), \(s_1/\mathsf{?}\), \(s^t/\topt\), and \(s^{+}/\topp\).
 
@@ -1413,7 +1392,7 @@ Examples include:
 \[
 \begin{aligned}
 &s_0\times q_0 \xrightarrow{\PAY^\times} s_1\times q_w,\\
-&s_1\times q_w \xrightarrow{\PAYF^\times} (s_0,s_1)\times q_{\bott},\\
+&s_1\times q_w \xrightarrow{\PAYF^\times} s_1\times q_{\bott},\\
 &s_1\times q_w \xrightarrow{\PAYF^\surd \wedge \overline{T}} s_1\times q_0,\\
 &s_1\times q_0 \xrightarrow{\PAY^\times \wedge \overline{T}} s_1\times q_w,\\
 &s_0\times q_0 \xrightarrow{\PAY^\surd} s_1\times q_0.
@@ -1572,7 +1551,7 @@ and $\overline{T} := \Gamma\setminus T$ denotes its absence.
 \label{fig:one-per-line}
 \end{figure}
 
-\end{example}
+
 
 The guarded open-ended contract illustrates how the automaton constructions combine.  
 The unbounded repetition of \(C_3\) enforces an indefinite sequence of payments with repair, and the regular expression \(re\) recognizes the first occurrence of a termination notice.  
