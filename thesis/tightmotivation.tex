@@ -545,7 +545,7 @@ Combining Lemma~\ref{lem:basic-splits} and Lemma~\ref{lem:cross}, we have $\Sigm
 
 \subsubsection{Tight Five-Valued Semantics}
 
-We move now to define the prefix-level semantics $\semfive{u \vDash L}$ using the values $\tightverdicts=\{\mathsf{?},\topt,\bott,\topp,\botp\}$. These correspond to pre-verdict, eager acceptance, eager rejection, irrelevant acceptance, and irrelevant rejection, respectively.
+We move now to define the prefix-level semantics $\semfive{u \vDash L}$ using the 5 tight verdict values $\tightverdicts=\{\mathsf{?},\topt,\bott,\topp,\botp\}$. These correspond to pre-verdict, eager acceptance, eager rejection, irrelevant acceptance, and irrelevant rejection, respectively.
 
 \begin{definition}[Five-valued prefix semantics]\label{def:five-valued-semantics}
 Fix $L\subseteq\Sigma^*$. For any $u\in\Sigma^*$:
@@ -669,6 +669,58 @@ This semantics guarantees key stability properties essential for contract monito
   \]
   \emph{Observation:} At $u=b$, the verdict is locked to $\bott$. Even though the next symbol is an $a$ (which usually signifies success), it arrives too late. The trace is already strictly post-violation ($\botp$), ensuring the contract is not ``fulfilled'' after it has already been broken.
 \end{example}
+
+\begin{example}[Five-region decomposition and Trace Evolution for $L'$]
+  Let $\Sigma=\{a,b\}$ and let $L'=\{a, aba\}$. The goal is to detect the occurrence of the accepted words using the tight semantics.
+  
+  \paragraph{1. Static Partitioning.}
+  First, we identify the topological frontiers.
+  The set of prefixes is $\closureclass{L'} = \{\varepsilon, a, ab, aba\}$.
+  However, the tight semantics halts at the \emph{first} definitive verdict.
+  Since $a \in L'$, the monitor stops there, rendering the longer word $aba$ unreachable in the eager partition.
+  We formally compute the partition sets:
+  \begin{itemize}
+      \item $\EAL{L'} = \{a\}$. This is the minimal accepted word.
+      \item $\ERL{L'} = \{b\}$. This is the minimal rejected prefix (since $b \notin \closureclass{L'}$).
+      \item $\IAL{L'} = \{aa, ab, aba, \dots\}$. These are extensions of the eager success $a$. Note that even though $aba \in L'$, it falls into the irrelevant region because the verdict was already decided at $a$.
+  \end{itemize}
+
+  \paragraph{2. Trace Evolution.}
+  We observe how the semantics $\semfive{u \vDash L'}$ evolve step-by-step as we process two different input streams.
+
+  \medskip
+  \noindent
+  \textbf{Trace A (Success):} The user inputs $a$, then continues with $b$ and $a$.
+  \[
+    \underbrace{\varepsilon}_{\mathsf{?}\,(\in\Pre{L'})}
+    \xrightarrow{a}
+    \underbrace{a}_{\topt\,(\in\EAL{L'})}
+    \xrightarrow{b}
+    \underbrace{ab}_{\topp\,(\in\IAL{L'})}
+    \xrightarrow{a}
+    \underbrace{aba}_{\topp}
+  \]
+  \emph{Observation:} At $u=a$, the verdict is locked to $\topt$. The subsequent extension $aba$, despite being in $L'$, is treated as a stable extension ($\topp$) rather than a new success, because the monitor has already halted.
+
+  \medskip
+  \noindent
+  \textbf{Trace B (Failure):} The user inputs $b$, then continues with $a$.
+  \[
+    \underbrace{\varepsilon}_{\mathsf{?}\,(\in\Pre{L'})}
+    \xrightarrow{b}
+    \underbrace{b}_{\bott\,(\in\ERL{L'})}
+    \xrightarrow{a}
+    \underbrace{ba}_{\botp\,(\in\IRL{L'})}
+    \xrightarrow{\forall u \in \Sigma^*}
+    \botp
+  \]
+  \emph{Observation:} At $u=b$, the verdict is locked to $\bott$.
+
+  \textbf{Comparison with $L=\{a\}$.}
+  Crucially, this decomposition is \emph{identical} to the previous example where $L=\{a\}$. Because the tight semantics halts at the first definitive verdict, the acceptance of the prefix $a$ effectively masks the longer requirement $aba$, rendering the two languages indistinguishable from a monitoring perspective.
+\end{example}
+
+
 
 Having established the theoretical partitions of for any regular language $L$, we move now operationalize them by constructing a Moore machine monitor from a deterministic finite automaton recognizing  $L$.
 

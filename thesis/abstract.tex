@@ -8,17 +8,18 @@
 
 Normative Systeme regeln das Verhalten von Individuen, Organisationen und zunehmend auch von autonomen Akteuren.
 Da diese Systeme in digitalen Umgebungen allgegenwärtig werden, wächst ihre inhärente Komplexität.
-Dies schafft einen kritischen Bedarf an einem rigorosen Engineering normativer Systeme. Ziel ist es sicherzustellen, dass die Einhaltung nicht nur erreichbar, sondern auch einfach zu planen und zu verifizieren ist.
-Diese Dissertation untersucht, wie formale Methoden ausgewählte Formen des Denkens automatisieren können, die häufig von Gesetzgeber und normativen Experten verwendet werden.
+Dies schafft einen kritischen Bedarf, normative Systeme rigoros zu entwickeln. 
+Das Ziel ist es sicherzustellen, dass die Einhaltung nicht nur möglich, sondern auch einfach zu planen und zu verifizieren ist.
+Diese Dissertation untersucht, wie formale Methoden ausgewählte Formen des Schlussfolgerns automatisieren können, die häufig von Gesetzgeber und normativen Experten verwendet werden.
 
 
 
-Der erste Teil der Arbeit konzentriert sich auf die statische Analyse von Spezifikationen. Er geht über die Erfüllbarkeit hinaus, um normative Konflikte unter metrisch-zeitlichen Bedingungen zu untersuchen. 
+Der erste Teil der Arbeit konzentriert sich auf die statische Analyse von normativen Spezifikationen. Die Analyse beschränkt sich nicht auf die Erüllbarkeit, sondern untersucht auch normative Konflikte unter metrisch-zeitlichen Bedingungen. 
 Zu diesem Zweck führt die Dissertation die Micro Metric-Time Normative Logic ($\TDDLfm$) ein. Dieser Formalismus ermöglicht eine präzise Unterscheidung zwischen \textit{deontischen Konflikten} (widersprüchliche Regeln) und \textit{ontischen Konflikten} (physikalische Unmöglichkeit). Unter Verwendung der Disjunctive Punctual Normal Form bietet das Framework eine rigorose Methode, um solche Konflikte zu erkennen. Zudem ermöglicht es Gesetzgeber, den Grad des Vorhandenseins von Konflikten über eine Metrik der ,,Konfliktdichte`` zu quantifizieren und diese systematisch zu eliminieren. Dies stellt sicher, dass die resultierenden Spezifikationen konfliktfrei sind und eine klare Grundlage für die Planung des Agentenverhaltens bieten.
 
 
 
-Der zweite Teil adressiert die dynamische Überwachung normativer Interaktionen. Er konzentriert sich auf die Unterscheidung zwischen Versuchen von Akteuren und erfolgreichen gemeinsamen Handlungen. Jenseits der binären Erkennung von Vertragsverletzungen schlägt die Arbeit die Two-Agents Collaborative Normative Logic (TACNL) vor, um komplexe Interaktionen zu modellieren. Ein zentraler Beitrag ist die Etablierung eines rigorosen, formalen Schuldzuweisungsverfahrens, das den Grad der Nichtkonformität für jeden Agenten über die gesamte Laufzeit eines Vertrags quantifiziert. Dieser Ansatz unterscheidet zwischen der Weigerung zu handeln und einem durch externe Störungen verursachten Scheitern. Folglich wird sichergestellt, dass die automatisierte Überwachung eindeutig, fair und umsetzbar ist.
+Der zweite Teil adressiert die dynamische Überwachung normativer Interaktionen. Der Schwerpunkt liegt hierbei auf der Unterscheidung zwischen individuellen Handlungsversuchen und erfolgreichen kollaborativen Aktionen. Jenseits der binären Erkennung von Vertragsverletzungen schlägt die Arbeit die Two-Agents Collaborative Normative Logic (TACNL) vor, um komplexe Interaktionen zu modellieren. Ein zentraler Beitrag ist die Etablierung eines formalen Verfahrens zur Schuldzuweisung (Blame Assignment), das den Grad der Nichtkonformität für jeden Agenten über die gesamte Vertragslaufzeit quantifiziert. Dieser Ansatz identifiziert sowohl aktive Handlungsverweigerung als auch ein durch externe Störungen verursachtes Scheitern. Folglich wird sichergestellt, dass die automatisierte Überwachung eindeutig, fair und umsetzbar ist.
 % Normative Systeme regeln das Verhalten von Individuen, Organisationen und zunehmend auch von autonomen Akteuren.
 %  Da diese Systeme in digitalen Umgebungen allgegenwärtig werden, wächst ihre inhärente Komplexität.
 %   Dies schafft einen kritischen Bedarf an einem rigorosen Engineering normativer Systeme. Ziel ist es sicherzustellen, dass Einhaltung nicht nur erreichbar, sondern auch einfach zu planen und zu verifizieren ist.
@@ -30,8 +31,8 @@ Der zweite Teil adressiert die dynamische Überwachung normativer Interaktionen.
 % Zu diesem Zweck führt die Dissertation die Micro Metric-Time Normative Logic ($\TDDLfm$) ein. Dieser Formalismus ermöglicht eine präzise Unterscheidung zwischen \textit{deontischen Konflikten} (widersprüchliche Regeln) und \textit{ontischen Konflikten} (physikalische Unmöglichkeit). Unter Verwendung der Disjunctive Punctual Normal Form bietet das Framework eine rigorose Methode, um solche Konflikte zu erkennen. Zudem ermöglicht es Gesetzgeber, den Grad des Vorhandenseins von Konflikten über eine Metrik der ,,Konfliktdichte`` zu quantifizieren und diese systematisch zu eliminieren. Dies stellt sicher, dass die resultierenden Spezifikationen konfliktfrei sind und eine klare Grundlage für die Planung des Agentenverhaltens bieten.
 
 % Der zweite Teil adressiert die dynamische Überwachung normativer Interaktionen. Er konzentriert sich auf die Unterscheidung zwischen Versuchen von Akteuren und erfolgreichen gemeinsamen Handlungen. Jenseits der binären Erkennung von Vertragsverletzungen schlägt die Arbeit die Two-Agents Collaborative Normative Logic (TACNL) vor, um komplexe Interaktionen zu modellieren. Ein zentraler Beitrag ist die Etablierung eines rigorosen, formalen Schuldzuweisungsverfahrens, das den Grad der Nichtkonformität für jeden Agenten über die gesamte Laufzeit eines Vertrags quantifiziert. Dieser Ansatz unterscheidet zwischen der Weigerung zu handeln und einem durch externe Störungen verursachten Scheitern. Folglich wird sichergestellt, dass die automatisierte Überwachung eindeutig, fair und umsetzbar ist.
-
-\cleardoublepage
+\newpage
+%\cleardoublepage
 \thispagestyle{plain}
 
 \foreignlanguage{english}{%
@@ -55,6 +56,6 @@ The first part of the dissertation examines the static analysis of normative spe
 
 
 
-The second part of the dissertation addresses the dynamic analysis of normative interactions, particularly in collaborative contexts where compliance depends on both outcomes and agents’ genuine attempts to fulfill obligations. To analyze these interactions, the Two-Agents Collaborative Normative Logic \cDL is developed, capturing collaborative norms and constructs such as reparations and Hohfeldian powers. Beyond binary violation detection, a blame procedure is introduced to quantify each agent’s contribution to non-conformance throughout the duration of a contract. This procedure differentiates between deliberate inaction and failures resulting from interference or obstruction, ensuring that automated monitoring produces explanations and accountability assessments that are both precise and normatively significant.
+The second part of the dissertation addresses the dynamic analysis of normative interactions, particularly in collaborative contexts where compliance depends on both outcomes and agents’ genuine attempts to fulfill obligations. To analyze these interactions, the Two-Agents Collaborative Normative Logic \cDL is developed, capturing collaborative norms and constructs such as reparations and Hohfeldian powers. Beyond binary violation detection, a blame procedure is introduced to quantify each agent’s contribution to non-conformance throughout the duration of a contract. This procedure identifies both deliberate inaction and failures resulting from interference or obstruction, ensuring that automated monitoring produces explanations and accountability assessments that are both precise and normatively significant.
 
 }

@@ -25,7 +25,7 @@ We identify two primary strategies for defining this scope:
 This work adopts the \textbf{Dynamic On-the-Fly} approach.
 This requires a structural tracking mechanism, which we formalize as the \emph{Contract Progress Monitor} (\CPM).
 The \CPM acts as a derivative function: given a contract $C$ and an incoming event, it computes the contract $C'$ that must be enforced in the next time step.
-Isolating the state of the contract (via the \CPM) from the evaluation of compliance (via a scoring function) enables a modular framework that can track active duties, handle contrary-to-duty (CTD) transitions, and attribute blame with precision over time. The scoring function is critical in this framework, as it provides a quantitative evaluation of compliance. This approach not only determines whether obligations have been met, but also assesses the degree of compliance or non-compliance. The interaction with the \CPM measures the magnitude of violations, presenting an in-depth and nuanced view of contractual adherence that improves accountability and enforcement precision.
+Isolating the state of the contract (via the \CPM~) from the evaluation of compliance (via a scoring function) enables a modular framework that can track active duties, handle contrary-to-duty (CTD) transitions, and attribute blame with precision over time. The scoring function is critical in this framework, as it provides a quantitative evaluation of compliance. This approach not only determines whether obligations have been met, but also assesses the degree of compliance or non-compliance. The interaction with the \CPM measures the magnitude of violations, presenting an in-depth and nuanced view of contractual adherence that improves accountability and enforcement precision.
 
 Regarding the computational complexity of this framework, we claim that the set of reachable residual contracts is finite. The size of this set is determined by the size of the regular expressions and contract literals within the original contract $C$, which implies that the set can be computed in finite time. We aim to provide the formal proofs of this finiteness property and the algorithm for exhaustive computation as future work.
 
@@ -437,7 +437,7 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
 We now turn to the notion of reachable residual contracts. This construction is essential for monitor synthesis under the quantitative semantics introduced above. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set captures precisely this state space.
 
 \begin{definition}[Reachable Residual Contract Set from a Contract]
-Let $C$ be a contract from \cDL, The \emph{reachable residual contract set} of $C$, written \rrcs{C}, is the set from $2^{\cDL \cup \emptc}$ capturing all the possible residual contracts obtainable from a contract $C$ by any trace $\pi \in \Gamma^*$ using the progress function
+Let $C$ be a contract from \cDL, the \emph{reachable residual contract set} of $C$, written \rrcs{C}, is the set from $2^{\cDL \cup \emptc}$ capturing all the possible residual contracts obtainable from a contract $C$ by any trace $\pi \in \Gamma^*$ using the progress function
 \[\rrcs{C} := \{ C_r \mid \exists \tau \in \Gamma^*: \Prog(\pi,C)= C_r\}.\]
 \end{definition}
 \begin{claim}[Finiteness of Reachable Residual Contracts]\label{clm:rrcs-finite}

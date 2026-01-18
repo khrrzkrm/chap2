@@ -268,7 +268,7 @@ Additionally, the agent's obligation on $\delAtGate$ and $\delAtPark$ (under $\D
 
 Lastly, note that the agent is subject to all three stipulated norms (\DC, \SR, \MA) and must comply with all of them. We will represent this in our logic as a \emph{conjunction}.
 
-Let us now turn our attention to our notion of conflicts. In this paper, we analyze conflicts over time. A temporal conflict arises when two or more norms apply to the same entity within overlapping time intervals but impose \emph{contradictory or unrealistic requirements}. Unlike static conflicts, which exist regardless of time, temporal conflicts are dynamic and depend on how rules interact over time. We display in \ref{conflictpict} the graphical projection of the norms in the use case across a 24-hour timeline, emphasizing conflicts from an intuitive visual standpoint. 
+Let us now turn our attention to our notion of conflicts. In this section, we analyze conflicts over time. A temporal conflict arises when two or more norms apply to the same entity within overlapping time intervals but impose \emph{contradictory or unrealistic requirements}. Unlike static conflicts, which exist regardless of time, temporal conflicts are dynamic and depend on how rules interact over time. We display in \ref{conflictpict} the graphical projection of the norms in the use case across a 24-hour timeline, emphasizing conflicts from an intuitive visual standpoint. 
 To distinguish the types of normative constraints, we use a \textbf{color- and pattern-based scheme} combined with discrete hour markers:
 
 \begin{itemize}
@@ -745,7 +745,7 @@ Both equivalences follow from the extensional semantics of \TDDLfm, where disjun
 &= \dutyclass{\forb{\is}{a}} \cap \dutyclass{\forb{\is'}{a}} \\
 &= \{\tau \mid \forall t \subin \is : \rho(\tau,t) \neq a \} \cap \{\tau \mid \forall t \subin \is' : \rho(\tau,t) \neq a \} \\
 &= \{\tau \mid \forall t \subin (\is \cup \is') : \rho(\tau,t) \neq a \} 
-\quad \text{(by merging universal quantifiers)} \\
+\quad \text{(by merging quantifiers)} \\
 &= \dutyclass{\forb{\is \cup \is'}{a}}
 \end{align*}
 \end{proof}
@@ -923,8 +923,6 @@ This lemma ensures that a finite search space is sufficient for checking satisfi
     \]
 
 We proceed now to reason about the $\phi_i$, assuming that $\phi_i$ is satisfiable, then $\exists \tau: \tau \dutysat \phi_i$. We know that for every obligation, there exists at least one event in the \timedword satisfying each obligation without violating any prohibition from the set of prohibitions. formally:
-
-
 \[
 \begin{aligned}
 \exists (a_1, t_1), \dots, (a_n, t_n) \ : \ 
@@ -1049,10 +1047,10 @@ We define the function $\cstp$ that recursively collects the constraints for a f
 \paragraph{Obligation} An obligation is transformed into the existence of an event in the \timedword such that its action matches the obligation action and its timestamp lies within one of the specified intervals.
 
 \begin{example}
-    The obligation $\ob{\{[9,16]\}}{\delAtPark}$ is encoded as:
-    \begin{align*}
-    \cstp(\ob{\{[9,16]\}}{\delAtPark})=& \exists i < \size{\mintau} : \action(\mintau[i]) = \delAtPark \wedge \big(9\leq \timestamp(\mintau[i]) \leq 16\big).
-    \end{align*}
+    The obligation $\ob{\{[9,16]\}}{\delAtPark}$ is encoded as:\\
+    
+    $\cstp(\ob{\{[9,16]\}}{\delAtPark})= \exists i < \size{\mintau} : \action(\mintau[i]) = \delAtPark \wedge \big(9\leq \timestamp(\mintau[i]) \leq 16\big).$
+    
 \end{example}
 
 \paragraph{Prohibition} A prohibition is transformed into an implication: for all events in the array, if an event has the prohibited action, its timestamp must not lie within the set of intervals. 
@@ -1060,7 +1058,7 @@ We define the function $\cstp$ that recursively collects the constraints for a f
 \begin{example}
  The prohibition $\forb{\{[2,4],[8,24]}{\delAtGate}$ is encoded as:
     \begin{align*}
-    \cstp(\forb{\{[2,4],[8,24]}{\delAtGate})=&\forall i < \size{\mintau}: \big((2 \leq\timestamp(\mintau[i]) \leq 4 \\&\vee 8 \leq \timestamp(\mintau[i]) \leq 24 )
+    \cstp(\forb{\{[2,4],[8,24]}{\delAtGate})=&\forall i < \size{\mintau}: \big((2 \leq\timestamp(\mintau[i]) \leq 4 \vee \\& 8 \leq \timestamp(\mintau[i]) \leq 24 )
      \implies \action(\mintau[i]) \neq \delAtGate\big).
     \end{align*}
 \end{example}
@@ -1096,7 +1094,8 @@ Consequently, with the constraints on the array $\mintau$ representing the timed
 We implemented a satisfiability checker for \TDDLfm formulas using the Python programming language and the Z3 SMT solver.\footnote{\href{https://github.com/khrrzkrm/FMMTNL\_Solver}{https://github.com/khrrzkrm/FMMTNL\_Solver/}} The implementation leverages the solver capabilities of the SMT tool and returns a model $\mintau$ when the formula is satisfiable; otherwise, it concludes unsatisfiability.
 
 \begin{example}\label{satsolver}
-    Below, we show the results when applying our solver to the  sub-formulas from our use case:
+    Below, we show the results when applying our solver to the  sub-formulas from our use case in \ref{ex:interface}. The figure demonstrates the solver's interface for evaluating the satisfiability of \TDDLfm formulas involving timed obligations and prohibitions. For the satisfiable scenarios $\UC_1'$ and $\UC$, the tool successfully generates a valid minimum-length timed word, such as executing a specific action at timestamp 15. In contrast, it correctly identifies $\UC_2'$ as an unsatisfiable formula, indicating that the specified constraints contain a conflict that prevents any valid execution.
+    \begin{figure}[htb]
     \begin{tcolorbox}[colback=blue!10, colframe=gray!80, title=Solver Examples]
     \#Satisfiable example $\UC_1'$\\
         Enter a formula from \TDDLfm: O \delAtGate \{[9,16]\} \& F~\delAtGate \{[10,14]\}\\
@@ -1111,8 +1110,9 @@ We implemented a satisfiability checker for \TDDLfm formulas using the Python pr
         Satisfiable \timedword with minimum length: 1\\
         Event 0: Action = \delAtGate, Timestamp = 15
     \end{tcolorbox}
-
-    
+    \caption{Interface of the Solver with examples}
+    \label{ex:interface}
+  \end{figure}
 \end{example}
 
 \subsubsection{Additional Unsatisfiability Semantic Rules}

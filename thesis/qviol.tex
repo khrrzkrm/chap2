@@ -1262,13 +1262,13 @@ As an optimization, we define a helper function to evaluate only the currently e
     Let $\epsilon_\ell$ be a distinguished symbol denoting the absence of an immediately available literal.
     The \emph{literal head} function
     \[
-      \LH : \cDL \to (\ell \cup \{\epsilon_\ell\}),
+      \LH : \cDL \rightharpoonup (\ell \cup \{\epsilon_\ell\}),
     \]
-    is defined inductively on the structure of contracts as follows:
+    is a partial function defined inductively on the structure of contracts as follows:
     \[
     \begin{aligned}
-    \LH(\ell) &:= \ell \\[2pt]
-    \LH(C ; C') &:= \LH(C) \\[2pt]
+    \LH(\ell) &:= \ell. \\[2pt]
+    \LH(C ; C') &:= \LH(C). \\[2pt]
     \LH(C \repair C') &:= \LH(C) \\[2pt]
     \LH(\trig[re]{C}) &:= 
     \begin{cases}
@@ -1280,12 +1280,12 @@ As an optimization, we define a helper function to evaluate only the currently e
     \LH(C) & \text{if } re \neq \epsilon,\\
     \epsilon_\ell & \text{if } re = \epsilon.
     \end{cases} \\[6pt]
-    \LH(C^n) &:= \LH(C) \\[2pt]
+    \LH(C^n) &:= \LH(C). \\[2pt]
     \LH(\repit{C}) &:= \LH(C).
     \end{aligned}
     \]
     \end{definition}
-
+    We explicitly exclude conjunctions ($C \wedge C'$) from the domain of $\LH$ because (i) they would necessitate a codomain of literal sets, and (ii) they are handled via recursive decomposition in the quantitative semantics definition.
     We now define the quantitative violation semantics based on two components: \begin{inparaenum} \item the progress monitor, which identifies the remaining parts of a contract to be evaluated, and \item a scoring mechanism that evaluates each event against the head literal of the residual contract returned by $\Prog$. \end{inparaenum} The final score is the sum of violations for each event along the trace.
 
   \begin{definition}[Quantitative Violation Semantics]
@@ -1619,7 +1619,7 @@ Figure~\ref{fig:eval-repetition} summarizes the pointwise valuation for this tra
 {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
 
-\begin{example}[Guarded Contract: Divergence Between Status and Cost (Extension of Example~\ref{example:prog-guard1}--\ref{example:prog-guard2})]\label{ex:eval-guard}
+\begin{example}[Guarded Contract: Divergence Between Status and Cost (Extension of \ref{example:prog-guard1},\ref{example:prog-guard2})]\label{ex:eval-guard}
 We extend Example~(Progression of Guarded Contracts) for
 \[
 C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}.
@@ -1637,7 +1637,7 @@ C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}.
   and \\$\qsem{\trace{A_2},C}=0$.
 \end{itemize}
 Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
-Figure~\ref{fig:eval-guard-pi} summarizes the pointwise valuation for $\pi$.
+\ref{fig:eval-guard-pi} summarizes the pointwise valuation for $\pi$.
 
 \boxalignfigure{\resizebox{0.8\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.2cm]
@@ -1699,7 +1699,7 @@ Figure~\ref{fig:eval-guard-pi} summarizes the pointwise valuation for $\pi$.
 \end{itemize}
 
 Thus, $\pi' \presat C$ in the tight semantics but $\qsem{\pi',C}=1$, directly illustrating that quantitative semantics exposes violations masked by guards and reparations.
-Figure~\ref{fig:eval-guard-piprime} summarizes the pointwise valuation for $\pi'$.
+\ref{fig:eval-guard-piprime} summarizes the pointwise valuation for $\pi'$.
 
 \boxalignfigure{\resizebox{0.9\textwidth}{!}{
   \centering
@@ -1758,30 +1758,31 @@ Figure~\ref{fig:eval-guard-piprime} summarizes the pointwise valuation for $\pi'
 This section introduced the quantitative violation semantics $\qsem{}$ as a trace-level cost measure that complements the tight, three-valued contract semantics. By coupling a local, instantaneous penalty with the residual evolution induced by the progress function $\Prog$, $\qsem{}$ cleanly separates temporal state change from scoring, while remaining sensitive to reparations, sequencing, and other structural constructs. Theorem~\ref{thm:quant-consistency} makes this link precise: a zero score characterizes traces that are fully compliant (either tightly satisfied, post-satisfied, or still pending), whereas any positive score pinpoints the presence and persistence of violations, including those that are later repaired and therefore masked at the level of a binary satisfaction verdict. The subsequent examples validate this intuition operationally by tracking $\Prog$, $\qsem{}$, and $\semfive{}$ pointwise, showing how the quantitative view supports post hoc audit, comparison of alternative executions, and downstream optimization tasks where ``satisfied'' is not a sufficient notion of quality.
 
 \subsection{Quantitative Violation Monitor Construction}
+While the forward-looking tight semantics employed Moore machines to output decisive verdicts based on the state (halting at the first decisive frontier), the quantitative semantics requires a monitor that persists on the extended run to accumulate violation points over time.
+To achieve this, we transition from the Moore architecture to a \emph{Mono-Quantitative Mealy machine}.
+Unlike the previous approach, this monitor generates outputs on transitions, mapping each specific input event—given the current contract state—to an instantaneous violation score from the set of natural numbers.
+Consequently, the overall score for a given trace is derived from the cumulative sum of the machine's transition outputs at each execution step.
+This position-based scoring enables the precise localization of the time points at which violations occur, thereby enhancing explainability.
+\begin{definition}[Mono-Quantitative Mealy machine]
+  \label{def:quant-monitor}
+  The \emph{Mono-Quantitative Mealy machine}, written $\mathcal{M}^{qt}$, is a Mealy machine whose output alphabet is $\mathbb{N}$ (representing a score). It is defined as a tuple:
+  \[
+  \mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda),
+  \]
+  where:
+  \begin{enumerate}
+    \item $Q$ is the finite set of states.
+    \item $q_0 \in Q$ is the initial state.
+    \item $\Gamma$ is the input event alphabet.
+    \item $\delta: Q \times \Gamma \to Q$ is the transition function.
+    \item $\lambda: Q \times \Gamma \to \mathbb{N}$ is the scoring (output) function.
+  \end{enumerate}
+  \end{definition}
 
-While the forward-looking semantics stops at the first decisive violation, the quantitative semantics requires a monitor that persists on the extended run after the violation, whilst continuing to accumulate violation points over time.
-To avoid the complexities of using counting machines, we define the \emph{Quantitative Monitor} as a Moore machine whose output alphabet is the set of natural numbers: each state is associated with an instantaneous violation score. Consequently, the overall score for a given trace is derived from the cumulative sum of the machine's outputs at each execution step. Furthermore, this position-based scoring enables precise localization of the time points at which violations occur, thereby enhancing explainability.
 
-\begin{definition}[Quantitative Monitor]
-\label{def:quant-monitor}
-The \emph{Quantitative Monitor}, written $\mathcal{M}^{qt}$, is a Mealy machine whose output alphabet is elements from $\mathbb{N}$ representing a score.
-\[
-\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda_{\mathbb{N}}),
-\]
-where:
-\begin{enumerate}
-  \item $Q $ is the set of states.
-  \item $q_0 \in Q$ is the initial state.
-  \item $\Gamma$ is the input event alphabet.
-  \item $\lambda = Q \times \Gamma \times \to \mathbb{N}$ is scoring function.
-  \item $\delta: Q \times \Gamma \to Q$ is the transition function.
-\end{enumerate}
-\end{definition}
-
-
-\begin{definition}[Quantitative Execution Score]
+\begin{definition}[Accumulative Quantitative  Score]
     \label{def:quant-execution-score}
-    Let $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ be a Quantitative Monitor and let $\pi = \langle A_0, A_1, \dots, A_{n-1} \rangle \in \Gamma^*$ be a finite trace.
+    Let $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ be a Mono-Quantitative Mealy machine and let $\pi = \langle A_0, A_1, \dots, A_{n-1} \rangle \in \Gamma^*$ be a finite trace.
     The execution of $\mathcal{M}^{qt}$ on $\pi$ produces an execution $\langle q_0, A_0, q_1, A_1 \dots, A_{n-1}, q_n \rangle$ such that $q_{i+1} = \delta(q_i, A_i)$ for all $0 \le i < n$.
     
     The \emph{quantitative score} of the trace $\pi$ on $\mathcal{M}^{qt}$, denoted as $\qscore( \mathcal{M}^{qt},\pi)$, is defined as the sum of the instantaneous scores of the states visited during the run, excluding the initial state:
@@ -1792,16 +1793,16 @@ where:
 
 To make the monitor construction constructive and finite, we define it inductively. However, since the states represent residual contracts, the primary challenge lies in bounding the state space. To address this, we leverage the \emph{Reachable Residual Contract Set} ($\rrcs{C}$), which we claim to be finite relative to the contract literals and regular expressions.
 
-\begin{definition}[Quantitative Monitor Construction]
-\label{def:qmc}
-The \emph{Quantitative Monitor Construction} function, denoted $\qmc(C)$, takes a contract $C \in \cDL$ and returns a Quantitative Monitor $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ defined as follows:
-\begin{enumerate}
-\item $Q := \rrcs{C}.$
-\item $q_0 := C.$
-\item For any $q_i \in Q$ and $A \in \Gamma$, $\delta(q_i, A) := \Prog(\trace{A},q_i).$
-\item For any $q_i \in Q$ and $A \in \Gamma$, $\lambda(q_i, A) := \qsem{\trace{A}, q_i}.$
-\end{enumerate}
-\end{definition}
+\begin{definition}[Quantitative Violation Monitor Construction]
+  \label{def:qmc}
+  The \emph{Quantitative Violation Monitor Construction} function, denoted $\qmc(C)$, takes a contract $C \in \cDL$ and returns a Mono-Quantitative Mealy machine $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ defined as follows:
+  \begin{enumerate}
+  \item $Q := \rrcs{C}.$
+  \item $q_0 := C.$
+  \item For any $q_i \in Q$ and $A \in \Gamma$, $\delta(q_i, A) := \Prog(\trace{A},q_i).$
+  \item For any $q_i \in Q$ and $A \in \Gamma$, $\lambda(q_i, A) := \qsem{\trace{A}, q_i}.$
+  \end{enumerate}
+  \end{definition}
 
 \begin{example}[Quantitative Monitor for a Guarded Repetition]
     \label{ex:qmc-guard-repit}
@@ -2027,10 +2028,10 @@ While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, i
         & \text{if } C = C_1 \wedge C_2, \\[6pt]
       
       (1,0)
-        & \text{if } \trace{A} \vDash_{\bottp{1}} \LH(C), \\[4pt]
+        & \text{if } \trace{A} \vDash_{\bottp{\{1\}}} \LH(C), \\[4pt]
       
       (0,1)
-        & \text{if } \trace{A} \vDash_{\bottp{2}} \LH(C), \\[4pt]
+        & \text{if } \trace{A} \vDash_{\bottp{\{2\}}} \LH(C), \\[4pt]
       
       (0,0)
         & \text{otherwise}.
@@ -2045,101 +2046,108 @@ The recursive clause uses the usual component-wise addition on $\mathbb{N}^2$: i
 We do not include a rule for a joint violation vector $(1,1)$ in the definition of $\qblame{\trace{A}, C}$, such as a hypothetical condition $\trace{A} \vDash_{\bottp{12}} \LH(C)$. This is intentional: for the atomic head literal $\LH(C)$, the blame verdicts used in $\vDash_{\bottp{i}}$ are mutually exclusive in the underlying tight blame semantics, so a single literal cannot be violated by both agents in the same step. When multiple obligations are active concurrently, the conjunction case $C=C_1\wedge C_2$ already captures multiple violations in one step by summing the vectors returned for each component, and this can yield a total vector whose two components are both positive, but only via \emph{distinct} literals.
 
 \begin{example}[Blame Attribution and Quantitative Scores on the Same Traces]
-    We reuse the contracts and traces from the quantitative violation semantics section
-    and evaluate them simultaneously under the forward-looking blame semantics and
-    the quantitative violation score.
-    
-    Recall the contract
-    \[
-    C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF},
-    \]
-    and the permission
-    \[
-    C_2 := \perm[1]{\OCC}.
-    \]
-    
-    \paragraph{Trace $\pi = \trace{A_1,A_2}$ with
-    $A_1=\{\OCC^{(1)}\}$ and $A_2=\{\PAYF^{(12)}\}$.}
-    
-    \emph{Step 1.}
-    The active obligation is $\obl[1]{\PAY}$.
-    Since $A_1$ contains no $\PAY^{(1)}$, the obligation is violated.
-    Under the blame semantics,
-    \[
-    \trace{A_1} \vDash_{\bottp{1}} \obl[1]{\PAY},
-    \]
-    so agent~1 is blamed.
-    Quantitatively,
-    \[
-    \qsem{\trace{A_1}, C_3} = 1.
-    \]
-    Progression activates the reparation:
-    \[
-    \Prog(\trace{A_1}, C_3) = \obl[1]{\PAYF}.
-    \]
-    
-    \emph{Step 2.}
-    The active obligation is now $\obl[1]{\PAYF}$.
-    Since $A_2=\{\PAYF^{(12)}\}$, the obligation is satisfied.
-    No new blame arises, and no quantitative penalty is incurred:
-    \[
-    \trace{A_2} \not\vDash_{\bottp{S}} \obl[1]{\PAYF}
-    \quad\text{for all }S,
-    \qquad
-    \qsem{\trace{A_2}, \obl[1]{\PAYF}} = 0.
-    \]
-    
-    \emph{Cumulative result.}
-    The tight semantics yields $\pi \satt C_3$,
-    while blame semantics records a single tight violation by agent~1.
-    The quantitative score is obtained by summation:
-    \[
-    \qsem{\pi, C_3}
-    = \qsem{\trace{A_1}, C_3} + \qsem{\trace{A_2}, \Prog(\trace{A_1},C_3)}
-    = 1 + 0 = 1.
-    \]
-    
-    \paragraph{Trace $\pi'=\trace{A_1}$ with $A_1=\{\OCC^{(1)}\}$.}
-    
-    Consider now the conjunction $C_2 \wedge C_3$.
-    
-    The permission $\perm[1]{\OCC}$ is violated because the subject attempts
-    $\OCC$ without cooperation:
-    \[
-    \trace{A_1} \vDash_{\bottp{2}} \perm[1]{\OCC}.
-    \]
-    Simultaneously, the obligation $\obl[1]{\PAY}$ is violated, yielding
-    \[
-    \trace{A_1} \vDash_{\bottp{1}} \obl[1]{\PAY}.
-    \]
-    Hence, blame semantics assigns joint responsibility:
-    \[
-    \trace{A_1} \vDash_{\bottp{12}} (C_2 \wedge C_3).
-    \]
-    
-    Quantitatively, both conjuncts contribute independently:
-    \[
-    \qsem{\trace{A_1}, C_2 \wedge C_3}
-    = \qsem{\trace{A_1}, C_2} + \qsem{\trace{A_1}, C_3}
-    = 1 + 1 = 2.
-    \]
-    \emph{Quantitative blame.}
-By Definition~\ref{def:quant-blame}, the instantaneous blame at Step~1 is
-\[
-\qblame{\trace{A_1}, C_3} = (1,0),
-\]
-since $\trace{A_1} \vDash_{\bottp{1}} \obl[1]{\PAY}$.
-At Step~2, no violation occurs, hence
-\[
-\qblame{\trace{A_2}, \obl[1]{\PAYF}} = (0,0).
-\]
-Therefore, the cumulative blame vector is obtained by component-wise addition:
-\[
-\qblame{\pi, C_3}
-= (1,0) + (0,0)
-= (1,0).
-\]
-    \end{example}
+  We reuse the contracts and traces from the quantitative violation semantics section
+  and evaluate them simultaneously under the forward-looking blame semantics and
+  the quantitative violation score.
+  
+  Recall the contract
+  \[
+  C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF},
+  \]
+  and the permission
+  \[
+  C_2 := \perm[1]{\OCC}.
+  \]
+  
+  \paragraph{Trace $\pi = \trace{A_1,A_2}$ with
+  $A_1=\{\OCC^{(1)}\}$ and $A_2=\{\PAYF^{(12)}\}$.}
+  
+  \emph{Step 1.}
+  The active obligation is $\obl[1]{\PAY}$.
+  Since $A_1$ contains no $\PAY^{(1)}$, the obligation is violated.
+  Under the blame semantics,
+  \[
+  \trace{A_1} \vDash_{\bottp{\{1\}}} \obl[1]{\PAY},
+  \]
+  so agent~1 is blamed.
+  Quantitatively,
+  \[
+  \qsem{\trace{A_1}, C_3} = 1.
+  \]
+  Progression activates the reparation:
+  \[
+  \Prog(\trace{A_1}, C_3) = \obl[1]{\PAYF}.
+  \]
+  
+  \emph{Step 2.}
+  The active obligation is now $\obl[1]{\PAYF}$.
+  Since $A_2=\{\PAYF^{(12)}\}$, the obligation is satisfied.
+  No new blame arises, and no quantitative penalty is incurred:
+  \[
+  \trace{A_2} \not\vDash_{\bottp{S}} \obl[1]{\PAYF}
+  \quad\text{for all }S,
+  \qquad
+  \qsem{\trace{A_2}, \obl[1]{\PAYF}} = 0.
+  \]
+  
+  \emph{Cumulative result.}
+  The tight semantics yields $\pi \satt C_3$,
+  while blame semantics records a single tight violation by agent~1.
+  The quantitative score is obtained by summation:
+  \[
+  \qsem{\pi, C_3}
+  = \qsem{\trace{A_1}, C_3} + \qsem{\trace{A_2}, \Prog(\trace{A_1},C_3)}
+  = 1 + 0 = 1.
+  \]
+  
+  \paragraph{Trace $\pi'=\trace{A_1}$ with $A_1=\{\OCC^{(1)}\}$.}
+  
+  Consider now the conjunction $C_2 \wedge C_3$.
+  
+  The permission $\perm[1]{\OCC}$ is violated because the subject attempts
+  $\OCC$ without cooperation:
+  \[
+  \trace{A_1} \vDash_{\bottp{\{2\}}} \perm[1]{\OCC}.
+  \]
+  Simultaneously, the obligation $\obl[1]{\PAY}$ is violated, yielding
+  \[
+  \trace{A_1} \vDash_{\bottp{\{1\}}} \obl[1]{\PAY}.
+  \]
+  Hence, blame semantics assigns joint responsibility:
+  \[
+  \trace{A_1} \vDash_{\bottp{\{1,2\}}} (C_2 \wedge C_3).
+  \]
+  
+  Quantitatively, both conjuncts contribute independently:
+  \[
+  \qsem{\trace{A_1}, C_2 \wedge C_3}
+  = \qsem{\trace{A_1}, C_2} + \qsem{\trace{A_1}, C_3}
+  = 1 + 1 = 2.
+  \]
+
+
+  \paragraph{Quantitative blame.}
+  By Definition~\ref{def:quant-blame}, the instantaneous blame at Step~1 for the conjunction is the sum of its components:
+  \[
+  \qblame{\trace{A_1}, C_2 \wedge C_3} 
+  = \qblame{\trace{A_1}, C_2} + \qblame{\trace{A_1}, C_3}.
+  \]
+  For the permission $C_2$, the violation is blocked occupation, blamed on agent 2:
+  \[
+  \trace{A_1} \vDash_{\bottp{\{2\}}} \LH(C_2) \implies \qblame{\trace{A_1}, C_2} = (0,1).
+  \]
+  For the obligation $C_3$, the violation is missing payment, blamed on agent 1:
+  \[
+  \trace{A_1} \vDash_{\bottp{\{1\}}} \LH(C_3) \implies \qblame{\trace{A_1}, C_3} = (1,0).
+  \]
+  Therefore, the cumulative blame vector is obtained by component-wise addition:
+  \[
+  \qblame{\pi', C_2 \wedge C_3}
+  = (0,1) + (1,0)
+  = (1,1).
+  \]
+  This matches the joint responsibility verdict $\bottp{\{1,2\}}$ derived in the forward semantics.
+  \end{example}
 
 So far, we have introduced two quantitative views of non-compliance. The first one, $\qsem{\pi,C}$, gives a single number that counts the number of violations along the trace, without caring who caused them. The second one, $\qblame{\pi,C}$, keeps the same idea but splits the count into two parts, one per agent. Since both definitions use the same progress function and add up step-by-step contributions, it is natural to ask whether the split version still matches the original violation semantics total. In other words, does adding up the two blame counters always give back the same score as $\qsem{\pi,C}$? The following lemma answers this by proving that the overall quantitative violation score is exactly the sum of the two blame components, so quantitative blame is just a finer view of the same quantity, not a different measure.
 
@@ -2247,6 +2255,47 @@ So far, we have introduced two quantitative views of non-compliance. The first o
                   \end{cases}
                 \]
                 \end{lemma}
+                \begin{proof}
+                  Assume that the forward blame monitor assigns a violation verdict attributed to $S$ on trace $\pi$.
+                  By the consistency of the forward blame monitor with the denotational semantics (Theorem~\ref{thm:bm-correct}), the condition $\fb{\pi,C} \in \{ \bott_{S}, \botp_{S} \}$ implies that there exists a prefix $\pi' \preceq \pi$ such that $\pi'$ is a tight violation of $C$ attributed to $S$.
+                  That is:
+                  \[
+                  \pi' \vDash_{\bott_{S}} C.
+                  \]
+                  Let $\pi' = \trace{A_0, \dots, A_k}$ be this decisive prefix.
+                  By the definition of tight blame semantics, the violation occurs at the last step $A_k$ against the residual contract $C_k = \Prog(\pi'[1,k-1], C)$.
+                  Consequently, the instantaneous blame relation holds:
+                  \[
+                  \trace{A_k} \vDash_{\bott_{S}} \LH(C_k).
+                  \]
+                  
+                  We now consider the quantitative blame vector $\qblame{\pi,C}$.
+                  By Definition~\ref{def:quant-blame}, this vector is the sum of instantaneous blame vectors along the trace.
+                  Since $\qblame{\cdot}$ decomposes over concatenation and $\pi' \preceq \pi$, we can write:
+                  \[
+                  \qblame{\pi,C} = \qblame{\pi',C} + \qblame{\pi_{\text{suffix}}, C_{\text{resid}}}.
+                  \]
+                  Focusing on $\pi'$, the recursive definition eventually evaluates the last step $A_k$ against $C_k$.
+                  By the definition of the instantaneous quantitative blame function:
+                  \begin{itemize}
+                      \item If $1 \in S$, then necessarily the evaluation of $A_k$ against $C_k$ contributes at least $(1,0)$ to the sum (either directly if $C_k$ is a literal, or via summation if $C_k$ is a conjunction where one conjunct blames agent 1).
+                      \item If $2 \in S$, then similarly, the evaluation contributes at least $(0,1)$.
+                  \end{itemize}
+                  Let $\qblame{\trace{A_k}, C_k} = (u,v)$. The implication above guarantees:
+                  \[
+                  1 \in S \implies u \ge 1, \quad \text{and} \quad 2 \in S \implies v \ge 1.
+                  \]
+                  Since the quantitative blame accumulates vectors in $\mathbb{N}^2$ (non-negative components), the final vector $(x,y) = \qblame{\pi,C}$ must satisfy $x \ge u$ and $y \ge v$.
+                  
+                  Therefore:
+                  \[
+                  1 \in S \implies x \ge 1 \implies x \neq 0,
+                  \]
+                  \[
+                  2 \in S \implies y \ge 1 \implies y \neq 0.
+                  \]
+                  This concludes the proof.
+              \end{proof}
 
 
                 \subsection{Quantitative Blame Monitor Construction}
@@ -2260,16 +2309,16 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             \vec{n}+\vec{m} := (n_1+m_1,\;n_2+m_2).
             \]
             
-            \begin{definition}[Quantitative blame monitor]
+            \begin{definition}[Double-Quantitative Monitor]
             \label{def:qbm}
-            Let $C$ be a contract in \cDL. The \emph{quantitative blame monitor} for $C$ is the Mealy machine
+            Let $C$ be a contract in \cDL. The \emph{Double-Quantitative Monitor Construction} for $C$, written $\qbm$,  is the Mealy machine
             \[
             \qbm(C) := (Q,q_0,\Gamma,\delta,\lambda_{\mathbb{N}^2}),
             \]
             where:
             \begin{enumerate}
               \item $Q := \rrcs{C}$ is the set of reachable residual contracts.
-              \item $q_0 := \Prog(emptytrace,C)=C$.
+              \item $q_0 := \Prog(\emptytrace,C)=C$.
               \item $\delta(q,A) := \Prog(\trace{A},q)$.
               \item $\lambda_{\mathbb{N}^2}(q,A):= \qblame{\trace{A},q}$, that is, the instantaneous blame vector contributed by the current letter $A$ when the active residual is $q$.
             \end{enumerate}
@@ -2747,7 +2796,7 @@ Distinguishing these scenarios requires a richer syntax that propagates blame in
 
 \section{Related Work}
 \label{sec:related-work}
-Having successfully established the formal semantics and automata-theoretic constructions for \cDL, we now move to discuss the broader research landscape. In this section, we situate our framework against its closest progenitors, specifically \logic{STIT} logic and the \logic{CSL} specification language, and contrast it with orthogonal approaches in runtime verification and causal reasoning. This comparison clarifies how \cDL’s synthesis of collaborative agency and state-based reparation addresses a gap in the governance of autonomous digital interactions. We begin by examining the two formalisms that most directly study responsibility in multi-agent settings and contract specifications, before broadening the analysis to complementary notions of causality and algorithmic verification.
+Having successfully established the formal semantics and automata-theoretic constructions for \cDL, we now move to discuss the broader research landscape. In this section, we situate our framework against its closest progenitors, specifically \logic{STIT} logic and the \logic{CSL} specification language, and contrast it with orthogonal approaches in runtime verification and causal reasoning. This comparison clarifies how the synthesis for \cDL of collaborative agency and state-based reparation addresses a gap in the governance of autonomous digital interactions. We begin by examining the two formalisms that most directly study responsibility in multi-agent settings and contract specifications, before broadening the analysis to complementary notions of causality and algorithmic verification.
 \subsection{Closest Formalisms: \logic{STIT} and \logic{CSL}}
 \paragraph{Inspiration and Context.}
 The development of \cDL has been significantly inspired by the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. In the following section, we aim to highlight the main differences between these formalisms and \cDL in the most faithful way possible, focusing on the specific divergence in their treatment of agency, reparation, and blame assignment.
@@ -2807,7 +2856,7 @@ This shift also applies to graded responsibility. While SCM derives degrees of r
 Principled methodologies for compiling logical specifications into executable monitors have been a central focus of the runtime verification (RV) community. Foundational to this field is the automata-based approach of Leucker and Schallhart, where temporal specifications are systematically translated into monitors with verdicts that are provably aligned with the underlying logic \cite{leucker2011teaching}. Generalizing this paradigm to quantitative and data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa support expressive stream transformations and aggregation, making them well suited for monitoring numerical properties over evolving data streams \cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
 
 
-The \cDL framework synthesizes these perspectives through a dual-semantic approach. For its \textit{tight forward semantics}, the language adheres to the classical construction advocated by Leucker and Schallhart: monitors are derived as correct-by-construction Moore machines where every transition is strictly induced by the contract's semantic definition. However, the \textit{quantitative semantics} necessitates a hybrid methodology. While the monitor retains the rigorous structural skeleton of a deterministic state machine, its state valuations integrate stream-based computations similar to SRV. This synthesis allows the monitor to track evolving quantitative data without sacrificing the semantic faithfulness of the underlying automaton.
+The \cDL framework synthesizes these perspectives through a dual-semantic approach. For its \textit{tight forward semantics}, the language adheres to the classical construction advocated by Leucker and Schallhart \cite{10.1145/2000799.2000800}: monitors are derived as correct-by-construction Moore machines where every transition is strictly induced by the contract's semantic definition. However, the \textit{quantitative semantics} necessitates a hybrid methodology. While the monitor retains the rigorous structural skeleton of a deterministic state machine, its state valuations integrate stream-based computations similar to SRV. This synthesis allows the monitor to track evolving quantitative data without sacrificing the semantic faithfulness of the underlying automaton.
 
 
 

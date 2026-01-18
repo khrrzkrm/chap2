@@ -423,9 +423,9 @@ satisfies either immediately when both conjuncts hold, or later when a reparatio
 \begin{lemma}[Local disjointness for repetition contracts]
   \label{lem:repetition-disjoint}
   Let $C$ be a contract, $n\in\mathbb{N}^*$, and let $\pi$ be a finite trace.
-  Assume the induction hypothesis that for every finite trace $\Pi_{\min}$ we have
-  $\neg(\Pi_{\min}\ \satt\ C\ \nd\ \Pi_{\min}\ \violt\ C)$, and moreover the same disjointness
-  holds for every suffix $\Pi_{\min}^k$ in place of $\Pi_{\min}$.
+  Assume the induction hypothesis that for every finite trace $\pi_{\min}$ we have
+  $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$, and moreover the same disjointness
+  holds for every suffix $\pi_{\min}^k$ in place of $\pi_{\min}$.
   Then:
   \[
   \neg\bigl(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n\bigr)
@@ -509,13 +509,13 @@ satisfies either immediately when both conjuncts hold, or later when a reparatio
   \begin{lemma}[Local disjointness for triggered and guarded contracts]
     \label{lem:regex-disjoint}
     Let $re$ be a regular expression over $\Gamma$ and let $C$ be a contract.
-    Assume disjointness for both components, namely for every finite trace $\Pi_{\min}$:
+    Assume disjointness for both components, namely for every finite trace $\pi_{\min}$:
     \[
-    \neg(\Pi_{\min}\ \satt\ re\ \nd\ \Pi_{\min}\ \violt\ re)
+    \neg(\pi_{\min}\ \satt\ re\ \nd\ \pi_{\min}\ \violt\ re)
     \quad\text{and}\quad
-    \neg(\Pi_{\min}\ \satt\ C\ \nd\ \Pi_{\min}\ \violt\ C),
+    \neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C),
     \]
-    and assume the same disjointness holds for every suffix $\Pi_{\min}^k$ in place of $\Pi_{\min}$.
+    and assume the same disjointness holds for every suffix $\pi_{\min}^k$ in place of $\pi_{\min}$.
     Then for every finite trace $\pi$:
     \[
     \neg\bigl(\pi\ \satt\ \trig[re]{C}\ \nd\ \pi\ \violt\ \trig[re]{C}\bigr)
@@ -772,16 +772,16 @@ Fix a finite trace $\pi$ and contract $C$.
 We reason point-wise on prefixes of $\pi$ (as defined in Section~\ref{traces}) and lift the result to the trace-level relations via Definition~\ref{def:postprecont}.
 
 By Lemma~\ref{lem:mutual prefix}, along a fixed trace the two frontiers cannot both occur on (possibly different) prefixes: if some prefix tightly satisfies $C$, then no prefix tightly violates $C$, and conversely.
-Moreover, constructor-wise disjointness holds point wise for every prefix, that is, $\neg(\Pi_{\min}\ \satt\ C\ \nd\ \Pi_{\min}\ \violt\ C)$ for every prefix $\Pi_{\min}$.
+Moreover, constructor-wise disjointness holds point wise for every prefix, that is, $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$ for every prefix $\pi_{\min}$.
 This is established formally in Lemma~\ref{lem:constructor-disjoint}.
 
 Now consider any prefix position $j$ with $1\le j<|\pi|$ and view the corresponding trace prefix $\pi[1,j]$.
-By Definition~\ref{def:postprecont}, for a given prefix $\Pi_{\min}:=\pi[1,j]$ exactly one of the following holds:
-(i) $\Pi_{\min}\ \presat\ C$ (no earlier prefix of $\Pi_{\min}$ is decisive),
-(ii) $\Pi_{\min}\ \satt\ C$,
-(iii) $\Pi_{\min}\ \violt\ C$,
-(iv) $\Pi_{\min}\ \postsat\ C$ (some earlier prefix of $\Pi_{\min}$ tightly satisfies $C$), or
-(v) $\Pi_{\min}\ \postviol\ C$ (some earlier prefix of $\Pi_{\min}$ tightly violates $C$).
+By Definition~\ref{def:postprecont}, for a given prefix $\pi_{\min}:=\pi[1,j]$ exactly one of the following holds:
+(i) $\pi_{\min}\ \presat\ C$ (no earlier prefix of $\pi_{\min}$ is decisive),
+(ii) $\pi_{\min}\ \satt\ C$,
+(iii) $\pi_{\min}\ \violt\ C$,
+(iv) $\pi_{\min}\ \postsat\ C$ (some earlier prefix of $\pi_{\min}$ tightly satisfies $C$), or
+(v) $\pi_{\min}\ \postviol\ C$ (some earlier prefix of $\pi_{\min}$ tightly violates $C$).
 These cases are mutually exclusive by the local disjointness results above together with Lemma~\ref{lem:mutual prefix}, which prevents mixing satisfaction-frontiers and violation-frontiers along the same trace.
 
 Therefore, the five relations $\{\presat,\satt,\violt,\postsat,\postviol\}$ are pairwise disjoint and jointly exhaustive on prefixes of $\pi$.

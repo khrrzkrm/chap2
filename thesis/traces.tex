@@ -48,7 +48,7 @@ We adopt \emph{1-based indexing} where indices correspond to the position of eve
 
 
 
-\paragraph{Words vs Traces.}
+\paragraph{Words vs. Traces.}
 We conceptually distinguish a \emph{finite word} (conceptual model) from a \emph{finite trace} (an observed behavior of a system/agent). However, formally, both are finite sequences of events in $\mathbb{E}^*$. In this dissertation, we use \emph{word} as the default technical term and \emph{trace} when emphasizing that the sequence is the result of a recorded observation.
 
 \paragraph{Omega notation.}
@@ -147,17 +147,17 @@ The next operator abstracts from positions and records how often a given action 
 
 
 
-\begin{example}[Logical-time operators]
-  Let \( \Sigma=\{\textsf{pick},\textsf{handover}\} \).
-  Consider the word:
-  \[
-  \tault=\trace{(\textsf{pick}),(\textsf{handover})}.
-  \]
-  \emph{Size and Indexing:} \(|\tault|=2\), \(\tault[1]=\textsf{pick}\).\\
-  \emph{Counts:} \(\#({\textsf{handover}},\tault)=1\).\\
-  \emph{Projection:} with \(A=\{\textsf{handover}\}\), \(\tault{\upharpoonright}A=\trace{(\textsf{handover})}\).\\
-  \emph{Concatenation:} \(\tault\concat\trace{(\textsf{pick})} = \trace{(\textsf{pick}),(\textsf{handover}),(\textsf{pick})}\).
-\end{example}
+% \begin{example}[Logical-time operators]
+%   Let \( \Sigma=\{\textsf{pick},\textsf{handover}\} \).
+%   Consider the word:
+%   \[
+%   \tault=\trace{(\textsf{pick}),(\textsf{handover})}.
+%   \]
+%   \emph{Size and Indexing:} \(|\tault|=2\), \(\tault[1]=\textsf{pick}\).\\
+%   \emph{Counts:} \(\#({\textsf{handover}},\tault)=1\).\\
+%   \emph{Projection:} with \(A=\{\textsf{handover}\}\), \(\tault{\upharpoonright}A=\trace{(\textsf{handover})}\).\\
+%   \emph{Concatenation:} \(\tault\concat\trace{(\textsf{pick})} = \trace{(\textsf{pick}),(\textsf{handover}),(\textsf{pick})}\).
+% \end{example}
 
 
 \subsection{Metric-Timed Words}

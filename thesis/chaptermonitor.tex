@@ -7,7 +7,7 @@ In this section, we outline the theoretical and practical necessity for a blame-
 
 \subsection{Motivation}
 
-Normative specifications are typically presented as constraints on what an individual agent must do or avoid. In many practical contexts, however, compliance is not achieved solely by individual agents but results from interactions where different parties may enable, disregard, or obstruct each other. This chapter examines collaborative normative settings where, even without zero-sum competition, strategic behavior and conflicting incentives arise. Our analysis focuses on two agents, as the fundamental challenges of collaboration are fully present even in bilateral contracts.
+Normative specifications are typically presented as constraints on what an individual agent must do or avoid. In many practical contexts, however, compliance is not achieved solely by individual agents but results from interactions where different parties may enable, disregard, or obstruct each other. This chapter examines collaborative normative settings where, even without zero-sum competition, strategic behavior and conflicting incentives arise. Our analysis focuses on two agents, as they represent base case for Multi-agent collaborations normative specifications.
 
 \paragraph{Interactions and collaboration.}
 Standard deontic formalism describes duties in isolation, yet many norms require that a desired outcome be realized through the joint contributions of both parties. For instance, a tenant's payment succeeds only if the landlord provides a channel to receive it; similarly, occupancy requires both the tenant's attempt to occupy and the landlord's permission. A robust model must therefore distinguish between the \emph{attempts} made by each agent and the \emph{successful collaboration} resulting from their compatibility. Additionally, the model must account for \emph{non-interference}, ensuring that compliance involves refraining from actions that obstruct the counterparty.
@@ -171,6 +171,7 @@ Clause C5 (Termination) represents a \emph{Power} rather than a simple duty. By 
 
 \subsection*{Summary}
 These scenarios motivate the need for a new logic of collaboration. This logic must represent strategies of multiple agents acting in tandem rather than in opposition, express obligations and powers in a uniform framework, capture open-ended dynamics, and support the analysis of compliance and blame. Such a framework requires both a formal model of interacting agent behaviors and a language with syntax and semantics suited to normative reasoning in collaborative, time-sensitive contracts.
+While a rich family of specification languages for contracts exists, including \cite{HvitvedKZ12,azzopardi2021,diaz2013specification,governatori2005representing}, these formalisms do not fully capture the nuances of assigning duties and rights to agents and timing settings. Rather than introducing an entirely new formalism from scratch, we build upon the framework of \cite{Azzopardi2016,Kharraz23}. We selected this frameworks as the most suitable operational baseline and extended it to address these specific gaps.
 
   
 \section{Abstractions for Collaborative Interaction}
