@@ -17,7 +17,7 @@ We design these as Moore-style machines, which means the monitor maintains a run
     \tightverdicts = \{\mathsf{?},\topt,\bott,\topp,\botp\}.
     \]
     \item $Q$ is the set of states and $q_0\in Q$ is the initial state,
-    \item $\Gamma = 2^\Sigma$ is the input event alphabet,
+    \item $\Gamma$ is the input event alphabet,
     \item $\delta: Q \times \Gamma \to Q$ is the transition function,
     \item $\lambda_{5}: Q \to \tightverdicts$ is the state output function.
     \end{enumerate}
@@ -128,7 +128,7 @@ For a literal $\ell$ from \cDL, the \emph{Tight Satisfaction monitor constructio
 
 \paragraph{Intuition.} For every atomic literal, the monitor construction initializes at $q_0$, emitting the undecided verdict $\mathsf{?}$ to reflect the absence of decisive information.
 Upon consuming the first event, the execution crosses the decisive frontier, transitioning to either $q_s$ (success at frontier) with verdict $\topt$ if the literal is satisfied, or $q_v$ (violation at frontier) with verdict $\bott$ if it is violated.
-Immediately following this decision, the monitor enters the stable regions $q_{ps}$ (post-success) or $q_{pv}$ (post-violation), where it permanently emits $\topp$ or $\botp$ respectively.
+On the next step after this decision, the monitor enters the stable regions $q_{ps}$ (post-success) or $q_{pv}$ (post-violation), where it permanently emits $\topp$ or $\botp$ respectively.
 These indices explicitly encode the temporal relationship to the frontier, distinguishing the exact moment of decision from the immutable history of the trace.
 
 \begin{figure}[h!]
@@ -532,7 +532,7 @@ The reparation operator activates the secondary contract $C'$ after the primary 
 All states of $C$ whose verdicts are already violating
 ($\lambda_5(q)\in\{\bott,\botp\}$) are removed. Every transition in $C$ that
 would enter such a state is redirected to $q'_0$, the initial state of $C'$.
-This starts $C'$ exactly at the first prefix where $C$ tightly fails.  
+This starts $C'$ exactly at the tight prefix where $C$ tightly fails.  
 
 As long as no violation occurs, the monitor behaves exactly as $C$. Once a tight failure is detected, the remaining input is processed by $C'$.
 
@@ -769,7 +769,7 @@ $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$.
 (a) and (b)~monitors for Literal composing $C_3$  side by side;
 (c)~Reparation composition $C_3$;
 (d)~Conjunctive composition $C_2 \wedge C_3$,
-where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \not\subset A \sor  \{\OCC^{1},\OCC^{1}\} \subseteq A\}$. 
+where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \not\subset A \sor  \{\OCC^{1},\OCC^{2}\} \subseteq A\}$. 
 $\PAY^\surd:= \{A \mid \PAY^{(1)},\PAY^{(2)}\} \subseteq A $. The case $\PAYF^\surd$ is similarly defined as for $\PAY^\surd$.}
 \label{fig:moore-c3-literals}
 \end{figure*}
@@ -868,7 +868,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     From that point on, the global output is exactly the output of \(C\) on the suffix.
     Redirect every transition that would make the trigger impossible (enter \(\bott\) or \(\botp\)) to the fresh vacuous-success sink \(q_{\mathit{vac}}^{\topt}\), which emits \(\topt\) and then permanently \(\topp\).
     While the guard remains open, only the guard component advances and the product emits \(\mathsf{?}\), so no premature verdict appears.
-    This realizes the prefix clauses: success either because the trigger never becomes true (vacuous satisfaction), or because it fires at the earliest index and the suffix satisfies \(C\);
+    This realizes the prefix clauses: success either because the trigger never becomes true (vacuous satisfaction), or because it fires at the earliest index (matching the tight prefix) and the suffix satisfies \(C\);
     violation only if the guard fires and the suffix violates \(C\).
     
     \begin{lemma}[Correctness of the triggered monitor construction]
@@ -1047,7 +1047,7 @@ The guard reads both monitors in lockstep and enforces:
     \pi\ \postsat\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \postsat\ C).
   \end{align*}
 \end{itemize}
-
+Note that $\pi\ \clossat\ re$ holds exactly when $\lambda_5^r\in{\mathsf{?},\topt,\topp}$.
 The resulting case table is symmetric and total, and it collapses to the expected two-valued clauses once tight/post outcomes are merged into satisfied vs.\ violated.
 
 \begin{lemma}[Correctness of the guarded monitor construction]
@@ -1544,7 +1544,7 @@ from that point on, for the global verdict to be tight or post acceptance.
 \caption{%
 Progressive construction for $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$.
 Figure (c) is obtained by applying $\tsmc_\guardd$ to Figures (b) and (a).
-Here, roughly speaking, $\PAY^\surd := \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}$ denotes a joint payment event,$\PAY^\times := \Gamma \setminus \PAY^\surd $ denotes failure of payement.
+Here, roughly speaking, $\PAY^\surd := \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}$ denotes a joint payment event,$\PAY^\times := \Gamma \setminus \PAY^\surd $ denotes failure of payment.
 $T := \{\,A\in\Gamma \mid \notifterm^{(1)}\in A\,\}$ denotes the occurrence of a termination notice by agent~1,
 and $\overline{T} := \Gamma\setminus T$ denotes its absence.
 }

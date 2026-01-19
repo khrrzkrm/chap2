@@ -298,77 +298,64 @@ or a violation-then-repair pattern.
 
 
 
-\begin{example}[Tight satisfaction and violation for $(C_2 \wedge C_3)$]
-\label{ex:c2c3-tight}
-We reuse the collaboration alphabet
-\[
-\Sigma_C=\{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \REPAIR\},
-\]
-and recall
-\[
-C_2 := \perm[1]{\OCC}, \qquad
-C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
-\]
-
-\paragraph{Tight satisfaction (the longest prefix).}
-Consider the trace
-\[
-\pi_{\textsf{sat}} = \langle A_1, A_2\rangle,
-\qquad
-A_1=\{\OCC^{(2)}\},\quad
-A_2=\{\PAYF^{(1)},\PAYF^{(2)}\}.
-\]
-Then
-$\trace{A_1}\ \satt\ C_2$
-(vacuously, since $\OCC^{(1)}\notin A_1$ and no unsupported attempt occurs),
-and
-$\pi_{\textsf{sat}}\ \satt\ C_3$
-(the rent was not paid in month 1, but the reparation clause succeeds at $t{=}1$).
-Hence, by conjunction,
-$\pi_{\textsf{sat}}\ \satt\ (C_2 \wedge C_3)$
-at the longest decisive prefix.
-
-\paragraph{Tight satisfaction (the shortest prefix).}
-For the single-event trace 
-\[
-\trace{A_1'} \quad\text{with}\quad A_1'=\{\OCC^{(2)},\PAY^{(1)},\PAY^{(2)}\},
-\]
-we have
-$\trace{A_1'}\ \satt\ C_2$
-and
-$\trace{A_1'}\ \satt\ \obl[1]{\PAY}$,
-so both conjuncts hold in month 1:
-\[
-\trace{A_1'}\ \satt\ (C_2 \wedge C_3),
-\quad
-\text{and any extension }\trace{A_1',A_2}\text{ yields }\postsat(C_2\wedge C_3).
-\]
-
-\paragraph{Tight violation.}
-Now consider
-\[
-\pi_{\textsf{viol}} = \langle A_1, A_2\rangle,
-\qquad
-A_1=\{\OCC^{(1)}\},\quad
-A_2=\emptyset.
-\]
-In the first month,
-$\trace{A_1}\ \satt\ C_2$
-and $\trace{A_1}\ \violt\ \obl[1]{\PAY}$,
-while
-$\trace{A_1}\ \presat\ C_3$
-since the reparation in $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ has not yet been tested.
-At $t{=}1$,
-$\pi_{\textsf{viol}}\ \violt\ C_3$
-(as $\pi[1,1]\ \violt\ \obl[1]{\PAY}$ and $\pi[2,2]\ \violt\ \obl[1]{\PAYF}$).
-Thus, the overall violation arises from $C_3$,
-and by conjunction,
-$\pi_{\textsf{viol}}\ \violt\ (C_2 \wedge C_3)$.
-
-\medskip
-This shows that $(C_2 \wedge C_3)$
-satisfies either immediately when both conjuncts hold, or later when a reparation compensates for a missed rent, while violation arises when both payment and its repair fail.
-\end{example}
+    \paragraph{Tight satisfaction (the later decisive prefix).}
+    Consider the trace
+    \[
+    \pi_{\textsf{sat}} = \langle A_1, A_2\rangle,
+    \qquad
+    A_1=\{\OCC^{(2)}\},\quad
+    A_2=\{\PAYF^{(1)},\PAYF^{(2)}\}.
+    \]
+    Then
+    $\trace{A_1}\ \satt\ C_2$
+    (vacuously, since $\OCC^{(1)}\notin A_1$ and no unsupported attempt occurs),
+    and
+    $\pi_{\textsf{sat}}\ \satt\ C_3$,
+    since $\pi[1,1]\ \violt\ \obl[1]{\PAY}$ and
+    $\pi[2,2]\ \satt\ \obl[1]{\PAYF}$.
+    Hence, by conjunction,
+    $\pi_{\textsf{sat}}\ \satt\ (C_2 \wedge C_3)$,
+    with decisive index $t=2$, the maximum of the two conjunct frontiers.
+    
+    \paragraph{Tight satisfaction (the earliest decisive prefix).}
+    For the single-event trace 
+    \[
+    \trace{A_1'} \quad\text{with}\quad A_1'=\{\OCC^{(2)},\PAY^{(1)},\PAY^{(2)}\},
+    \]
+    we have
+    $\trace{A_1'}\ \satt\ C_2$
+    and
+    $\trace{A_1'}\ \satt\ C_3$
+    (via the direct satisfaction of $\obl[1]{\PAY}$).
+    Thus,
+    \[
+    \trace{A_1'}\ \satt\ (C_2 \wedge C_3),
+    \quad
+    \text{and any extension }\trace{A_1',A_2}\text{ yields }\postsat(C_2\wedge C_3).
+    \]
+    
+    \paragraph{Tight violation.}
+    Now consider
+    \[
+    \pi_{\textsf{viol}} = \langle A_1, A_2\rangle,
+    \qquad
+    A_1=\{\OCC^{(1)}\},\quad
+    A_2=\emptyset.
+    \]
+    In the first month,
+    $\trace{A_1}\ \satt\ C_2$
+    and $\trace{A_1}\ \violt\ \obl[1]{\PAY}$,
+    while
+    $\trace{A_1}\ \presat\ C_3$
+    since the reparation in $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ has not yet been evaluated.
+    With split $k=1$,
+    $\pi[1,1]\ \violt\ \obl[1]{\PAY}$ and
+    $\pi[2,2]\ \violt\ \obl[1]{\PAYF}$,
+    hence
+    $\pi_{\textsf{viol}}\ \violt\ C_3$.
+    Thus, the overall violation arises from $C_3$, and by conjunction,
+    $\pi_{\textsf{viol}}\ \violt\ (C_2 \wedge C_3)$,
+    with decisive index $t=2$.
 
 \subsubsection*{Repetition Contracts Tight Semantics}
 \begin{definition}[Repetition Contracts]

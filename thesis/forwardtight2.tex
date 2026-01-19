@@ -98,7 +98,7 @@ A=\{a^{(2)}\}: & \text{no violation} & \text{(no unsupported subject attempt).}
 
 \subsubsection*{Blame Propagation in Contracts}
 \paragraph{Conjunction.}
-For $S \subseteq\{1, 2\}$ of agent(s), and  two contract $C$ and $C'$ from \cDL and a synchronous trace $\pi$, blame is defined for the conjunction $C \wedge C'$ is defined as:
+For $S \subseteq\{1, 2\}$ of agent(s), and  two contracts $C$ and $C'$ from \cDL and a synchronous trace $\pi$, blame is defined for the conjunction $C \wedge C'$ is defined as:
 \[
 \pi\ \vDash_{\bottp{S}}\ (C\wedge C') \;\iff\;
 \begin{cases}
@@ -107,7 +107,7 @@ For $S \subseteq\{1, 2\}$ of agent(s), and  two contract $C$ and $C'$ from \cDL 
 \pi\ \vDash_{\bottp{S_1}}\ C\ \nd\ \pi\ \vDash_{\bottp{S_2}}\ C' \text{ with } S=S_1\cup S_2.
 \end{cases}
 \]
-Where $\dbot$ stand for a non violation verdict, i.e, $\dbot \in \{\,?,\ \topp,\ \topt\,\}$\\
+Where $\dbot$ stands for a non violation verdict, i.e, $\dbot \in \{\,?,\ \topp,\ \topt\,\}$\\
 \emph{Intuition.}
 The three cases summarize the possible outcomes of forward-looking blame.
 The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contracts could be violated at the same time point, in this case, the agent or agents responsible for \emph{both simultaneous} violation get the blame.
@@ -150,7 +150,7 @@ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
 \medskip
 \noindent\textbf{Tight blame for agent 1 }
 \[
-\pi_1=\langle A_0\rangle,\quad A_0=\{\OCC^{(1)}\}
+\pi_1=\langle A_1\rangle,\quad A_1=\{\OCC^{(1)}\}
 \]
 Here, $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdicts are:
 \begin{itemize}
@@ -163,9 +163,9 @@ $\pi_1 \presat \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.$
 Consequently, only the landlord gets the blame for the overall specification:
 \[\pi_1 \vDash_{\bottp{\{2\}}} C_2' \wedge C_3.\]
 
-Moreover, consider the trace of  $\pi_2:= \trace{\{\OCC^{(1)}\}, \{\OCC^{(1)}\}}$, the extension of $\pi_1$ with the same event, as the blame is forward and tight looking, the blame is still assigned only to agent $2$ (landlord) as they is responsible for the first violation.
+Moreover, consider the trace of  $\pi_2:= \trace{\{\OCC^{(1)}\}, \{\OCC^{(1)}\}}$, the extension of $\pi_1$ with the same event, as the blame is forward and tight-looking, the blame is still assigned only to agent $2$ (landlord) as they is responsible for the first violation.
 
-Let us consider instead the following trace $\pi_3:=\trace{A_0',A_1}$ with $A_0':= \{\OCC^{(1)}, \OCC^{(2)}\}$ and $A_1:= \{\OCC^{(1)}\}$.
+Let us consider instead the following trace $\pi_3:=\trace{A_1',A_2}$ with $A_1':= \{\OCC^{(1)}, \OCC^{(2)}\}$ and $A_2:= \{\OCC^{(1)}\}$.
 
 Here:
 \begin{itemize}
@@ -312,7 +312,7 @@ where:
     \mathbb{V}_{11} = \{\mathsf{?},\topt,\topp\} \cup \{\bot^{t}_{S},\bot^{p}_{S} \mid S\subseteq \{1,2\}\}.
   \]
   \item $Q$ is the set of states and $q_0\in Q$ is the initial state,
-  \item $\Gamma = 2^\Sigma$ is the input event alphabet,
+  \item $\Gamma$ is the input event alphabet,
   \item $\delta: Q \times \Gamma \to Q$ is the transition function,
   \item $\lambda_{11}: Q \to \mathbb{V}_{11}$ is the state output function.
 \end{enumerate}
@@ -460,7 +460,7 @@ The proof proceeds by structural induction on $C$.
   \node[state,fill=red!10,left=10mm of qv2] (qpv2) {$s_{\botp}^2$\\ [2pt]$\botpp{\{2\}}$};
   
   % Blame 1 (Tenant) - e.g., failing to pay fine
-  \node[state,fill=red!18,right=50mm of qv2] (qv1) {$s_{\bott}^1$\\[2pt]$\bottp{\{2\}}$};
+  \node[state,fill=red!18,right=50mm of qv2] (qv1) {$s_{\bott}^1$\\[2pt]$\bottp{\{1\}}$};
   \node[state,fill=red!10,right=10mm of qv1] (qpv1) {$s_{\botp}^1$\\[2pt]$\botpp{\{1\}}$};
   
   % --- Transitions ---
@@ -512,7 +512,7 @@ The proof proceeds by structural induction on $C$.
   Although the previous example is constructed using a conjunction, the reparation operator within $C_3$ delays the assignment of blame for the payment obligation.
 Specifically, if the tenant fails to pay rent, the monitor transitions to a waiting state for the repair (outputting $\mathsf{?}$) rather than immediately emitting a violation verdict.
 Consequently, it is impossible for both conjuncts to return a tight violation $\bott$ at the same initial step.
-To illustrate a scenario where the monitor can output the joint blame verdict $\bottp{12}$, we consider the reparation-free reduction of the specification: $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$.
+To illustrate a scenario where the monitor can output the joint blame verdict $\bottp{\{1,2\}}$, we consider the reparation-free reduction of the specification: $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$.
 
   \begin{example}[Blame Monitor with double blame]\label{example:joint-blame}
     The following monitor in \ref{fig:joint-blame} shows the emergence of joint blame. From the initial state $s_0$, three distinct violation paths are possible depending on who fails. The path to $s_{\bott}^{12}$ represents the simultaneous failure of both parties.
@@ -539,16 +539,16 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
     % --- Violation States ---
     
     % 1. Joint Blame (Top Path)
-    \node[state,fill=purple!18,above right=7mm and 35mm of q0] (q12) {$s_{\bott}^{12}$\\[2pt]$\bottp{12}$};
-    \node[state,fill=purple!10,right=20mm of q12] (qp12) {$s_{\botp}^{12}$\\[2pt]$\botpp{12}$};
+    \node[state,fill=purple!18,above right=7mm and 35mm of q0] (q12) {$s_{\bott}^{\{12\}}$\\[2pt]$\bottp{\{12\}}$};
+    \node[state,fill=purple!10,right=20mm of q12] (qp12) {$s_{\botp}^{12}$\\[2pt]$\botpp{\{12\}}$};
     
     % 2. Tenant Blame (Middle/Right Path)
-    \node[state,fill=red!18,below=7mm of qs] (q1) {$s_{\bott}^{1}$\\[2pt]$\bottp{\{2\}}$};
-    \node[state,fill=red!10,right=20mm of q1] (qp1) {$s_{\botp}^{1}$\\[2pt]$\botpp{1}$};
+    \node[state,fill=red!18,below=7mm of qs] (q1) {$s_{\bott}^{1}$\\[2pt]$\bottp{\{1\}}$};
+    \node[state,fill=red!10,right=20mm of q1] (qp1) {$s_{\botp}^{1}$\\[2pt]$\botpp{\{1\}}$};
     
     % 3. Landlord Blame (Bottom Path)
     \node[state,fill=red!18,below=7mm of q1] (q2) {$s_{\bott}^{2}$\\[2pt]$\bottp{\{2\}}$};
-    \node[state,fill=red!10,right=20mm of q2] (qp2) {$s_{\botp}^{2}$\\[2pt]$\botpp{2}$};
+    \node[state,fill=red!10,right=20mm of q2] (qp2) {$s_{\botp}^{2}$\\[2pt]$\botpp{\{2\}}$};
     
     % --- Transitions ---
     
@@ -609,7 +609,7 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
       % --- Split Violation States ---
       
       % Path 1: Tenant Blame (Most common case)
-      \node[state,fill=red!18,above right= 4 mm and 20mm of qw]       (qv1)  {$s_{\bott}^1$\\[2pt]$\bottp{\{2\}}$};
+      \node[state,fill=red!18,above right= 4 mm and 20mm of qw]       (qv1)  {$s_{\bott}^1$\\[2pt]$\bottp{\{1\}}$};
       \node[state,fill=red!10,right=20mm of qv1]       (qpv1) {$s_{\botp}^1$\\[2pt]$\botpp{\{1\}}$};
       
       % Path 2: Landlord Blame (Blocking the fine)
