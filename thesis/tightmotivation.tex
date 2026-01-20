@@ -887,7 +887,7 @@ Since each component DFA recognizes exactly one of the five semantic regions (e.
 \end{proof}
 
 \paragraph*{Summary}
-This section has developed a \emph{correct-by-construction} framework that transforms any regular language $L\subseteq\Sigma^*$ first into the five semantic regions required by tight monitoring, and subsequently into a single executable monitor. This workflow relies exclusively on standard automata-theoretic operations—completion, complement, breadth-first search for minimal frontiers, and right-ideal saturation—applied to the underlying DFA graph.
+This section introduced a \emph{correct-by-construction} framework that transforms any regular language $L\subseteq\Sigma^*$ into the five semantic regions required for tight monitoring, ultimately yielding a single executable monitor. This workflow operates on the underlying DFA graph using exclusively standard automata-theoretic operations, such as completion, complement, breadth-first search for minimal frontiers, and right-ideal saturation.
 
 Conceptually, this construction bridges the gap between the linguistic requirements of normative systems and operational verification. It ensures that norms enter into force at exact positions and that monitor decisions are both fair (no premature verdicts) and final (no evolution to the opposite verdict). By strictly preserving the transition structure, we deliver a monitor that is correct by design without incurring the state explosion typical of product constructions.
 
@@ -1042,7 +1042,7 @@ Continuing from Example~\ref{ex:contract-encoding}, we demonstrate the automata 
 \Sigma_C  &:= \{\PAY,\ \PAYF,\ \OCC,\ \notifrepair,\ \notifterm,\ \REPAIR\}.
 \end{aligned}
 \]
-Figure~\ref{fig:thompson-C5} depicts the Thompson-style $\varepsilon$-NFA for $\re_{C_5}$, and Figure~\ref{fig:dfa-C5-determinized} shows its determinized and completed DFA.
+\ref{fig:thompson-C5} depicts the Thompson-style $\varepsilon$-NFA for $\re_{C_5}$, and \ref{fig:dfa-C5-determinized} shows its determinized and completed DFA.
 
 \tikzset{
   ->, >=Stealth,
@@ -1143,8 +1143,7 @@ We now close the pipeline by instantiating the tight monitor construction. The c
 \begin{definition}[Tight monitor construction for regular expressions]\label{def:tsmc-re}
 Let $\re$ be a regular expression over the alphabet $\Gamma$ and let
 $L := \Lang{\re}\subseteq\Gamma^{*}$ be its language as in Definition~\ref{def:re-semantics}.
-Let
-\[
+\[\text{Let }
   \mathcal{M}_{\text{5tight}}(L)
   \;=\;\big(S, s^0, \Gamma, \tightverdicts, \delta, \lambda\big)
 \]
@@ -1156,7 +1155,7 @@ The \emph{tight satisfaction monitor} for $\re$ is this Moore machine:
 \end{definition}
 
 \begin{example}[Tight monitor for $C_5$]\label{ex:moore-C5-tight}
-Continuing Example~\ref{ex:end-to-end-C5}, Figure~\ref{fig:moore-C5-tight-compact} shows the compact five-valued Moore monitor obtained by applying the tight monitor construction of Definition~\ref{def:tsmc-re} to the regular expression $\re_{C_5}$.
+Continuing Example~\ref{ex:end-to-end-C5}, \ref{fig:moore-C5-tight-compact} shows the compact five-valued Moore monitor obtained by applying the tight monitor construction of Definition~\ref{def:tsmc-re} to the regular expression $\re_{C_5}$.
 
 \begin{figure}[h!]
 \centering

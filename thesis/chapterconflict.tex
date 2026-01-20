@@ -44,7 +44,7 @@ We then bridge the gap between this operational detection and theoretical logic.
 Finally, we address the practical trade-off between automation and conciseness. Eliminating conflicts automatically can sometimes result in verbose specifications. To mitigate this, we complement our algorithms with a \emph{conflict calculus}. This set of inference rules allows for high-level symbolic reasoning. It enables designers to resolve conflicts manually and simplify specifications without needing to decompose the entire formula.
 \subsection{Contribution}
 
-In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions, building up on our previous work \cite{kharraz2021timed,DBLP:conf/jurix/KharrazSL24} are as follows:
+In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions are as follows:
 
 \begin{enumerate}[Con1]
     \item \textbf{Formal Machinery:} We define a compact, action-based logic over finite interval sets. We provide algorithms for punctual and disjunctive normalization (\dpnf) and a proof-theoretic calculus for conflict detection.
@@ -392,13 +392,13 @@ where $\is^*$ is an interval set formed by finite intervals ranging over element
 %\todo{The use case is not motivating. An example is motivating. A use case is there and we consider it. We have been through this many times. Check and kill.\\KK:kill, I will check on the rest of the paper.}
 To illustrate our logic, let us transform the textual representation of norms from our  
 use case to formulas from \TDDLfm.
-First, the Delivery Clause in Table~\ref{tab:contract}, where an agent can choose between delivering at the gate and delivering at the parking between 9:00 and 16:00,  and could be represented in \TDDLfm as:
+First, the Delivery Clause in \ref{tab:contract}, where an agent can choose between delivering at the gate and delivering at the parking between 9:00 and 16:00,  and could be represented in \TDDLfm as:
 $$\DC := \ob{\{[9,16]\}}{\delAtGate} \sqcup \ob{\{[9,16]\}}{\delAtPark}.$$
 % 
-The Safety Regulation norm from Table~\ref{tab:contract} prohibits the delivery of dangerous goods at the parking between 10:00 and 14:00, and could be expressed in \TDDLfm as follows:
+The Safety Regulation norm from \ref{tab:contract} prohibits the delivery of dangerous goods at the parking between 10:00 and 14:00, and could be expressed in \TDDLfm as follows:
 $$\SR:= \forb{\{[10,14]\}}{\delAtPark}.$$
 %
-Lastly, the Maintenance Announcement in  Table~\ref{tab:ma}, prohibits the delivery at the gate between  2:00 and 04:00 and between 8:00 and 24:00, and could be written in our logic as follows:
+Lastly, the Maintenance Announcement in \ref{tab:ma}, prohibits the delivery at the gate between  2:00 and 04:00 and between 8:00 and 24:00, and could be written in our logic as follows:
 $$\MA:=\forb{\{[2,4]\},\{[8,24]\}}{\delAtGate}.$$
 %
 %\todo[inline]{GS: Shouldn't the last one be $\MA:=\forb{\{[2,4]\},\{[8,24]\}}{\delAtGate}.$ (Why infinity?)\\ KK:Updated to 24 instead of infinity: kill}
@@ -846,7 +846,7 @@ When specifying time-dependent norms, the choice of how to represent temporal co
 
 The way literals represent time constraints has a significant impact on the overall size and readability of formulas. Thanks to the compression equivalences (\textbf{ObDis}) and (\textbf{FConj}) in Lemma~\ref{lemma:literal-compression}, multiple intervals involving the same action can be merged into a single literal whose interval set is a union of the original intervals. This reduces the syntactic overhead and improves overall readability, which facilitates the subjects of the normative system to get a more straightforward interpretation.
 
-Consider, for example, the literal $\forb{{[2,4],[8,24]}}{\delAtGate}$, which expresses a prohibition over two time ranges. As shown in Table~\ref{table:ma-conciseness}, this specification can be written in multiple ways—with varying levels of granularity. We compare three syntactic alternatives: using single time points, using individual intervals, and using a set of intervals. The table highlights that the interval set representation is by far the most concise, requiring fewer symbols to express the same semantics.
+Consider, for example, the literal $\forb{{[2,4],[8,24]}}{\delAtGate}$, which expresses a prohibition over two time ranges. As shown in \ref{table:ma-conciseness}, this specification can be written in multiple ways, with varying levels of granularity. We compare three syntactic alternatives: using single time points, using individual intervals, and using a set of intervals. The table highlights that the interval set representation is by far the most concise, requiring fewer symbols to express the same semantics.
 
 \end{remark}
 
@@ -1197,7 +1197,7 @@ These rules form a \emph{conflict calculus}, enabling systematic exploration of 
 \medskip
 
 \noindent
-Table~\ref{syncnotation} summarizes the syntactic notations of our deductive system, grounded in the extensional semantics of \TDDLfm.  
+\ref{syncnotation} summarizes the syntactic notations of our deductive system, grounded in the extensional semantics of \TDDLfm.  
 We use standard derivability and equivalence symbols, with their semantic counterparts defined over duty classes.
 
 \begin{table}[h]
@@ -1345,10 +1345,7 @@ Together they form a structured system for detecting, rewriting, and resolving n
 \end{figure}
 
 \begin{example}[Analyzing $\UC$ via Conflict Calculus]
-
-Let
-
-$
+$\text{Let }
 \UC_1' := \ob{\{[9,16]\}}{\delAtGate} \sqcap \MA \sqcap \SR, 
 \UC_2' := \ob{\{[9,16]\}}{\delAtPark} \sqcap \MA \sqcap \SR$\\
 and $\UC := \UC_1' \sqcup \UC_2'
@@ -1363,10 +1360,10 @@ A constructive way of prunning $\UC$ with be following the next three steps:\\
 \textbf{Step 1: Total deontic conflict in $\UC_1'$.}
 \begin{prooftree}
 \AxiomC{}
-\RightLabel{\scriptsize (T-DeoConf)}
+\RightLabel{\footnotesize (T-DeoConf)}
 \UnaryInfC{$\ob{\{[9,16]\}}{\delAtGate}\sqcap\forb{\{[2,4],[8,24]\}}{\delAtGate}\vdash\bot$}
 \AxiomC{}
-\RightLabel{\scriptsize ($\bot\sqcap$)}
+\RightLabel{\footnotesize ($\bot\sqcap$)}
 \BinaryInfC{$\UC_1'\dutymodel\bot$}
 \end{prooftree}
 Thus $\UC_1'$ is unsatisfiable due to overlapping obligation and prohibition intervals on the same action.
@@ -1374,12 +1371,12 @@ Thus $\UC_1'$ is unsatisfiable due to overlapping obligation and prohibition int
 \textbf{Step 2: Partial deontic conflict in $\UC_2'$.}
 \begin{prooftree}
 \AxiomC{}
-\RightLabel{\scriptsize (P-DeoConf)}
+\RightLabel{\footnotesize(P-DeoConf)}
 \UnaryInfC{$\ob{\{[9,16]\}}{\delAtPark}\sqcap\forb{\{[10,14]\}}{\delAtPark}
 \dutyequiv
 \ob{\{[9,9],[15,16]\}}{\delAtPark}\sqcap\forb{\{[10,14]\}}{\delAtPark}$}
 \AxiomC{}
-\RightLabel{\scriptsize ($\equiv\sqcap$)}
+\RightLabel{\footnotesize ($\equiv\sqcap$)}
 \BinaryInfC{$\UC_2'\equiv\UC_2$}
 \end{prooftree}
 $\UC_2'$ is thus satisfiable after eliminating overlapping intervals.
@@ -1388,7 +1385,7 @@ $\UC_2'$ is thus satisfiable after eliminating overlapping intervals.
 \begin{prooftree}
 \AxiomC{$\UC_1'\dutymodel\bot$}
 \AxiomC{$\UC_2'\equiv\UC_2$}
-\RightLabel{\scriptsize ($\bot\sqcup$)}
+\RightLabel{\footnotesize ($\bot\sqcup$)}
 \BinaryInfC{$\UC_1'\sqcup\UC_2'\dutyequiv\UC_2$}
 \end{prooftree}
 Hence the global formula $\UC$ is equivalent to its conflict free refinement $\UC_2$.
@@ -1405,7 +1402,7 @@ This opens a path toward an interactive assistant for designing consistent norma
         
         \subsection{Answering the Research Questions Through Formal Results}
 
-This section situates our technical contributions within a structured methodology for analyzing and resolving conflicts. We demonstrate how the formal pipeline—connecting definitions, algorithms, and theorems—provides precise answers to the three research questions (RQ1--RQ3) posed in Section~\ref{sec:overview}.
+This section situates our technical contributions within a structured methodology for analyzing and resolving conflicts. We demonstrate how the formal pipeline—connecting definitions, algorithms, and theorems—provides precise answers to the three research questions (RQ1--RQ3) posed in \ref{sec:overview}.
 
 \subsubsection{Answering RQ1: The Relation between Unsatisfiability and Conflict}
 

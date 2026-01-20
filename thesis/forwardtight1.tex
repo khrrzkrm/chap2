@@ -266,14 +266,12 @@ The monitor for $C \wedge C'$ checks both components at the same time and decide
 
 \begin{lemma}[Correctness of the conjunctive monitor construction]
 \label{lem:conj-correct}
-Let 
-\[
+\[\text{Let }
 \tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
 \quad\text{and}\quad
 \tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5)
 \]
-and let
-\[
+\[\text{and let }
 \tsmc(C \wedge C')
   = (Q_{\wedge}, q_0^{\wedge}, \Gamma, \tightverdicts, \delta_{\wedge}, \lambda_5^{\wedge})
 \]
@@ -312,10 +310,57 @@ reaches tight satisfaction, must continue execution with $C'$ on the remaining
 suffix. The construction below reuses the state spaces of both components by redirecting transitions that correspond to the tight success of $C$
 into the initial state of $C'$. This yields a tight prefix monitor that exactly matches the semantics of sequential composition.
 
+\begin{remark}[Contradicting literals]
+  \label{rem:contradicting-literals}
+    Consider the literal pairs $\obl[1]{a}\wedge\frb[1]{a}$ and $\perm[1]{a}\wedge\frb[2]{a}$ are contradictory in the sense that no single event $A\in\Gamma$ can satisfy both components simultaneously as in Definition \ref{def:lattsat}, there semantics clash:
+    
+   $ \nexists A\in\Gamma:\ \bigl(\trace{A}\ \satt\ \obl[1]{a}\ \land\ \trace{A}\ \satt\ \frb[1]{a}\bigr), \nd\\
+    \nexists A\in\Gamma:\ \bigl(\trace{A}\ \satt\ \perm[1]{a}\ \land\ \trace{A}\ \satt\ \frb[2]{a}\bigr).$
+  
+    Consequently, following the in the synchronous-product conjunction rules from $\lambda_{5}^{\textsf{comb}}$ \\
+    $$
+    \tsmc_{\wedge}\bigl(\tsmc(\obl[1]{a}),\tsmc(\frb[1]{a})\bigr),\\
+    \tsmc_{\wedge}\bigl(\tsmc(\perm[1]{a}),\tsmc(\frb[2]{a})\bigr),
+  $$
+    no state with output $\topt$ or $\topp$ is reachable.
+    Tight acceptance for these conjunctions is therefore unreachable: every execution either remains undecided or produces a tight or post violation, aligning exactly with the five-valued tight semantics as shown in \ref{fig:tsmc-obl-and-frb-unreachable}.
+  \end{remark}
+
+  \begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[
+    shorten >=1pt,auto,node distance=30mm,semithick,
+    every state/.style={rectangle,rounded corners,draw,minimum width=14mm,
+      minimum height=7.5mm,inner sep=5pt,font=\footnotesize,align=center}
+  ]
+  
+  % States (reachable quotient)
+  \node[initial,state,fill=gray!10] (s0) {$q_0$\\[0.2pt]$\mathsf{?}$};
+  \node[state,fill=red!18,right=of s0] (sv) {$q_{\bott}$\\[0.2pt]$\bott$};
+  \node[state,fill=red!10,right=of sv] (sp) {$q_{\botp}$\\[0.2pt]$\botp$};
+  
+  % Transitions
+  \path[->]
+    (s0) edge node[above] {$\Gamma$} (sv)
+    (sv) edge node[above] {$\Gamma$} (sp)
+    (sp) edge[loop right] node {$\Gamma$} (sp);
+  \end{tikzpicture}
+  \caption{Reachable part of the conjunction monitor $\tsmc_{\wedge}(\tsmc(\obl[1]{a}),\tsmc(\frb[1]{a}))$.}
+  \label{fig:tsmc-obl-and-frb-unreachable}
+  \end{figure}
+  
+  \paragraph{Perspective of unsatisfiability via monitor structure.}
+  This observation suggests a natural automata-theoretic characterization of contract unsatisfiability.
+  We propose to study this property by identifying contracts whose tight satisfaction monitors admit no accepting behaviors.
+  Specifically, we define a contract $C$ as unsatisfiable if \emph{every} run of its corresponding tight forward monitor construction $\tsmc(C)$ inevitably reaches a tight violation state $\bott$ and subsequently the permanent violation sink $\botp$.
+  In graph-theoretic terms, this condition holds if the monitor graph contains no infinite path that avoids $\bott$.
+  This definition links semantic inconsistency to operational inevitability, enabling unsatisfiability checks via reachability analysis rather than direct semantic reasoning.
+  
+
+
 \begin{definition}[Sequential Monitor Construction]
 \label{def:moore-seq}
-Let
-\[
+\[\text{Let }
 \tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
 \quad\text{and}\quad
 \tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5)
@@ -381,7 +426,7 @@ trace.
 
 \begin{lemma}[Correctness of the sequential monitor construction]
 \label{lem:seq-correct}
-Let $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
+Let the two $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
 and let $\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))
 = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor outputs the same verdict according to the sequence semantics:
 \[
@@ -469,8 +514,7 @@ The proof is by induction on the length of the input trace $\pi$.
 
 \begin{definition}[Reparation Monitor Construction]
 \label{def:moore-repair}
-Let
-\[
+\[\text{Let }
 \tsmc(C)  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5)
 \quad\text{and}\quad
 \tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5)
@@ -538,7 +582,7 @@ As long as no violation occurs, the monitor behaves exactly as $C$. Once a tight
 
 \begin{lemma}[Correctness of the reparation monitor construction]
 \label{lem:rep-correct}
-Let $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$, and let
+Let \(C\) and \(C'\) be contracts from \(\cDL\), with corresponding tight satisfaction monitors \(\tsmc(C)\) and \(\tsmc(C')\), and let
 \[
 \tsmc_{\repair}(\tsmc(C),\tsmc(C'))
   = (Q_{\repair}, q_0^{\repair}, \Gamma, \tightverdicts, \delta_{\repair}, \lambda_5^{\repair})
@@ -599,11 +643,11 @@ The Letter classes used on edges correspond to  shorthand for literal satisfacti
 \[
 \begin{aligned}
 \PAY^\surd   &:= \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}, 
-&\qquad \PAY^\times   &:= \Gamma\setminus \PAY^\surd,\\[2pt]
+&\quad \PAY^\times   &:= \Gamma\setminus \PAY^\surd,\\[2pt]
 \PAYF^\surd  &:= \{\,A\in\Gamma \mid \{\PAYF^{(1)},\PAYF^{(2)}\}\subseteq A\,\},
-&\qquad \PAYF^\times  &:= \Gamma\setminus \PAYF^\surd,\\[2pt]
+&\quad \PAYF^\times  &:= \Gamma\setminus \PAYF^\surd,\\[2pt]
 \OCC^{\surd} &:= \{\,A\in\Gamma \mid \OCC^{(2)}\in A \Rightarrow \OCC^{(1)}\in A\,\},
-&\qquad \OCC^{\times} &:= \Gamma\setminus \OCC^{\surd}.
+&\quad \OCC^{\times} &:= \Gamma\setminus \OCC^{\surd}.
 \end{aligned}
 \]
 Outputs follow the conjunction rule $\Lambda$:
@@ -766,10 +810,7 @@ The monitor activates $\PAYF$ after tight failure of $\PAY$.}
 
 \caption{Literal and composite 5-output Moore monitors for
 $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$.
-(a) and (b)~monitors for Literal composing $C_3$  side by side;
-(c)~Reparation composition $C_3$;
-(d)~Conjunctive composition $C_2 \wedge C_3$,
-where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \not\subset A \sor  \{\OCC^{1},\OCC^{2}\} \subseteq A\}$. 
+where $C_2=\perm[1]{\OCC}$ represents the tenant's power to occupy the property. $\OCC^{\surd}:= \{A \mid \{\OCC^{1}\} \not\subset A \sor  \{\OCC^{1},\OCC^{2}\} \subseteq A\}$. \\
 $\PAY^\surd:= \{A \mid \PAY^{(1)},\PAY^{(2)}\} \subseteq A $. The case $\PAYF^\surd$ is similarly defined as for $\PAY^\surd$.}
 \label{fig:moore-c3-literals}
 \end{figure*}
@@ -1260,8 +1301,7 @@ In the next sections, we use the definitions of the different languages in the s
 
 \begin{definition}[Tight monitor construction for unbounded repetition $\repit{C}$]
 \label{def:moore-repeat-unbounded}
-Let
-\[
+\[\text{Let }
 \tsmc(C)=(Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)
 \]
 be the tight satisfaction monitor for $C$.

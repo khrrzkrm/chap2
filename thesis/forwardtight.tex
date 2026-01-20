@@ -416,14 +416,13 @@ or a violation-then-repair pattern.
   Then:
   \[
   \neg\bigl(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n\bigr)
-  \qquad\text{and}\qquad
+  \quad\text{and}\quad
   \neg\bigl(\pi\ \satt\ \repit{C}\ \nd\ \pi\ \violt\ \repit{C}\bigr).
   \]
   \end{lemma}
   
   \begin{proof}
   We prove the two claims.
-  
   \paragraph{Finite repetition $C^n$.}
   We argue by induction on $n$.
   For $n=1$, we have $C^1\equiv C$ by definition, hence the claim follows from the hypothesis.
@@ -756,7 +755,7 @@ $\{\presat,\satt,\violt,\postsat,\postviol\}$ for \cDL are pairwise disjoint and
 \end{theorem}
 \begin{proof}
 Fix a finite trace $\pi$ and contract $C$.
-We reason point-wise on prefixes of $\pi$ (as defined in Section~\ref{traces}) and lift the result to the trace-level relations via Definition~\ref{def:postprecont}.
+We reason point-wise on prefixes of $\pi$ (as defined in \ref{traces}) and lift the result to the trace-level relations via Definition~\ref{def:postprecont}.
 
 By Lemma~\ref{lem:mutual prefix}, along a fixed trace the two frontiers cannot both occur on (possibly different) prefixes: if some prefix tightly satisfies $C$, then no prefix tightly violates $C$, and conversely.
 Moreover, constructor-wise disjointness holds point wise for every prefix, that is, $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$ for every prefix $\pi_{\min}$.

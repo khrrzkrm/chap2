@@ -71,7 +71,7 @@ We transform the following timed constraints to intervals:
 \subsection{Allen's Algebra and Unifiability}
 
 
-Allen's algebra \cite{allen1983maintaining} consists of 13 exhaustive and mutually exclusive relations between \textit{abstract}\footnote{Not inherently tied to a specific numerical domain.} pairs of intervals. To provide an intuition, in \ref{fig:ia} we give a visual interpretation of these relations. The different cases are based on the relative comparison of the start and end points of the intervals. In Table \ref{tab:IAdesc} we specify the constraints associated with each case for the domain of intervals $\mathbb{I}$ defined on natural numbers.
+Allen's algebra \cite{allen1983maintaining} consists of 13 exhaustive and mutually exclusive relations between \textit{abstract}\footnote{Not inherently tied to a specific numerical domain.} pairs of intervals. To provide an intuition, in \ref{fig:ia} we give a visual interpretation of these relations. The different cases are based on the relative comparison of the start and end points of the intervals. In \ref{tab:IAdesc} we specify the constraints associated with each case for the domain of intervals $\mathbb{I}$ defined on natural numbers.
 
 
 \begin{figure}[h]
@@ -437,8 +437,7 @@ Showing a large blow-up, mainly caused by the large intervals.
 
 
  \subsubsection{Union}
-The union of two interval sets $\is$ and $\is'$ is recursively computed by the successive union of each interval $I_i \in \is'$ with $\is$:
-
+The union of two interval sets $\is$ and $\is'$ is recxursively computed by the successive union of each interval $I_i \in \is'$ with $\is$:
 \[
 \is \cup \is' := \left\{ \left( \left(\is \cup I_1) \cdots \right) \cup I_n \right) \ \middle|\ I_1, \dots, I_n \in \is' \right\}.
 \]

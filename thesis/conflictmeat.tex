@@ -153,7 +153,7 @@ In this section, the notion of conflict is treated primarily as a syntactic phen
 \subsubsection{Syntax-Aware Conflict Detection: LUCO and LAP}
 
 
-We therefore introduce two invariants that govern how literal refinements behave in conflict detection: (i) \emph{Lowest Upper Common Operator (LUCO):} preserves the Boolean position where literals meet; and (ii) \emph{Literal Ancestor Preservation (LAP):} ensures punctual descendants refine—but never alter—their ancestor literals.
+We therefore introduce two invariants that govern how literal refinements behave in conflict detection: (i) \emph{Lowest Upper Common Operator (LUCO):} preserves the Boolean position where literals meet; and (ii) \emph{Literal Ancestor Preservation (LAP):} ensures punctual descendants refine but never alter their ancestor literals.
 
 These invariants ensure that conflicts cannot vanish or appear spuriously during normalization.
 
@@ -569,7 +569,7 @@ To illustrate, consider a compact specification combining both deontic and ontic
 \]
 The maximal obligation time point is $k=2$.  
 Applying $\pnf(\phi,2)$ expands obligations and prohibitions up to $t\le2$, while retaining the tail $[3,5]$.  
-Subsequent $\dnf$ and conflict extraction yield the results summarized in Table~\ref{table:conflict-analysis}.
+Subsequent $\dnf$ and conflict extraction yield the results summarized in \ref{table:conflict-analysis}.
 
 \begin{table}
     \centering
@@ -709,12 +709,12 @@ literal $\ell$ in~$\phi$ with identical modality and action. Its interval set is
 in that of~$\ell$, corresponding to punctual points $t\le k$ or the residual tail.
 
 (\emph{Upward}) For any literal $\ell$ in~$\phi$, its descendants in $\pnf(\phi,k)$ are:
-(a) for $\tool{O}$, the family
+(i) for $\tool{O}$, the family
 $\{\ob{\{[t,t]\}}{a}\mid t\in\is\cap[0,k]\}$, possibly plus
 $\ob{\is\cap[k{+}1,\infty]}{a}$;
-(b) for $\tool{F}$, the analogous conjunctive family.
+(ii) for $\tool{F}$, the analogous conjunctive family.
 Their nearest common Boolean operator in $\pnf(\phi,k)$ is the one introduced locally at
-$\ell$—a disjunction for $\tool{O}$ or conjunction for $\tool{F}$, and by
+$\ell$, that is either a disjunction for $\tool{O}$ or a conjunction for $\tool{F}$, and by
 \textbf{ObDis}/\textbf{FConj} the resulting expression is syntactically equivalent to~$\ell$.
 \end{proof}
 
@@ -906,7 +906,7 @@ Conflict density captures the proportion of punctual obligations involved in con
 A formula with $\cd(\phi)=0$ is \defn{conflict-free}; when $\cd(\phi)=1$ it is \defn{fully conflicting}.
 
 \begin{example}[Conflict density computation]
-From Table~\ref{table:conflict-analysis} for Example~\ref{ex:easy}, we have:
+From \ref{table:conflict-analysis} for Example~\ref{ex:easy}, we have:
 \[
 \Xi(\phi)=4, \qquad \size{\mathcall{PC}(\phi)}=3.
 \]
@@ -1121,7 +1121,7 @@ Conflict elimination can enlarge the formula. In particular, avoiding simultaneo
 \ob{\{[0,3]\}}{\mathsf{b}} \sqcap
 \ob{\{[0,3]\}}{\mathsf{c}}.
 \]
-Table~\ref{table:ontic-triple-conflict} summarizes the transformation pipeline—\pnf, \dnf, conflict extraction, and the conflict-free rewriting $\Namb(\phi)$.  
+\ref{table:ontic-triple-conflict} summarizes the transformation pipeline—\pnf, \dnf, conflict extraction, and the conflict-free rewriting $\Namb(\phi)$.  
 The final formula is roughly $20\times$ larger than the original.
 
 Intuitively, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.  
@@ -1182,7 +1182,7 @@ Disjunctions of punctual obligations can be compacted via \textbf{ObDis}, and co
 \forb{\{[2,4],[8,24]\}}{\delAtGate}.
 \]
 The conflict-free rewriting $\Namb(\UC_2')$ retains the non-conflicting obligations $t\!\in\!\{9,15,16\}$.  
-Table~\ref{table:refactoring-uc2} compares the original, verbose rewriting, and a merged equivalent $\UC_2''$.
+\ref{table:refactoring-uc2} compares the original, verbose rewriting, and a merged equivalent $\UC_2''$.
 
 \begin{table}[h]
 \centering

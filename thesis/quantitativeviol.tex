@@ -22,12 +22,10 @@ We identify two primary strategies for defining this scope:
    
 \end{enumerate}
 
-This work adopts the \textbf{Dynamic On-the-Fly} approach.
-This requires a structural tracking mechanism, which we formalize as the \emph{Contract Progress Monitor} (\CPM).
-The \CPM acts as a derivative function: given a contract $C$ and an incoming event, it computes the contract $C'$ that must be enforced in the next time step.
-Isolating the state of the contract (via the \CPM~) from the evaluation of compliance (via a scoring function) enables a modular framework that can track active duties, handle contrary-to-duty (CTD) transitions, and attribute blame with precision over time. The scoring function is critical in this framework, as it provides a quantitative evaluation of compliance. This approach not only determines whether obligations have been met, but also assesses the degree of compliance or non-compliance. The interaction with the \CPM measures the magnitude of violations, presenting an in-depth and nuanced view of contractual adherence that improves accountability and enforcement precision.
+This work adopts a \emph{Dynamic On-the-Fly} approach, utilizing a structural tracking mechanism formalized as the \emph{Contract Progress Monitor} (\CPM). The \CPM functions as a derivative operator: given a contract $C$ and an incoming event, it computes the residual contract $C'$ to be enforced in the next time step. By decoupling the maintenance of contract state (via the \CPM) from the evaluation of compliance (via a scoring function), this architecture enables a modular framework that tracks active duties, manages contrary-to-duty (CTD) transitions, and attributes blame with precision over time. The scoring function is critical, providing a quantitative measure of adherence that transcends binary verification to assess the \emph{degree} of compliance. This interaction with the \CPM quantifies the magnitude of violations, yielding a nuanced view of contractual performance that enhances both accountability and enforcement precision.
 
-Regarding the computational complexity of this framework, we claim that the set of reachable residual contracts is finite. The size of this set is determined by the size of the regular expressions and contract literals within the original contract $C$, which implies that the set can be computed in finite time. We aim to provide the formal proofs of this finiteness property and the algorithm for exhaustive computation as future work.
+Regarding computational complexity, we rely on the following finiteness hypothesis: the set of reachable residual contracts is finite.
+We state this property formally in Claim~\ref{clm:rrcs-finite} and leave a complete proof and an effective enumeration algorithm to future work.
 
 \subsection{Contract Progress Monitor}
 
@@ -45,7 +43,7 @@ For a single event step $\trace{A}$ with $A \in \Gamma$, the function is defined
 \paragraph{Literals (State Update).}
 For any literal $\ell$ (obligation, permission, or prohibition):
 \[
-\Prog(\trace{A}, \ell) := \emptc
+\Prog(\trace{A}, \ell) := \emptc.
 \]
 \emph{Rationale:} Structurally, a literal applies to a single time step.
 Once the $A$ step occurs, the literal is consumed.
@@ -110,12 +108,18 @@ These constructs rely on regular expression matching.
 \end{cases}
 \]
 
-Where the regular progress function $\Prog_{re}: 2^\Gamma \times \cDL_{re} \to \cDL_{re} $ is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
+Where the regular progress function $\Prog_{re}: \Gamma^1 \times \cDL_{re} \to \cDL_{re} $ is defined for traces of length 1, and is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
  We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon$.
 
- \paragraph{Atomic regular expressions}
- For a set of actions $A \in \Gamma$ we have:
-$\Prog_{re}(\trace{A}, A') := \epsilon.$ 
+ \paragraph{Atomic regular expressions.}
+ For an atomic letter-test $B \in \Gamma$,
+ \[
+ \Prog_{re}(A, B) :=
+ \begin{cases}
+ \epsilon & \text{if } A = B,\\
+ \emptyset & \text{otherwise}.
+ \end{cases}
+ \]
   
  \paragraph{Concatenation}
 For $\re \cdot \re'$, the progression is defined as:
@@ -123,6 +127,9 @@ For $\re \cdot \re'$, the progression is defined as:
 \Prog_{re}(\trace{A}, \re \cdot \re') := 
     \Prog_{re}(\trace{A}, re) \cdot re'.
 \]
+\noindent\emph{Remark.} whenever a residual of the left part reduces to $\epsilon$, we use the standard identity $(\epsilon)\cdot re' \equiv re'$ to simplify the resulting expression.
+
+
 
 \paragraph{Union}
 For $re \mid re'$, the progression is defined by distinguishing cases based on violation:
@@ -130,7 +137,7 @@ For $re \mid re'$, the progression is defined by distinguishing cases based on v
 \Prog_{re}(\trace{A}, re \mid re') := \begin{cases} 
 \Prog_{re}(\trace{A}, re') & \text{if } \trace{A} \violt re ,\\
 \Prog_{re}(\trace{A}, re) & \text{if } \trace{A} \violt re' ,\\
-\Prog_{re}(\trace{A}, re) \mid \Prog_{re}(A, re') & \text{otherwise}.
+\Prog_{re}(\Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A}, re') & \text{otherwise}.
 \end{cases}
 \]
 
@@ -141,7 +148,7 @@ For $\re^n$, with $n \in \mathbb{N}^*$ the progression is defined as:
 \]
 
 
-\paragraph{$+$-Operator}
+\paragraph{$+$ Operator}
 For $\re^+$, the progression is defined as:
 \[
 \Prog_{re}(\trace{A}, re^+) := \Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A},re)\cdot re^+.
@@ -162,9 +169,9 @@ $A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix. The
 The helper function $\Prog_{re}$ computes the residual regular expression following an idea from Brzozowski's derivative~\cite{brzozowski1964derivatives} of the regular expression. In our case, it is tuned for the tight semantics.
 
 \begin{lemma}[Termination]
-For each finite prefix $\pi$, $\Prog(\pi, C)$ terminates in at most $\min |\pi|$ recursive steps and the worst case is considering the worst regular expression such as the guard of the use case.
-
-\end{lemma}
+  For each finite trace $\pi$ and contract $C$, the computation of $\Prog(\pi,C)$ terminates.
+  Moreover, the recursion on the trace unfolds for at most $|\pi|$ steps.
+  \end{lemma}
 To illustrate the \CPM, the evolution of the residual contract under different traces is examined. The evaluation initiates with the fundamental building block of normative enforcement: the reparation.
 
 \begin{example}[Progression of Reparation]
@@ -172,8 +179,13 @@ To illustrate the \CPM, the evolution of the residual contract under different t
 Consider the basic rental reparation clause:
 \[ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}. \]
 
+
 \noindent\textbf{Scenario 1: Compliance.}
-In the first trace $\pi$, the tenant pays rent in Month 1 ($\PAY \in A_1$). Since $\trace{A_1} \satt \obl[1]{\PAY}$, the condition for discharge is met. The reparation structure collapses to $\emptc$, meaning no further obligations exist for Month 2.
+Consider the trace $\pi=\trace{A_1,A_2}$. We illustrate this scenario in \ref{example:prog-repair1}.
+In Month~1, the tenant pays rent, that is,
+$\PAY^{(1)}\in A_1$ and $\PAY^{(2)}\in A_1$.
+Hence $\trace{A_1}\ \satt\ \obl[1]{\PAY}$, and the reparation clause is immediately discharged.
+The residual contract after Month~1 is therefore $\emptc$, meaning that no further obligations exist for Month~2.
 
     \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
  
@@ -216,7 +228,11 @@ In the first trace $\pi$, the tenant pays rent in Month 1 ($\PAY \in A_1$). Sinc
 
 \medskip
 \noindent\textbf{Scenario 2: Violation and Repair.}
-In trace $\pi'$, the tenant fails to pay in Month 1 ($\PAY \notin A'_1$). Here, $\trace{A'_1} \violt \obl[1]{\PAY}$. Consequently, the \CPM activates the repair branch. The residual for Month 2 becomes $\obl[1]{\PAYF}$, obliging the tenant to pay the fine.
+Consider the trace $\pi=\trace{A_1,A_2}$.
+In Month~1, the tenant fails to pay rent, that is,
+$\PAY^{(1)}\notin A_1$ (or equivalently, $\trace{A_1}\ \violt\ \obl[1]{\PAY}$). We illustrate this scenario in \ref{example:prog-repair2}
+As a consequence, the \CPM activates the reparation branch.
+The residual contract after Month~1 is $\obl[1]{\PAYF}$, obliging the tenant to pay the fine in Month~2.
 
   \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
   \begin{tikzpicture}[y=1.6cm,x=3.0cm]
@@ -323,7 +339,7 @@ A guarded contract that persists until a termination notice ($\notifterm$) is is
 \[ \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}} \]
 
 \noindent\textbf{Trace 1: Successful Termination.}
-The tenant pays in Month 1 ($A_1$) and issues a termination notice in Month 2 ($A_2$).
+The tenant pays in Month~1 ($A_1$) and issues a termination notice in Month~2 ($A_2$), as illustrated in \ref{example:prog-guard1}.
 \begin{itemize}
     \item At $i=1$, the event $A_1$ satisfies the inner contract $C_3$ (rent paid), but does not satisfy the guard (no notice). The residual is the guarded repetition.
     \item At $i=2$, the event $A_2$ contains $\notifterm$. This satisfies the guard expression. The \CPM immediately reduces the entire contract to $\emptc$, signifying the contract has ended.
@@ -339,7 +355,7 @@ The tenant pays in Month 1 ($A_1$) and issues a termination notice in Month 2 ($
       }
     }
     % Local definition for the residual regex to fit in the box
-    \def\resid{\notifterm \mid \Gamma^+ \cdot \notifterm}
+    \def\resid{\notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)}}
   
     % Labels
     \node at (0,0)   {Month $i$};
@@ -371,30 +387,30 @@ The tenant pays in Month 1 ($A_1$) and issues a termination notice in Month 2 ($
   
   \end{tikzpicture}
   }}
-  {Progression on guarded contract where the termination notice at step 2 discharges the contract.}
+  {Trace~1 (Successful Termination): progression of the guarded contract where the termination notice at step~2 discharges the contract.}
   {example:prog-guard1}
   {\vspace{8pt}}{\vspace{-12pt}}
 
 \medskip
 \noindent\textbf{Trace 2: Pending Guard with Internal Violation.}
-In this scenario, the tenant pays in Month 1 but fails to pay in Month 2 (and gives no notice).
+In this scenario, the tenant pays in Month~1 but fails to pay in Month~2 (and gives no notice), as illustrated in \ref{example:prog-guard2}.
 \begin{itemize}
     \item At $i=2$, the guard is \emph{not} satisfied.
     \item Simultaneously, the inner contract $\repit{C_3}$ processes the event. Since rent was not paid, the inner contract evolves into a reparation state ($\obl[1]{\PAYF}$).
-    \item The resulting residual is a guarded reparation: $\guard[\dots]{(\obl[1]{\PAYF} ; \repit{C_3})}$.
+    \item The resulting residual is a guarded reparation:\\ $\guard[\notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)}]{(\obl[1]{\PAYF} ; \repit{C_3})}$.
 \end{itemize}
 This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the content inside (the obligations) evolves and accumulates violations independently.
 
   \boxalignfigure{\resizebox{0.95\textwidth}{!}{%
-  \begin{tikzpicture}[y=1.8cm,x=4.4cm]
+  \begin{tikzpicture}[y=1.8cm,x=4.7cm]
   
     \tikzset{
       cell/.style={
-        draw, rectangle, text width=40mm,
-        minimum height=8mm, align=center, font=\small
+        draw, rectangle, text width=43mm,
+        minimum height=8mm, align=center, font=\footnotesize
       }
     }
-    \def\resid{\notifterm \mid \Gamma^+ \cdot \notifterm}
+    \def\resid{\notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)}}
   
     % Labels
     \node at (0,0)   {Month $i$};
@@ -402,16 +418,16 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
     \node at (0,-2)  {$\Prog(\pi'_{i},C)$};
     
     % Row 1: time
-    \node[cell] at (1,0) (t1) {$1$};
+    \node[cell] at (0.8,0) (t1) {$1$};
     \node[cell] at (2,0) (t2) {$2$};
     
     % Row 2: events
-    \node[cell] at (1,-1) (e1) {$\{\PAY^{(1)}, \PAY^{(2)}\}$};
+    \node[cell] at (0.8,-1) (e1) {$\{\PAY^{(1)}, \PAY^{(2)}\}$};
     \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
     
     % Row 3: residuals
     % Step 1: Manual line break using \\
-    \node[cell] at (1,-2) (r1) {$\lceil \resid \rceil$ \\ $\repit{C_3}$};
+    \node[cell] at (0.8,-2) (r1) {$\lceil \resid \rceil$ \\ $\repit{C_3}$};
     % Step 2: Manual line break using \\
     \node[cell] at (2,-2) (r2) {$\lceil \resid \rceil$ \\ $(\obl[1]{\PAYF} ; \repit{C_3})$};
     % Arrows
@@ -428,7 +444,7 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
   
   \end{tikzpicture}
   }}
-  {Progression on a guarded contract where the guard is not satisfied, and the inner contract triggers a reparation.}
+  {Trace~2 (Pending Guard with Internal Violation): progression where the guard is not satisfied and the inner contract triggers a reparation.}
   {example:prog-guard2}
   {\vspace{8pt}}{\vspace{-12pt}}
   
@@ -437,9 +453,11 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
 We now turn to the notion of reachable residual contracts. This construction is essential for monitor synthesis under the quantitative semantics introduced above. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set captures precisely this state space.
 
 \begin{definition}[Reachable Residual Contract Set from a Contract]
-Let $C$ be a contract from \cDL, the \emph{reachable residual contract set} of $C$, written \rrcs{C}, is the set from $2^{\cDL \cup \emptc}$ capturing all the possible residual contracts obtainable from a contract $C$ by any trace $\pi \in \Gamma^*$ using the progress function
-\[\rrcs{C} := \{ C_r \mid \exists \tau \in \Gamma^*: \Prog(\pi,C)= C_r\}.\]
-\end{definition}
+  Let $C \in \cDL$. The \emph{reachable residual contract set} of $C$, written $\rrcs{C}$, is
+  \[
+    \rrcs{C} := \{\, C_r \in (\cDL \cup \{\emptc\}) \mid \exists \pi \in \Gamma^*: \Prog(\pi,C)= C_r \,\}.
+  \]
+  \end{definition}
 \begin{claim}[Finiteness of Reachable Residual Contracts]\label{clm:rrcs-finite}
   For every contract $C \in \cDL$, the reachable residual contract set $\rrcs{C}$ is finite.
   \end{claim}

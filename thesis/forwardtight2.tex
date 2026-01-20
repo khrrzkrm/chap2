@@ -65,33 +65,35 @@ Tight blame persists to extensions, and post blame is exactly “some earlier ti
 
 
 \begin{example}[Obligation, prohibition, and power blame]
-By fixing $p=1$, $\barp=2$. Consider the following letters $A\in\Gamma$:
+  Fix $p=1$ (tenant) and $\bar p=2$ (landlord), and consider the same four one-step letters $A_1,\dots,A_4\in\Gamma$ under each literal $\obl[1]{a}$, $\frb[1]{a}$, and $\perm[1]{a}$.  
+  These letters exhaust all possible attempt patterns in a single step, namely no attempt, only agent~2 attempts, only agent~1 attempts, and joint attempt, and we report the corresponding verdict in $\mathbb{V}_{11}$ for each case.
 
 \smallskip
 \noindent\emph{Obligation \(\obl[1]{a}\).}
 \[
 \begin{array}{lcl}
-A=\emptyset: & \trace{A}\ \vDash_{\bottp{\{1\}}}\ \obl[1]{a} & \text{(subject of the obligation did not attempt)}\\
-A=\{a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{\{1\}}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
-A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \obl[1]{a} & \text{(other party did not cooperate)}\\
-A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(joint execution present).}
+A_1=\emptyset: & \trace{A_1}\ \vDash_{\bottp{\{1\}}}\ \obl[1]{a} & \text{(subject of the obligation did not attempt)}\\
+A_2=\{a^{(2)}\}: & \trace{A_2}\ \vDash_{\bottp{\{1\}}}\ \obl[1]{a} & \text{(subject did not attempt)}\\
+A_3=\{a^{(1)}\}: & \trace{A_3}\ \vDash_{\bottp{\{2\}}}\ \obl[1]{a} & \text{(other party did not cooperate)}\\
+A_4=\{a^{(1)},a^{(2)}\}: & \trace{A_4}\ \satt\ \obl[1]{a} & \text{(joint execution present)}
 \end{array}
 \]
-
 \noindent\emph{Prohibition \(\frb[1]{a}\).}
 \[
 \begin{array}{lcl}
-A=\{a^{(1)},a^{(2)}\}: & \trace{A}\ \vDash_{\bottp{\{1\}}}\ \frb[1]{a} & \text{(subject should have refrained)}\\
-A=\{a^{(1)}\} \quad: & \text{no violation} & \text{The prohibited action was not successful}
+A_1=\emptyset: & \trace{A_1}\ \satt\ \frb[1]{a} & \text{(the prohibited joint act does not occur)}\\
+A_2=\{a^{(2)}\}: & \trace{A_2}\ \satt\ \frb[1]{a} & \text{(joint act does not occur)}\\
+A_3=\{a^{(1)}\}: & \trace{A_3}\ \satt\ \frb[1]{a} & \text{(joint act does not occur)}\\
+A_4=\{a^{(1)},a^{(2)}\}: & \trace{A_4}\ \vDash_{\bottp{\{1\}}}\ \frb[1]{a} & \text{(subject should have refrained)}
 \end{array}
 \]
-
 \noindent\emph{Power \(\perm[1]{a}\).}
 \[
 \begin{array}{lcl}
-A=\{a^{(1)}\}: & \trace{A}\ \vDash_{\bottp{\{2\}}}\ \perm[1]{a} & \text{(subject asked, other party withheld)}\\
-A=\{a^{(1)},a^{(2)}\}: & \text{no violation} & \text{(properly supported)}\\
-A=\{a^{(2)}\}: & \text{no violation} & \text{(no unsupported subject attempt).}
+A_1=\emptyset: & \trace{A_1}\ \satt\ \perm[1]{a} & \text{(subject does not attempt)}\\
+A_2=\{a^{(2)}\}: & \trace{A_2}\ \satt\ \perm[1]{a} & \text{(no unsupported subject attempt)}\\
+A_3=\{a^{(1)}\}: & \trace{A_3}\ \vDash_{\bottp{\{2\}}}\ \perm[1]{a} & \text{(subject attempted, other party withheld)}\\
+A_4=\{a^{(1)},a^{(2)}\}: & \trace{A_4}\ \satt\ \perm[1]{a} & \text{(properly supported)}
 \end{array}
 \]
 \end{example}
@@ -107,8 +109,8 @@ For $S \subseteq\{1, 2\}$ of agent(s), and  two contracts $C$ and $C'$ from \cDL
 \pi\ \vDash_{\bottp{S_1}}\ C\ \nd\ \pi\ \vDash_{\bottp{S_2}}\ C' \text{ with } S=S_1\cup S_2.
 \end{cases}
 \]
-Where $\dbot$ stands for a non violation verdict, i.e, $\dbot \in \{\,?,\ \topp,\ \topt\,\}$\\
-\emph{Intuition.}
+Where $\dbot$ stands for a non violation verdict, that is, $\dbot \in \{\,?,\ \topp,\ \topt\,\}$.\\
+\paragraph{Intuition.}
 The three cases summarize the possible outcomes of forward-looking blame.
 The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contracts could be violated at the same time point, in this case, the agent or agents responsible for \emph{both simultaneous} violation get the blame.
 
@@ -123,7 +125,7 @@ For \(S\subseteq\{1,2\}\), contracts \(C,C'\) in \cDL, and a synchronous trace \
 \exists \pi_k\ \vDash_{\topt} \ C \ \nd\ \pi^{k}\ \vDash_{\bottp{S}}\ C'.
 \end{cases}
 \]
-\emph{Intuition.} The first decisive failure before \(C\) has tightly succeeded belongs to \(C\), so its blame propagates. Once \(C\) has tightly succeeded (\(\topt\)) or is in post-success (\(\topp\)), only \(C'\) can still fail, so the blame comes from \(C'\). There is no tie, since \(C'\) becomes active only after \(C\) has tightly succeeded.
+\paragraph{Intuition.} The first decisive failure before \(C\) has tightly succeeded belongs to \(C\), so its blame propagates. Once \(C\) has tightly succeeded (\(\topt\)) or is in post-success (\(\topp\)), only \(C'\) can still fail, so the blame comes from \(C'\). There is no tie, since \(C'\) becomes active only after \(C\) has tightly succeeded.
 
 \paragraph{Reparation.}
 For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) is defined as:
@@ -135,7 +137,7 @@ For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) i
 \ \nd\
 \pi^k\ \vDash_{\bottp{S}}\ C'.
 \]
-\emph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\), therefore, corresponds to the agents responsible for violating the reparation \(C'\) once it is triggered. The blame for $C$ is not considered, as one cares only for the overall violation of the combined contracts.
+\paragraph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\), therefore, corresponds to the agents responsible for violating the reparation \(C'\) once it is triggered. The blame for $C$ is not considered, as one cares only for the overall violation of the combined contracts.
 
 
 \begin{example}[Witness traces for all blame verdicts]

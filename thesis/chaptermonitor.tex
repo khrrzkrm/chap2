@@ -617,8 +617,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   
   \begin{definition}[Run and output of a deterministic Moore machine]
     \label{def:moore-run}
-    Let 
-    \[
+    \[\text{Let }
     M_i \;=\; (S_i, s^0_i,\ \Sigma_I^i,\ \Sigma_O^i,\ \delta_i,\ \lambda_i)
     \]
     be a deterministic Moore machine for agent $i$ as in Definition~\ref{def:moore}.
@@ -903,9 +902,8 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
     In this way, \cDL does not abstract away interaction, but instead builds on the interaction model to provide precise, blame-aware contractual semantics.
 
   \subsection{Syntax of \cDL}
-  
   In \ref{fig:cdl-syntax}, the syntax of \cDL\ is organized into three blocks: regular expressions, literals, and contracts.
-  \medskip
+
   \paragraph{Regular expressions (\emph{re}).}
   This block specifies \emph{when} clauses apply by describing patterns over monthly positions.
   An \emph{atom} is a tagged action-set \(A \subseteq \Sigma\) stating what the two parties did in a month.
