@@ -193,23 +193,23 @@ The residual contract after Month~1 is therefore $\emptc$, meaning that no furth
       \tikzset{
         cell/.style={
           draw, rectangle, text width=26mm,
-          minimum height=7mm, align=center, font=\small
+          minimum height=7mm, align=center, font=\footnotesize
         }
       }
     
       % Labels
-      \node at (0,0)   {Month $i$};
-      \node at (0,-1)  {Event at i $A_i$};
-      \node at (0,-2)  {$\Prog(\pi_{i},C)$};
+      \node at (-1,0)   {Month $i$};
+      \node at (-1,-1)  {Event at i $A_i$};
+      \node at (-1,-2)  {$\Prog(\pi_{i},C)$};
       % Row 1: time
-      \node[cell] at (1,0) (t1) {$1$};
-      \node[cell] at (2,0) (t2) {$2$};
+      \node[cell] at (0,0) (t1) {$1$};
+      \node[cell] at (1.5,0) (t2) {$2$};
       % Row 2: events
-      \node[cell] at (1,-1) (e1) {$\{\PAY^{(12)}\}$};
-      \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+      \node[cell] at (0,-1) (e1) {$\{\PAY^{(12)}\}$};
+      \node[cell] at (1.5,-1) (e2) {$\{\OCC^{(1)}\}$};
       % Row 3: residuals
-      \node[cell] at (1,-2) (r1) {\emptc};
-      \node[cell] at (2,-2) (r2) {\emptc};
+      \node[cell] at (0,-2) (r1) {\emptc};
+      \node[cell] at (1.5,-2) (r2) {\emptc};
       % Arrows
       \draw (t1)--(t2);
       \draw (e1)--(e2);
@@ -240,23 +240,23 @@ The residual contract after Month~1 is $\obl[1]{\PAYF}$, obliging the tenant to 
     \tikzset{
       cell/.style={
         draw, rectangle, text width=26mm,
-        minimum height=7mm, align=center, font=\small
+        minimum height=7mm, align=center, font=\footnotesize
       }
     }
   
     % Labels
-    \node at (0,0)   {Month $i$};
-    \node at (0,-1)  {Event at i $A_i$};
-    \node at (0,-2)  {$\Prog(\pi'_{i},C)$};
+    \node at (-1,0)   {Month $i$};
+    \node at (-1,-1)  {Event at i $A_i$};
+    \node at (-1,-2)  {$\Prog(\pi'_{i},C)$};
     % Row 1: time
-    \node[cell] at (1,0) (t1) {$1$};
-    \node[cell] at (2,0) (t2) {$2$};
+    \node[cell] at (0,0) (t1) {$1$};
+    \node[cell] at (1.5,0) (t2) {$2$};
     % Row 2: events
-    \node[cell] at (1,-1) (e1) {$\{\OCC^{(1)}\}$};
-    \node[cell] at (2,-1) (e2) {$\{\OCC^{(1)}\}$};
+    \node[cell] at (0,-1) (e1) {$\{\OCC^{(1)}\}$};
+    \node[cell] at (1.5,-1) (e2) {$\{\OCC^{(1)}\}$};
     % Row 3: residuals
-    \node[cell] at (1,-2) (r1) {$\obl[1]{\PAYF}$};
-    \node[cell] at (2,-2) (r2) {\emptc};
+    \node[cell] at (0,-2) (r1) {$\obl[1]{\PAYF}$};
+    \node[cell] at (1.5,-2) (r2) {\emptc};
     % Arrows
     \draw (t1)--(t2);
     \draw (e1)--(e2);

@@ -985,7 +985,6 @@ usual two distinguished states $(s_{\mathrm{in}},s_{\mathrm{out}})$ per fragment
 and $\varepsilon$-transitions for wiring~\cite{Thompson1968,HopcroftUllman2001,Sipser2012}. The only twist is how we
 treat letters, since an atom $\mathsf{A}$ matches \emph{any} $\Gamma$-letter $X$
 that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
-
 \begin{itemize}
   \item \textbf{Atom $\mathsf{A}\subseteq\Gamma$:} create two states
         $p\to q$ and add, for \emph{every} $X\in\Gamma$ with $\mathsf{A}\subseteq X$,
@@ -1016,10 +1015,8 @@ that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
         (At least one iteration is enforced by entering at $p_1$.)
 \end{itemize}
 The resulting NFA accepts exactly $\Lang{re}$.
-
 \paragraph*{Stage 2: Determinization.}
-Apply the standard subset construction with $\varepsilon$-closures to obtain a DFA $\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language~\cite{RabinScott1959,HopcroftUllman2001}.
-
+Apply the standard subset construction with $\varepsilon$-closures to obtain a DFA $\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language~\cite{RabinScott1959,HopcroftUllman2001}.x
 \paragraph*{Stage 3: Completion, trimming, and minimization.}
 For monitoring we assume a \emph{completed} DFA: add (if needed) a sink state so that $\delta$ is total on $Q\times\Gamma$.
 Next, trim unreachable states (retain only $\Reach(\aut_D(re))$).

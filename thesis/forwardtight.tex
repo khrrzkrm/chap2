@@ -13,12 +13,9 @@ Traces, prefixes, suffixes, and their basic operators are as defined in
 \ref{traces}.
 In this subsection, we only introduce the forward-looking semantic
 judgements used to evaluate contracts along such traces.
-
-\medskip
 \paragraph{Core tight judgements.}
 All semantic clauses below are stated relative to the prefix structure
 fixed in \ref{traces}.
-
 We define two tight relations (inductively on the syntax of $C$):
 \[
 \pi\ \satt\ C \quad\text{(tight satisfaction)},\qquad
@@ -28,8 +25,6 @@ Intuitively, $\satt$ holds exactly at the \emph{first prefix}
 where the contract becomes satisfied (acceptance frontier),
 and $\violt$ holds exactly at the \emph{first prefix}
 where it becomes violated (rejection frontier).
-
-\medskip
 \paragraph{Derived judgements.}
 Using these frontiers, we define the remaining derived relations of the five-valued semantics.
 By Lemma~\ref{lem:mutual prefix}, at most one tight frontier can occur along a fixed trace, so the clauses below classify a prefix by its position relative to this (unique, if it exists) decisive point.
@@ -73,7 +68,6 @@ For conservativeness, undecided prefixes are treated as violating, which prevent
 Exactly one of $\pi\ \sat\ C$ or $\pi\ \viol\ C$ holds for every trace~$\pi$ and contract~$C$.
 This conservative collapse treats undecided prefixes as \emph{violating}
 (no premature acceptance) while still preserving the tight moment of satisfaction.
-
 \subsubsection*{Literal Tight Semantics}
 Literals $\ell$ are decided in a single synchronous step.
 We therefore interpret them on a single event word $\trace{A}$ with $A\in\Gamma$
@@ -179,7 +173,6 @@ Reparation, on the other hand, requires that either $C$ succeeds directly, or, a
   Let $\pi$ be a finite trace over $\Gamma = 2^{\Sigma}$ with  $s=\size{\pi}$.
   We use the notation $\pi_k = \pi[1,k]$ for the prefix of length $k$,
   and $\pi^k = \pi[k+1,s]$ for the suffix after $k$.
-
   \[
   \begin{array}{l@{\quad}c@{\quad}l}
   \multicolumn{3}{l}{\textbf{Conjunction }(C \wedge C')}\rule{0pt}{2.4ex}\\
@@ -260,7 +253,7 @@ or a violation-then-repair pattern.
     (ii) if $k<s$, then $\pi_k$ is a strict prefix of $\pi$ with $\pi_k \satt C$, contradicting Lemma~\ref{lem:mutual prefix}(2) instantiated with $C$ (since $\pi \violt C$ forbids any $j<s$ with $\pi_j \satt C$).
     The case $\pi \violt C'$ is symmetric.
     
-    \paragraph{Case $;$.}
+    \paragraph{Case conjunction$(;)$.}
     Assume $\pi \satt (C;C')$ and $\pi \violt (C;C')$.
     From satisfaction there exists $k\in[1,s-1]$ such that
     $\pi_k \satt C$ and $\pi^{k} \satt C'$.
@@ -276,7 +269,7 @@ or a violation-then-repair pattern.
     namely $\pi^{k} \satt C'$ and $\pi^{k} \violt C'$,
     contradicting the suffix-disjointness hypothesis for $C'$.
     
-    \paragraph{Case $\repair$.}
+    \paragraph{Case reparation $(\repair)$.}
     Assume $\pi \satt (C\repair C')$ and $\pi \violt (C\repair C')$.
     From $\pi \violt (C\repair C')$ there exists $k\in[1,s-1]$ such that
     $\pi_k \violt C$ and $\pi^{k} \violt C'$.
@@ -333,7 +326,6 @@ or a violation-then-repair pattern.
     \quad
     \text{and any extension }\trace{A_1',A_2}\text{ yields }\postsat(C_2\wedge C_3).
     \]
-    
     \paragraph{Tight violation.}
     Now consider
     \[
@@ -386,7 +378,6 @@ or a violation-then-repair pattern.
   \end{array}
   \]
 \end{definition}
-  
   \paragraph{Intuition.}
   Repetition contracts express the iterative enforcement of a subcontract.
   The finite form $C^n$ requires $C$ to hold $n$ times in sequence, each instance starting
@@ -441,9 +432,6 @@ or a violation-then-repair pattern.
   Hence, $\pi$ cannot both tightly satisfy and tightly violate $\repit{C}$.
   \end{proof}
   
-
-
-
   \subsubsection*{Regular Expression Binary Operator Semantics}
   \label{sec:regex-contract}
   Contracts guarded by regular expressions specify that a normative condition becomes active only after the trace matches a given regular pattern.  
@@ -528,7 +516,6 @@ or a violation-then-repair pattern.
     This contradicts the disjointness hypothesis for $C$ on the suffix $\pi^{k}$.
     
     Hence, $\pi$ cannot both tightly satisfy and tightly violate $\trig[re]{C}$.
-    
     \paragraph{Guarded $\guard[re]{C}$.}
     Assume toward contradiction that $\pi\ \satt\ \guard[re]{C}$ and $\pi\ \violt\ \guard[re]{C}$.
     By Definition~\ref{def:trigger-guard-semantics}, violation means $\pi\ \clossat\ re$ and $\pi\ \violt\ C$.

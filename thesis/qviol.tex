@@ -67,7 +67,6 @@ Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract ex
 Explicit handling of Sequence and Reparation is managed by the contract progress function, which ensures that ``zero-delay'' transitions are penalized correctly. For instance, if a contract requires $C_1$ then $C_2$, and an event discharges $C_1$ but violates $C_2$ in the same step, the summation logic ($\qsem{\trace{A}, C_1} + \qsem{\trace{A}, C_2}$) ensures the violation of $C_2$ is not ignored simply because it appeared in a continuation.
 
 The definition of the instantaneous score $\qsem{\trace{A}, C}$ rests on distinguishing between \textbf{concurrent} (parallel) obligations and \textbf{structural} (atomic) constraints. It decouples the measurement of the ``volume'' of non-compliance from the binary verification of specific rules.
-
 \paragraph{Additivity of Concurrency.}
 For $\qsem{\trace{A}, C_1 \wedge C_2} := \qsem{\trace{A}, C_1 } + \qsem{\trace{A}, C_2}$, it captures the ``width'' of the violation as shown in \ref{fig:joint-blame}. In normative systems, a conjunction represents distinct, independent obligations that are active simultaneously. By summing the scores, the function ensures that the penalty is proportional to the number of distinct parallel duties neglected in a single instant, preventing ``violation masking'' where a single boolean verdict could hide multiple breaches.
 
@@ -796,10 +795,10 @@ We do not include a rule for a joint violation vector $(1,1)$ in the definition 
   \qblame{\pi, C_1 \wedge C_1} = 2 \times \qblame{\pi, C_1},
   \]
   despite the logical equivalence $C_1 \wedge C_1 \equiv C_1$.
-  This behavior is intentional: our construction treats conjunction as a syntactic operator denoting parallel normative instances, rather than as an idempotent logical connective.
+  This behavior is intentional: our construction treats conjunction as a syntactic operator denoting parallel normative instances, and ignores the idempotent semantic property.
   Accordingly, the quantitative semantics counts violations per syntactic occurrence of a duty rather than per semantic equivalence class.
-  Unlike the analysis in \ref{chap:conflict}, this chapter focuses primarily on monitor synthesis and therefore does not address semantic normalization.
-  A systematic investigation of algebraic properties, such as idempotence, contraction, and the normalization of equivalent contracts, is left for future work.
+  Unlike the analysis in \ref{chap:conflict}, this chapter focuses primarily on monitor synthesis and therefore does not address semantic properties of \cDL.
+  A systematic investigation of semantic properties, such as contraction and the normalization of equivalent contracts, is left for future work.
 \end{remark}
 
 \begin{example}[Blame Attribution and Quantitative Scores on the Same Traces]
@@ -1560,12 +1559,42 @@ The development of \cDL has been significantly inspired by the logic of agency \
 Both \cDL and \logic{STIT} model simultaneous interaction through discrete rounds, structurally analogous to a game of ``Rock-Paper-Scissors''; however, they diverge significantly in their constraints on agency and reparation.
 (i) \emph{Agency Structure:} In \logic{STIT}, interaction is governed by the \textsf{Independence of Agents} condition \cite{belnap2001facing}, which treats the choice structure at a moment $m$ as a strict \textit{partition} of histories. This axiom asserts that for any set of agents, the intersection of their respective choices is non-empty, but it restricts each agent to exactly one choice partition per moment. Conversely, \cDL is more flexible regarding action composition: since a round is encoded as a set of moments within a window, agents are permitted to perform multiple actions simultaneously.
 (ii) \emph{Semantic Faithfulness:} A deeper divergence appears in the handling of reparation. The \logic{STIT} encoding of reparation via temporal disjunction proves overly permissive, as it lacks the state memory to distinguish between a valid reparation and a spontaneous ``fine payment'' unrelated to any breach. In contrast, \cDL{} enforces the strict procedural semantics of the \textsf{repair} operator ($\repair$) through its state-based transition structure ($\Prog$), where the secondary obligation $\obl[1]{\PAYF}$ appears as a residual \textit{only} after a transition on the violation branch of $\obl[1]{\PAY}$. This mechanism ensures that reparation actions are not globally admissible propositions, but are causally enabled only by a specific antecedent failure, thereby ruling out anomalous traces like $\langle \PAYF, \PAYF \dots \rangle$ where fines are discharged without activation.
-Consequently, while the \cDL contract $C_7 := \guard[(\Gamma^+ \cdot \notifterm)]{\repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}}$ can be approximated in \logic{STIT} as $\phi_7 := [ \{1,2\} \text{ dstit }: ((\PAY \lor \PAYF)\ \mathcal{U}\ \notifterm^{(1)})]$, the latter fails to enforce the causal link between violation and fine.
+Consequently, while the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ can be approximated in group atemporal stit \cite{canavotto2022responsibility} as $\phi_7 := \boldmath{G}\big[ \{1,2\} \text{ cstit }\big] (\PAY \lor \PAYF)$, the latter fails to enforce the sequence ordering between the violation of the payement and the enforcement of the fine payement.
 
 \paragraph{\cDL vs. \logic{CSL}.}
 While \logic{CSL} also formalizes multi-party contracts through an trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:
 (i) \emph{Action Semantics:} \logic{STIT} models the causal ``attempt'' and potential interference (blocking) through simultaneous choice partitions. In contrast, \logic{CSL} abstracts away action generation entirely, assuming a fixed input trace of timestamped events. Consequently, \logic{CSL} does not account for blocked actions; the success of an obligation depends solely on whether the assigned agent performs the action on the trace, ignoring external interference.
-(ii) \emph{Blame and Quantification:} While \logic{STIT} evaluates the entire history, allowing for properties like ``repeatedly seeing to it'', \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously (i.e., $|B| > 1$) if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach.
+(ii) \emph{Blame and Quantification:} While \logic{STIT} evaluates the entire history, allowing for properties like ``repeatedly seeing to it'', \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously (i.e., $|B| > 1$) if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach. We illustrate in \ref{fig:csl-payment-loop} the closest encoding for $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ in \logic{CSL}.
+\begin{figure}[t]
+  \centering
+  \begin{minipage}{0.92\textwidth}
+  \[
+  \begin{array}{l}
+  \textbf{letrec } \mathit{paymentLoop}(\mathit{amountR}, \mathit{amountF})
+  \langle \mathit{tenant}, \mathit{landlord} \rangle = \\[2pt]
+  \quad \textbf{if } \mathit{Pay\_R}(s,r,a)
+  \ \textbf{where } s=\mathit{tenant} \land r=\mathit{landlord} \land a=\mathit{amountR} \\[-1pt]
+  \quad \textbf{due within } 30D \ \textbf{remaining } z \\[2pt]
+  \quad \textbf{then } \\[-1pt]
+  \qquad \mathit{paymentLoop}(\mathit{amountR}, \mathit{amountF})
+  \langle \mathit{tenant}, \mathit{landlord} \rangle \\[2pt]
+  \quad \textbf{else } \\[-1pt]
+  \qquad \langle \mathit{tenant} \rangle \mathit{Pay\_F}(s,r,a)
+  \ \textbf{where } s=\mathit{tenant} \land r=\mathit{landlord} \land a=\mathit{amountF} \\[-1pt]
+  \qquad \textbf{due within } 7D \\[2pt]
+  \qquad \textbf{then } \\
+  \qquad\quad \mathit{paymentLoop}(\mathit{amountR}, \mathit{amountF})
+  \langle \mathit{tenant}, \mathit{landlord} \rangle \\[4pt]
+  \textbf{in } \mathit{paymentLoop}(100,110)
+  \langle \mathit{Alice}, \mathit{Bob} \rangle
+  \ \textbf{starting } 2026\text{-}01\text{-}20
+  \end{array}
+  \]
+  \end{minipage}
+  \caption{Recursive payment loop specification with primary rent payment and secondary fine obligation.
+  The contrary-to-duty structure is captured using and if then else structure. The specification language does not account for landlords ability to block the payements.}
+  \label{fig:csl-payment-loop}
+  \end{figure}
 
 \subsection{Broader Landscape and Orthogonal Approaches}
 Having established the precise relationship between \cDL and its closest formalisms, we now broaden our scope. This section situates the proposed \textbf{Two-Agents Collaborative Normative Logic (\cDL)} within the wider landscape of formal methods, deontic logic, and multi-agent systems (MAS) \cite{bulling2015strategic,HvitvedKZ12}.
@@ -1593,7 +1622,7 @@ Standard RV monitors are often \emph{abortive}: once a property is definitively 
 \subsubsection{Normative Contrary to Duty handling: From Kripke Models to Trace Decomposition}
 Standard Deontic Logic (SDL) provides a modal foundation for obligations but notoriously struggles with CTD scenarios, such as the Chisholm paradox, where violations give rise to new obligations that can render the theory inconsistent \cite{VonWright1951,Chisholm1963,carmo2001deontic}. Dyadic deontic logics and Input/Output logic address CTDs by conditioning obligations on explicit contexts or input situations \cite{DBLP:conf/deon/BenzmullerFP18,Makinson2000}.
 
-In parallel, the AI and legal-informatics literature explores more operational perspectives: defeasible deontic reasoning, dynamic deontic operators, and trace-based contract models \cite{PrisacariuS12,rohaninezhad2017defeasible,HvitvedKZ12,wyner2006sequences}. While these approaches bring contracts closer to executable structures, they often emphasize inference over the temporal evolution of a single monitored contract instance. \cDL aligns with the executable perspective but distinctively integrates the \emph{collaborative} and \emph{interference} aspects of the interactions directly into the trace semantics.
+In parallel, the computational law literature explores more operational perspectives: defeasible deontic reasoning, dynamic deontic operators, and trace-based contract models \cite{PrisacariuS12,rohaninezhad2017defeasible,HvitvedKZ12,wyner2006sequences}. While these approaches bring contracts closer to executable structures, they often emphasize inference over the temporal evolution of a single monitored contract instance. \cDL aligns with the executable perspective but distinctively integrates the \emph{collaborative} and \emph{interference} aspects of the interactions directly into the trace semantics.
 
 \subsubsection{Agency: Zero-sum vs Collaborative Interactions}
 Strategic logics such as ATL and Strategy Logic model coalitional ability and joint moves over game structures and underpin verification tools like MCMAS \cite{Alur2002,Chatterjee2010,bulling2015strategic,belardinelli2015logic,caltais2014mcmas}. Their baseline semantics is game-theoretic: a coalition is evaluated by whether it can enforce a goal against the remaining agents or an environment. This perspective fits adversarial settings and many verification scenarios, but it is a poor match for bilateral contracts, where interaction is typically cooperative and compliance is a joint achievement rather than one side ``winning''.
@@ -1611,10 +1640,10 @@ This shift also applies to graded responsibility. While SCM derives degrees of r
 
 The compilation of logical specifications into executable monitors has long been a central focus of the Runtime Verification (RV) community. A cornerstone of this effort is the automata-based approach of Leucker and Schallhart, which systematically translates temporal specifications into monitors with verdicts provably aligned with the underlying logic~\cite{leucker2011teaching}. Complementing this logical rigor in data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa excel in this domain by supporting expressive stream transformations, a capability essential for monitoring numerical properties over evolving data streams~\cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
 
-The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction paradigm advocated in~\cite{10.1145/2000799.2000800}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition. The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches state valuations with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
+The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction paradigm advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition. The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches state valuations with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
 
 
 
-In conclusion, \cDL occupies a distinct niche within this landscape. While it draws foundational inspiration from the agency axioms of \logic{STIT} and the trace-based specifications of \logic{CSL}, it departs from them to address the specific needs of runtime accountability. By prioritizing persistent monitoring over one-shot verification, and normative causality over counterfactual reasoning, \cDL bridges the gap between abstract deontic theory and the operational reality of interference-prone collaborative interactions.
+In conclusion, The \cDL framework occupies a distinct and deliberately hybrid position within the monitoring landscape. On the one hand, its tight forward semantics aligns with the classical correct-by-construction philosophy: every monitor is a deterministic Moore machine whose states and transitions are justified directly by the contract's denotational semantics. This guarantees semantic faithfulness and enables precise reasoning about satisfaction, violation, and responsibility at the trace level. On the other hand, its quantitative layer departs from purely verdict-oriented monitoring, adopting ideas from stream runtime verification to accumulate step-local scores over time. This combination is not accidental; whereas pure automata-based monitors lack the means to retain quantitative information beyond the first decisive verdict, pure stream-based approaches often lack a mechanism of defining denotational semantics first and operational semantics second to ensure correctness. By embedding stream-style accumulation inside a state-based progress monitor, \cDL reconciles these two traditions. The result is a framework that supports persistent, explainable, and quantitative accountability without sacrificing correctness guarantees or collapsing violations into a single terminal outcome. This synthesis enables \cDL to move beyond one-shot verification toward operational reasoning about interference-prone collaborative contracts.
 
 

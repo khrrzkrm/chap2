@@ -94,11 +94,11 @@ The literal clauses above define one-step satisfaction and violation judgements 
 We lift these clauses into a five-valued Moore machine whose outputs track the evolution of the tight verdicts over prefixes.
 \begin{definition}[Tight Satisfaction Monitor Construction for Literals]
 \label{def:moore-5-literal}
-For a literal $\ell$ from \cDL, the \emph{Tight Satisfaction monitor construction} for $\ell$, written $\tsmc_{\mathit{lit}}(\ell)$ is defined as:
-\[
+For a literal $\ell$ from \cDL, the \emph{Tight Satisfaction monitor construction} for $\ell$, written $\tsmc_{\mathit{lit}}(\ell)$ is defined as
+$
 \tsmc_{\mathit{lit}}(\ell)
-  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5).
-\]
+  = (Q, q_0, \Gamma, \tightverdicts, \delta, \lambda_5), \text{ with }$
+
 \begin{itemize}
   \item $Q=\{q_0,q_s,q_v,q_{ps},q_{pv}\}$,
         with outputs
@@ -666,9 +666,6 @@ is activated, and we move to the waiting state $s_1$ (still $\mathsf{?}$). From 
 \,$\PAYF^{\times}$\ yields $\bott$. After $\topt$ (accepting frontier), all continuations
 are in $\topp$; after $\bott$ (reject frontier) all continuations are in $\botp$.
 Thus, the decisive index for the conjunction is the latter of the two successes when both succeed, or the earlier tight failure when any conjunct fails, exactly as the figure shows.
-
-
-
 \begin{figure*}[h!]
 \centering
 \captionsetup[subfigure]{justification=centering}
