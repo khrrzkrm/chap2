@@ -1012,171 +1012,134 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
 
 
 
-\begin{definition}[Guarded Monitor Construction]
-\label{def:moore-guard}
-\[\text{Let }
-\tsmc(\re)=(Q_r, r_0, \Gamma, \tightverdicts, \delta_r, \lambda_5^r)
-\quad\text{and}\quad
-\tsmc(C)=(Q_c, c_0, \Gamma, \tightverdicts, \delta_c, \lambda_5^c).
-\]
-The guarded contract monitor for $\guard[re]{C}$ is the synchronous product
-\[
-\tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
-  :=(Q_r\times Q_c,\ (r_0,c_0),\ \Gamma,\ \tightverdicts,\ \delta_{\guardd},\ \lambda_5^{\guardd}),
-\]
-with
-\[
-\delta_{\guardd}((x,y),A)
-  :=(\delta_r(x,A),\delta_c(y,A)).
-\]
-The output verdict of the guarded monitor is determined by jointly inspecting the current verdicts of the guard and the contract components, according to the following case distinction.
-\[
-\lambda_5^{\guardd}(x,y)=
-\begin{cases}
-\bott
-  & \text{if }\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}
-    \ \text{and }\lambda_5^c(y)=\bott,\\[2pt]
-\botp
-  & \text{if }\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}
-    \ \text{and }\lambda_5^c(y)=\botp,\\[2pt]
-\topt
-  & \text{if }\lambda_5^r(x)=\bott
-    \ \text{and }\lambda_5^c(y)\in\{\mathsf{?},\topt,\topp\},\\[2pt]
-\topp
-  & \text{if }\lambda_5^r(x)=\botp
-    \ \text{and }\lambda_5^c(y)\in\{\mathsf{?},\topt,\topp\},\\[2pt]
-\topt
-  & \text{if }\lambda_5^r(x)\in\{\topt,\topp\}
-    \ \text{and }\lambda_5^c(y)=\topt,\\[2pt]
-\topp
-  & \text{if }\lambda_5^r(x)\in\{\topt,\topp\}
-    \ \text{and }\lambda_5^c(y)=\topp,\\[2pt]
-\mathsf{?}
-  & \text{otherwise.}
-\end{cases}
-\]
-\end{definition}
+We move now to guarded contracts monitor construction. Unlike conjunction, the guarded contract $\guard[re]{C}$ cannot be monitored via a naive synchronous product. While the tight frontier is determined by the instantaneous state of $re$ and $C$, the stable post-verdicts ($\topp, \botp$) require historical context: the monitor must remember if the decisive frontier has effectively been crossed. A simple pointwise combination of component outputs fails to capture this latching behavior. Consequently, our construction restricts the synchronous product to the active tight region and handles post-verdicts via explicit transitions to global sinks, ensuring the monitor stabilizes correctly immediately after the decisive step. 
 
 
-
-\paragraph{Intuition.}
-The guard reads both monitors in lockstep and enforces:
-
-\begin{itemize}
-  \item \emph{Open guard.} While the guard is open
-  \(\bigl(\lambda_r\in\{\mathsf{?},\topt,\topp\}\bigr)\), i.e. exactly when \(\pi\ \clossat\ re\),
-  any tight or post failure of \(C\) becomes the global failure:
-  \begin{align*}
-    \pi\ \violt\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \violt\ C),\\
-    \pi\ \postviol\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \postviol\ C).
-  \end{align*}
-
-  \item \emph{Guard impossible.} If the guard becomes impossible
-  \(\bigl(\lambda_r\in\{\bott,\botp\}\bigr)\), we accept provided \(C\) has not failed:
-  \begin{align*}
-    \pi\ \satt\ \guard[re]{C} &\iff (\pi\ \violt\ re)\ \land\ (\pi\ \clossat\ C),\\
-    \pi\ \postsat\ \guard[re]{C} &\iff (\pi\ \violt\ re)\ \land\ (\pi\ \postsat\ C).
-  \end{align*}
-
-  \item \emph{Guard fired/closed.} When the guard has fired/closed
-  \(\bigl(\lambda_r\in\{\topt,\topp\}\bigr)\), we require \(C\) to (tight/post) succeed:
-  \begin{align*}
-    \pi\ \satt\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \satt\ C),\\
-    \pi\ \postsat\ \guard[re]{C} &\iff (\pi\ \clossat\ re)\ \land\ (\pi\ \postsat\ C).
-  \end{align*}
-\end{itemize}
-Note that $\pi\ \clossat\ re$ holds exactly when $\lambda_5^r\in{\mathsf{?},\topt,\topp}$.
-The resulting case table is symmetric and total, and it collapses to the expected two-valued clauses once tight/post outcomes are merged into satisfied vs.\ violated.
-
-\begin{lemma}[Correctness of the guarded monitor construction]
-\label{lem:guard-correct}
-\[\text{Let }
-\tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
-  =(Q_{\guardd},q_0^{\guardd},\Gamma,\tightverdicts,\delta_{\guardd},\lambda_5^{\guardd})
-\]
-be the monitor constructed in Definition~\ref{def:moore-guard} for
-$\guard[re]{C}$.  
-Then, for every finite trace $\pi$,
-\[
-\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
-  \;=\;
-\semfive{\pi \vDash \guard[re]{C}}.
-\]
-\end{lemma}
-\noindent\textbf{Proof sketch.}
-The argument proceeds by induction on the length of $\pi$.  
-The guarded monitor is a synchronous product of $\tsmc(re)$ and $\tsmc(C)$,
-with the output governed by the case distinction in
-Definition~\ref{def:moore-guard}.  
-Each region of the case table matches exactly one of the semantic clauses for 
-$\guard[re]{C}$.
-
-\smallskip
-\emph{Base case.}
-For $\pi=\emptytrace$ we have
-\[
-\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\emptytrace)\bigr)
-  = \lambda_5^{\guardd}(r_0,c_0),
-\]
-which yields $\mathsf{?}$ in agreement with
-$\semfive{\emptytrace \vDash \guard[re]{C}}$.
-
-\smallskip
-\emph{Inductive step.}
-Assume correctness for all prefixes of length $n$.
-Consider $\pi[n{+}1]$ with last letter $A$ and let
-\[
-(x',y') := \delta_{\guardd}((x,y),A)
-           = (\delta_r(x,A),\delta_c(y,A)).
-\]
-
-There are three semantic regions, corresponding to the three guard statuses.
-
-\begin{itemize}
-  \item \textbf{Guard open}
-  \(\lambda_5^r(x)\in\{\mathsf{?},\topt,\topp\}\).  
-  This means $\pi$ still possibly satisfies the guard.  
-  The guarded semantics requires that any tight or post failure of $C$ becomes the global failure.  
-  The monitor table assigns $\bott$ or $\botp$ precisely in these cases, and
-  $\mathsf{?}$ otherwise, matching
-  \[
-  \semfive{\pi \vDash \guard[re]{C}}
-    = \semfive{\pi \vDash C}
-    \quad\text{as long as $re$ is still open.}
-  \]
-
-  \item \textbf{Guard impossible}
-  \(\lambda_5^r(x)\in\{\bott,\botp\}\).  
-  This corresponds exactly to $\pi\ \violt\ re$.  
-  The guarded semantics declares vacuous acceptance provided that $C$ has not already failed.  
-  The output table assigns $\topt$ or $\topp$ if $C$ has not failed, and
-  propagates $\bott$ or $\botp$ if it has.  
-  This matches the semantic requirements for vacuous satisfaction.
-
-  \item \textbf{Guard closed (triggered or concluded)}
-  \(\lambda_5^r(x)\in\{\topt,\topp\}\).  
-  In this region, the guard has fired or completed successfully, and the
-  semantics require $C$ to satisfy or to fail.  
-  The output table combines the post-accept and tight-accept verdicts of $C$
-  with those of $re$ exactly as demanded by the five-valued semantics:
-  \[
-     \semfive{\pi \vDash \guard[re]{C}}
-       = \semfive{\pi \vDash C}
-       \quad\text{once $re$ has closed.}
-  \]
-\end{itemize}
-
-\smallskip
-\emph{Conclusion.}
-At each prefix of $\pi$, the guarded monitor outputs exactly the verdict
-prescribed by the five-valued semantics of $\guard[re]{C}$.  
-Thus
-\[
-\lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
-  = \semfive{\pi \vDash \guard[re]{C}}
-\]
-for all traces $\pi$.
-\qed
+    \begin{definition}[Guarded Monitor Construction]
+      \label{def:moore-guard}
+      Let the tight satisfaction monitors for the guard and the contract be:
+      \[
+      \tsmc(\re)=(Q_r, r_0, \Gamma, \tightverdicts, \delta_r, \lambda_5^r)
+      \quad\text{and}\quad
+      \tsmc(C)=(Q_c, c_0, \Gamma, \tightverdicts, \delta_c, \lambda_5^c).
+      \]
+      We construct the guarded monitor in two phases: first building a \emph{core} product restricted to the tight regions \(\{\mathsf{?},\topt,\bott\}\), and then extending it with single-step transitions to post-verdict sinks.
+      
+      \medskip
+      \noindent\textbf{1. Core (3-valued) guarded product.}
+      We define the sets of \emph{active states} (those that have not yet reached a stable post-verdict):
+      \[
+      Q_r^{\circ} := \{\,x\in Q_r \mid \lambda_5^r(x) \notin \{\topp, \botp\}\,\},
+      \qquad
+      Q_c^{\circ} := \{\,y\in Q_c \mid \lambda_5^c(y) \notin \{\topp, \botp\}\,\}.
+      \]
+      The core product is the restricted Moore machine
+      \[
+      M_{\guardd}^{\circ}:=
+      \bigl(Q_r^{\circ}\times Q_c^{\circ},\ (r_0,c_0),\ \Gamma,\ \{\mathsf{?},\topt,\bott\},\ \delta_{\guardd}^{\circ},\ \lambda_{\guardd}^{\circ}\bigr),
+      \]
+      where the transition function is the standard synchronous product
+      \[
+      \delta_{\guardd}^{\circ}((x,y),A) := (\delta_r(x,A),\delta_c(y,A)).
+      \]
+      The core output function $\lambda_{\guardd}^{\circ}$ is defined by the following rules, using the component verdicts \((v_r,v_c)=(\lambda_5^r(x),\lambda_5^c(y))\):
+      \[
+      \lambda_{\guardd}^{\circ}(x,y)=
+      \begin{cases}
+      \bott & \text{if } v_r\in\{\mathsf{?},\topt\} \ \nd\ v_c=\bott,\\[4pt]
+      \topt & \text{if } \bigl(v_r=\bott \ \nd\ v_c\in\{\mathsf{?},\topt\}\bigr) \\
+            & \quad \sor\ \bigl(v_r\in\{\mathsf{?},\topt\} \ \nd\ v_c=\topt\bigr),\\[4pt]
+      \mathsf{?} & \text{otherwise.}
+      \end{cases}
+      \]
+      
+      \medskip
+      \noindent\textbf{2. Full monitor with post-verdicts.}
+      We extend the core monitor with two fresh sink states \(q_{\topp}\) and \(q_{\botp}\) to obtain:
+      \[
+      \tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
+      := (Q_{\guardd},\ (r_0,c_0),\ \Gamma,\ \tightverdicts,\ \delta_{\guardd},\ \lambda_5^{\guardd}),
+      \]
+      where the state space is \(Q_{\guardd}:=(Q_r^{\circ}\times Q_c^{\circ})\ \cup\ \{q_{\topp},q_{\botp}\}\).
+      
+      The \textbf{output function} extends the core outputs naturally:
+      \[
+      \lambda_5^{\guardd}(s)=
+      \begin{cases}
+      \lambda_{\guardd}^{\circ}(s) & \text{if } s\in Q_r^{\circ}\times Q_c^{\circ},\\[2pt]
+      \topp & \text{if } s=q_{\topp},\\[2pt]
+      \botp & \text{if } s=q_{\botp}.
+      \end{cases}
+      \]
+      
+      The \textbf{transition function} handles the redirection from tight frontiers to stable sinks.
+      For any state $s \in Q_{\guardd}$ and input $A \in \Gamma$:
+      \[
+      \delta_{\guardd}(s,A)=
+      \begin{cases}
+      % Sinks Loop
+      q_{\topp} & \text{if } s=q_{\topp},\\
+      q_{\botp} & \text{if } s=q_{\botp},\\[4pt]
+      
+      % Redirection from Frontier to Sink
+      q_{\topp} & \text{if }  \lambda_5^{\guardd}(s)=\topt,\\
+      q_{\botp} & \text{if }  \lambda_5^{\guardd}(s)=\bott,\\[4pt]
+      
+      % Normal Core Evolution (from undecided state)
+      \delta_{\guardd}^{\circ}(s,A) & \text{if }\lambda_5^{\guardd}(s)=\mathsf{?}.
+      \end{cases}
+      \]
+      \end{definition}
+      
+      \paragraph{Intuition.}
+      The guarded monitor construction separates the detection of the decisive frontier from the maintenance of the stable verdict.
+      
+      \smallskip
+      \noindent\emph{Phase~1: Tight-core product.}
+      The core machine $M_{\guardd}^{\circ}$ restricts the synchronous product to the ``active'' regions of the components. Its responsibility is solely to identify the \emph{earliest decisive prefix}.
+      While the interaction is undecided, the monitor evolves within this core.
+      If the guard closes safely or the contract succeeds, the core reaches a state labeled $\topt$.
+      Conversely, if the contract is breached while the guard is active, the core reaches a state labeled $\bott$.
+      
+      \smallskip
+      \noindent\emph{Phase~2: Post-verdict stabilization.}
+      The full monitor wraps the core with a transition logic that enforces stability.
+      Instead of computing product states for the post-regions (which would be redundant), the transition function detects when the core has reached a frontier.
+      If the current state emits a tight verdict ($\topt$ or $\bott$), the \emph{next} transition leaves the core and enters the corresponding global sink ($q_{\topp}$ or $q_{\botp}$).
+      This ensures that the monitor emits the tight verdict for exactly one step, preserving the boundary semantics, before stabilizing permanently.
+      
+      \begin{lemma}[Correctness of the guarded monitor construction]
+      \label{lem:guard-correct}
+      \[\text{Let }
+      \tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
+        =(Q_{\guardd},q_0^{\guardd},\Gamma,\tightverdicts,\delta_{\guardd},\lambda_5^{\guardd})
+      \]
+      be the monitor constructed in Definition~\ref{def:moore-guard}.
+      Then, for every finite trace $\pi$,
+      \[
+      \lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
+        \;=\;
+      \semfive{\pi \vDash \guard[re]{C}}.
+      \]
+      \end{lemma}
+      \noindent\textbf{Proof sketch.}
+      The proof relies on the decomposition of the trace into a decisive prefix and a stable suffix.
+      
+      \smallskip
+      \emph{Tight-core correctness.}
+      For any prefix $\pi$ that has not strictly passed a decisive point, the monitor remains in the core set $Q_r^{\circ} \times Q_c^{\circ}$.
+      In this region, $\delta_{\guardd}$ acts as a standard synchronous product.
+      The core output function $\lambda_{\guardd}^{\circ}$ directly implements the tight semantic clauses: it evaluates to $\bott$ upon an active violation, and to $\topt$ upon release (guard failure) or active satisfaction.
+      Thus, as long as the semantics evaluate to $\{\mathsf{?}, \topt, \bott\}$, the monitor output matches the semantics.
+      
+      \smallskip
+      \emph{Post-verdict correctness.}
+      Once the monitor reaches a state $s$ with a tight verdict (e.g., $\lambda(s)=\topt$), the semantic evaluation of the trace $\pi$ is exactly $\topt$.
+      For any extension $\pi \cdot A$, the semantics require the verdict to become $\topp$.
+      The transition function satisfies this by definition: $\delta_{\guardd}(s, A) = q_{\topp}$.
+      Since $q_{\topp}$ is absorbing and outputs $\topp$, the monitor correctly stabilizes.
+      The same reasoning applies to the violation case ($\bott \text{ to } \botp$).
+      \qed
 
 
 
