@@ -405,11 +405,11 @@ or a violation-then-repair pattern.
   $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$, and moreover the same disjointness
   holds for every suffix $\pi_{\min}^k$ in place of $\pi_{\min}$.
   Then:
-  \[
+  $$
   \neg\bigl(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n\bigr)
   \quad\text{and}\quad
   \neg\bigl(\pi\ \satt\ \repit{C}\ \nd\ \pi\ \violt\ \repit{C}\bigr).
-  \]
+  $$
   \end{lemma}
   
   \begin{proof}
@@ -451,7 +451,7 @@ or a violation-then-repair pattern.
   \begin{definition}[Triggered and Guarded Contracts]
     \label{def:trigger-guard-semantics}
     Let $\pi$ be a finite trace over $\Gamma = 2^{\Sigma}$ with  $s=\size{\pi}$.
-    \[
+    $$
     \begin{array}{l@{\quad}c@{\quad}l}
     \pi\ \satt\ \trig[re]{C}
       &\mydef& 
@@ -476,7 +476,7 @@ or a violation-then-repair pattern.
       &\mydef&
       \pi\ \clossat\ re\ \nd\ \pi\ \violt\ C.
     \end{array}
-    \]
+    $$
     Where $\pi\ \clossat\ X$ abbreviates $(\pi\ \presat\ X\ \sor\ \pi\ \satt\ X)$.
   \end{definition}
   
@@ -491,11 +491,11 @@ or a violation-then-repair pattern.
     \]
     and assume the same disjointness holds for every suffix $\pi_{\min}^k$ in place of $\pi_{\min}$.
     Then for every finite trace $\pi$:
-    \[
+    $$
     \neg\bigl(\pi\ \satt\ \trig[re]{C}\ \nd\ \pi\ \violt\ \trig[re]{C}\bigr)
     \quad\text{and}\quad
     \neg\bigl(\pi\ \satt\ \guard[re]{C}\ \nd\ \pi\ \violt\ \guard[re]{C}\bigr).
-    \]
+    $$
   \end{lemma}
     
   \begin{proof}

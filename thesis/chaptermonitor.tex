@@ -252,14 +252,14 @@ In the fourth month, the tenant attempts to address the earlier non-payment by t
  \]
  
  The observed behavior of each agent is encoded as a metric-timed trace, where each event is paired with its occurrence time:
- \[
+ $$
  \begin{aligned}
  \taumt_{1}
  &=\trace{(\textsf{pay\_rent},5),\ (\textsf{start\_occ},35),\ (\textsf{pay\_rent},36), (\textsf{pay\_rent\_f},95)},\\
  \taumt_{2}
  &=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\ (\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
  \end{aligned}
- \]
+$$
  These timed words constitute the most concrete representation of the interaction and serve as the starting point for the abstraction pipeline developed in this section.
  \end{example}
 

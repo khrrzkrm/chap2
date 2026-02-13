@@ -15,7 +15,7 @@ As an optimization, we define a helper function to evaluate only the currently e
     \begin{aligned}
     \LH(\ell) &:= \ell. \\[2pt]
     \LH(C ; C') &:= \LH(C). \\[2pt]
-    \LH(C \repair C') &:= \LH(C) \\[2pt]
+    \LH(C \repair C') &:= \LH(C). \\[2pt]
     \LH(\trig[re]{C}) &:= 
     \begin{cases}
     \epsilon_\ell & \text{if } re \neq \epsilon,\\
@@ -176,14 +176,14 @@ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.$$
   \item \textbf{Quantitative score:} $\qsem{\trace{A_1},C_3}=0$.
 \end{itemize}
 This illustrates immediate satisfaction with zero cost.
-\ref{fig:eval-reparation-pi} summarizes the pointwise valuation for $\pi$.
+\ref{fig:eval-reparation-pi} summarizes the point-wise valuation for $\pi$.
 
 \boxalignfigure{\resizebox{0.55\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.2cm]
   \tikzset{
     cell/.style={
       draw, rectangle, text width=26mm,
-      minimum height=7mm, align=center, font=\small
+      minimum height=7mm, align=center, font=\footnotesize
     }
   }
   % Labels
@@ -215,7 +215,7 @@ This illustrates immediate satisfaction with zero cost.
   \draw[dotted](s1.south)--(v1.north);
 \end{tikzpicture}
 }}
-{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ under the trace $\pi=\trace{A_1}$.}
+{Point-wise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ under the trace $\pi=\trace{A_1}$.}
 {fig:eval-reparation-pi}
 {\vspace{8pt}}{\vspace{-12pt}}
 
@@ -231,7 +231,7 @@ This illustrates immediate satisfaction with zero cost.
   and \\$\qsem{\trace{A'_2},\obl[1]{\PAYF}}=0$.
 \end{itemize}
 Overall, $\pi' \satt C_3$ but $\qsem{\pi',C_3}=1$, illustrating Theorem~\ref{thm:quant-consistency}(3).
-\ref{fig:eval-reparation-piprime} summarizes the pointwise valuation for $\pi'$.
+\ref{fig:eval-reparation-piprime} summarizes the point-wise valuation for $\pi'$.
 
 \boxalignfigure{\resizebox{0.75\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.0cm,xshift=1cm]
@@ -280,7 +280,7 @@ Overall, $\pi' \satt C_3$ but $\qsem{\pi',C_3}=1$, illustrating Theorem~\ref{thm
   \draw[dotted](s2.south)--(v2.north);
 \end{tikzpicture}
 }}
-{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ under the trace $\pi'=\trace{A'_1,A'_2}$.}
+{Point-wise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ under the trace $\pi'=\trace{A'_1,A'_2}$.}
 {fig:eval-reparation-piprime}
 {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
@@ -307,7 +307,7 @@ $A_1=\{\PAY^{(12)}\}$ and $A_2=\{\OCC^{(1)}\}$.
 
 Thus, $\pi \postviol \repit{C_3}$ while $\qsem{\pi,\repit{C_3}}=1$.
 A longer trace that later satisfies the fine would increase satisfaction without decreasing the accumulated score, illustrating monotonicity.
-\ref{fig:eval-repetition} summarizes the pointwise valuation for this trace.
+\ref{fig:eval-repetition} summarizes the point-wise valuation for this trace.
 
 \boxalignfigure{\resizebox{0.94\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.0cm]
@@ -356,7 +356,7 @@ A longer trace that later satisfies the fine would increase satisfaction without
   \draw[dotted](s2.south)--(v2.north);
 \end{tikzpicture}
 }}
-{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $\repit{C_3}$ under the trace $\pi=\trace{A_1,A_2}$.}
+{Point-wise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $\repit{C_3}$ under the trace $\pi=\trace{A_1,A_2}$.}
 {fig:eval-repetition}
 {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
@@ -379,14 +379,14 @@ C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}.
   and \\$\qsem{\trace{A_2},C}=0$.
 \end{itemize}
 Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
-\ref{fig:eval-guard-pi} summarizes the pointwise valuation for $\pi$.
+\ref{fig:eval-guard-pi} summarizes the point-wise valuation for $\pi$.
 
 \boxalignfigure{\resizebox{0.8\textwidth}{!}{%
 \begin{tikzpicture}[y=1.6cm,x=3.2cm]
   \tikzset{
     cell/.style={
       draw, rectangle, text width=26mm,
-      minimum height=7mm, align=center, font=\small
+      minimum height=7mm, align=center, font=\footnotesize
     }
   }
   % Labels
@@ -428,7 +428,7 @@ Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
   \draw[dotted](s2.south)--(v2.north);
 \end{tikzpicture}
 }}
-{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{})$, and tight satisfaction ($\semfive{}$) for the contract $C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$ under the trace $\pi=\trace{A_1,A_2}$.}
+{Point-wise valuation of the progress ($\Prog$), violation score ($\qsem{})$, and tight satisfaction ($\semfive{}$) for the contract $C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$ under the trace $\pi=\trace{A_1,A_2}$.}
 {fig:eval-guard-pi}
 {\vspace{8pt}}{\vspace{-12pt}}
 
@@ -441,7 +441,7 @@ Hence, $\pi \satt C$ and $\qsem{\pi,C}=0$.
 \end{itemize}
 
 Thus, $\pi' \presat C$ in the tight semantics but $\qsem{\pi',C}=1$, directly illustrating that quantitative semantics exposes violations masked by guards and reparations.
-\ref{fig:eval-guard-piprime} summarizes the pointwise valuation for $\pi'$.
+\ref{fig:eval-guard-piprime} summarizes the point-wise valuation for $\pi'$.
 
 \boxalignfigure{\resizebox{0.9\textwidth}{!}{
   \centering
@@ -491,13 +491,13 @@ Thus, $\pi' \presat C$ in the tight semantics but $\qsem{\pi',C}=1$, directly il
   \draw[dotted](s2.south)--(v2.north);
 \end{tikzpicture}
 }}
-{Pointwise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$ under the trace $\pi'=\trace{A_1,A_2'}$.}
+{Point-wise valuation of the progress ($\Prog$), violation score ($\qsem{}$), and tight satisfaction ($\semfive{}$) for the contract $C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}$ under the trace $\pi'=\trace{A_1,A_2'}$.}
 {fig:eval-guard-piprime}
 {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
 
 \paragraph{Conclusion.}
-This section introduced the quantitative violation semantics $\qsem{}$ as a trace-level cost measure that complements the tight, three-valued contract semantics. By coupling a local, instantaneous penalty with the residual evolution induced by the progress function $\Prog$, $\qsem{}$ cleanly separates temporal state change from scoring, while remaining sensitive to reparations, sequencing, and other structural constructs. Theorem~\ref{thm:quant-consistency} makes this link precise: a zero score characterizes traces that are fully compliant (either tightly satisfied, post-satisfied, or still pending), whereas any positive score pinpoints the presence and persistence of violations, including those that are later repaired and therefore masked at the level of a binary satisfaction verdict. The subsequent examples validate this intuition operationally by tracking $\Prog$, $\qsem{}$, and $\semfive{}$ pointwise, showing how the quantitative view supports post hoc audit, comparison of alternative executions, and downstream optimization tasks where ``satisfied'' is not a sufficient notion of quality.
+This section introduced the quantitative violation semantics $\qsem{}$ as a trace-level cost measure that complements the tight, three-valued contract semantics. By coupling a local, instantaneous penalty with the residual evolution induced by the progress function $\Prog$, $\qsem{}$ cleanly separates temporal state change from scoring, while remaining sensitive to reparations, sequencing, and other structural constructs. Theorem~\ref{thm:quant-consistency} makes this link precise: a zero score characterizes traces that are fully compliant (either tightly satisfied, post-satisfied, or still pending), whereas any positive score pinpoints the presence and persistence of violations, including those that are later repaired and therefore masked at the level of a binary satisfaction verdict. The subsequent examples validate this intuition operationally by tracking $\Prog$, $\qsem{}$, and $\semfive{}$ point-wise, showing how the quantitative view supports post hoc audit, comparison of alternative executions, and downstream optimization tasks where ``satisfied'' is not a sufficient notion of quality.
 
 \subsection{Quantitative Violation Monitor Construction}
 While the forward-looking tight semantics employed Moore machines to output decisive verdicts based on the state (halting at the first decisive frontier), the quantitative semantics requires a monitor that persists on the extended run to accumulate violation points over time.
@@ -1559,7 +1559,7 @@ The development of \cDL has been significantly inspired by the logic of agency \
 Both \cDL and \logic{STIT} model simultaneous interaction through discrete rounds, structurally analogous to a game of ``Rock-Paper-Scissors''; however, they diverge significantly in their constraints on agency and reparation.
 (i) \emph{Agency Structure:} In \logic{STIT}, interaction is governed by the \textsf{Independence of Agents} condition \cite{belnap2001facing}, which treats the choice structure at a moment $m$ as a strict \textit{partition} of histories. This axiom asserts that for any set of agents, the intersection of their respective choices is non-empty, but it restricts each agent to exactly one choice partition per moment. Conversely, \cDL is more flexible regarding action composition: since a round is encoded as a set of moments within a window, agents are permitted to perform multiple actions simultaneously.
 (ii) \emph{Semantic Faithfulness:} A deeper divergence appears in the handling of reparation. The \logic{STIT} encoding of reparation via temporal disjunction proves overly permissive, as it lacks the state memory to distinguish between a valid reparation and a spontaneous ``fine payment'' unrelated to any breach. In contrast, \cDL{} enforces the strict procedural semantics of the \textsf{repair} operator ($\repair$) through its state-based transition structure ($\Prog$), where the secondary obligation $\obl[1]{\PAYF}$ appears as a residual \textit{only} after a transition on the violation branch of $\obl[1]{\PAY}$. This mechanism ensures that reparation actions are not globally admissible propositions, but are causally enabled only by a specific antecedent failure, thereby ruling out anomalous traces like $\langle \PAYF, \PAYF \dots \rangle$ where fines are discharged without activation.
-Consequently, while the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ can be approximated in group temporal stit \cite{canavotto2022responsibility} as $\phi_7 := \boldmath{G}\big[ \{1,2\} \text{ cstit }\big] (\PAY \lor \PAYF)$, the latter fails to enforce the sequence ordering between the violation of the payement and the enforcement of the fine payement.
+Consequently, while the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ can be approximated in group temporal stit \cite{canavotto2022responsibility} as $\phi_7 := \boldmath{G}\big[ \{1,2\} \text{ cstit: }\big] (\PAY \lor \PAYF)$, the latter fails to enforce the sequence ordering between the violation of the payement and the enforcement of the fine payement.
 
 \paragraph{\cDL vs. \logic{CSL}.}
 While \logic{CSL} also formalizes multi-party contracts through an trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:

@@ -10,12 +10,12 @@ Normative Systeme regeln das Verhalten von Individuen, Organisationen und zunehm
 Da diese Systeme in digitalen Umgebungen allgegenwärtig werden, wächst ihre inhärente Komplexität.
 Dies schafft einen kritischen Bedarf, normative Systeme rigoros zu entwickeln. 
 Das Ziel ist es sicherzustellen, dass die Einhaltung nicht nur möglich, sondern auch einfach zu planen und zu verifizieren ist.
-Diese Dissertation untersucht, wie formale Methoden ausgewählte Formen des Schlussfolgerns automatisieren können, die häufig von Gesetzgeber und normativen Experten verwendet werden.
+Diese Dissertation untersucht, wie formale Methoden ausgewählte Formen des Schlussfolgerns automatisieren können, die häufig von Gesetzgebern und normativen Experten verwendet werden.
 
 
 
-Der erste Teil der Arbeit konzentriert sich auf die statische Analyse von normativen Spezifikationen. Die Analyse beschränkt sich nicht auf die Erüllbarkeit, sondern untersucht auch normative Konflikte unter metrisch-zeitlichen Bedingungen. 
-Zu diesem Zweck führt die Dissertation die Micro Metric-Time Normative Logic ($\TDDLfm$) ein. Dieser Formalismus ermöglicht eine präzise Unterscheidung zwischen \textit{deontischen Konflikten} (widersprüchliche Regeln) und \textit{ontischen Konflikten} (physikalische Unmöglichkeit). Unter Verwendung der Disjunctive Punctual Normal Form bietet das Framework eine rigorose Methode, um solche Konflikte zu erkennen. Zudem ermöglicht es Gesetzgeber, den Grad des Vorhandenseins von Konflikten über eine Metrik der ,,Konfliktdichte`` zu quantifizieren und diese systematisch zu eliminieren. Dies stellt sicher, dass die resultierenden Spezifikationen konfliktfrei sind und eine klare Grundlage für die Planung des Agentenverhaltens bieten.
+Der erste Teil der Arbeit konzentriert sich auf die statische Analyse von normativen Spezifikationen. Die Analyse beschränkt sich nicht auf die Erfüllbarkeit, sondern untersucht auch normative Konflikte unter metrisch-zeitlichen Bedingungen. 
+Zu diesem Zweck führt die Dissertation die Micro Metric-Time Normative Logic ($\TDDLfm$) ein. Dieser Formalismus ermöglicht eine präzise Unterscheidung zwischen \textit{deontischen Konflikten} (widersprüchliche Regeln) und \textit{Einschränkungen der Handlungsfähigkeit von Akteuren} (physikalische Unmöglichkeit). Unter Verwendung der Disjunctive Punctual Normal Form bietet das Framework eine rigorose Methode, um solche Konflikte zu erkennen. Zudem ermöglicht es Gesetzgebern, die Häufigkeit von Konflikten über eine Metrik der ,,Konfliktdichte`` zu quantifizieren und diese systematisch zu eliminieren. Dies stellt sicher, dass die resultierenden Spezifikationen konfliktfrei sind und eine klare Grundlage für die Planung des Agentenverhaltens bieten.
 
 
 
@@ -42,19 +42,8 @@ Der zweite Teil adressiert die dynamische Überwachung normativer Interaktionen.
 Normative systems regulate the behavior of individuals, organizations, and increasingly, autonomous agents. The increasing structural complexity of normative specifications and the growing cost of ensuring their correct design and compliance motivate the  need for rigorous Normative System Engineering based on formal methods.
 This dissertation explores how formal techniques can  automate selected forms of reasoning commonly employed by regulators and normative experts.
 
-
-
-
-
-
-
-The first part of the dissertation examines the static analysis of normative specifications under metric time. Instead of restricting the analysis to satisfiability, the focus is on identifying and characterizing normative conflicts. To achieve this, the Micro Metric-Time Normative Logic \TDDLfm is introduced. This logical framework enables a precise distinction between \textit{deontic conflicts} (contradictory rules) and \textit{ontic conflicts} (constraints on agent actions). By employing a Disjunctive Punctual Normal Form, the framework systematically detects such inconsistencies. Additionally, it introduces a quantitative measure of conflict density, enabling regulators to evaluate the prevalence of conflicts within a specification and eliminate them systematically. The outcome is a conflict-free specification that facilitates straightforward planning and execution by agents.
-
-
-
-
-
-
+The first part of the dissertation examines the static analysis of normative specifications under metric time. Instead of restricting the analysis to satisfiability, the focus is on identifying and characterizing normative conflicts. To achieve this, the Micro Metric-Time Normative Logic \TDDLfm is introduced.
+This logical framework enables a precise distinction between \textit{deontic conflicts} (contradictory rules) and \textit{ontic conflicts} (constraints on agent capability to act). By employing a Disjunctive Punctual Normal Form, the framework systematically detects such inconsistencies. Additionally, it introduces a quantitative measure of conflict density, enabling regulators to evaluate the prevalence of conflicts within a specification and eliminate them systematically. The outcome is a conflict-free specification that facilitates straightforward planning and execution by agents.
 
 The second part of the dissertation addresses the dynamic analysis of normative interactions, particularly in collaborative contexts where compliance depends on both outcomes and agents’ genuine attempts to fulfill obligations. To analyze these interactions, the Two-Agents Collaborative Normative Logic \cDL is developed, capturing collaborative norms and constructs such as reparations and Hohfeldian powers. Beyond binary violation detection, a blame procedure is introduced to quantify each agent’s contribution to non-conformance throughout the duration of a contract. This procedure identifies both deliberate inaction and failures resulting from interference or obstruction, ensuring that automated monitoring produces explanations and accountability assessments that are both precise and normatively significant.
 

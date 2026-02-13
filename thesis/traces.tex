@@ -447,11 +447,7 @@ Both \(\LT\) and \(\ST\) are \emph{many-to-one}. In particular, \(\LT\) is \emph
 \(\LT\) and \(\ST\) are the canonical forgetful maps from metric time to, respectively, order-only and round-synchronous views. They preserve exactly the event properties listed above and discard the rest.
 
 \subsection{Synchronization of Words}\label{operators}
-
-\noindent\textbf{Design rationale.}
-Having defined words for generic systems, we now turn to the interaction between systems. Different communities fix different \emph{time assumptions}, which determine how local words are aligned. Process calculi (CCS/CSP) adopt \emph{no global clock} and reason over order only, yielding \emph{pure interleaving} and optionally \emph{shared action handshakes}. Synchronous languages assume a \emph{single global round clock} (lockstep). Timed automata use \emph{absolute timestamps} and synchronize at equal times on shared actions.
-
-In this section, we instantiate three operators consistent with our models for two specific agents, denoted by indices 1 and 2, with alphabets $\Sigma_1$ and $\Sigma_2$. We cover:
+In this subsection, we illustrate the complexity of synchronizing traces across different timing settings. We define three operators, adapted from standard formulations to fit our specific two-agent models denoted by indices 1 and 2, with alphabets $\Sigma_1$ and $\Sigma_2$. We cover:
 (i) \emph{asynchrony} on logical-time words (\(\tault\)),
 (ii) \emph{lockstep synchrony} on synchronous words (\(\taust\)),
 and (iii) \emph{synchronous handshake} on synchronous words with an explicit set \(A\) of shared actions.
