@@ -1,0 +1,131 @@
+%
+% Copyright 2003--2007 by Till Tantau
+% Copyright 2011--2014 by Rene Schoenfelder
+%
+% This file may be distributed and/or modified
+%   1. under the LaTeX Project Public License and/or
+%   2. under the GNU Public License.
+% See the file doc/licenses/LICENSE for more details.
+
+% This style was created for presentations at the University of Luebeck.
+% It is in no way complete nor an official template. But in order to
+% provide a beamer template in an appropriate way of implementing the
+% corporate design, it was created by a student by modifying Till Tantaus
+% previous style template.
+
+% Features:
+% - clear and simple design
+% - including university logo at top left
+%     (can be replaced by the logo of your institute)
+% - palatino font (which is closest to official Myriad, that is not
+%     directly available for latex)
+% - color theme is ocean green
+
+% Warning: This template was not tested on different beamer options
+%          than the default ones. So if there is something wrong
+%          you can of course email the author at
+%          schoenfr@informatik.uni-luebeck.de
+%          but since he has not much experience in writing
+%          tex-styles, he probably won't be able to help you.
+
+% Lübeck, March 17, 2014
+
+\ProvidesPackage{beamerthemeHLISP}[
+2014/03/17 v0.2 beamer color theme in the
+corporate design of the institute for software engineering
+at the university of luebeck]
+
+\RequirePackage{ifthen}
+\newcommand{\ifthen}[2]{\ifthenelse{#1}{#2}{}}
+\RequirePackage{calc}
+
+\mode<presentation>
+
+\definecolor{uzlmain}{RGB}{0,75,90}
+\definecolor{uzlgreen}{RGB}{0,200,0}
+\definecolor{uzlred}{RGB}{200,0,0}
+
+\usecolortheme{HLISP}
+\setbeamertemplate{blocks}[rounded]
+
+\beamertemplatenavigationsymbolsempty
+\setbeamercovered{dynamic}
+%\setbeamercovered{transparent=15}
+
+% Palatino is closest to official Myriad font, which is not available to LaTeX
+\usepackage{palatino}
+% Use serif font in math mode
+\usefonttheme[onlymath]{serif}
+
+%\fontfamily{ppl}
+%\fontsize{<font size>}{<value for \baselineskip>}\selectfont
+%\fontsize{9pt}{10pt}
+%\selectfont
+
+% Line spacing
+\usepackage{setspace}
+\setstretch{1.5}
+\setlength{\parindent}{0pt}
+
+% Make frametitle smaller
+\setbeamerfont{frametitle}{series=\bfseries,size={\fontsize{9}{0}}}
+
+% Fix for beamer font
+\let\Tiny=\tiny
+
+% Disable Navigation symbols
+%\setbeamertemplate{navigation symbols}{}
+
+% Headline
+\defbeamertemplate*{headline}{infolines theme}{
+  \leavevmode%
+  \begin{beamercolorbox}
+    [ht=7em, 
+     wd=\paperwidth, 
+     sep=1em, 
+     rightskip=1.5em, 
+     leftskip=0.5em] {section in head/foot}%
+      \includegraphics[height=5em]{isp_uni_en_for}%
+      \hfill
+      \includegraphics[width=4em]{isp}%
+  \end{beamercolorbox}
+}%
+
+% Frametitle
+\setbeamertemplate{frametitle}{%
+  \begin{beamercolorbox}[wd=\paperwidth,left,ht=1em,dp=0.55ex]{structure}%
+  {\hspace*{2ex}
+%     \insertsection - 
+    \insertframetitle
+   \hspace*{2ex}
+  }%
+  \end{beamercolorbox}%
+}%
+% Footline
+\defbeamertemplate*{footline}{infolines theme}{
+  \leavevmode%
+%  \hbox{%  
+  \begin{beamercolorbox}[ht=1em,dp=1ex]{structure}%
+    % Author (short)
+    \begin{beamercolorbox}[wd=.20\paperwidth,ht=1em,left]{}%
+      \usebeamerfont{author in head/foot}\hspace*{2ex}\insertshortauthor%
+    \end{beamercolorbox}%
+    % Title and subtitle (short)
+    \begin{beamercolorbox}[wd=.60\paperwidth,ht=1em,center]{}%
+      \usebeamerfont{title in head/foot}\insertshorttitle%
+      %\ifthen{\not\equal{\insertsubtitle}{}}{%
+	%  \ - \insertsubtitle{}
+	%}%
+    \end{beamercolorbox}%
+    % Current frame number and total frame number
+    \begin{beamercolorbox}[wd=.20\paperwidth,ht=1em,right]{}%
+      \usebeamerfont{framenumber in head/foot}\insertframenumber{}/%
+      \inserttotalframenumber{}\hspace*{2ex}%
+    \end{beamercolorbox}%
+  \end{beamercolorbox}%
+%  }%
+  \vskip0pt%
+}%
+
+\mode<all>
+

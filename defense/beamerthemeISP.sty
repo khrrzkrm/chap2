@@ -1,0 +1,111 @@
+% Copyright 2012
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+
+\PassOptionsToPackage{right}{beamerouterthemesidebar}
+\PassOptionsToPackage{width=2cm}{beamerouterthemesidebar}
+
+\ProcessOptionsBeamer
+
+\newcommand{\plain}[1]{\frame[plain,t]{%
+  \hspace*{-\beamer@leftmargin}%
+  \vspace*{-5em}%
+  \minipage[c][\textheight][t]{\paperwidth}%
+    #1
+  \endminipage%
+}}
+
+\newcommand{\titleframe}[1]{\plain{%
+  \hskip1em
+  
+  \hspace*{2mm}
+  \pgfuseimage{uni-luebeck}
+  \hfill
+  \pgfuseimage{isp}
+  \hspace*{6mm}
+  
+  \vskip1em
+  
+  \hskip1cm
+  \minipage[c][75mm][t]{100mm}%
+    #1
+  \endminipage%
+}}
+
+\newcommand{\plaintitle}[2]{
+  \titleframe{
+    {\LARGE\bfseries Chapter \thepart}
+	
+	{\vskip8pt\Large\textcolor{maincolor}{#1}}
+	
+	#2
+  }
+}
+
+% define logo images
+\pgfdeclareimage[width=8mm]{isp}{style/isp.pdf}
+\pgfdeclareimage[width=4cm]{uni-luebeck}{style/uni-luebeck-isp.pdf}
+\logo{\pgfuseimage{isp}}
+
+
+\useinnertheme{default} % circles, rounded, rectangles
+
+\usefonttheme{structurebold}
+
+\setbeamertemplate{navigation symbols}{} % hide navigation symbols
+
+\useoutertheme[height=0pt]{sidebar}
+
+\setbeamerfont{page number in head/foot}{size=\tiny,series=\bfseries}
+
+\setbeamertemplate{sidebar right}
+{
+  \beamer@tempdim=\beamer@sidebarwidth%
+  \advance\beamer@tempdim by -6pt%
+  {%
+    \usebeamercolor[fg]{title in sidebar}%
+    \usebeamerfont{title in sidebar}%
+    \vskip1.5em%
+    \hskip3pt%
+    \hbox to\beamer@tempdim{\hss\insertlogo\hss}%
+    \par\vskip1em\hskip3pt%
+    \insertshorttitle[width=\beamer@tempdim,center,respectlinebreaks]\par%
+    \vskip1.25em%
+  }%
+  {%
+    \usebeamercolor[fg]{author in sidebar}%
+    \usebeamerfont{author in sidebar}%
+    \hskip3pt%
+    \insertshortauthor[width=\beamer@tempdim,center,respectlinebreaks]\par%
+    \vskip1.25em%
+  }%
+  \insertverticalnavigation{\beamer@sidebarwidth}%
+  
+  \vfill
+  \usebeamercolor[fg]{page number in head/foot}%
+  \usebeamerfont{page number in head/foot}%
+  \hbox to2cm{\hss\insertframenumber\hss}
+  \vskip2em
+}
+
+\newcommand{\chapter}[2][]{%
+  \def\temp{#1}%
+  \part[\ifx\temp\empty#2\else\temp\fi]{#2}%
+  \addtocontents{toc}{\protect\beamer@partintoc{\the\c@part}{\beamer@partnameshort}{\the\c@page}}%
+}
+%% number, shortname, page.
+\providecommand\beamer@partintoc[3]{%
+  \ifnum\c@tocdepth=-1\relax
+    % requesting onlyparts.
+    \hyperlink{part-#1}{\makebox[5em][l]{Chapter #1} \textcolor{maincolor}{#2}}
+    \par
+  \fi
+}
+\define@key{beamertoc}{onlyparts}[]{%
+  \c@tocdepth=-1\relax
+}
+
+\usecolortheme{ISP}

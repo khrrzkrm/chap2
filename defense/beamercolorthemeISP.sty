@@ -1,0 +1,41 @@
+% Copyright 2012
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+
+\mode<presentation>
+
+\setbeamercolor{structure}{fg=maincolor}
+
+\setbeamercolor{block title}{fg=black,bg=maincolor!30}
+\setbeamercolor{block title alerted}{fg=black,bg=alertedcolor!30}
+\setbeamercolor{block title example}{fg=black,bg=examplecolor!30}
+
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=maincolor!9}
+\setbeamercolor{block body alerted}{parent=normal text,use=block title,bg=alertedcolor!9}
+\setbeamercolor{block body example}{parent=normal text,use=block title,bg=examplecolor!9}
+
+\setbeamercolor{sidebar}{bg=maincolor!9}
+
+\setbeamercolor{palette sidebar primary}{fg=black}
+\setbeamercolor{palette sidebar secondary}{fg=black}
+\setbeamercolor{palette sidebar tertiary}{fg=maincolor}
+\setbeamercolor{palette sidebar quaternary}{fg=maincolor}
+
+\setbeamercolor*{section in sidebar shaded}{parent=palette sidebar secondary}
+\setbeamercolor*{section in sidebar}
+  {parent=section in sidebar shaded,fg=maincolor}
+    
+\setbeamercolor*{subsection in sidebar shaded}{parent=palette sidebar primary}
+\setbeamercolor*{subsection in sidebar}
+  {parent=subsection in sidebar shaded,fg=maincolor}
+
+\setbeamercolor{page number in head/foot}{fg=black}
+
+\setbeamercolor{alerted text}{fg=alertedcolor}
+\setbeamercolor{example text}{fg=examplecolor}
+
+\mode
+<all>
