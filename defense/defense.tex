@@ -147,13 +147,13 @@
   \vspace{2mm}
 
   \end{column}
-  \begin{column}{0.52\textwidth}
+  \begin{column}{0.49\textwidth}
   \centering
     \onslide<2->{
     \begin{block}{The Scaling Problem}
       \small 
       \begin{itemize}
-        \item Regulatory burden costs the global economy \alert{trillions of dollars} annually:\textbf{3.5 \% of Europe's GDP}.\\
+        \item Regulatory burden costs the global economy \alert{trillions of dollars} annually: \textbf{3.5 \% of the EU's GDP}.\\
         \item The manual management of normative specifications is a time-consuming and error-prone process.
       \end{itemize}
     \end{block}
@@ -161,22 +161,22 @@
   \end{column}
   \end{columns}
    \onslide<3->{
-    \begin{block}{The Solution: Legaltech }
+    \begin{block}{The Solution: Normative Specifications' digital transformation}
     \begin{itemize}
-      \item Legaltech, or legal technology, refers to the application of software and digital tools to provide legal services and support the justice system.
+      \item The application of software and digital tools to provide automated compliance checking and support the legal system.
     \end{itemize}
     \end{block}
   }
 \end{frame}
 
 % ---------------- Slide 3 ----------------
-\begin{frame}{Legaltech between probabilistic AI and formal methods}
+\begin{frame}{Legaltech Between Probabilistic AI and Formal Methods}
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.48\textwidth}
 \onslide<2->{
   \begin{block}{LLM in legaltech}
     \small 
-    According to a new survey of over 200 inhouse and law firm lawyers \footnote{https://www.artificiallawyer.com/2026/04/07/}, \alert{69.7\%} of legal outputs still require targeted edits or extensive rework.
+    According to a new survey of over 200 in-house and law firm lawyers \footnote{https://www.artificiallawyer.com/2026/03/23/}, \alert{69.7\%} of legal outputs still require targeted edits or extensive rework.
   \end{block}
 }
 \vspace{2mm}
@@ -196,7 +196,7 @@
     arr/.style={-{Latex[length=2.8mm]}, thick, black!65}
   ]
   \node[box, fill=SoftRed, text width=4.2cm] (ai) {Statistical AI (LLMs)\\ \small Operates in a fuzzy logic and probabilistic reasoning, making outcomes less predictable};
-  \node[box, fill=SoftGreen, text width=4.2cm, below=12mm of ai] (fm) {Formal Methods\\ \small sound, rule based precise, accountable};
+  \node[box, fill=SoftGreen, text width=4.2cm, below=12mm of ai] (fm) {Formal Methods\\ \small sound, rule-based, precise, accountable};
   \draw[arr, dashed, ConflictRed] (ai) -- node[right, align=left, font=\small] {Less practical for law \\ but more reliable} (fm);
   \end{tikzpicture}
 }
@@ -207,12 +207,12 @@
 % =====================================
 % SLIDE 2 — Thesis Vision & Research Gap
 % =====================================
-\begin{frame}{Thesis Vision: The two families of formal methods applied to Normative reasoning}
+\begin{frame}{Thesis Vision: The Two Families of Formal Methods Applied to Normative Reasoning}
 
 \centering
 \begin{tikzpicture}
   \node[draw,rounded corners,fill=SoftOrange,text width=0.85\textwidth,align=center,inner sep=5pt,font=\small\bfseries] {
-  Thesis Contribution: two formal pipelines for timed normative conflicts and blame-tracking runtime monitors in multi-agent settings.
+  Thesis Contribution: Two logics + tailored automated \\verification pipelines for conflict analysis and monitoring.
   };
 \end{tikzpicture}
 \vspace{4mm}
@@ -220,7 +220,7 @@
   \begin{column}{0.48\textwidth}
     \begin{block}{Before Adoption \textemdash\ Static Analysis}
       \small
-      Reasoning about conflicts in metric timed normative specifications.
+      Detection and elimination of metric time conflicts in normative specifications.
     \medskip
 
       \textbf{Problem:}  Conflicting norms \emph{hide} inside complex temporal conditions, we suggest a novel characterization of timed normative conflicts.
@@ -235,8 +235,8 @@
 
       \textbf{Problem:}  Contracts specify collaborative multi-agent behavior that may run indefinitely, requiring:
       \begin{itemize}\setlength\itemsep{1pt}
-        \item Monitoring that also tracks \emph{obstructions}, not only non-performance, and
-        \item Per-agent \emph{cumulative blame attribution}  over the whole contract execution.
+        \item Monitoring that also tracks \emph{obstructions}, i.e blocking other agents from fulfilling their obligations.  
+        \item and per-agent \emph{cumulative blame attribution}  over the whole contract execution.
       \end{itemize}
     \end{block}
   \end{column}
@@ -253,14 +253,14 @@
   \centering
   \textcolor{white}{\Huge\bfseries Part I}\\[6mm]
   \textcolor{white!85}{\Large Reasoning about Metric-Timed Normative Conflicts }\\[3mm]
-  \textcolor{white!70}{\large Micro Metric-Timed Normative Logic $\TDDLfm$}
+%   \textcolor{white!70}{\large Micro Metric-Timed Normative Logic $\TDDLfm$}
   \vfill
 \end{frame}
 }
 
 
 
-\begin{frame}{Intuitive understanding of normative conflicts}
+\begin{frame}{Intuitive Understanding of Normative Conflicts}
 \onslide<1->{
   \begin{block}{The Fundamental Intuition}
     \small
@@ -314,7 +314,7 @@
 % =====================================
 % SLIDE 3 — Conflict Motivation
 % ===================================
-\begin{frame}{Motivation: Inpterpreting Timed norms as a Planning Problem}
+\begin{frame}{Motivation: Interpreting Timed Norms as a Planning Problem}
 \begin{columns}[T]
   \begin{column}{0.52\textwidth}
     \small
@@ -436,14 +436,39 @@
                 minimum height=5mm, minimum width=7mm, right=25mm of legO] (legF) {};
           \node[right=1mm of legF, font=\scriptsize] {Prohibition};
         \end{scope}
+
+        \only<2>{
+          % Highlight gate conflict
+          \fill[red, opacity=0.2, rounded corners=2pt] 
+            (9, \ygate+\rectShift-\laneH/2-0.15) rectangle (16, \ygate+\rectShift+\offset+\laneH/2+0.15);
+          \draw[red, thick, dashed, rounded corners=2pt] 
+            (9, \ygate+\rectShift-\laneH/2-0.15) rectangle (16, \ygate+\rectShift+\offset+\laneH/2+0.15);
+          \node[red!80!black, font=\bfseries\scriptsize, fill=white, inner sep=1.5pt] 
+            at (12.5, \ygate+\rectShift+\offset+\laneH/2+0.4) {Conflict!};
+
+          % Highlight park conflict
+          \fill[red, opacity=0.2, rounded corners=2pt] 
+            (10, \ypark+\rectShift-\laneH/2-0.15) rectangle (14, \ypark+\rectShift+\offset+\laneH/2+0.15);
+          \draw[red, thick, dashed, rounded corners=2pt] 
+            (10, \ypark+\rectShift-\laneH/2-0.15) rectangle (14, \ypark+\rectShift+\offset+\laneH/2+0.15);
+          \node[red!80!black, font=\bfseries\scriptsize, fill=white, inner sep=1.5pt] 
+            at (12, \ypark+\rectShift+\offset+\laneH/2+0.4) {Conflict!};
+        }
       \end{scope}
     \end{tikzpicture}
-   \medskip \medskip
+\only<2>{
+  \vspace*{1cm}
+
     \begin{tikzpicture}
-      \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=\columnwidth,align=left,inner sep=4pt,font=\scriptsize] {
-      \textbf{SAT result:} $\DC \sqcap \SR \sqcap \MA$ is satisfiable~--- model: $\delAtPark$ at $t\!=\!9$.
+       \node[draw=ConflictGreen,rounded corners,fill=yellow!30,text width=\columnwidth,align=left,inner sep=4pt,font=\scriptsize] (node1) {
+      Deontic conflict at $t=9,10,11,12,13,14,15,16$ (\delAtGate) \\
+       Deontic conflict at $t=10,11,12,13,14$ (\delAtPark) \\
+      };
+      \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=\columnwidth,align=left,inner sep=4pt,font=\scriptsize, below=2mm of node1] {
+      \textbf{SAT result:} $\DC \sqcap \SR \sqcap \MA$ is satisfiable~:model: $\delAtPark$ at $t\!=\!9$.
       };
     \end{tikzpicture}
+}
   \end{column}
 \end{columns}
 
@@ -501,10 +526,17 @@
 % =====================================
 % SLIDE 5 — Methodology (Conflict)
 % =====================================
-\begin{frame}{Syntactic definition and analysis of conflicts in $\TDDLfm$ }
+\begin{frame}{Syntactic Definition and Analysis of Conflicts in $\TDDLfm$ }
 \small
 \begin{columns}[T]
 \begin{column}{0.48\textwidth}
+  \textbf{Syntax of $\TDDLfm$}
+  \[ \phi ::= \ob{\is}{a} \mid \forbb{\is}{a} \mid \phi \sqcap \phi \mid \phi \sqcup \phi \]
+  \vspace{-2mm}
+ where $a $ is an atomic action and  $\is$ is an interval set
+
+  \vspace{4mm}
+  \small
   \textbf{Punctual Conflicts}
   \medskip
 
@@ -518,7 +550,7 @@
   \vspace{2mm}
   % \emph{Any Formula \textit{syntactically formed} by these patterns is conflicting.}
   \vspace{1mm}
- As literals in formulas are not always punctual, we introduce the \dpnf~  that decomposes time intervals into punctual atoms, allowing us to detect conflicts at the punctual level.
+  How can punctual conflicts be detected in formulas formed by non-punctual literals?
 \end{column}
 
 \begin{column}{0.48\textwidth}
@@ -550,7 +582,7 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}{Example of conflict analysis}
+\begin{frame}{Example of Conflict Analysis}
 \begin{table}
     \centering
     \renewcommand{\arraystretch}{1}
@@ -669,7 +701,7 @@
 % =====================================
 % SLIDE 6 — Answering RQ1–RQ3
 % =====================================
-\begin{frame}{Key results through conflict density}
+\begin{frame}{Key Results Through Conflict Density}
 \small
 \begin{columns}[T]
   \begin{column}{0.32\textwidth}
@@ -695,7 +727,7 @@
     \textbf{Key results:}
     \begin{itemize}\setlength\itemsep{2pt}
       \item $\phi$ is unsat $\;\Longleftrightarrow\;$ $\cd(\phi) = 1$
-      \item Punctual conflicts $\equiv$ Minimal unsatisfiable set (MUS) in the \dpnf.
+      \item Punctual conflicts \textit{coincid} with \textbf{minimal unsatisfiable sets (MUS)} of the product terms of the  \dpnf transformation.
     \end{itemize}
   \end{block}
 \end{column}
@@ -709,7 +741,7 @@
     \begin{itemize}\setlength\itemsep{2pt}
       \item Prune conflicting terms.
       \item May return a very big size repaired formula.
-      \item Conflict calculus for choosing to partially repair the formula.
+      \item Conflict calculus for manual and efficient conflicts resolution and detection
     \end{itemize}
   \end{block}
 \end{column}
@@ -717,25 +749,71 @@
 \end{frame}
 
 % =====================================
+% SLIDE 6b — Conflict Calculus
+% =====================================
+\begin{frame}{Conflict Calculus for \TDDLfm}
+  \centering
+  \small
+  \fbox{
+    \begin{minipage}{0.97\textwidth}
+      \vspace{1mm}
+      \[
+      \begin{array}{l@{\qquad}l}
+        \textbf{(O-Union)} \ \displaystyle \frac{ \is = \is_1 \cup \is_2 }{ \ob{\is_1}{a} \sqcup \ob{\is_2}{a} \equiv \ob{\is}{a} } 
+        &
+        \textbf{(F-Union)} \ \displaystyle \frac{ \is = \is_1 \cup \is_2 }{ \forbb{\is_1}{a} \sqcup \forbb{\is_2}{a} \equiv \forbb{\is}{a} } 
+        \\[3.5ex]
+        \textbf{(Distr1L)} \ \displaystyle \frac{~}{ \phi_1 \sqcap (\phi_2 \sqcup \phi_3) \equiv (\phi_1 \sqcap \phi_2) \sqcup (\phi_1 \sqcap \phi_3) } 
+        &
+        \textbf{($\bm{\equiv\sqcap}$)} \ \displaystyle \frac{ \phi_1 \equiv \phi_1' }{ \phi_1 \sqcap \phi_2 \equiv \phi_1' \sqcap \phi_2 } 
+        \\[3.5ex]
+        \textbf{($\bm{\bot\sqcap}$)} \ \displaystyle \frac{ \phi \vdash \bot }{ \phi \sqcap \phi' \vdash \bot } 
+        &
+        \textbf{($\bm{\bot\equiv}$)} \ \displaystyle \frac{ \phi' \vdash \bot \quad \phi \equiv \phi' }{ \phi \vdash \bot } 
+        \\[3.5ex]
+        \textbf{($\bm{\bot\sqcup}$)} \ \displaystyle \frac{ \phi \vdash \bot \quad \phi' \vdash \bot }{ \phi \sqcup \phi' \vdash \bot } 
+        &
+        \textbf{($\bm{\sqcup\bot}$)} \ \displaystyle \frac{ \phi' \vdash \bot }{ \phi \sqcup \phi' \equiv \phi } 
+        \\[3.5ex]
+        \textbf{\color{ConflictRed}(T-DeoConf)} \ \displaystyle \frac{ \is \subseteq \is'}{ \ob{\is}{a} \sqcap \forbb{\is'}{a} \vdash \bot } 
+        &
+        \textbf{\color{ConflictRed}(OntConf)} \ \displaystyle \frac{ \size{\is} <_\infty \size{\{a_1,\dots,a_n\}} }{ \bigsqcap \ob{\is}{a_i} \vdash \bot } 
+        \\[4ex]
+        \multicolumn{2}{c}{
+          \textbf{\color{ConflictRed}(P-DeoConf)} \ \displaystyle \frac{ \is \cap \is' \neq \emptyset \quad \is \not\subset \is'}{ \ob{\is}{a} \sqcap \forbb{\is'}{a} \equiv \ob{\is \ominus \is'}{a} \sqcap \forbb{\is'}{a} }
+        }
+      \end{array}
+      \]
+      \vspace{1mm}
+    \end{minipage}
+  }
+\end{frame}
+% =====================================
 % SLIDE 7 — The Overall Framework (Conflict)
 % =====================================
-\begin{frame}{Sound and complete Conflict Analysis \& Resolution Framework}
+\begin{frame}{Sound and Complete Conflict Analysis \& Resolution Framework}
+\vspace*{-3mm}
 \begin{center}
+\makebox[\textwidth][c]{
 \begin{tikzpicture}[
   node distance=14mm and 16mm,
-  rect/.style={rectangle, draw, rounded corners, text width=28mm, align=center, minimum height=9mm, fill=blue!8, font=\scriptsize},
-  ell/.style={ellipse, draw, minimum width=24mm, minimum height=12mm, align=center, fill=green!8, font=\scriptsize},
+  rect/.style={rectangle, draw, rounded corners, text width=28mm, align=center, minimum height=9mm, font=\scriptsize},
+  ell/.style={ellipse, draw, minimum width=24mm, minimum height=12mm, align=center, font=\scriptsize},
+  specstyle/.style={ell, fill=ConflictGreen!20},
+  res/.style={ell, fill=orange!20},
+  auto/.style={rect, fill=blue!10},
+  manual/.style={rect, fill=red!15},
   arr/.style={-{Stealth[round]}, thick},
   scale=0.78, transform shape
 ]
-  \node[ell] (spec) {Specification\\$\phi$};
-  \node[rect, below=of spec] (smt) {SMT Time\\Feasibility};
-  \node[rect, below left=6mm and 10mm of smt] (calc) {Conflict\\Calculus};
-  \node[rect, below right=6mm and 10mm of smt] (det) {Detection\\(\dpnf)};
-  \node[rect, below=12mm of det] (elim) {Elimination};
-  \node[ell, right=14mm of det] (pc) {$\mathcall{PC}(\phi)$};
-  \node[ell, below right=6mm and 10mm of det] (cdens) {$\cd(\phi)$};
-  \node[ell, below=20mm of calc] (ref) {Refined\\$\phi'$};
+  \node[specstyle] (spec) {Specification\\$\phi$};
+  \node[auto, below=of spec] (smt) {SMT Time\\Feasibility};
+  \node[manual, below left=6mm and 10mm of smt] (calc) {Conflict\\Calculus};
+  \node[auto, below right=6mm and 10mm of smt] (det) {Conflict Detection\\(\dpnf)};
+  \node[auto, below=12mm of det] (elim) {Conflict Elimination};
+  \node[res, right=14mm of det] (pc) {$\mathcall{PC}(\phi)$};
+  \node[res, below right=6mm and 10mm of det] (cdens) {$\cd(\phi)$};
+  \node[specstyle, below=20mm of calc] (ref) {Refined\\$\phi'$};
 
   \draw[arr] (spec) -- (smt);
   \draw[arr] (spec.west) -| (calc.north);
@@ -747,7 +825,24 @@
   \draw[arr] (elim.south) -- ++(0,-0.6) -| (ref.east);
   \draw[arr] (calc) to[bend left=20] (ref);
   \draw[arr] (ref) to[bend left=20] (calc);
+
+  % Legend
+  \begin{scope}[shift={(pc.east |- spec.north)}, yshift=4mm, xshift=6mm]
+    \node[draw, rounded corners, fill=white, minimum width=40mm, minimum height=24mm, anchor=north west] (legbox) at (0,0) {};
+    \node[draw, rectangle, fill=ConflictGreen!20, minimum width=5mm, minimum height=2.5mm] at (5mm, -4.5mm) {};
+    \node[anchor=west, font=\small] at (9mm, -4.5mm) {Specification};
+    
+    \node[draw, rectangle, fill=orange!20, minimum width=5mm, minimum height=2.5mm] at (5mm, -9.5mm) {};
+    \node[anchor=west, font=\small] at (9mm, -9.5mm) {Results};
+    
+    \node[draw, rectangle, fill=blue!10, minimum width=5mm, minimum height=2.5mm] at (5mm, -14.5mm) {};
+    \node[anchor=west, font=\small] at (9mm, -14.5mm) {Automatic Procedure};
+    
+    \node[draw, rectangle, fill=red!15, minimum width=5mm, minimum height=2.5mm] at (5mm, -19.5mm) {};
+    \node[anchor=west, font=\small] at (9mm, -19.5mm) {Manual Procedure};
+  \end{scope}
 \end{tikzpicture}
+}
 \end{center}
 \end{frame}
 
@@ -771,25 +866,25 @@
 % =====================================
 % PART II — Slide 1
 % =====================================
-\begin{frame}{Challenges in Monitoring Multi-Party open-ended Contracts}
+\begin{frame}{Challenges in Monitoring Multi-Party Open-Ended Contracts}
 \small
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.49\textwidth}
     \begin{block}{Challenges}
       \begin{itemize}
-        \item Contract assign a duty to each party, but the outcome depends on their joint behavior.
+        \item Contracts assign a duty to each party, but the outcome depends on their joint behavior.
         \item A violation may activate a reparation duty rather than a simple failure.
         \item Contracts are open-ended: they may be terminated or repeated indefinitely.
       \end{itemize}
     \end{block}
   \end{column}
 \begin{column}{0.49\textwidth}
-  \begin{block}{Running use case: rental contract}
+  \begin{block}{Running use case: flat rental contract}
     \begin{itemize}
       \item Tenant must pay rent every month.
-      \item Missed rent payement activates a late-fee reparation.
+      \item Missed rent payment activates a late-fee reparation to be paid by the next month.
       \item Landlord must guarantee occupancy.
-      \item Payement and occupency are repeated in a montly basis until a termination notification is submitted.
+      \item Payment and occupancy are repeated on a monthly basis until a termination notification is submitted.
     \end{itemize}
   \end{block}
 \end{column}
@@ -801,7 +896,7 @@
 \begin{tikzpicture}
   \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=0.9\textwidth,align=center,inner sep=5pt,font=\small] {
   \textbf{Part II Goal:} Design a monitoring framework for multi-party collaboration.\begin{itemize}
-    \item Distinguish agent  attempts from tasl outcome for precise blame attribution.
+    \item Distinguish agent  attempts from task outcome for precise blame attribution.
     \item Support monitoring over the whole lifecycle of the contract.
   \end{itemize}.
   };
@@ -847,62 +942,91 @@
 % \end{column}
 % \end{columns}
 % \end{frame}
+% \begin{frame}{The two agent collaborative}
+% \small
+% \begin{columns}[T,totalwidth=\textwidth]
+% \begin{column}{0.47\textwidth}
+%   \begin{block}{Primitives}
+%     \footnotesize
+%     \[
+%     \begin{aligned}
+%     \obl[p]{a} &\quad \text{: obligation}\\
+%     \frb[p]{a} &\quad \text{: prohibition}\\
+%     \perm[p]{a} &\quad \text{: power}
+%     \end{aligned}
+%     \]
+%      $a \in \Sigma_C$ is a collab action and $p \in \{1,2\}$ is party.
+%   \end{block}
+
+%   \begin{block}{Compositional control flow}
+%     \footnotesize
+%     \[
+%     \begin{aligned}
+%     C \wedge C &\quad \text{: parallel duties}\\
+%     % C ; C &\quad \text{: sequencing}\\
+%     C \repair C &\quad \text{: contrary-to-duty repair}\\
+%     \trig[re]{C} &\quad \text{: event-triggered activation}\\
+%     \guard[re]{C} &\quad \text{: termination / bounded applicability}\\
+%     \repit{C} &\quad \text{: open-ended repetition}
+%     \end{aligned}
+%     \]
+%   \end{block}
+% \end{column}
+% \begin{column}{0.51\textwidth}
+%   \begin{block}{Rental contract encoding}
+%     \footnotesize
+%     \[
+%     \begin{aligned}
+%     C_1 &:= \obl[1]{\PAY}\\
+%     C_2 &:= \perm[1]{\OCC}\\
+%     C_3 &:= \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}\\
+%     C_4 &:= \trig[\{\mathsf{Notif\_R}^{(1)}\}]{\obl[2]{\mathsf{REPAIR}}}\\
+%     C_{5\to2} &:= \guard[\Gamma^+\!\cdot\!\{\notifterm^{(1)}\}\!\cdot\!\Gamma^3]\repit{C_2}
+%     \end{aligned}
+%     \]
+%     \footnotesize
+%     Together these formulas cover the chapter's core phenomena: ordinary duties, blocked cooperation, repair after violation, event-driven activation, and finite termination of an otherwise open-ended contract.
+%   \end{block}
+% \end{column}
+% \end{columns}
+% \end{frame}
 
 % =====================================
 % PART II — Slide 3
 % =====================================
-\begin{frame}{The two agent collaborative normative logic \cDL}
-\small
-\begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.47\textwidth}
-  \begin{block}{Primitives}
-    \footnotesize
-    \[
-    \begin{aligned}
-    \obl[p]{a} &\quad \text{: obligation}\\
-    \frb[p]{a} &\quad \text{: prohibition}\\
-    \perm[p]{a} &\quad \text{: power}
-    \end{aligned}
-    \]
-     $a \in \Sigma_C$ is a collab action and $p \in \{1,2\}$ is party.
-  \end{block}
+\begin{frame}{Methodology Overview}
+\vspace{2mm}
+\begin{center}
+\begin{tikzpicture}[
+  node distance=8mm and 12mm,
+  box/.style={draw=ConflictBlue, fill=SoftBlue, rounded corners, minimum height=18mm, text width=42mm, align=center, font=\small},
+  arr/.style={-{Stealth[round]}, line width=1.2pt, ConflictGray},
+  scale=0.9, transform shape
+]
 
-  \begin{block}{Compositional control flow}
-    \footnotesize
-    \[
-    \begin{aligned}
-    C \wedge C &\quad \text{: parallel duties}\\
-    % C ; C &\quad \text{: sequencing}\\
-    C \repair C &\quad \text{: contrary-to-duty repair}\\
-    \trig[re]{C} &\quad \text{: event-triggered activation}\\
-    \guard[re]{C} &\quad \text{: termination / bounded applicability}\\
-    \repit{C} &\quad \text{: open-ended repetition}
-    \end{aligned}
-    \]
-  \end{block}
-\end{column}
-\begin{column}{0.51\textwidth}
-  \begin{block}{Rental contract encoding}
-    \footnotesize
-    \[
-    \begin{aligned}
-    C_1 &:= \obl[1]{\PAY}\\
-    C_2 &:= \perm[1]{\OCC}\\
-    C_3 &:= \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}\\
-    C_4 &:= \trig[\{\mathsf{Notif\_R}^{(1)}\}]{\obl[2]{\mathsf{REPAIR}}}\\
-    C_{5\to2} &:= \guard[\Gamma^+\!\cdot\!\{\notifterm^{(1)}\}\!\cdot\!\Gamma^3]\repit{C_2}
-    \end{aligned}
-    \]
-    \footnotesize
-    Together these formulas cover the chapter's core phenomena: ordinary duties, blocked cooperation, repair after violation, event-driven activation, and finite termination of an otherwise open-ended contract.
-  \end{block}
-\end{column}
-\end{columns}
+  \node[box] (abs) {\textbf{1. Semantic Abstraction}\\Attempt-based model\\for collaboration};
+  \node[box, right=of abs] (log) {\textbf{2. Logic Design}\\The \cDL\ (\logic{TACNL})\\framework};
+  
+  \node[box, below=12mm of log] (sem) {\textbf{3. Denotational Semantics}\\Progressive definition\\of satisfaction andblame domains};
+  \node[box, left=of sem] (mon) {\textbf{4. Structural Synthesis}\\Correct-by-construction\\monitor generation};
+
+  \draw[arr] (abs) -- (log);
+  \draw[arr] (log) -- (sem);
+  \draw[arr] (sem) -- (mon);
+  
+\end{tikzpicture}
+\end{center}
+
+\vspace{2mm}
+\begin{itemize}
+  \item \textbf{Abstraction:} Distinguish individual agent attempts from joint collaborative outcomes.
+  \item \textbf{Logic:} Formalize open-ended, multi-party contracts with triggers, termination guards, and reparations.
+\end{itemize}
 \end{frame}
 
 
 
-\begin{frame}{Progressive semantics for blame attribution}
+\begin{frame}{Progressive Semantics for Blame Attribution}
   \small
   \centering
   \begin{tikzpicture}[scale=0.9, transform shape,
@@ -939,43 +1063,54 @@
 % =====================================
 % PART II — Slide 4
 % =====================================
-\begin{frame}{Tight Forward  Denotational Semantics}
+\begin{frame}{Tight Forward Denotational Semantics}
 \small
 \begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.50\textwidth}
+\begin{column}{0.3\textwidth}
   \begin{block}{Two verdict domains}
-    \footnotesize
-    \begin{itemize}
-      \item $\mathbb{V}_5=\{?,\topt,\bott,\topp,\botp\}$
-      \item $\mathbb{V}_{11}=\{?,\topt,\topp\}\cup\{\bottp{S},\botpp{S}\mid S\subseteq\{1,2\}\}$
+    \begin{itemize}\setlength\itemsep{4pt}
+      \item \textbf{$\mathbb{V}_5$ (Compliance):}\\ $\{?,\topt,\bott,\topp,\botp\}$
+      \item \textbf{$\mathbb{V}_{11}$ (Blame):}\\ Introduces subsets $S\subseteq\{1,2\}$ to tag violations:\\ $\bottp{S}$ and $\botpp{S}$.
     \end{itemize}
   \end{block}
-\textbf{Why it matters:} reparations and triggers switch exactly at the decisive prefix.
 \end{column}
-\begin{column}{0.46\textwidth}
-  \begin{block}{Obligation example: $C=\obl[1]{\PAY}$}
-    \footnotesize
-    \[
-    \begin{array}{lcl}
-    \PAY^{(1)}\notin A &\Rightarrow& \mathbb{V}_5:\ \bott\\[2pt]
-    \PAY^{(1)}\in A,\ \PAY^{(2)}\notin A &\Rightarrow& \mathbb{V}_5:\ \bott
-    \end{array}
-    \]
-    In $\mathbb{V}_5$, both failures are just violations.
-  \end{block}
 
-  \begin{block}{$\mathbb{V}_{11}$ distinguishes blame}
+\begin{column}{0.31\textwidth}
+  \begin{block}{Tightness \& Blame}
+    \begin{itemize}\setlength\itemsep{4pt}
+      \item \textbf{Tightness:} Triggers and reparations must activate at the \emph{exact} decisive prefix where a duty succeeds or fails.
+      \item \textbf{Blame:} Binary failure ($\bott$) is unfair if the agent attempted the action but was obstructed.
+    \end{itemize}
+  \end{block}
+\end{column}
+
+\begin{column}{0.35\textwidth}
+  \begin{block}{\textbf{How?} Attempt-based mapping}
+    Example: $C=\obl[1]{\PAY}$\\
+    \vspace{1mm}
+    \textbf{In $\mathbb{V}_5$ (Simple failure per event):}
     \footnotesize
-    \[
-    \begin{array}{lcl}
-    \PAY^{(1)}\notin A &\Rightarrow& \bottp{\{1\}}\\[2pt]
-    \PAY^{(1)}\in A,\ \PAY^{(2)}\notin A &\Rightarrow& \bottp{\{2\}}
-    \end{array}
-    \]
-    Same frontier, but now we know who caused the violation.
+    \\$\bott$ when the rent payment was unsuccessful at the first event.
+    
+    \vspace{1mm}
+    \small
+    \textbf{In $\mathbb{V}_{11}$ (Precise blame):}
+    \footnotesize
+    \begin{itemize}
+    \item $\bottp{\{1\}}$: Agent 1 did not attempt to pay.
+    \item $\bottp{\{2\}}$: Agent 1 attempted to pay, but agent 2 blocked.
+    \end{itemize}
   \end{block}
 \end{column}
 \end{columns}
+
+\vspace{2mm}
+\centering
+\begin{tikzpicture}
+  \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=0.9\textwidth,align=center,inner sep=4pt,font=\small] {
+  \textbf{Key Takeaway:} Forward evaluation finds the exact frontier where obligations switch. $\mathbb{V}_{11}$ preserves \emph{who} caused the failure exactly at that frontier.
+  };
+\end{tikzpicture}
 \end{frame}
 
 
@@ -1005,35 +1140,58 @@
 
 \end{column}
 \begin{column}{0.56\textwidth}
-  \begin{block}{Example: Moore machine for $\obl[1]{\PAY}$}
+  \begin{block}{Moore machine for $C = \repit{ (\obl[1]{\PAY} \repair \obl[1]{\PAYF}) }$}
   \centering
-  \begin{tikzpicture}[scale=0.75, transform shape,
-    shorten >=1pt,auto,node distance=12mm and 14mm,semithick,
+  \begin{tikzpicture}[scale=0.65, transform shape,
+    shorten >=1pt,auto,node distance=14mm and 16mm,semithick,
     every state/.style={rectangle,rounded corners,draw,minimum width=11mm,
       minimum height=6.5mm,inner sep=2.5pt,font=\tiny,align=center}
   ]
     \node[initial,state,fill=gray!10] (q0)  {$q_0$\\$?$};
-    \node[state,fill=green!18,right=of q0] (qs)  {$q_s$\\$\topt$};
-    \node[state,fill=red!18,below=of q0]   (qv)  {$q_v$\\$\bott$};
-    \node[state,fill=green!10,right= 0.5cmof  qs] (qps) {$q_{ps}$\\$\topp$};
-    \node[state,fill=red!10,right=of qv]   (qpv) {$q_{pv}$\\$\botp$};
+    \node[state,fill=gray!10,right=2.5cm of q0] (q1)  {$q_1$\\$?$};
+    \node[state,fill=red!18,below=of q1]   (qv)  {$q_v$\\$\bott$};
+    \node[state,fill=red!10,left=2.5cm of qv]   (qpv) {$q_{pv}$\\$\botp$};
 
     \path[->]
-      (q0) edge[bend left=12] node[above,pos=0.5] {\tiny $\{\PAY^{(1)},\PAY^{(2)}\}\subseteq A$} (qs)
-      (q0) edge[bend right=12] node[left,pos=0.42] {\tiny $\{\PAY^{(1)},\PAY^{(2)}\}\nsubseteq A$} (qv)
-      (qs)  edge node[above] {\tiny $\Gamma$} (qps)
-      (qv)  edge node[below] {\tiny $\Gamma$} (qpv)
-      (qps) edge[loop right] node {\tiny $\Gamma$} (qps)
-      (qpv) edge[loop right] node {\tiny $\Gamma$} (qpv);
+      (q0) edge[loop above] node[above] {\tiny $\PAY^\surd$} (q0)
+      (q0) edge[bend left=15] node[above] {\tiny $\PAY^\times$} (q1)
+      (q1) edge[bend left=15] node[below] {\tiny $\PAYF^\surd$} (q0)
+      (q1) edge node[right] {\tiny $\PAYF^\times$} (qv)
+      (qv) edge node[above] {\tiny $\Gamma$} (qpv)
+      (qpv) edge[loop left] node {\tiny $\Gamma$} (qpv);
   \end{tikzpicture}
   \end{block}
 
-  \begin{block}{Construction}
-    \begin{itemize}
-      \item Construction à la Thomson.
-      \item Conformance proof to the semantics.
-    \end{itemize}
-  \end{block}
+%   \onslide<2->{
+%   \begin{block}{Blame monitor ($\mathbb{V}_{11}$) for $C$}
+%   \centering
+%   \begin{tikzpicture}[scale=0.65, transform shape,
+%     shorten >=1pt,auto,node distance=10mm and 12mm,semithick,
+%     every state/.style={rectangle,rounded corners,draw,minimum width=10mm,
+%       minimum height=6mm,inner sep=2pt,font=\tiny,align=center}
+%   ]
+%     \node[initial,state,fill=gray!10] (q0)  {$q_0$\\$?$};
+%     \node[state,fill=gray!10,right=2.5cm of q0] (q1)  {$q_1$\\$?$};
+    
+%     \node[state,fill=orange!18,below=0.8cm of q1]   (qv1)  {$q_v^{\{1\}}$\\$\bottp{\{1\}}$};
+%     \node[state,fill=orange!18,left=1.5cm of qv1]   (qv2)  {$q_v^{\{2\}}$\\$\bottp{\{2\}}$};
+    
+%     \node[state,fill=orange!10,below=0.8cm of qv1]   (qpv1) {$q_{pv}^{\{1\}}$\\$\botpp{\{1\}}$};
+%     \node[state,fill=orange!10,below=0.8cm of qv2]   (qpv2) {$q_{pv}^{\{2\}}$\\$\botpp{\{2\}}$};
+
+%     \path[->]
+%       (q0) edge[loop above] node[above] {\tiny $\PAY^\surd$} (q0)
+%       (q0) edge[bend left=15] node[above] {\tiny $\PAY^\times$} (q1)
+%       (q1) edge[bend left=15] node[below] {\tiny $\PAYF^\surd$} (q0)
+%       (q1) edge node[right] {\tiny $\PAYF^{\times_1}$} (qv1)
+%       (q1) edge node[above left, inner sep=1pt] {\tiny $\PAYF^{\times_2}$} (qv2)
+%       (qv1) edge node[right] {\tiny $\Gamma$} (qpv1)
+%       (qv2) edge node[left] {\tiny $\Gamma$} (qpv2)
+%       (qpv1) edge[loop right] node {\tiny $\Gamma$} (qpv1)
+%       (qpv2) edge[loop left] node {\tiny $\Gamma$} (qpv2);
+%   \end{tikzpicture}
+%   \end{block}
+%   }
 \end{column}
 \end{columns}
 \end{frame}
@@ -1041,7 +1199,7 @@
 % =====================================
 % PART II — Slide 7
 % =====================================
-\begin{frame}{Quantitative violation $\qsem{}:\Gamma^* \times \cDL \to \mathbb{N}$}
+\begin{frame}{Quantitative Violation $\qsem{}:\Gamma^* \times \cDL \to \mathbb{N}$}
 \scriptsize
   \begin{block}{Two ingredients}
     $\LH(C)$ tells us \emph{which literal is currently in force}.
@@ -1049,7 +1207,7 @@
     $\Prog(\textcolor{orange!70!black}{\trace{A}},C)$ tells us \emph{how the contract evolves after the current event}.
   \end{block}
 
-  \begin{block}{Fixpoint intuition}
+  \begin{block}{Fixpoint Semantics}
     \[
     \qsem{\textcolor{orange!70!black}{\trace{A}}\cdot \textcolor{blue!70!black}{\pi}, C}
     =
@@ -1065,7 +1223,7 @@
   \begin{block}{Example}
     Let $C=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$.
     \[
-    \pi=\textcolor{orange!70!black}{\trace{A_1}}\cdot \textcolor{blue!70!black}{\trace{A_2}},
+    \pi=\trace{\textcolor{orange!70!black}{A_1} ,\textcolor{blue!70!black}{A_2}},
     \quad
     A_1=\{\OCC^{(1)}\},
     \quad
@@ -1098,7 +1256,7 @@
 % =====================================
 \begin{frame}{Intuition for the Quantitative Violation Monitor $\qmc(C)$}
 \footnotesize
-\begin{columns}[T,totalwidth=\textwidth]
+\begin{columns}
 \begin{column}{0.48\textwidth}
   \begin{block}{Construction idea}
     Turn the denotational recursion into a Mealy machine:
@@ -1108,7 +1266,7 @@
     where
     \begin{itemize}
       \item $Q=\rrcs{C}$ is the set of reachable residual contracts,
-      \item $q_0=C$ is the initial residual,
+      \item $q_0=C$ ,
       \item $\delta(q,A)=\Prog(\trace{A},q)$ updates the contract state,
       \item $\lambda(q,A)=\qsem{\trace{A},q}$ emits the local cost.
     \end{itemize}
@@ -1118,32 +1276,35 @@
     If $\rrcs{C}$ is finite, the monitor is finite too.
   \end{block}
 \end{column}
-\begin{column}{0.48\textwidth}
-  \begin{block}{Execution view}
-    \[
-    q_0=C
-    \xrightarrow{\trace{A_0}/\lambda(q_0,A_0)} q_1
-    \xrightarrow{\trace{A_1}/\lambda(q_1,A_1)} q_2
-    \xrightarrow{\ \cdots\ } q_n
-    \]
-    Each transition does two things:
-    \begin{itemize}
-      \item advance the residual contract by progression;
-      \item output the score contributed by the current event.
-    \end{itemize}
-  \end{block}
+\begin{column}{0.50\textwidth}
+  
+  \begin{block}{Example}
+Infinite rental with fine \\$C = \repit{ (\obl[1]{\PAY} \repair \obl[1]{\PAYF}) }$
 
-  \begin{block}{Correctness takeaway}
-    Along the unique run on $\pi$,
-    \[
-    \qscore(\qmc(C),\pi)
-    =
-    \sum_{i=0}^{n-1}\lambda(q_i,A_i)
-    =
-    \qsem{\pi,C}.
-    \]
-    So the monitor is an executable realization of the quantitative semantics.
+  \vspace{3mm}
+  \centering
+  \begin{tikzpicture}[
+    scale=1.1, transform shape,
+    ->, >=Stealth, node distance=28mm,
+    every state/.style={rectangle, rounded corners, draw=ConflictBlue, fill=SoftBlue, minimum width=15mm, minimum height=8mm, inner sep=4pt, font=\scriptsize, align=center},
+    initial text={}
+  ]
+    \node[initial, state] (q0) {$q_0$: $\repit{C_3}$};
+    \node[state, right= 1.7cmof q0] (q1) {$q_1$: $\obl[1]{\PAYF} ; \repit{C_3}$};
+
+    \path
+      (q0) edge[loop above] node[above, font=\tiny] {$\PAY^\surd \; / \; 0$} ()
+      (q0) edge[bend left=20] node[above, font=\tiny] {$\PAY^\times \; / \; 1$} (q1)
+      (q1) edge[bend left=20] node[below, font=\tiny] {$\PAYF^\surd \; / \; 0$} (q0)
+      (q1) edge[bend left=45] node[below, font=\tiny] {$\PAYF^\times \; / \; 1$} (q0);
+  \end{tikzpicture}
+
+  \vspace{3mm}
+  \raggedright
+  \emph{The monitor perpetually tracks progress. A missed payment ($\PAY^\times$) transitions to $q_1$ and emits $1$. The fine $\PAYF$ resolves the residual, returning to $q_0$ with cost $0$ or $1$.}
   \end{block}
+ 
+  
 \end{column}
 \end{columns}
 \end{frame}
@@ -1204,16 +1365,16 @@
 \end{column}
 \end{columns}
 
-\vspace{5mm}
+\vspace{3mm}
 \centering
   \begin{tikzpicture}
   \node[draw=ConflictGray,rounded corners,fill=gray!8,text width=0.8\textwidth,align=center,inner sep=5pt,font=\normalsize] {
-  \textsf{MAMTNLAS}: Toward a Multi agent Metric Time Normative logic for conflict detection and runtime verification.
+  \textsf{MAMTNL}: Toward a Multi-agent Metric-Timed Normative logic for conflict detection and runtime verification.
   };
 \end{tikzpicture}
-
-\vspace{4mm}
-{\Large\bfseries Thank you! \quad Questions?}
+\onslide<2->
+\vspace{1mm}
+{\Large\bfseries \\Thank you! \quad Questions?}
 \end{frame}
 
 \appendix
@@ -1236,6 +1397,8 @@
   \end{block}
   \medskip
   \textbf{Key insight:} Two literals can form a punctual conflict \emph{only} when $\LUCO = \sqcap$ (they must appear together in a product term).
+  \textbf{Theorem:} $\pnf$ and $\dnf$ preserve \LUCO --- if two ancestors were under $\sqcap$, all their punctual descendants remain under $\sqcap$.
+  
 \end{column}
 \begin{column}{0.45\textwidth}
   \textbf{Example:} $\phi = \big((\ell_1 \sqcup \ell_2)\sqcap \ell_3\big)\sqcup\big(\ell_4 \sqcap \ell_5\big)$
@@ -1268,21 +1431,15 @@
   \footnotesize
   \renewcommand{\arraystretch}{1.15}
   \begin{tabular}{ll}
-  $\LUCO(\ell_1,\ell_2)=\sqcup$ & (same branch, disj.)\\
+  $\LUCO(\ell_1,\ell_2)=\sqcup$ & should never conflict\\
   $\LUCO(\ell_1,\ell_3)=\sqcap$ & \textcolor{ConflictRed}{can conflict}\\
   $\LUCO(\ell_4,\ell_5)=\sqcap$ & \textcolor{ConflictRed}{can conflict}\\
-  $\LUCO(\ell_1,\ell_4)=\sqcup$ & (cross-branch)\\
+  $\LUCO(\ell_1,\ell_4)=\sqcup$ & should never conflict
   \end{tabular}
 \end{column}
 \end{columns}
 
-\vspace{3mm}
-\centering
-\begin{tikzpicture}
-  \node[draw=ConflictBlue,rounded corners,fill=SoftBlue,text width=0.85\textwidth,align=center,inner sep=4pt,font=\small] {
-  \textbf{Theorem:} $\pnf$ and $\dnf$ preserve \LUCO --- if two ancestors were under $\sqcap$, all their punctual descendants remain under $\sqcap$.
-  };
-\end{tikzpicture}
+
 \end{frame}
 
 % =====================================
@@ -1388,41 +1545,14 @@
 % =====================================
 % BACKUP SLIDE 3 — Conflict Calculus
 % =====================================
-\begin{frame}{Backup: Conflict Calculus for $\TDDLfm$}
-\small
-Eleven inference rules for big-step reasoning — no $\dpnf$ expansion required.
-
-\vspace{2mm}
-\begin{center}
-\footnotesize
-\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Rule} & \textbf{Condition} & \textbf{Conclusion} \\\hline
-\textbf{(O-Union)} & $\is = \is_1 \cup \is_2$ & $\ob{\is_1}{a} \sqcup \ob{\is_2}{a} \equiv \ob{\is}{a}$ \\\hline
-\textbf{(F-Union)} & $\is = \is_1 \cup \is_2$ & $\forbb{\is_1}{a} \sqcup \forbb{\is_2}{a} \equiv \forbb{\is}{a}$ \\\hline
-\textbf{(Distr1L)} & & $\phi_1 \sqcap (\phi_2 \sqcup \phi_3) \equiv (\phi_1 \sqcap \phi_2) \sqcup (\phi_1 \sqcap \phi_3)$ \\\hline
-\textbf{($\bm{\equiv\sqcap}$)} & $\phi_1 \equiv \phi_1'$ & $\phi_1 \sqcap \phi_2 \equiv \phi_1' \sqcap \phi_2$ \\\hline
-\textbf{($\bm{\bot\equiv}$)} & $\phi \equiv \phi',\; \phi' \vdash \bot$ & $\phi \vdash \bot$ \\\hline
-\textbf{($\bm{\bot\sqcap}$)} & $\phi \vdash \bot$ & $\phi \sqcap \phi' \vdash \bot$ \\\hline
-\textbf{($\bm{\bot\sqcup}$)} & $\phi \vdash \bot,\; \phi' \vdash \bot$ & $\phi \sqcup \phi' \vdash \bot$ \\\hline
-\textbf{($\bm{\sqcup\bot}$)} & $\phi' \vdash \bot$ & $\phi \sqcup \phi' \equiv \phi$ \\\hline
-\textbf{(T-DeoConf)} & $\is \subseteq \is'$ & $\ob{\is}{a} \sqcap \forbb{\is'}{a} \vdash \bot$ \\\hline
-\textbf{(P-DeoConf)} & $\is \cap \is' \neq \emptyset,\; \is \not\subset \is'$ & $\ob{\is}{a} \sqcap \forbb{\is'}{a} \equiv \ob{\is \!\setminus\! \is'}{a} \sqcap \forbb{\is'}{a}$ \\\hline
-\textbf{(OntConf)} & $|\is| <_\infty |\{a_1,\dots,a_n\}|$ & $\bigsqcap_{i} \ob{\is}{a_i} \vdash \bot$ \\\hline
-\end{tabular}
-\end{center}
-
-\vspace{2mm}
-\textbf{Use case $\UC = \UC_1' \sqcup \UC_2'$:}
-\begin{itemize}
-  \item \textbf{(T-DeoConf):} $\ob{\{[9,16]\}}{\delAtGate} \sqcap \forbb{\{[2,4],[8,24]\}}{\delAtGate} \vdash \bot$
-  since $[9,16]\subseteq [2,4]\cup[8,24]$
-  $\;\Rightarrow\; \UC_1' \vdash \bot$
-  \item \textbf{(P-DeoConf):} $\ob{\{[9,16]\}}{\delAtPark} \sqcap \forbb{\{[10,14]\}}{\delAtPark} \equiv \ob{\{[9,9],[15,16]\}}{\delAtPark} \sqcap \forbb{\{[10,14]\}}{\delAtPark}$
-  \item \textbf{($\bm{\sqcup\bot}$):} $\UC \equiv \UC_2'$ (the conflict-free refinement).
-\end{itemize}
-\end{frame}
+% \begin{itemize}
+%   \item \textbf{(T-DeoConf):} $\ob{\{[9,16]\}}{\delAtGate} \sqcap \forbb{\{[2,4],[8,24]\}}{\delAtGate} \vdash \bot$
+%   since $[9,16]\subseteq [2,4]\cup[8,24]$
+%   $\;\Rightarrow\; \UC_1' \vdash \bot$
+%   \item \textbf{(P-DeoConf):} $\ob{\{[9,16]\}}{\delAtPark} \sqcap \forbb{\{[10,14]\}}{\delAtPark} \equiv \ob{\{[9,9],[15,16]\}}{\delAtPark} \sqcap \forbb{\{[10,14]\}}{\delAtPark}$
+%   \item \textbf{($\bm{\sqcup\bot}$):} $\UC \equiv \UC_2'$ (the conflict-free refinement).
+% \end{itemize}
+% \end{frame}
 
 % =====================================
 % BACKUP SLIDE 4a — Timed Words → Periodic Set Traces
@@ -1528,6 +1658,54 @@ E_1(\OCC) & \textsf{start\_occ}  & E_2(\OCC) = \{\textsf{grant\_occ}\},\quad B_2
   \item $I_3$: Tenant keeps occupying but does not pay; landlord still allows occupation.
   \item $I_4$: Tenant pays late (\PAYF); \textcolor{ConflictRed}{landlord blocks \PAY and \OCC $\Rightarrow \emptyset$ (landlord blamed)}.
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: Quantitative Violation Monitor $\qmc(C)$}
+  \centering
+  \resizebox{0.9\textwidth}{!}{
+    \begin{tikzpicture}[node distance=32mm, on grid, auto]
+      \tikzset{shorten >=1pt,
+        every node/.style={font=\footnotesize},
+        state/.style={draw=ConflictBlue, fill=SoftBlue, rectangle, rounded corners, align=center, inner sep=3pt},
+        accepting/.style={double}
+      }
+
+      \node[state,initial] (q0) {$\lceil \Gamma^+ \cdot \notifterm^{(1)} \rceil $\\${\repit{C_3}}$};
+      \node[state, right=6.5cm of q0] (q2) {$\lceil \notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)} \rceil$\\${\repit{C_3}}$};
+      \node[state, below=3cm of q0] (q1) {$\lceil \notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)} \rceil$\\$(\obl[1]{\PAYF};\repit{C_3})$};
+      \node[state, below=3cm of q2] (qe) {\qquad$\emptc$ \qquad};
+
+      % q0 transitions
+      \path[->]
+        (q0) edge  node[left] {$ \overline{\PAY^{(12)}} $/\,1} (q1)
+        (q0) edge [bend left =8]node {$\PAY^{(12)}$/\,0} (q2)
+       ;
+
+      % q1 transitions
+      \path[->]
+        (q1) edge[bend left =24] node[above,sloped] {$\PAYF^{(12)} \wedge \overline{\notifterm^{(1)}}\,/\,0$} (q2)
+        (q1) edge[bend left =8] node[above,sloped, pos=0.6] {$(\overline{\PAYF^{(12)}} \wedge \overline{\notifterm})\,/\,1$} (q2)
+        (q1) edge[bend left =8] node[pos=0.557] {$\notifterm^{(1)} \wedge \PAYF^{(12)}\,/\,0$} (qe)
+        (q1) edge[bend right =8] node[below]  {$\notifterm^{(1)} \wedge \overline{\PAYF^{(12)}}\,/\,1$} (qe);
+       % q2 transitions  
+       \path[->]
+       (q2) edge[loop above] node[align=center]
+{$\overline{\notifterm^{(1)}} \wedge\PAY^{(12)}$\\$/\,0$} (q2)
+(q2) edge [bend right =15] node[left, align=center,pos=0.58] {$\notifterm^{(1)} \wedge $\\$\PAY^{(12)}/\,0$} (qe)
+(q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(1)}} \wedge \overline{\PAY^{(12)}}\,/\,1$} (q1) 
+        (q2) edge[bend left =20] node [align=center] {$\notifterm^{(1)} \wedge $\\$\overline{\PAY^{(12)}}/\,1$} (qe);
+    \end{tikzpicture}
+  }
+
+  \vspace{3mm}
+  \begin{block}{}
+    \scriptsize
+    The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$, with $re:=\Gamma^+ \cdot \notifterm^{(1)} $ and $C_3:= \obl[1]{\PAY} \repair \obl[1]{\PAYF}$. On the transitions:\\
+    $\PAY^{(12)}:=\{A \in \Gamma \mid \{\PAY^{(1)}, \PAY^{(2)}\} \subseteq A\}$ a shorthand for when the payment successfully occurred.\\
+    $\notifterm^{(1)}:=\{A \in \Gamma \mid \{\notifterm^{(1)}\} \subseteq A\}$ for agent (1) sending a termination notification.\\
+    $ \overline{P}:= \{A \in \Gamma \setminus P\}.$\\
+    $P \wedge Q := \{A \mid A \in P \cap Q\}.$
+  \end{block}
 \end{frame}
 
 \end{document}
