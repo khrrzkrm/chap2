@@ -131,14 +131,14 @@
 
 
 
-\begin{frame}{Motivation: The Cost of Manual Compliance}
+\begin{frame}{Motivation: The Cost of  Normative Compliance}
   \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.48\textwidth}
   \onslide<1->{
     \begin{block}{What are Normative Specifications?}
       \small 
       \begin{itemize}
-        \item A normative specification is a document or clause that outlines mandatory requirements, technical standards, or protocols that must be followed for compliance. 
+        \item A normative specification states what must be done to comply with a set of norms, rules, or standards.
         \item Contracts, laws, and regulations are examples of normative specifications.
       \end{itemize}
     \end{block}
@@ -150,18 +150,18 @@
   \begin{column}{0.49\textwidth}
   \centering
     \onslide<2->{
-    \begin{block}{The Scaling Problem}
+    \begin{block}{The cost of compliance}
       \small 
       \begin{itemize}
-        \item Regulatory burden costs the global economy \alert{trillions of dollars} annually: \textbf{3.5 \% of the EU's GDP}.\\
-        \item The manual management of normative specifications is a time-consuming and error-prone process.
+        \item Regulatory burden costs: \textbf{3.5 \% of the EU's GDP}.\\
+        \item The manual management of normative specifications is a time and cost consuming and error-prone process.
       \end{itemize}
     \end{block}
   }
   \end{column}
   \end{columns}
    \onslide<3->{
-    \begin{block}{The Solution: Normative Specifications' digital transformation}
+    \begin{block}{The Solution: Digital transformation of normative systems}
     \begin{itemize}
       \item The application of software and digital tools to provide automated compliance checking and support the legal system.
     \end{itemize}
@@ -174,16 +174,16 @@
 \begin{columns}[T,totalwidth=\textwidth]
 \begin{column}{0.48\textwidth}
 \onslide<2->{
-  \begin{block}{LLM in legaltech}
+  \begin{block}{LLM in practice of normative reasoning}
     \small 
     According to a new survey of over 200 in-house and law firm lawyers \footnote{https://www.artificiallawyer.com/2026/03/23/}, \alert{69.7\%} of legal outputs still require targeted edits or extensive rework.
   \end{block}
 }
 \vspace{2mm}
 \onslide<2->{
-  \begin{block}{The Formal Methods Alternative}
+  \begin{block}{Normative systems as code}
     \small 
-    Legislation as code aims to treat specifications as mathematical objects, where questions about behavior yield provable verdicts rather than statistical guesses.
+    aims to formalize normative specifications in a precise and machine-readable way, enabling automated reasoning and verification.
   \end{block}
 }
 \end{column}
@@ -215,7 +215,7 @@
   Thesis Contribution: Two logics + tailored automated \\verification pipelines for conflict analysis and monitoring.
   };
 \end{tikzpicture}
-\vspace{4mm}
+\vspace{-3mm}
 \begin{columns}[T]
   \begin{column}{0.48\textwidth}
     \begin{block}{Before Adoption \textemdash\ Static Analysis}
@@ -233,11 +233,9 @@
       
       \medskip
 
-      \textbf{Problem:}  Contracts specify collaborative multi-agent behavior that may run indefinitely, requiring:
-      \begin{itemize}\setlength\itemsep{1pt}
-        \item Monitoring that also tracks \emph{obstructions}, i.e blocking other agents from fulfilling their obligations.  
-        \item and per-agent \emph{cumulative blame attribution}  over the whole contract execution.
-      \end{itemize}
+      \textbf{Problem:}  Contracts specify collaborative multi-agent behavior requiring precisely define when a norm was violated and by whom
+         during the whole lifecycle of the contract, not just at the first violation.
+  
     \end{block}
   \end{column}
 \end{columns}
@@ -316,7 +314,7 @@
 % ===================================
 \begin{frame}{Motivation: Interpreting Timed Norms as a Planning Problem}
 \begin{columns}[T]
-  \begin{column}{0.52\textwidth}
+  \begin{column}{0.47\textwidth}
     \small
     \textbf{Use case:} Goods delivery to a harbour.
 
@@ -327,20 +325,19 @@
     \end{itemize}
 
 
-    Conflicts are not logical contradictions in isolation: they arise from \emph{overlapping activation windows} and \emph{single-action capacity}.
-
-    \medskip
+    Conflicts are not logical contradictions in isolation: they arise from \emph{overlapping activation windows}.
     \textbf{Conflict at a specific time point t:}
+    \vspace{-2mm}
     \begin{enumerate}
       \item \textcolor{ConflictRed}{\textbf{Deontic:}} Two contradictory obligations/prohibitions specified at the same t.
-      \item \textcolor{ConflictOrange}{\textbf{Ontic:}} Two obliged actions cannot be performed at the same time t.
+      \item \textcolor{blue!50!red}{\textbf{Ontic:}} Two obliged actions cannot be achieved at the same time t.
     \end{enumerate}
 
    
   \end{column}
-  \begin{column}{0.45\textwidth}
+  \begin{column}{0.49\textwidth}
     \centering
-    \begin{tikzpicture}[scale=0.52,transform shape]
+    \begin{tikzpicture}[scale=0.52]
       \begin{scope}[x=0.5cm, shift={(1cm,0)}]
         % Layout parameters
         \def\laneH{0.45}
@@ -355,9 +352,9 @@
           obl/.style={draw=blue!80!black, line width=0.8pt, rounded corners=2pt,
             pattern={Lines[angle=45,distance=2pt,line width=0.3pt]},
             pattern color=blue!70!black, fill opacity=1},
-          proh/.style={draw=red!80!black, line width=0.8pt, rounded corners=2pt,
+          proh/.style={draw=orange!80!black, line width=0.8pt, rounded corners=2pt,
             pattern={Lines[angle=90,distance=2pt,line width=0.3pt]},
-            pattern color=red!80!black, fill opacity=1},
+            pattern color=orange!80!black, fill opacity=1},
           tick/.style={gray!60, line width=0.4pt}
         }
 
@@ -367,7 +364,7 @@
           \draw[tick] (\t,\ygate-0.12) -- (\t,\ygate+0.12);
         }
         \foreach \t in {0,4,8,12,16,20,24} {
-          \node[below=3pt, font=\scriptsize] at (\t,\ygate) {\t:00};
+          \node[below=3pt, font=\small] at (\t,\ygate) {\t:00};
         }
 
         % Park timeline
@@ -376,7 +373,7 @@
           \draw[tick] (\t,\ypark-0.12) -- (\t,\ypark+0.12);
         }
         \foreach \t in {0,4,8,12,16,20,24} {
-          \node[below=3pt, font=\scriptsize] at (\t,\ypark) {\t:00};
+          \node[below=3pt, font=\small] at (\t,\ypark) {\t:00};
         }
 
         % Timeline labels
@@ -398,11 +395,11 @@
           rectangle (\GateOblB,\ygate+\rectShift+\offset+\laneH/2);
 
         % Gate labels
-        \node[blue!80!black, font=\scriptsize,yshift=+0.2cm]
+        \node[blue!80!black, font=\small,yshift=+0.2cm,xshift=-0.8cm]
           at ({(\GateOblA+\GateOblB)/2},\ygate+\rectShift+\offset+\laneH/1.3) {\DC};
-        \node[red!80!black, font=\scriptsize,yshift=1.3cm,xshift=1cm]
+        \node[orange!80!black, font=\small,yshift=1.3cm,xshift=1cm]
           at ({(\GateProhA+\GateProhB)/2},\ygate+\rectShift-\laneH/1.3-\yshiftText) {\MA};
-        \node[red!80!black, font=\scriptsize,yshift=+1.3cm]
+        \node[orange!80!black, font=\small,yshift=+1.3cm]
           at ({(\GateProhSmallA+\GateProhSmallB)/2},\ygate+\rectShift-\laneH/1.3-\yshiftText) {\MA};
 
         % Park intervals
@@ -417,24 +414,30 @@
           rectangle (\ParkOblB,\ypark+\rectShift+\offset+\laneH/2);
 
         % Park labels
-        \node[blue!80!black, font=\scriptsize,yshift=+0.2cm]
+        \node[blue!80!black, font=\small,yshift=+0.2cm,xshift=-0.9cm]
           at ({(\ParkOblA+\ParkOblB)/2},\ypark+\rectShift+\offset+\laneH/1.3) {\DC};
-        \node[red!80!black, font=\scriptsize,yshift=-0.2cm]
+        \node[orange!80!black, font=\small,yshift=-0.4cm]
           at ({(\ParkProhA+\ParkProhB)/2},\ypark+\rectShift-\laneH/1.5-\yshiftText) {\SR};
 
         % Legend
-        \begin{scope}[shift={(0,-3.0)}]
+        \begin{scope}[shift={(0,-4.0)}]
           \node[draw, rounded corners=2pt,
                 pattern={Lines[angle=45,distance=2pt,line width=0.4pt]},
                 pattern color=blue!70!black,
                 minimum height=5mm, minimum width=7mm] (legO) {};
-          \node[right=1mm of legO, font=\scriptsize] {Obligation};
+          \node[right=1mm of legO, font=\small] (legOtext) {Obligation};
 
           \node[draw, rounded corners=2pt,
                 pattern={Lines[angle=90,distance=2pt,line width=0.4pt]},
-                pattern color=red!80!black,
-                minimum height=5mm, minimum width=7mm, right=25mm of legO] (legF) {};
-          \node[right=1mm of legF, font=\scriptsize] {Prohibition};
+                pattern color=orange!80!black,
+                minimum height=5mm, minimum width=7mm, right=2mm of legOtext] (legF) {};
+          \node[right=1mm of legF, font=\small] (legFtext) {Prohibition};
+
+          \only<2>{
+            \node[draw=red, thick, dashed, fill=red!20, rounded corners=2pt,
+                  minimum height=5mm, minimum width=7mm, right=2mm of legFtext] (legC) {};
+            \node[right=1mm of legC, font=\bfseries\small, red!80!black] {Conflict};
+          }
         \end{scope}
 
         \only<2>{
@@ -443,24 +446,24 @@
             (9, \ygate+\rectShift-\laneH/2-0.15) rectangle (16, \ygate+\rectShift+\offset+\laneH/2+0.15);
           \draw[red, thick, dashed, rounded corners=2pt] 
             (9, \ygate+\rectShift-\laneH/2-0.15) rectangle (16, \ygate+\rectShift+\offset+\laneH/2+0.15);
-          \node[red!80!black, font=\bfseries\scriptsize, fill=white, inner sep=1.5pt] 
-            at (12.5, \ygate+\rectShift+\offset+\laneH/2+0.4) {Conflict!};
+          \node[red!80!black, font=\bfseries\small, fill=white, inner sep=1.5pt] 
+            at (12.5, \ygate+\rectShift+\offset+\laneH/2+0.4) {};
 
           % Highlight park conflict
           \fill[red, opacity=0.2, rounded corners=2pt] 
             (10, \ypark+\rectShift-\laneH/2-0.15) rectangle (14, \ypark+\rectShift+\offset+\laneH/2+0.15);
           \draw[red, thick, dashed, rounded corners=2pt] 
             (10, \ypark+\rectShift-\laneH/2-0.15) rectangle (14, \ypark+\rectShift+\offset+\laneH/2+0.15);
-          \node[red!80!black, font=\bfseries\scriptsize, fill=white, inner sep=1.5pt] 
-            at (12, \ypark+\rectShift+\offset+\laneH/2+0.4) {Conflict!};
+          \node[red!80!black, font=\bfseries\small, fill=white, inner sep=1.5pt] 
+            at (12, \ypark+\rectShift+\offset+\laneH/2+0.4) {};
         }
       \end{scope}
     \end{tikzpicture}
 \only<2>{
-  \vspace*{1cm}
+  \vspace*{-0.5cm}
 
     \begin{tikzpicture}
-       \node[draw=ConflictGreen,rounded corners,fill=yellow!30,text width=\columnwidth,align=left,inner sep=4pt,font=\scriptsize] (node1) {
+       \node[draw=ConflictGreen,rounded corners,fill=red!30,text width=\columnwidth,align=left,inner sep=4pt,font=\scriptsize] (node1) {
       Deontic conflict at $t=9,10,11,12,13,14,15,16$ (\delAtGate) \\
        Deontic conflict at $t=10,11,12,13,14$ (\delAtPark) \\
       };
@@ -575,8 +578,7 @@
   \end{center}
   \vspace{1mm}
   \begin{itemize}
-    \item Structural invariants literal ancestor preservation.
-    \item Exponential worst-case blow-up in the size of $\dpnf(\phi,x)$.
+    \item Structural invariants literal ancestor preservation to prove correctness with respect to detecting conflicts. 
   \end{itemize}
 \end{column}
 \end{columns}
@@ -741,7 +743,7 @@
     \begin{itemize}\setlength\itemsep{2pt}
       \item Prune conflicting terms.
       \item May return a very big size repaired formula.
-      \item Conflict calculus for manual and efficient conflicts resolution and detection
+      \item Conflict calculus for manual and efficient conflicts detection and resolution
     \end{itemize}
   \end{block}
 \end{column}
@@ -751,7 +753,7 @@
 % =====================================
 % SLIDE 6b — Conflict Calculus
 % =====================================
-\begin{frame}{Conflict Calculus for \TDDLfm}
+\begin{frame}{Conflict Calculus for \TDDLfm: Big step conflict rules}
   \centering
   \small
   \fbox{
@@ -775,12 +777,12 @@
         &
         \textbf{($\bm{\sqcup\bot}$)} \ \displaystyle \frac{ \phi' \vdash \bot }{ \phi \sqcup \phi' \equiv \phi } 
         \\[3.5ex]
-        \textbf{\color{ConflictRed}(T-DeoConf)} \ \displaystyle \frac{ \is \subseteq \is'}{ \ob{\is}{a} \sqcap \forbb{\is'}{a} \vdash \bot } 
+        \textbf{\color{blue!80!black}(T-DeoConf)} \ \displaystyle \frac{ \is \subseteq \is'}{ \ob{\is}{a} \sqcap \forbb{\is'}{a} \vdash \bot } 
         &
-        \textbf{\color{ConflictRed}(OntConf)} \ \displaystyle \frac{ \size{\is} <_\infty \size{\{a_1,\dots,a_n\}} }{ \bigsqcap \ob{\is}{a_i} \vdash \bot } 
+        \textbf{\color{blue!80!black}(OntConf)} \ \displaystyle \frac{ \size{\is} <_\infty \size{\{a_1,\dots,a_n\}} }{ \bigsqcap_{i=1}^n \ob{\is}{a_i} \vdash \bot } 
         \\[4ex]
         \multicolumn{2}{c}{
-          \textbf{\color{ConflictRed}(P-DeoConf)} \ \displaystyle \frac{ \is \cap \is' \neq \emptyset \quad \is \not\subset \is'}{ \ob{\is}{a} \sqcap \forbb{\is'}{a} \equiv \ob{\is \ominus \is'}{a} \sqcap \forbb{\is'}{a} }
+          \textbf{\color{blue!80!black}(P-DeoConf)} \ \displaystyle \frac{ \is \cap \is' \neq \emptyset \quad \is \not\subset \is'}{ \ob{\is}{a} \sqcap \forbb{\is'}{a} \equiv \ob{\is \ominus \is'}{a} \sqcap \forbb{\is'}{a} }
         }
       \end{array}
       \]
@@ -827,13 +829,13 @@
   \draw[arr] (ref) to[bend left=20] (calc);
 
   % Legend
-  \begin{scope}[shift={(pc.east |- spec.north)}, yshift=4mm, xshift=6mm]
+  \begin{scope}[shift={(pc.east |- spec.north)}, yshift=1mm, xshift=6mm]
     \node[draw, rounded corners, fill=white, minimum width=40mm, minimum height=24mm, anchor=north west] (legbox) at (0,0) {};
     \node[draw, rectangle, fill=ConflictGreen!20, minimum width=5mm, minimum height=2.5mm] at (5mm, -4.5mm) {};
     \node[anchor=west, font=\small] at (9mm, -4.5mm) {Specification};
     
     \node[draw, rectangle, fill=orange!20, minimum width=5mm, minimum height=2.5mm] at (5mm, -9.5mm) {};
-    \node[anchor=west, font=\small] at (9mm, -9.5mm) {Results};
+    \node[anchor=west, font=\small] at (9mm, -9.5mm) {Analysis Results};
     
     \node[draw, rectangle, fill=blue!10, minimum width=5mm, minimum height=2.5mm] at (5mm, -14.5mm) {};
     \node[anchor=west, font=\small] at (9mm, -14.5mm) {Automatic Procedure};
@@ -869,16 +871,7 @@
 \begin{frame}{Challenges in Monitoring Multi-Party Open-Ended Contracts}
 \small
 \begin{columns}[T,totalwidth=\textwidth]
-  \begin{column}{0.49\textwidth}
-    \begin{block}{Challenges}
-      \begin{itemize}
-        \item Contracts assign a duty to each party, but the outcome depends on their joint behavior.
-        \item A violation may activate a reparation duty rather than a simple failure.
-        \item Contracts are open-ended: they may be terminated or repeated indefinitely.
-      \end{itemize}
-    \end{block}
-  \end{column}
-\begin{column}{0.49\textwidth}
+    \begin{column}{0.48\textwidth}
   \begin{block}{Running use case: flat rental contract}
     \begin{itemize}
       \item Tenant must pay rent every month.
@@ -888,20 +881,30 @@
     \end{itemize}
   \end{block}
 \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{block}{Challenges}
+      \begin{itemize}
+        \item Contracts assign a duty to each party, but the outcome depends on their joint behavior.
+        \item A violation may activate a reparation duty rather than a simple failure.
+        \item Contracts are open-ended: they may be terminated or repeated indefinitely.
+      \end{itemize}
+    \end{block}
+  \end{column}
+
 
 \end{columns}
 
-\vspace{2mm}
-\begin{center}
-\begin{tikzpicture}
-  \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=0.9\textwidth,align=center,inner sep=5pt,font=\small] {
-  \textbf{Part II Goal:} Design a monitoring framework for multi-party collaboration.\begin{itemize}
-    \item Distinguish agent  attempts from task outcome for precise blame attribution.
-    \item Support monitoring over the whole lifecycle of the contract.
-  \end{itemize}.
-  };
-\end{tikzpicture}
-\end{center}
+% \vspace{0.5mm}
+% \begin{center}
+% \begin{tikzpicture}
+%   \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=0.9\textwidth,align=center,inner sep=5pt,font=\small] {
+%   \textbf{Part II Goal:} Design a monitoring framework for multi-party collaboration.\begin{itemize}
+%     \item Distinguish agent  attempts from task outcome for precise blame attribution.
+%     \item Support monitoring over the whole lifecycle of the contract.
+%   \end{itemize}.
+%   };
+% \end{tikzpicture}
+% \end{center}
 \end{frame}
 
 % =====================================
@@ -937,7 +940,7 @@
 % \end{column}
 % \begin{column}{0.48\textwidth}
 %   \begin{block}{Why this matters}
-%     In month $I_4$, the tenant attempts $\PAYF^{(1)}$ while the landlord performs \textsf{change\_lock}. The successful outcome is $\emptyset$, but the trace still preserves \emph{who tried} and \emph{who obstructed}.
+%     In month $I_4$, the tenant attempts $\PAYF^{(T)}$ while the landlord performs \textsf{change\_lock}. The successful outcome is $\emptyset$, but the trace still preserves \emph{who tried} and \emph{who obstructed}.
 %   \end{block}
 % \end{column}
 % \end{columns}
@@ -977,11 +980,11 @@
 %     \footnotesize
 %     \[
 %     \begin{aligned}
-%     C_1 &:= \obl[1]{\PAY}\\
+%     C_1 &:= \obl[T]{\PAY}\\
 %     C_2 &:= \perm[1]{\OCC}\\
-%     C_3 &:= \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}\\
-%     C_4 &:= \trig[\{\mathsf{Notif\_R}^{(1)}\}]{\obl[2]{\mathsf{REPAIR}}}\\
-%     C_{5\to2} &:= \guard[\Gamma^+\!\cdot\!\{\notifterm^{(1)}\}\!\cdot\!\Gamma^3]\repit{C_2}
+%     C_3 &:= \obl[T]{\PAY}\ \repair\ \obl[T]{\PAYF}\\
+%     C_4 &:= \trig[\{\mathsf{Notif\_R}^{(T)}\}]{\obl[L]{\mathsf{REPAIR}}}\\
+%     C_{5\to2} &:= \guard[\Gamma^+\!\cdot\!\{\notifterm^{(T)}\}\!\cdot\!\Gamma^3]\repit{C_2}
 %     \end{aligned}
 %     \]
 %     \footnotesize
@@ -1005,9 +1008,9 @@
 ]
 
   \node[box] (abs) {\textbf{1. Semantic Abstraction}\\Attempt-based model\\for collaboration};
-  \node[box, right=of abs] (log) {\textbf{2. Logic Design}\\The \cDL\ (\logic{TACNL})\\framework};
+  \node[box, right=of abs] (log) {\textbf{2. Logic Design}\\The \cDL syntax for operators for contract construnction};
   
-  \node[box, below=12mm of log] (sem) {\textbf{3. Denotational Semantics}\\Progressive definition\\of satisfaction andblame domains};
+  \node[box, below=12mm of log] (sem) {\textbf{3. Denotational Semantics}\\four semantics of satisfaction and blame};
   \node[box, left=of sem] (mon) {\textbf{4. Structural Synthesis}\\Correct-by-construction\\monitor generation};
 
   \draw[arr] (abs) -- (log);
@@ -1024,6 +1027,127 @@
 \end{itemize}
 \end{frame}
 
+
+{
+\setbeamercovered{invisible}
+\begin{frame}{Example: Abstraction of Collaborative Actions}
+  \begin{figure}
+    \centering
+      \begin{tikzpicture}[y=2cm,x=3cm, scale=0.7, transform shape]
+        % Uniform rectangle nodes for all events (no colors)
+        \tikzset{
+          event/.style={
+            draw,
+            rectangle,    % fixed width for all nodes
+            minimum height=9mm, 
+            minimum width=20mm, % fixed height for all nodes
+            align=center,
+            rounded corners=2pt,
+            font=\small
+          }
+        }
+      
+        % Month labels above Tenant
+        \node[font=\small\bfseries] at (1, 0.7) (m1) {Month 1};
+        \node[font=\small\bfseries] at (2.5, 0.7) (m2) {Month 2};
+        \node[font=\small\bfseries] at (3.7, 0.7) (m3) {Month 3};
+        \node[font=\small\bfseries] at (4.8, 0.7) (m4) {Month 4};
+
+        % top row: agent T (tagged)
+        \node[event] at (1,0)   (t1) {$\{\PAY^{(T)}\}$};
+        \node[event] at (2.5,0)   (t2) {$\{\OCC^{(T)},\PAY^{(T)}\}$};
+        \node[event] at (3.7,0)   (t3) {$\{\OCC^{(T)}\}$};
+        \node[event] at (4.8,0)   (t4) {$\{\OCC^{(T)},\PAYF^{(T)}\}$};
+      
+        % middle row: agent L (tagged)
+        \node[event] at (1,-1)  (l1) {$\{\OCC^{(L)},\PAY^{(L)}\}$};
+        \node[event] at (2.5,-1)  (l2) {$\{\OCC^{(L)},\PAY^{(L)}\}$};
+        \node[event] at (3.7,-1)  (l3) {$\{\OCC^{(L)}\}$};
+        \node[event] at (4.8,-1)  (l4) {$\emptyset$};
+      
+        % union symbols
+        \node<4->[font=\large] at (1,-0.5) {$\bm{\cup}$};
+        \node<4->[font=\large] at (2.5,-0.5) {$\bm{\cup}$};
+        \node<4->[font=\large] at (3.7,-0.5) {$\bm{\cup}$};
+        \node<4->[font=\large] at (4.8,-0.5) {$\bm{\cup}$};
+
+        % bottom row: success = unlabel + intersection
+        \node[event] at (1,-2) (h1) {$\{\PAY\}$};
+        \node[event] at (2.5,-2) (h2) {$\{\OCC,\PAY\}$};
+        \node[event] at (3.7,-2) (h3) {$\{\OCC\}$};
+        \node[event] at (4.8,-2) (h4) {$\emptyset$};
+      
+        % time/progression connectors
+        \path[shorten >=0pt]
+          (0,0) node[left] (labelT) {{\large Tenant}} edge[|-]
+          (t1) (t1) edge (t2) (t2) edge (t3) (t3) edge (t4) (t4) edge[->] +(1.2,0)
+          (0,-1) node[left] (labelL) {{\large Landlord}} edge[|-]
+          (l1) (l1) edge (l2) (l2) edge (l3) (l3) edge (l4) (l4) edge[->] node[pos=1, right, font=\small, align=left] {} +(1.2,0)
+          (0,-2) node[left, align=center] {{\large Outcomes}} edge[|-]
+          (h1) (h1) edge (h2) (h2) edge (h3) (h3) edge (h4) (h4) edge[->] +(1.2,0);
+ 
+        % Highlight boxes for specific months
+        \node<2>[fill=ConflictOrange, opacity=0.2, rounded corners=6pt, inner sep=8pt, inner xsep=13pt, fit=(m1) (h1)] {};
+        \node<3>[fill=ConflictBlue, opacity=0.2, rounded corners=6pt, inner sep=8pt, inner xsep=13pt, fit=(m4) (h4)] {};
+        \node<4>[fill=ConflictGreen, opacity=0.2, rounded corners=6pt, inner sep=8pt, inner xsep=13pt, fit=(labelT) (t4) (labelL) (l4)] {};
+      \end{tikzpicture}
+  \end{figure}
+  \vspace{-2mm}
+  \footnotesize
+  \begin{itemize}
+    \item<2-> \textbf{Month 1:} looking at the outcome only, one can think the \textcolor{ConflictOrange}{landlord} blocked the \textcolor{ConflictBlue}{tenant} from occupancy.
+    \item<3-> \textbf{Month 4:} looking at the outcome only, one can think the \textcolor{ConflictBlue}{tenant} refused to pay.
+    \item<4-> Instead we work with \textbf{the union of the behaviors of both agents in a given period}.
+  \end{itemize}
+\end{frame}
+}
+
+\begin{frame}{The Two-Agent Collaborative Normative Logic \cDL:}
+\small
+\begin{columns}[T,totalwidth=\textwidth]
+\begin{column}{0.46\textwidth}
+  \begin{block}{Syntax of \cDL}
+    \scriptsize
+    \[
+    \begin{aligned}
+    \ell &::= \obl[p]{a} \mid \frb[p]{a} \mid \perm[p]{a} \mid \top \mid \bot\\
+    C &::= \ell \mid C \wedge C \mid C ; C \mid C \repair C\\
+      &\mid \trig[re]{C} \mid \guard[re]{C} \mid C^n \mid \repit{C}
+    \end{aligned}
+    \]
+    \vspace{-2mm}
+    \begin{itemize}\setlength\itemsep{2pt}
+      \item $p \in \{T,L\}$ is the party.
+      \item $a \in \Sigma_C$ is a collaborative action.
+      \item $re$ is a regular expression over monthly behaviors.
+    \end{itemize}
+  \end{block}
+\end{column}
+
+\begin{column}{0.50\textwidth}
+  \begin{block}{Operator intuition}
+    \scriptsize
+    \begin{itemize}\setlength\itemsep{2pt}
+      \item \textbf{Obligation} $\obl[T]{\PAY}$: the tenant must realize \PAY\ this month.
+      \item \textbf{Power / permission} $\perm[T]{\OCC}$: the tenant may realize \OCC, provided the landlord cooperates.
+      \item \textbf{Reparation} $\obl[T]{\PAY} \repair \obl[T]{\PAYF}$: if rent payment fails, the fine becomes due next.
+      \item \textbf{Repetition} $\repit{C}$: repeat the contract in every period.
+      \item \textbf{Guard} $\guard[\Gamma^+\!\cdot\!\{\notifterm^{(T)}\}]{C}$: enforce $C$ only until the termination pattern is completed.
+    \end{itemize}
+  \end{block}
+\end{column}
+\end{columns}
+\vspace{-1mm}
+\begin{block}{Running Example}
+  \scriptsize
+  \[
+  C_{\text{rent}} :=
+  \guard[\Gamma^+\!\cdot\!\{\notifterm^{(T)}\}]
+  {\repit{\left(\obl[T]{\PAY}\repair\obl[T]{\PAYF}\right)}}
+  \]
+  Read as: until notification of termination, repeat every month: pay rent, or repair by paying the fine.
+\end{block}
+\end{frame}
 
 
 \begin{frame}{Progressive Semantics for Blame Attribution}
@@ -1057,60 +1181,86 @@
   \end{tikzpicture}
   
   \vspace{5mm}
-  \textbf{Result:} $\qsem{\pi,C} = n_1 + n_2$ \textemdash\ \emph{blame is a strict refinement of the violation count.}
+  \textbf{Result:} $\qsem{\pi,C} = n_T + n_L$ \textemdash\ \emph{blame is a strict refinement of the violation count.}
   \end{frame}
 
 % =====================================
 % PART II — Slide 4
 % =====================================
-\begin{frame}{Tight Forward Denotational Semantics}
-\small
+\begin{frame}{Tight Forward Satisfaction Semantics}
 \begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.3\textwidth}
-  \begin{block}{Two verdict domains}
-    \begin{itemize}\setlength\itemsep{4pt}
-      \item \textbf{$\mathbb{V}_5$ (Compliance):}\\ $\{?,\topt,\bott,\topp,\botp\}$
-      \item \textbf{$\mathbb{V}_{11}$ (Blame):}\\ Introduces subsets $S\subseteq\{1,2\}$ to tag violations:\\ $\bottp{S}$ and $\botpp{S}$.
+\begin{column}{0.37\textwidth}
+  \begin{block}{$\mathbb{V}_5$: five verdicts}
+ 
+    \[
+    \mathbb{V}_5=\{?,\topt,\bott,\topp,\botp\}
+    \]
+    \vspace{-2mm}
+    \begin{itemize}\setlength\itemsep{2pt}
+      \item $?$: no decisive prefix yet
+      \item $\topt$: first prefix that satisfies (tight))
+      \item $\bott$: first prefix that violates
+      \item $\topp$: post satisfaction
+      \item $\botp$: post violation
     \end{itemize}
   \end{block}
 \end{column}
 
-\begin{column}{0.31\textwidth}
-  \begin{block}{Tightness \& Blame}
-    \begin{itemize}\setlength\itemsep{4pt}
-      \item \textbf{Tightness:} Triggers and reparations must activate at the \emph{exact} decisive prefix where a duty succeeds or fails.
-      \item \textbf{Blame:} Binary failure ($\bott$) is unfair if the agent attempted the action but was obstructed.
-    \end{itemize}
-  \end{block}
-\end{column}
-
-\begin{column}{0.35\textwidth}
-  \begin{block}{\textbf{How?} Attempt-based mapping}
-    Example: $C=\obl[1]{\PAY}$\\
-    \vspace{1mm}
-    \textbf{In $\mathbb{V}_5$ (Simple failure per event):}
-    \footnotesize
-    \\$\bott$ when the rent payment was unsuccessful at the first event.
-    
-    \vspace{1mm}
-    \small
-    \textbf{In $\mathbb{V}_{11}$ (Precise blame):}
-    \footnotesize
-    \begin{itemize}
-    \item $\bottp{\{1\}}$: Agent 1 did not attempt to pay.
-    \item $\bottp{\{2\}}$: Agent 1 attempted to pay, but agent 2 blocked.
+\begin{column}{0.60\textwidth}
+  \begin{block}{Reparation is where tightness matters}
+    \[\large
+    \begin{aligned}
+    \pi\ \satt\ (C\repair C')
+      &\mydef \pi\ \satt\ C\ \\ &~~\sor\ \exists k:\ \pi_k\ \violt\ C\ \nd\ \pi^k\ \satt\ C'\\
+    \end{aligned}
+    \]
+    \begin{itemize}\setlength\itemsep{2pt}
+      \item For $C=\obl[T]{\PAY}\repair\obl[T]{\PAYF}$, missing rent payement activates the fine obligation
+      \item This tight verdicts are exactly why triggers, reparations, and guards are well defined
     \end{itemize}
   \end{block}
 \end{column}
 \end{columns}
+\end{frame}
 
-\vspace{2mm}
-\centering
-\begin{tikzpicture}
-  \node[draw=ConflictGreen,rounded corners,fill=SoftGreen,text width=0.9\textwidth,align=center,inner sep=4pt,font=\small] {
-  \textbf{Key Takeaway:} Forward evaluation finds the exact frontier where obligations switch. $\mathbb{V}_{11}$ preserves \emph{who} caused the failure exactly at that frontier.
-  };
-\end{tikzpicture}
+\begin{frame}{Tight Forward Blame Semantics}
+\small
+\begin{columns}[T,totalwidth=\textwidth]
+\begin{column}{0.38\textwidth}
+  \begin{block}{$\mathbb{V}_{11}$: eleven verdicts}
+    \scriptsize
+    \[
+    \mathbb{V}_{11}=\{?,\topt,\topp\}\cup\{\bottp{S},\botpp{S}\mid S\subseteq\{T,L\}\}
+    \]
+    \begin{itemize}\setlength\itemsep{2pt}
+      \item 3 non-violating verdicts are unchanged
+      \item 4 tight blame verdicts $\bottp{S}$
+      \item 4 post-blame verdicts $\botpp{S}$
+      \item $S$ records who is responsible
+    \end{itemize}
+  \end{block}
+\end{column}
+
+\begin{column}{0.59\textwidth}
+  \begin{block}{Obligation blame split}
+    \scriptsize
+    For a subject $p$ and the other party $\bar p$:
+    \[
+    \begin{aligned}
+    \trace{A}\ \vDash_{\bottp{\{p\}}}\ \obl[p]{a}
+      &\mydef a^{(p)}\notin A\\
+    \trace{A}\ \vDash_{\bottp{\{\bar p\}}}\ \obl[p]{a}
+      &\mydef a^{(p)}\in A\ \land\ a^{(\bar p)}\notin A
+    \end{aligned}
+    \]
+    \begin{itemize}\setlength\itemsep{2pt}
+      \item For $\obl[T]{\PAY}$, blame the tenant if the tenant never attempts to pay.
+      \item Blame the landlord if the tenant attempts to pay but the payment is blocked.
+      \item So $\mathbb{V}_{11}$ keeps the same tight frontier as $\mathbb{V}_5$, but refines \emph{who caused} the failure at that frontier.
+    \end{itemize}
+  \end{block}
+\end{column}
+\end{columns}
 \end{frame}
 
 
@@ -1140,7 +1290,7 @@
 
 \end{column}
 \begin{column}{0.56\textwidth}
-  \begin{block}{Moore machine for $C = \repit{ (\obl[1]{\PAY} \repair \obl[1]{\PAYF}) }$}
+  \begin{block}{Moore machine for $C = \repit{ (\obl[T]{\PAY} \repair \obl[T]{\PAYF}) }$}
   \centering
   \begin{tikzpicture}[scale=0.65, transform shape,
     shorten >=1pt,auto,node distance=14mm and 16mm,semithick,
@@ -1200,55 +1350,55 @@
 % PART II — Slide 7
 % =====================================
 \begin{frame}{Quantitative Violation $\qsem{}:\Gamma^* \times \cDL \to \mathbb{N}$}
-\scriptsize
-  \begin{block}{Two ingredients}
-    $\LH(C)$ tells us \emph{which literal is currently in force}.
-    \qquad
-    $\Prog(\textcolor{orange!70!black}{\trace{A}},C)$ tells us \emph{how the contract evolves after the current event}.
-  \end{block}
+
+
 
   \begin{block}{Fixpoint Semantics}
-    \[
+ {\Large
+\[
     \qsem{\textcolor{orange!70!black}{\trace{A}}\cdot \textcolor{blue!70!black}{\pi}, C}
     =
     \textcolor{orange!70!black}{\underbrace{\qsem{\textcolor{orange!70!black}{\trace{A}},C}}_{\text{score now}}}
     +
-    \textcolor{blue!70!black}{\underbrace{\qsem{\textcolor{blue!70!black}{\pi},\Prog(\textcolor{orange!70!black}{\trace{A}},C)}}_{\text{continue on the residual}}}
-    \]
-    \textcolor{orange!70!black}{Orange: score the current event.}
-    \qquad
-    \textcolor{blue!70!black}{Blue: continue with the residual contract.}
+    \textcolor{blue!70!black}{\underbrace{\qsem{\textcolor{blue!70!black}{\pi},\Prog(\trace{A},C)}}_{\text{continue on the residual}}}
+\]
+}
+
+  \end{block}
+    \begin{block}{Two ingredients}
+    $\Prog(\trace{A},C)$ tells us \emph{what is the state of the contract after the current event}.
+    %todo show that \qsem{\textcolor{orange!70!black}{\trace{A}},C}} is one if it violates and 0 else using the 5 verdicts 
   \end{block}
 
-  \begin{block}{Example}
-    Let $C=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$.
-    \[
-    \pi=\trace{\textcolor{orange!70!black}{A_1} ,\textcolor{blue!70!black}{A_2}},
-    \quad
-    A_1=\{\OCC^{(1)}\},
-    \quad
-    A_2=\{\PAYF^{(12)}\}
-    \]
-    \[
-    \begin{aligned}
-    \textcolor{orange!70!black}{\trace{A_1}}:\;&
-    \LH(C)=\obl[1]{\PAY},
-    \quad
-    \textcolor{orange!70!black}{\qsem{\trace{A_1},C}=1},
-    \quad
-    \textcolor{blue!70!black}{\Prog(\trace{A_1},C)=\obl[1]{\PAYF}}
-    \\
-    \textcolor{blue!70!black}{\trace{A_2}}:\;&
-    \LH(\obl[1]{\PAYF})=\obl[1]{\PAYF},
-    \quad
-    \qsem{\trace{A_2},\obl[1]{\PAYF}}=0
-    \end{aligned}
-    \]
+  % \begin{block}{Example}
+  %   Let $C=\obl[T]{\PAY}\repair\obl[T]{\PAYF}$.
+  %   \[
+  %   \pi=\trace{\textcolor{orange!70!black}{A_1} ,\textcolor{blue!70!black}{A_2}},
+  %   \quad
+  %   A_T=\{\OCC^{(T)}\},
+  %   \quad
+  %   A_L=\{\PAYF^{(12)}\}
+  %   \]
+  %   \[
+  %   \begin{aligned}
+  %   \textcolor{orange!70!black}{\trace{A_T}}:\;&
+  %   \LH(C)=\obl[T]{\PAY},
+  %   \quad
+  %   \textcolor{orange!70!black}{\qsem{\trace{A_T},C}=1},
+  %   \quad
+  %   \textcolor{blue!70!black}{\Prog(\trace{A_T},C)=\obl[T]{\PAYF}}
+  %   \\
+  %   \textcolor{blue!70!black}{\trace{A_L}}:\;&
+  %   \LH(\obl[T]{\PAYF})=\obl[T]{\PAYF},
+  %   \quad
+  %   \qsem{\trace{A_L},\obl[T]{\PAYF}}=0
+  %   \end{aligned}
+  %   \]
   
-    \[
-    \qsem{\pi,C}=1+0=1.
-    \]
-  \end{block}
+  %   \[
+  %   \qsem{\pi,C}=1+0=1.
+  %   \]
+  % \end{block}
 \end{frame}
 
 % =====================================
@@ -1279,7 +1429,7 @@
 \begin{column}{0.50\textwidth}
   
   \begin{block}{Example}
-Infinite rental with fine \\$C = \repit{ (\obl[1]{\PAY} \repair \obl[1]{\PAYF}) }$
+Infinite rental with fine \\$C = \repit{ (\obl[T]{\PAY} \repair \obl[T]{\PAYF}) }$
 
   \vspace{3mm}
   \centering
@@ -1290,7 +1440,7 @@ Infinite rental with fine \\$C = \repit{ (\obl[1]{\PAY} \repair \obl[1]{\PAYF}) 
     initial text={}
   ]
     \node[initial, state] (q0) {$q_0$: $\repit{C_3}$};
-    \node[state, right= 1.7cmof q0] (q1) {$q_1$: $\obl[1]{\PAYF} ; \repit{C_3}$};
+    \node[state, right= 1.7cmof q0] (q1) {$q_1$: $\obl[T]{\PAYF} ; \repit{C_3}$};
 
     \path
       (q0) edge[loop above] node[above, font=\tiny] {$\PAY^\surd \; / \; 0$} ()
@@ -1635,15 +1785,15 @@ E_1(\OCC) & \textsf{start\_occ}  & E_2(\OCC) = \{\textsf{grant\_occ}\},\quad B_2
 \[
 \begin{aligned}
 \pi_1^C &= \langle
-  \underbrace{\{\PAY^{(1)}\}}_{I_1},\;
-  \underbrace{\{\OCC^{(1)},\;\PAY^{(1)}\}}_{I_2},\;
-  \underbrace{\{\OCC^{(1)}\}}_{I_3},\;
-  \underbrace{\{\PAYF^{(1)}\}}_{I_4}
+  \underbrace{\{\PAY^{(T)}\}}_{I_1},\;
+  \underbrace{\{\OCC^{(T)},\;\PAY^{(T)}\}}_{I_2},\;
+  \underbrace{\{\OCC^{(T)}\}}_{I_3},\;
+  \underbrace{\{\PAYF^{(T)}\}}_{I_4}
 \rangle\\[3pt]
 \pi_2^C &= \langle
-  \underbrace{\{\OCC^{(2)},\;\PAY^{(2)}\}}_{I_1},\;
-  \underbrace{\{\OCC^{(2)},\;\PAY^{(2)}\}}_{I_2},\;
-  \underbrace{\{\OCC^{(2)}\}}_{I_3},\;
+  \underbrace{\{\OCC^{(L)},\;\PAY^{(L)}\}}_{I_1},\;
+  \underbrace{\{\OCC^{(L)},\;\PAY^{(L)}\}}_{I_2},\;
+  \underbrace{\{\OCC^{(L)}\}}_{I_3},\;
   \underbrace{\emptyset}_{I_4}
 \rangle
 \end{aligned}
@@ -1670,39 +1820,39 @@ E_1(\OCC) & \textsf{start\_occ}  & E_2(\OCC) = \{\textsf{grant\_occ}\},\quad B_2
         accepting/.style={double}
       }
 
-      \node[state,initial] (q0) {$\lceil \Gamma^+ \cdot \notifterm^{(1)} \rceil $\\${\repit{C_3}}$};
-      \node[state, right=6.5cm of q0] (q2) {$\lceil \notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)} \rceil$\\${\repit{C_3}}$};
-      \node[state, below=3cm of q0] (q1) {$\lceil \notifterm^{(1)} \mid\Gamma^+ \cdot \notifterm^{(1)} \rceil$\\$(\obl[1]{\PAYF};\repit{C_3})$};
+      \node[state,initial] (q0) {$\lceil \Gamma^+ \cdot \notifterm^{(T)} \rceil $\\${\repit{C_3}}$};
+      \node[state, right=6.5cm of q0] (q2) {$\lceil \notifterm^{(T)} \mid \Gamma^+ \cdot \notifterm^{(T)} \rceil$\\${\repit{C_3}}$};
+      \node[state, below=3cm of q0] (q1) {$\lceil \notifterm^{(T)} \mid\Gamma^+ \cdot \notifterm^{(T)} \rceil$\\$(\obl[T]{\PAYF};\repit{C_3})$};
       \node[state, below=3cm of q2] (qe) {\qquad$\emptc$ \qquad};
 
       % q0 transitions
       \path[->]
-        (q0) edge  node[left] {$ \overline{\PAY^{(12)}} $/\,1} (q1)
-        (q0) edge [bend left =8]node {$\PAY^{(12)}$/\,0} (q2)
+        (q0) edge  node[left] {$ \overline{\PAY^{(TL)}} $/\,1} (q1)
+        (q0) edge [bend left =8]node {$\PAY^{(TL)}$/\,0} (q2)
        ;
 
       % q1 transitions
       \path[->]
-        (q1) edge[bend left =24] node[above,sloped] {$\PAYF^{(12)} \wedge \overline{\notifterm^{(1)}}\,/\,0$} (q2)
-        (q1) edge[bend left =8] node[above,sloped, pos=0.6] {$(\overline{\PAYF^{(12)}} \wedge \overline{\notifterm})\,/\,1$} (q2)
-        (q1) edge[bend left =8] node[pos=0.557] {$\notifterm^{(1)} \wedge \PAYF^{(12)}\,/\,0$} (qe)
-        (q1) edge[bend right =8] node[below]  {$\notifterm^{(1)} \wedge \overline{\PAYF^{(12)}}\,/\,1$} (qe);
+        (q1) edge[bend left =24] node[above,sloped] {$\PAYF^{(TL)} \wedge \overline{\notifterm^{(T)}}\,/\,0$} (q2)
+        (q1) edge[bend left =8] node[above,sloped, pos=0.6] {$(\overline{\PAYF^{(TL)}} \wedge \overline{\notifterm})\,/\,1$} (q2)
+        (q1) edge[bend left =8] node[pos=0.557] {$\notifterm^{(T)} \wedge \PAYF^{(TL)}\,/\,0$} (qe)
+        (q1) edge[bend right =8] node[below]  {$\notifterm^{(T)} \wedge \overline{\PAYF^{(TL)}}\,/\,1$} (qe);
        % q2 transitions  
        \path[->]
        (q2) edge[loop above] node[align=center]
-{$\overline{\notifterm^{(1)}} \wedge\PAY^{(12)}$\\$/\,0$} (q2)
-(q2) edge [bend right =15] node[left, align=center,pos=0.58] {$\notifterm^{(1)} \wedge $\\$\PAY^{(12)}/\,0$} (qe)
-(q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(1)}} \wedge \overline{\PAY^{(12)}}\,/\,1$} (q1) 
-        (q2) edge[bend left =20] node [align=center] {$\notifterm^{(1)} \wedge $\\$\overline{\PAY^{(12)}}/\,1$} (qe);
+{$\overline{\notifterm^{(T)}} \wedge\PAY^{(TL)}$\\$/\,0$} (q2)
+(q2) edge [bend right =15] node[left, align=center,pos=0.58] {$\notifterm^{(T)} \wedge $\\$\PAY^{(TL)}/\,0$} (qe)
+(q2) edge[bend left =15] node[sloped]  {$\overline{\notifterm^{(T)}} \wedge \overline{\PAY^{(TL)}}\,/\,1$} (q1) 
+        (q2) edge[bend left =20] node [align=center] {$\notifterm^{(T)} \wedge $\\$\overline{\PAY^{(TL)}}/\,1$} (qe);
     \end{tikzpicture}
   }
 
   \vspace{3mm}
   \begin{block}{}
     \scriptsize
-    The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$, with $re:=\Gamma^+ \cdot \notifterm^{(1)} $ and $C_3:= \obl[1]{\PAY} \repair \obl[1]{\PAYF}$. On the transitions:\\
-    $\PAY^{(12)}:=\{A \in \Gamma \mid \{\PAY^{(1)}, \PAY^{(2)}\} \subseteq A\}$ a shorthand for when the payment successfully occurred.\\
-    $\notifterm^{(1)}:=\{A \in \Gamma \mid \{\notifterm^{(1)}\} \subseteq A\}$ for agent (1) sending a termination notification.\\
+    The quantitative violation monitor $\qmc(C)$ for $C := \guard[re]{\repit{C_3}}$, with $re:=\Gamma^+ \cdot \notifterm^{(T)} $ and $C_3:= \obl[T]{\PAY} \repair \obl[T]{\PAYF}$. On the transitions:\\
+    $\PAY^{(TL)}:=\{A \in \Gamma \mid \{\PAY^{(T)}, \PAY^{(L)}\} \subseteq A\}$ a shorthand for when the payment successfully occurred.\\
+    $\notifterm^{(T)}:=\{A \in \Gamma \mid \{\notifterm^{(T)}\} \subseteq A\}$ for agent (1) sending a termination notification.\\
     $ \overline{P}:= \{A \in \Gamma \setminus P\}.$\\
     $P \wedge Q := \{A \mid A \in P \cap Q\}.$
   \end{block}
