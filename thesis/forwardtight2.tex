@@ -254,10 +254,10 @@ The tight forward semantics is a refinement of forward tight semantics, that is 
     First, consider the five-valued semantics. By Definition~\ref{def:lattsat}, literals are decided on the first letter:
     exactly one of $\trace{A}\ \satt\ \ell$ or $\trace{A}\ \violt\ \ell$ holds.
     
-    Now consider the blame semantics for literals (your Definition “Blame assignment for literals”).
+    Now consider the blame semantics for literals .
     If $\trace{A}\ \satt\ \ell$, then no blame violation verdict applies at the first step, so $\semelf{\pi,\ell}\in\{?,\topt,\topp\}$ and the collapse leaves it unchanged. Hence $\semfive{\pi,\ell}\in\{?,\topt,\topp\}$ matches the same non-violating region.
     
-    If instead $\trace{A}\ \violt\ \ell$, then by your literal blame rules the violation is refined into a (unique) blame set $S\subseteq\{1,2\}$:
+    If instead $\trace{A}\ \violt\ \ell$, then by the literal blame rules the violation is refined into a (unique) blame set $S\subseteq\{1,2\}$:
     for $\obl[p]{a}$ there are exactly the two exclusive cases
     $a^{(p)}\notin A$ and $a^{(p)}\in A\land a^{(\bar p)}\notin A$,
     for $\frb[p]{a}$ there is the single case $\{a^{(1)},a^{(2)}\}\subseteq A$,

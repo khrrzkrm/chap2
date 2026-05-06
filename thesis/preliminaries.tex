@@ -1,10 +1,10 @@
 \chapter{Preliminaries}\label{chapter:preliminaries}
-This chapter introduces the mathematical structures that underlie the temporal component of our normative framework, together with the basic models used to represent system executions. We focus on representations that allow timed constraints to be stated, combined, and analyzed symbolically, without committing to a particular execution or monitoring model. In parallel, we introduce trace-based word models that serve as the semantic carriers for observed behavior and interaction. The material in this chapter is intentionally elementary and self contained. Its purpose is not to introduce new logical operators, but to establish precise domains for manipulating time ranges and executions algebraically, which will later be embedded into normative specifications and monitoring constructions.
+This chapter introduces the mathematical structures that underlie the temporal component of our normative framework, together with the basic models used to represent system executions. We focus on representations that allow timed constraints to be stated, combined, and analyzed symbolically, without committing to a particular execution or monitoring model. In parallel, we introduce trace-based word models that serve as the semantic carriers for observed behavior and interaction. The material in this chapter is intentionally elementary and self-contained. Its purpose is not to introduce new logical operators, but to establish precise domains for manipulating time ranges and executions algebraically, which will later be embedded into normative specifications and monitoring constructions.
 \section{Interval Set over Integers}
-Timed constraints in normative systems are rarely punctual. Obligations and prohibitions typically apply over contiguous or fragmented time ranges, and reasoning directly over individual time points leads to unnecessary blow up. For this reason, we adopt sets of intervals as our basic representation of temporal constraints. Interval sets provide a compact and canonical way to capture possibly discontinuous time ranges, while still supporting precise arithmetic operations such as intersection, union, and difference. Before introducing interval sets and their algebra, we first fix the underlying numerical domain on which these intervals are defined.
+Timed constraints in normative systems are rarely punctual. Obligations and prohibitions typically apply over contiguous or fragmented time ranges, and reasoning directly over individual time points leads to unnecessary blow-up. For this reason, we adopt sets of intervals as our basic representation of temporal constraints. Interval sets provide a compact and canonical way to capture possibly discontinuous time ranges, while still supporting precise arithmetic operations such as intersection, union, and difference. Before introducing interval sets and their algebra, we first fix the underlying numerical domain on which these intervals are defined.
 \subsection{Natural Numbers and Extended Natural Numbers}
 
-Let  $\mathbb{N}$ denote the set of all positive integers including zero, i.e.\ \( \mathbb{N}:= \{ 0, 1, 2, 3, \dots \} \) and let \emph{less} ($<$) and  \emph{less or equal} ($\leq$) denote the usual order relations on $\mathbb{N}$.
+Let  $\mathbb{N}$ denote the set of all non-negative integers, i.e.\ \( \mathbb{N}:= \{ 0, 1, 2, 3, \dots \} \) and let \emph{less} ($<$) and  \emph{less or equal} ($\leq$) denote the usual order relations on $\mathbb{N}$.
 %
 We extend \(\mathbb{N}\) by adding the element \(\infty\), denoting infinity, forming the set of extended  natural numbers: % ML@KK: define macros for example for \mathbb{N}^\infty 
 \( \mathbb{N}^\infty = \mathbb{N} \cup \{\infty\} \).
@@ -30,9 +30,7 @@ We define  the order relations for  $\mathbb{N}^\infty$ : $<_\infty$ and  $\leq_
 
 \begin{definition}[Interval]
 A \emph{non-empty interval} is a pair $[\tmin,\tmax]$ with $\tmin \in \mathbb{N}$, $\tmax \in \mathbb{N}^\infty$, and $\tmin \leq_\infty \tmax$. The \emph{empty interval}, written $\varnothing$, contains no elements.
-The domain of intervals is
-%\[
-defined as $
+The domain of intervals is defined as $
 \mathbb{I} := \{[\tmin,\tmax] \mid \tmin \leq_\infty \tmax\} \cup \{\varnothing\}.
 $
 %\]
@@ -61,7 +59,7 @@ b-a+1 & \text{if } b\!\in\!\mathbb{N},\\
 We transform the following timed constraints to intervals:
 \begin{enumerate}
     \item Let $I_1:=[9,16]$ represent the timed constraint between 9:00 and 16:00.
-    \item Let $I_2:=[8, 24]$ represent the constraint between 8:00 and 24.
+    \item Let $I_2:=[8, 24]$ represent the constraint between 8:00 and 24:00.
     \item Let $I_3:=[10,14]$ represent the constraint between 10:00 and 14:00.
 \end{enumerate}
 
@@ -218,25 +216,25 @@ We show below examples illustrating some relations between intervals:
         Notation& Interpretation  & Necessary constraints  \\
         \hline
         $\boldsymbol{I< I'}$  & $I$ precedes $I'$  & $\max(I) <_\infty \min(I')$\\
-        $\boldsymbol{I' > I}$  & $I'$ precedes $I$  &  \\
+        $\boldsymbol{I' > I}$  & $I'$ is preceded by $I$  &  \\
         \hline
         $\boldsymbol{I = I'}$  & $I$ is equal to $I'$  & $\min(I) = \min(I')$, $\max(I) = \max(I')$ \\
         & $I'$ is equal to $I$  & \\
         \hline
         $\boldsymbol{I~m~I'}$  & $I$ meets $I'$  & $\max(I) =\min(I')$ \\
-        $\boldsymbol{I'~mi~I}$  & $I'$ meets $I$  &  \\
+        $\boldsymbol{I'~mi~I}$  & $I'$ is met by $I$  &  \\
         \hline
         $\boldsymbol{I~o~I'}$  & $I$ overlaps with $I'$  & $\min(I) <_\infty \min(I') < \max(I) <_\infty \max(I')$ \\
-        $\boldsymbol{I'~oi~I}$  & $I'$ overlaps with $I$  & \\
+        $\boldsymbol{I'~oi~I}$  & $I'$ is overlapped by $I$  & \\
         \hline
         $\boldsymbol{I~s~I'}$  & $I$ starts $I'$  & $\min(I) = \min(I')$, $\max(I) <_\infty \max(I')$ \\
-        $\boldsymbol{I' si I}$  & $I'$ starts $I$  &  \\
+        $\boldsymbol{I'~si~I}$  & $I'$ is started by $I$  &  \\
         \hline
         $\boldsymbol{I~d~I'}$  & $I$ during $I'$  & $\min(I') <_\infty \min(I)$, $\max(I) <_\infty \max(I')$ \\
-        $\boldsymbol{I'~di~I}$  & $I'$ during $I$  & \\
+        $\boldsymbol{I'~di~I}$  & $I'$ contains $I$  & \\
         \hline
         $\boldsymbol{I~f~I'}$  & $I$ finishes $I'$  & $\max(I) = \max(I')$, $\min(I) >_\infty \min(I')$ \\
-        $\boldsymbol{I'~fi~I}$  & $I'$ finishes $I$  &  \\
+        $\boldsymbol{I'~fi~I}$  & $I'$ is finished by $I$  &  \\
         \hline
     \end{tabular}
     \caption{Constraint on intervals from $\mathbb{I}$ to satisfy a relation from  Allen's Algebra }
@@ -254,7 +252,7 @@ The {intersection} operator: $ \cap:\mathbb{I} \times \mathbb{I}  \to \mathbb{I}
 		\right.
 	\end{align*}
 
-The operators we define now are partially defined as the interval domain not being closed under these operations.
+The operators we define now are partially defined,since the interval domain is not closed under these operations.
 
 The \emph{union} operator $ \cup:\mathbb{I} \times \mathbb{I}  \rightharpoonup \mathbb{I}$ is partially defined as follows:
 
@@ -267,10 +265,10 @@ The partial interval difference operator $\ominus: \mathbb{I} \times \mathbb{I} 
 
 $$[a,b] \ominus [c,d] := \begin{cases} 		
 		\text{ undefined }& \text{ iff   } [c,d] \text{ during } [a,b],\\
-		[a,b] & \text{iff   } [a,b] \cap [c,d]= \emptyset,\\
+		[a,b] & \text{iff   } [a,b] \cap [c,d]= \varnothing,\\
   \varnothing & \text{iff   } [a,b] \subseteq [c,d],\\
-  [a,c-1] & \text{iff   } [a,b] \text{ meets or overlaps or finished by } [c,d],\\
-  [d+1,b] & \text{iff   } [c,d] \text{ meets or overlaps or starts by } [a,b],\\
+  [a,c-1] & \text{iff   } [a,b] \text{ overlaps or finished by } [c,d],\\
+  [d+1,b] & \text{iff   } [c,d] \text{ overlaps or starts  } [a,b],\\
 	\end{cases}$$
 
 \begin{example}
@@ -293,8 +291,8 @@ Let us consider some examples concerning the operator $\ominus$:
 \end{itemize}
 
 
-We use now the difference operator on the three-time intervals:
-$I_1 \ominus I_2 = [9,16]\ominus [12,\infty]= [9,11]$. 
+We use now the difference operator on the three-time intervals:\\
+$I_1 \ominus I_2 = [9,16]\ominus [12,\infty]= [9,11]$. \\
 On the other hand,
 $I_1 \ominus I_3 = [9,16] \ominus [10,14]$ is undefined as $[10,14]$ during $[9,16]$.
 
@@ -306,9 +304,9 @@ To address this structural limitation, we introduce the concept of interval sets
 
 
 \begin{definition}[Canonical Interval Set]\label{def:canonis}
-An \defn{interval set} $\is$ is said to be in \emph{canonical form} if no two intervals in $\is$ are unifiable. Formally:
+An \defn{interval set} $\is$ is said to be in \emph{canonical form} if no two distinct intervals in $\is$ are unifiable. Formally:
 \[
-\forall \{I, I'\} \subseteq \is: \overline{U}(I, I').
+\forall I, I' \in \is: I \neq I' \implies \overline{U}(I, I'),
 \]
 where $\overline{U}(I, I')$ denotes that $I$ and $I'$ are not unifiable (i.e., $I \cup I'$ is not an interval from $\mathbb{I}$).
 
@@ -318,8 +316,10 @@ The \emph{size of a set of intervals} $\is$, written $\size{\is}$, is defined as
 \[
 \size{\is} := \sum_{I \in \is} \size{I}.
 \]
-The \emph{cardinality} of the $\is:=\{I_0,I_1, \dots,I_n\}$, written $\card(\is)$, is the number of element intervals in the set,
-$\size{\is} := n+1$.
+The \emph{cardinality} of $\is:=\{I_1, I_2, \dots, I_n\}$, written $\card(\is)$, is the number of element intervals in the set:
+\[
+\card(\is) := n.
+\]
 \end{definition}
 
 
@@ -351,7 +351,7 @@ Let \(\is\) be a finite set of intervals. The \defn{expansion factor} \(\expf(\i
 \[
 \expf(\is) := \frac{\size{\is}}{\card(\is)}\quad,
 \]
-where \(\size{\is}\) is the sum of the sizes (number of points) of the intervals in \(\is\), and \(\card(\is)\) is the number of intervals in \(\is\).
+where \(\size{\is}:= \sum_{I \in \is} \size{I}\) is the sum of the sizes  of the intervals in \(\is\), and \(\card(\is)\) is the cardinality of \(\is\), i.e., the number of intervals syntactically forming \(\is\).
 \end{definition}
 
 \begin{example}[Minimal Expansion Factor]
@@ -387,7 +387,7 @@ Thus, the expansion factor is
 \[
 \expf(\is_2) = \frac{1002}{3} = 334,
 \]
-Showing a large blow-up, mainly caused by the large intervals.
+showing a large blow-up, mainly caused by the large intervals.
 \end{example}
 
 \subsection{Arithmetic of Interval Sets}\label{isarithmetic}
@@ -413,7 +413,7 @@ Showing a large blow-up, mainly caused by the large intervals.
     For the sets of intervals $\is_1:= \{[9,16]\}$ and $\is_3:=\{[2,4],[8,24]\}$ we have: $\is_1 \subset \is_3$.
     \end{example}
 
-    \paragraph{Intersection} The intersection of two sets of intervals $\mathfrak{I}$ and $\mathfrak{I}'$ is the set of intervals containing all the intervals present in both interval sets. The operator is commutative and is defined as:
+    \paragraph{Intersection} The intersection of two sets of intervals $\mathfrak{I}$ and $\mathfrak{I}'$ is the set of all non-empty pairwise intersections of their intervals. The operator is commutative and is defined as:
     $$
     \mathfrak{I} \cap \mathfrak{I}' :=\begin{cases}
      \emptyset& \text{if } \forall I\in \mathfrak{I}, \forall I'\in \mathfrak{I}': I \cap I'=\varnothing,\\
@@ -437,9 +437,9 @@ Showing a large blow-up, mainly caused by the large intervals.
 
 
  \subsubsection{Union}
-The union of two interval sets $\is$ and $\is'$ is recxursively computed by the successive union of each interval $I_i \in \is'$ with $\is$:
+The union of two interval sets $\is$ and $\is'$ is recursively computed by the successive union of each interval $I_i \in \is'$ with $\is$:
 \[
-\is \cup \is' := \left\{ \left( \left(\is \cup I_1) \cdots \right) \cup I_n \right) \ \middle|\ I_1, \dots, I_n \in \is' \right\}.
+\is \cup \is' :=  \left( \left(\is \cup I_1) \cdots \right) \cup I_n \right) \ \text{ where } \is':= \{I_1, \dots, I_n \} .
 \]
 
 
@@ -448,7 +448,7 @@ The union of an interval set $\is$ with a single interval $I$ is given by:
 \is \cup I := \left\{ \left( \bigcup_{I_i \in U(I, \is)} (I \cup I_i) \right) \right\} \circ \overline{U}(I, \is),
 \]
 
-where $\circ$ denotes set concatenation, and the subset of unifiable and non unifiable interval with $I$ from $\is$ are defined as:
+where $\circ$ denotes set concatenation, and the subset of unifiable and non-unifiable intervals with $I$ from $\is$ are defined as:
 \begin{align*}
 \overline{U}(I, \is) &:= \{ I_i \in \is \mid \overline{U}(I, I_i) \}, \\
 U(I, \is) &:= \{ I_i \in \is \mid I_i \notin \overline{U}(I, \is) \}.
@@ -456,26 +456,26 @@ U(I, \is) &:= \{ I_i \in \is \mid I_i \notin \overline{U}(I, \is) \}.
 
 \begin{example} Let $\is := \{ [1, 5], [9, 11] \}$ and $\is' := \{ [3, 7], [9, 12] \}$. The union is computed as follows:
     \begin{align*}
-    \is \cup \is' &= \big({ [1, 5], [9, 11] } \cup [3, 7]\big) \cup [9, 12] && \text{(expansion)}\\
-    &= \big( { [1, 5] \cup [3, 7] } \cup { [9, 11] } \big) \cup [9, 12] && (\text{as } \overline{U}([9, 11], [3, 7]))\\
-    &= { [1, 7], [9, 11] } \cup [9, 12] && \text{(simplification)}\\
-    &= { [9, 11] \cup [9, 12] } \cup { [1, 7] } && (\text{as } \overline{U}([1, 7], [9, 12]))\\
-    &= { [1, 7], [9, 12] } && \text{(final result)}
+    \is \cup \is' &= \big(\{ [1, 5], [9, 11] \} \cup [3, 7]\big) \cup [9, 12] && \text{(expansion)}\\
+    &= \big( \{ [1, 5] \cup [3, 7] \} \cup \{ [9, 11] \} \big) \cup [9, 12] && (\text{as } \overline{U}([9, 11], [3, 7]))\\
+    &= \{ [1, 7], [9, 11] \} \cup [9, 12] && \text{(simplification)}\\
+    &= \{ [9, 11] \cup [9, 12] \} \cup \{ [1, 7] \} && (\text{as } \overline{U}([1, 7], [9, 12]))\\
+    &= \{ [1, 7], [9, 12] \} && \text{(final result)}
     \end{align*}
     \end{example}
 
 \subsubsection{Difference (Reduction)}\label{differenceop}
 
-The \emph{difference} of an interval set $\is$ by an interval set $\is'$, denoted $\is \ominus \is'$, is the set of intervals in $\is$ excluding those that overlap with $\is'$:
+The \emph{difference} of an interval set $\is$ by an interval set $\is'$, denoted $\is \ominus \is'$, is the result of removing all elements of $\is'$ from the intervals in $\is$:
 
-$$\is \ominus \is' := \bigcup_{I_i \in \is}(I \ominus \is') \text{ with } I \ominus \mathfrak{I'}= \bigcap_{I_i \in \is'}(I \ominus I_i).$$
-Where the \emph{redefined} reduction of two intervals is now computed as \emph{set of intervals} instead of intervals as defined in the arithmetic of intervals: $\ominus: \mathbb{I} \times \mathbb{I} \to 2^\mathbb{I}$ is defined as :
+$$\is \ominus \is' := \bigcup_{I \in \is}(I \ominus \is') \text{ with } I \ominus \mathfrak{I'}= \bigcap_{I_i \in \is'}(I \ominus I_i).$$
+where the \emph{redefined} reduction of two intervals is now computed as a \emph{set of intervals} instead of a single interval as defined in the arithmetic of intervals: $\ominus: \mathbb{I} \times \mathbb{I} \to 2^\mathbb{I}$ is defined as :
 	$$[a,b] \ominus [c,d] := \begin{cases} 		
 		\{[a,c-1], [d+1,b]\}& \text{ iff   } [c,d] \text{ during } [a,b],\\
 		\{[a,b]\} & \text{iff   } [a,b] \cap [c,d]= \varnothing,\\
   \emptyset & \text{iff   } [a,b] \subseteq [c,d],\\
-  \{[a,c-1]\} & \text{iff   } [a,b] \text{ meets or overlaps or finished by} [c,d],\\
-  \{[d+1,b]\} & \text{iff   } [c,d] \text{ meets or overlaps or starts by} [a,b].\\
+  \{[a,c-1]\} & \text{iff   } [a,b] \text{  overlaps or finished by} [c,d],\\
+  \{[d+1,b]\} & \text{iff   } [c,d] \text{ overlaps or starts} [a,b].\\
 	\end{cases}$$
     
 \begin{remark}

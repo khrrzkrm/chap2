@@ -730,9 +730,9 @@ By structural induction on the syntax of $C$.
 
 \emph{Inductive steps.}
 For binary constructors $C_1\wedge C_2$, $C_1;C_2$, and $C_1\repair C_2$, the claim follows from Lemma~\ref{lem:binary-disjoint} and the induction hypotheses for $C_1$ and $C_2$ (including the required suffix form).
-For repetition constructors $D^n$ and $\repit{D}$, the claim follows from Lemma~\ref{lem:repetition-disjoint} and the induction hypothesis for $D$.
-For triggered and guarded constructors $\trig[re]{D}$ and $\guard[re]{D}$, the claim follows from Lemma~\ref{lem:regex-disjoint} together with the induction hypotheses for $re$ and $D$.
-No other constructors exist.
+For repetition constructors $C^n$ and $\repit{C}$, the claim follows from Lemma~\ref{lem:repetition-disjoint} and the induction hypothesis for $C$.
+For triggered and guarded constructors $\trig[re]{C}$ and $\guard[re]{C}$, the claim follows from Lemma~\ref{lem:regex-disjoint} together with the induction hypotheses for $re$ and $C$.
+Covering all contract constructors.
 \end{proof}
 % --- END INSERTED LEMMA ---
 

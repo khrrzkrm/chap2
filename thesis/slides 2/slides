@@ -1,0 +1,308 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Theme and Color Setup
+\usetheme{Madrid}
+\usecolortheme{whale}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{forest} % specialized package for trees based on TikZ
+\usepackage{fontawesome5} % Optional: for folder/file icons. If not available, remove \faIcon commands.
+
+% Custom Colors
+\definecolor{safetyred}{RGB}{200, 0, 0}
+\definecolor{traceblue}{RGB}{0, 80, 200}
+\definecolor{codegray}{rgb}{0.95, 0.95, 0.95}
+\definecolor{commentgreen}{rgb}{0.0, 0.5, 0.0}
+
+% Code Listing Configuration
+\lstset{
+    backgroundcolor=\color{codegray},
+    commentstyle=\color{commentgreen},
+    keywordstyle=\color{traceblue}\bfseries,
+    basicstyle=\ttfamily\scriptsize,
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    captionpos=b,
+    tabsize=2
+}
+
+% Title Information
+\title[MedTech Copilot Demo]{GitHub Copilot in Safety-Critical SDLC}
+\subtitle{Demonstrating Agentic Workflows for IEC 62304 Compliance}
+\author{System Architect}
+\date{\today}
+
+\begin{document}
+
+%--- Title Frame ---
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%--- Goals Frame ---
+\begin{frame}{Demonstration Goals}
+    We aim to prove that Generative AI can be safely integrated into a Class C medical device workflow.
+    \vspace{0.5cm}
+    \begin{enumerate}
+        \item \textbf{Compliance by Design:} \texttt{AGENTS.md} enforces safety standards (e.g., forbidding floating-point math).
+        \item \textbf{Traceability:} Automated linking of code to requirements via AI-generated annotations.
+        \item \textbf{Multi-Mode Efficiency:} Seamless transition between Synchronous, Asynchronous, and Review modes.
+    \end{enumerate}
+\end{frame}
+
+%--- Scenario Frame ---
+\begin{frame}{The Scenario: GlucoGuard Insulin Pump}
+    \begin{tcolorbox}[title=Product Requirement Source (IEC 62304), colback=blue!5!white, colframe=blue!75!black]
+        \textbf{ID:} REQ-302 (Active Insulin Calculation)\\
+        \textbf{Safety Class:} C (High Risk)\\
+        \textbf{Description:} Calculate "Insulin on Board" (IOB) using linear decay.\\
+        \textbf{Constraint:} Floating point arithmetic is \textbf{strictly forbidden}. Must use \texttt{decimal.Decimal}.
+    \end{tcolorbox}
+\end{frame}
+
+%===========================================================
+% SECTION 1: AGENT & REVIEW CONFIGURATION
+%===========================================================
+\section{Agent \& Review Configuration}
+
+\begin{frame}{Agent Configuration Strategy}
+    GitHub Copilot uses a file-based configuration to define "Who" the AI is and "How" it behaves.
+    \vspace{0.5cm}
+    \begin{columns}[t]
+        \column{0.5\textwidth}
+        \textbf{1. The Global Persona (Root)}
+        \begin{itemize}
+            \item File: \texttt{AGENTS.md}
+            \item Role: Defines the baseline "MedTech Developer".
+            \item Scope: Applies to the whole repo.
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{2. The Reviewer (Guardrails)}
+        \begin{itemize}
+            \item File: \texttt{.github/copilot-instructions.md}
+            \item Role: "Quality Gatekeeper".
+            \item Scope: Applies during Pull Requests.
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Artifact: The Agent Definition}
+    \textbf{File:} \texttt{AGENTS.md}
+    \begin{lstlisting}[language=markdown, caption={Defining the Safety Constraints}]
+---
+name: "Safety Critical Firmware Agent"
+tools: [pytest, mypy, grep]
+---
+# Mission
+You are an expert in IEC 62304 Class C software. 
+Your code must be defensive and strictly typed.
+
+# Constraints
+1. **Precision:** NEVER use standard float. Use `decimal.Decimal`.
+2. **Traceability:** ALWAYS annotate functions with `@trace("REQ-ID")`.
+3. **Safety:** If unsure about a calculation, STOP and ask.
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Scalability: How Many Agents?}
+    There is \textbf{no hard limit} on the number of agents.
+    \vspace{0.5cm}
+    \begin{description}
+        \item[Task-Specific Fleet] Located in \texttt{.github/agents/*.md}. You can have distinct agents for \textit{Security}, \textit{QA}, \textit{Documentation}, etc.
+        \item[Context-Specific] Located in subdirectories (e.g., \texttt{src/ui/AGENTS.md}). These override global rules for specific folders.
+    \end{description}
+\end{frame}
+
+%===========================================================
+% SECTION 2: SYNCHRONOUS MODE
+%===========================================================
+\section{Use Case 1: Synchronous Mode}
+
+\begin{frame}{Synchronous Mode: The "Co-pilot"}
+    \textbf{Scenario:} Real-time drafting in the IDE (VS Code).
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item The developer is writing the core logic for \texttt{dose\_calc.py}.
+        \item The developer types a function signature and waits for completion.
+    \end{itemize}
+    \vspace{0.3cm}
+    \textbf{Goal:} Prevent safety violations \textit{before} the code is even saved.
+\end{frame}
+
+\begin{frame}[fragile]{Synchronous Configuration \& Results}
+    \textbf{Configuration:} Active \texttt{AGENTS.md} forbids `float`.
+    \vspace{0.3cm}
+    
+    \textbf{Result (Ghost Text):}
+    Copilot automatically suggests \texttt{Decimal} and adds traceability tags.
+    
+    \begin{lstlisting}[language=Python, caption={Real-time Suggestion}]
+from decimal import Decimal
+from src.utils.tracing import trace
+
+# Copilot auto-generates this based on AGENTS.md rule #2
+@trace("REQ-302") 
+def calculate_active_insulin(initial: Decimal, time: int) -> Decimal:
+    # Copilot uses Decimal() instead of float()
+    decay = initial / Decimal(100) 
+    return max(Decimal("0.00"), initial - decay * time)
+    \end{lstlisting}
+\end{frame}
+
+%===========================================================
+% SECTION 3: ASYNCHRONOUS MODE
+%===========================================================
+\section{Use Case 2: Asynchronous Mode}
+
+\begin{frame}{Asynchronous Mode: The "Autopilot"}
+    \textbf{Scenario:} Background task execution.
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item The developer assigns a complex verification task to the agent.
+        \item \textit{Prompt:} "@copilot generate a test suite for REQ-302 covering edge cases."
+    \end{itemize}
+    \vspace{0.3cm}
+    \textbf{Goal:} Automate tedious verification tasks while maintaining high rigor.
+\end{frame}
+
+\begin{frame}[fragile]{Asynchronous Configuration \& Results}
+    \textbf{Configuration:} Agent has access to tools: \texttt{pytest}, \texttt{file\_edit}.
+    \vspace{0.2cm}
+    
+    \textbf{Result (Agent Action Log):}
+    \begin{enumerate}
+        \item \texttt{PLAN:} Read \texttt{reqs.md}. Identify edge cases (negative time, zero dose).
+        \item \texttt{EXECUTE:} Create \texttt{tests/test\_dose.py}.
+        \item \texttt{VALIDATE:} Run \texttt{pytest}.
+        \item \texttt{CORRECT:} Test failed on ZeroDivisionError. Agent modifies code to handle 0 duration.
+        \item \texttt{OUTPUT:} Agent opens a Pull Request.
+    \end{enumerate}
+\end{frame}
+
+%===========================================================
+% SECTION 4: REVIEW MODE
+%===========================================================
+\section{Use Case 3: Review Mode}
+
+\begin{frame}{Review Mode: The "Auditor"}
+    \textbf{Scenario:} Automated Critique via Pull Request.
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item A PR is opened containing the new feature.
+        \item The "Copilot Code Review" agent automatically scans the changes.
+    \end{itemize}
+    \vspace{0.3cm}
+    \textbf{Goal:} A final gatekeeper to catch subtle safety violations humans might miss.
+\end{frame}
+
+\begin{frame}[fragile]{Review Configuration}
+    \textbf{File:} \texttt{.github/copilot-instructions.md}
+    \begin{lstlisting}[language=markdown]
+# Code Review Policy
+You are the Quality Gatekeeper.
+
+## Checklist
+- [ ] **Safety:** Flag any math that risks precision loss.
+- [ ] **Traceability:** Reject code without requirement IDs.
+- [ ] **Tone:** Flag Class C violations as "BLOCKING".
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Review Results (Artifact)}
+    The Agent posts comments directly on the PR Diff:
+    \vspace{0.5cm}
+    
+    \begin{tcolorbox}[colback=red!5!white, colframe=red!75!black, title=Copilot Code Review Bot]
+        \textcolor{red}{\textbf{BLOCKING ISSUE}} \\
+        \textbf{File:} \texttt{src/core/dose\_calc.py:42} \\
+        \textit{"You are performing division using an integer literal `100`. In strict Class C mode, this should be explicitly cast to `Decimal('100')` to ensure consistent precision behavior."}
+    \end{tcolorbox}
+    
+    \vspace{0.2cm}
+    \begin{tcolorbox}[colback=green!5!white, colframe=green!75!black, title=Copilot Code Review Bot]
+        \textcolor{green}{\textbf{PASSED}} \\
+        \textit{"Traceability confirmed: Function is linked to REQ-302."}
+    \end{tcolorbox}
+\end{frame}
+
+\begin{frame}
+    \begin{frame}{Repo Structure and Copilot Workflows}
+        \begin{forest}
+            for tree={
+              font=\sffamily\small,
+              grow'=0,
+              folder,
+              draw,
+              thick,
+              rounded corners,
+              node options={inner sep=4pt, align=left},
+              edge={thick, rounded corners},
+              s sep=5pt, % Vertical separation between siblings
+              l sep=10pt, % Horizontal separation between levels
+            }
+            [ \textbf{gitrepo/} (Root), fill=folderColor
+              [ \textbf{.github/}, fill=configBlue, label=right:\textit{Agent Configuration}
+                [ \textbf{agents/}, fill=configBlue
+                  [ security-auditor.agent.md, fill=white ]
+                  [ qa-engineer.agent.md, fill=white ]
+                ]
+                [ copilot-instructions.md, fill=white, label=right:\textit{Review Guardrails} ]
+              ]
+              [ \textbf{docs/}, fill=docGreen
+                [ \textbf{specs/}, fill=docGreen
+                  [ requirements.md, fill=white, label=right:\textit{REQ-302 Source of Truth} ]
+                ]
+              ]
+              [ \textbf{src/}, fill=srcOrange
+                [ \textbf{core/}, fill=srcOrange
+                  [ dose\_calc.py, fill=white, label=right:\textit{Implementation (Decimal Only)} ]
+                ]
+                [ \textbf{utils/}, fill=srcOrange
+                  [ tracing.py, fill=white ]
+                ]
+                [ AGENTS.md, fill=srcOrange!50, label=right:\textit{Context Overrides} ]
+              ]
+              [ \textbf{tests/}, fill=testRed
+                [ test\_dose\_calc.py, fill=white, label=right:\textit{Verification (Generated)} ]
+              ]
+              [ AGENTS.md, fill=configBlue, label=right:\textit{Global Persona Definition} ]
+            ]
+          \end{forest}
+        \end{frame}
+        
+\end{frame}
+%--- Conclusion Frame ---
+\begin{frame}{Summary}
+    \begin{center}
+        \textbf{GitHub Copilot creates a "Safety Sandwich"}
+    \end{center}
+    \vspace{0.5cm}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \centering
+        \textbf{1. Proactive}\\
+        (Synchronous)\\
+        Prevents errors during drafting.
+        
+        \column{0.33\textwidth}
+        \centering
+        \textbf{2. Active}\\
+        (Asynchronous)\\
+        Generates verification proofs (Tests).
+        
+        \column{0.33\textwidth}
+        \centering
+        \textbf{3. Reactive}\\
+        (Review)\\
+        Catch-all safety net for compliance.
+    \end{columns}
+\end{frame}
+
+\end{document}
