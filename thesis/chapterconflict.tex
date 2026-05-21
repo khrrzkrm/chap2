@@ -3,60 +3,116 @@
 \section{Overview}
 \label{sec:overview}
 
-As discussed in the introduction chapter, normative systems provide the formal backbone for how organizations, individuals, software, and autonomous agents are expected to behave. A \emph{normative specification} describes these expectations as a set of rules determining what an agent ought to do or what state of affairs ought to be. However, dealing with such specifications is inherently difficult. They combine different types of rules, such as obligations, prohibitions, and permissions, whose interplay can yield overlapping prescriptions. In many situations, complying with one norm causes the violation of another. This situation is referred to as a \emph{normative conflict}.
+As discussed in the introduction chapter, normative systems provide the formal backbone for how organizations, individuals, software, and autonomous agents are expected to behave. A \emph{normative specification} describes these expectations as a set of rules determining what an agent ought to do or what the state of affairs ought to be. However, dealing with such specifications is inherently difficult. They combine different types of rules, such as obligations, prohibitions, and permissions, whose interplay can yield overlapping prescriptions. In many situations, complying with one norm causes the violation of another. This situation is referred to as a \emph{normative conflict}.
 This chapter studies those conflicts in \emph{ought-to-do} specifications with explicit temporal conditions. 
 
+
+
 \subsection{Motivation}
+
 Norms are rarely timeless: they are activated, suspended, or expire under explicit temporal conditions.  
+
 This temporal structure has motivated a long line of research in \emph{temporal deontic logics} and \emph{contract specification languages}.  
+
 Early works such as~\cite{DBLP:conf/hicss/DignumK98,DBLP:conf/deon/BroersenDDM04} formalized temporal deontic constraints by linking obligations to deadlines.  
-A second wave of studies~\cite{BroersenBrunel2007} examined how unmet obligations propagate over time, capturing the principle that “what I fail to do today, I must do tomorrow,” which formalizes the continuation of obligations after a missed deadline.  
-In parallel, \cite{governatori2007characterising,governatori2011justice} introduced a temporal defeasible logic that characterizes different types of deadlines, offering a flexible framework for representing and reasoning about time-sensitive norms.  
-This line of research enabled the modeling of norms that become active or expire at specific points in time, the idea that a rule is \emph{in force} at a given instant due to a reparation clause following a violation or a triggering event.  
+
+A second wave of studies illustrated in~\cite{BroersenBrunel2007} examined how unmet obligations propagate over time, capturing the principle that “what I fail to do today, I must do tomorrow,” which formalizes the notion of deadlines and reparation as a delayed disjunction when the deadline of an obligation has passed without complying with it.  
+
+In parallel, \cite{governatori2007characterising,governatori2011justice} introduced a temporal defeasible logic that characterizes different types of deadlines; one of its main features is reasoning about when two norms' timed conditions coincide. Thanks to its defeasibility, it distinguishes between violations and exceptional conditions when a rule is considered stronger (defeater) than another one.
+
 More recent frameworks, such as~\cite{HvitvedKZ12}, C--O Diagrams~\cite{camilleri2014cnl}, and FCL~\cite{farmer2016fcl}, offer greater expressive power and aim to capture real-world normative dynamics.
 
- 
-Unlike in untimed settings, conflicts in timed specifications depend on \emph{when} norms are active and \emph{how many} are active at once. When several obligations share the same activation period, the agent may lack the capacity to plan and execute them all within that window. Conflicts also occur at \emph{moments} when the agent is obliged to perform an action and at the same time prohibited from doing it. In short, time turns contradiction into a scheduling and capacity problem: we must reason about activation periods and point-wise clashes, not only about truth values.
+Conflicts in timed normative specifications, as opposed to untimed specifications, depend not only on \emph{how many} norms are active simultaneously, but also on when their timed conditions are enforced. For instance, when many obligations are active at the same time, an agent may fail to comply with all of them, as their timed conditions are not collectively achievable. Also, when an action is due at a specific time point but is also prohibited at that time, there is a conflict. As such, conflicts can be seen as a scheduling problem; one must also reason about their activation periods to detect them.
 
-Early approaches, such as Fenech et al.~\cite{fenech2009automatic}, formalized conflict detection through reachability analysis over automata whose states were annotated with deontic labels: whenever a reachable state contained incompatible obligations or prohibitions, the contract was considered conflicting. While effective for identifying logical contradictions, this view abstracts away from when and how conflicts arise. As argued by Colombo Tosatto, Governatori, and Kelsen~\cite{colombo2014detecting}, such inconsistencies often result not from $O\alpha \land O\lnot\alpha$ alone but from \emph{temporal infeasibility}, where no timed trace can satisfy the conjunction of active norms. More recent work, such as N-Check~\cite{10.1145/3597503.3639093}, reduces the analysis of normative requirements to first-order satisfiability checking, diagnosing conflicts as unsatisfiable rule combinations. 
+
+
+
+
+
+Early approaches, such as \cite{fenech2009automatic}, reasoned about incompatible obligations and prohibitions in a logical-timed setting through reachability analysis over automata whose states were annotated with deontic labels; every reachable state that contained both a prohibition and an obligation was reported as a conflict.  While effective for identifying logical contradictions, this view abstracts away from when and how conflicts arise.
+
+ Other works, such as \cite{colombo2014detecting}, show that such inconsistencies result not only from obligation and prohibition clashes, as in $O\alpha \land O\lnot\alpha$, but from \emph{temporal infeasibility}, where no timed trace can satisfy the conjunction of active norms. While this work introduced a rich classification of conflict types, it drew a direct equivalence between normative conflicts and unsatisfiability.
+
+More recent work, such as N-Check~\cite{10.1145/3597503.3639093}, reduces the analysis of normative requirements to first-order satisfiability checking, diagnosing conflicts as unsatisfiable rule combinations. They raise fewer conflict types but offer a more nuanced definition of conflicts and their relation to unsatisfiability, where they consider a conflict to be a situation that, either always or in some feasible scenario, inevitably leads to the violation of one or more rules.
 
 \paragraph{Research gap and questions}
-Although existing approaches successfully expose when a formula contains a conflict, they typically treat time symbolically and leave the precise definition of what \emph{constitutes} a normative conflict open. This lack of formal precision raises three fundamental research questions:
+
+Related works define a type of conflict and/or a procedure for detecting when a normative specification conflicts; they typically adopt either a syntactic or a semantic approach, but rarely both, leaving it unclear what really \emph{constitutes} a normative conflict. 
+
+This lack of formal precision raises three fundamental research questions:
+
 
 \begin{enumerate}[RQ1]
+
   \item \textbf{Relation between Unsatisfiability and Conflict:} The relationship between general logical unsatisfiability and specific normative conflicts is currently not well formalized. Is every unsatisfiable formula a conflict? Conversely, does the presence of a conflict necessarily imply that the formula is unsatisfiable?
+
     
+
     \item \textbf{Conflict Quantification:} While satisfiability is intrinsically a binary property (true or false), can we define a quantitative measure for the \emph{degree} of conflict within a specification?
+
     
-    \item \textbf{Properties-Preserving Resolution:} Is it always possible to resolve conflicts in a formula without altering its inherent semantics or compromising its structural compactness?
+
+    \item \textbf{Properties-Preserving Resolution:} Is it always possible to resolve conflicts in a formula without compromising its structural compactness or changing its accepted behaviors?
+
 \end{enumerate}
 
 \subsection{Methodology}
 
-To address these challenges, we first formalize the potential behavior of agents as finite timed words by structuraly encoding it as a sequence of timed events formed by \emph{a unique action} per event. We introduce a light logic, $\TDDLfm$, allowing us to formalize normative specifications where time conditions are represented as finite interval sets. This trace-based semantics serves as the ground truth for our analysis.
 
-We then narrow down the abstract notion of conflict into two fundamental types. The first is \emph{deontic}, where rules contradict each other. The second is \emph{ontic}, where rules demand more than the agent can physically perform. We show that these clashes often hide within complex time intervals. To expose them, we develop a rigorous transformation process that unfolds specifications into their atomic components. Crucially, we prove that this process is structure-preserving. It reveals strictly those conflicts present in the original design without creating spurious ones or erasing existing ones.
 
-With these atomic conflicts exposed, we introduce a quantitative metric to measure the density of inconsistency in a system. We demonstrate that this measure is directly linked to whether a specification is logically solvable. A fully conflicting system is impossible to satisfy. Conversely, a partially conflicting one can always be automatically repaired. We provide an algorithm for this repair that effectively prunes the contradictory parts while preserving the valid compliant behaviors.
+To address these challenges, we first formalize the potential behaviors of agents as finite timed words by structurally encoding them as a sequence of timed events consisting of \emph{a unique action} per event. We introduce a light logic, $\TDDLfm$, that allows us to formalize normative specifications in which time conditions are represented as finite interval sets. This trace-based semantics serves as the ground truth for our analysis.
+
+
+
+We first define two fundamental types of normative timed conflicts. The first is \emph{deontic}, where rules contradict each other. The second is \emph{ontic}, where rules demand more than the agent can physically perform, given the assumptions we impose on metric timed traces. We show that conflicts often hide within complex time intervals. To expose them, we develop a rigorous transformation process that unfolds specifications into their atomic components. Crucially, we prove that this process is structure-preserving. It reveals only the conflicts present in the original design, without creating spurious ones or erasing existing ones.
+
+
+
+With these atomic conflicts exposed, we introduce a quantitative metric to measure the density of inconsistencies in a system. We demonstrate that this measure is directly linked to whether a specification is logically solvable. A fully conflicting system is impossible to satisfy. Conversely, a partially conflicting one can always be automatically repaired. We provide an algorithm for this repair that effectively prunes the contradictory parts while preserving the valid compliant behaviors.
+
+
 
 We then bridge the gap between this operational detection and theoretical logic. We prove that our defined conflict patterns are \emph{enough to explain all causes} of the unsatisfiability of any formula. This ensures that our detection method is both sound and complete.
 
-Finally, we address the practical trade-off between automation and conciseness. Eliminating conflicts automatically can sometimes result in verbose specifications. To mitigate this, we complement our algorithms with a \emph{conflict calculus}. This set of inference rules allows for high-level symbolic reasoning. It enables designers to resolve conflicts manually and simplify specifications without needing to decompose the entire formula.
+
+
+Finally, we address the practical trade-off between automation and conciseness. Automatically eliminating conflicts can sometimes result in verbose specifications. To mitigate this, we complement our algorithms with a \emph{conflict calculus}. This set of inference rules allows for high-level symbolic reasoning. It enables designers to resolve conflicts manually and simplify specifications without needing to decompose the entire formula.
+
 \subsection{Contribution}
+
+
 
 In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions are as follows:
 
+
+
 \begin{enumerate}[Con1]
-    \item \textbf{Formal Machinery:} We define a compact, action-based logic over finite interval sets. We provide algorithms for punctual and disjunctive normalization (\dpnf) and a proof-theoretic calculus for conflict detection.
+
+    \item \textbf{Formal Machinery:} We define a compact, semantics-first, action-based logic over finite interval sets. We provide a syntactic definition of conflicts and the disjunctive punctual normal form that preserves conflicting time points, and build a sound and complete algorithm for conflict detection.
+
     
-    \item \textbf{Conflict Characterization:} We offer precise definitions for conflicts and conditions for their correct detection. We prove that deontic and ontic conflicts correspond precisely to Minimal Unsatisfiable Subsets (MUS) in our logic. Conversely, we show that any MUS is necessarily an instance of one of these conflict types.
+
+    \item \textbf{Conflict Characterization:} We prove that the types of conflicts we define correspond precisely to Minimal Unsatisfiable Subsets (MUS) of product terms in the disjunctive punctual normal form of the original input formula. Conversely, we show that any MUS is necessarily an instance of one of these conflict types.
+
     
-    \item \textbf{Quantitative Metrics:} We introduce the concept of \emph{conflict density}, which measures the ratio of conflicting to total punctual obligations. We show that a conflict density of 1 implies unsatisfiability, while a density below 1 allows for a conflict-free, semantics-preserving pruning.
-    
-    \item \textbf{Elimination and Guarantees:} We provide sound and complete methods for equivalence-preserving conflict elimination. We analyze the verbosity induced by this process, demonstrating that while eliminating conflicts can increase the syntactic size of the specification, the blow-up remains bounded under well-defined structural conditions.
+
+    \item \textbf{Quantitative Metrics:} We introduce the quantitative notion of \emph{conflict density}, which measures the ratio of conflicting product terms to the total number of product terms in the disjunctive punctual normal form. We then relate a conflict density of 1 to unsatisfiability, and show that specifications with any lower density can be repaired.
+
+   
+
+    \item \textbf{Elimination and Guarantees:} We provide a sound conflict elimination procedure for not fully conflicting formulas that returns a repaired, conflict-free formula. We study the impact of elimination on the size of the repaired formula produced by this process, demonstrating that while eliminating conflicts can increase the syntactic size of the specification, the blow-up remains bounded under well-defined structural conditions.
+
+
+
+    \item \textbf{Conflict Calculus:} We provide a conflict calculus that can be used as an interactive normative system assistant where the user can check conflicts using inference rules. The conflict calculus uses generalized rules over interval sets instead of time points to mitigate the blow-up induced by the disjunctive punctual normal form.
+
 \end{enumerate}
 
+
+
 Altogether, this framework allows us to identify conflicts in a specification, explain their causes via interval arithmetic, measure their density, and eliminate them without altering the intended compliant behaviors.
+
+
 \section{Use Case: Goods Delivery Contract}\label{sec:usecase}
 
 
@@ -314,7 +370,7 @@ In practice, the driver has the option to adopt the following \textbf{practical 
 
 In the following sections, we introduce the formal definitions and notations necessary to construct a logical language for analyzing potential normative conflicts. Building on this foundation, we develop a reasoning framework grounded in the syntax and semantics of the logic. This framework serves three key purposes:  to determine whether a viable strategy exists for complying with the normative specification; (ii) to formally identify conflicting time points where some norms from the normative system are incompatible; and (iii) to derive a refined version of the specification that eliminates such conflicts while preserving the normative intent, thereby providing the agent with a clear and streamlined formula to support its planning and reasoning. Throughout the chapter, we illustrate these components using a running use case.
 
-\section{The Micro Metric-Time  Normative Logic (\TDDLfm)}
+\section{The Micro Metric-Time  Normative Logic (\TDDLfm)}\label{syntaxandsemantics}
 
 Following the use case, our intuition suggests that a conflict manifests when an action is both required and prohibited at the same point in time. We refer to such a situation as a \emph{deontic conflict}.
 %
@@ -815,7 +871,7 @@ Let $\is, \is'$ be interval sets such that $\is \subseteq \is'$. Then the disjun
 
 \begin{proof}
 We reason using the semantics of prohibition in \TDDLfm. A prohibition $\forb{\is}{a}$ means that the action $\acta$ is forbidden at all time points in $\is$.
-
+who present a temporal semantic framework for analyzing various types of obligations, standard, achievement, maintenance, preemptive, and compensable—using timed traces as semantic models.
 \begin{itemize}
     \item The disjunction $\forb{\is}{a} \sqcup \forb{\is'}{a}$ holds whenever at least one of the two prohibitions holds.
     \item Since $\is \subseteq \is'$, if $\forb{\is'}{a}$ holds, then so does $\forb{\is}{a}$.
@@ -1175,7 +1231,7 @@ $\dutyclass \phi \subseteq (\dutyclass{\phi} \cup \dutyclass{\phi'})$, thus by t
 
 
 
-While satisfiability checking determines whether a normative specification admits at least one compliant behavior, it falls short in providing explanatory insight. Specifically, it does not reveal which parts of the specification are the root cause for unsatisfiability, nor does it clarify how or why certain norms render the system infeasible. It offers a binary answer—satisfiable or not—without tracing the origins of unsatisfiability or identifying potential resolutions. To overcome this limitation, we now turn to a more detailed analysis of normative conflicts, grounded in the semantics of \TDDLfm.
+While satisfiability checking determines whether a normative specification admits at least one compliant behavior, it falls short in providing explanatory insight. Specifically, it does not reveal which parts of the specification are the root cause for unsatisfiability, nor does it clarify how or why certain norms render the system infeasible. It offers a binary answer, satisfiable or not,without explaining the origins of unsatisfiability or identifying potential resolutions. To overcome this limitation, we now turn to a more detailed analysis of normative conflicts, grounded in the semantics of \TDDLfm.
 
 
 
@@ -1191,13 +1247,13 @@ While satisfiability checking determines whether a normative specification admit
 
 The previous section showed that eliminating punctual conflicts can cause substantial growth in formula size.  
 While some verbose conflict-free rewriting can be refactored compactly, others cannot without losing semantic precision.  
-We now generalize the conflict patterns observed earlier and formalize them as inference rules.  
+We now generalize the earlier observed conflict patterns and formalize them as inference rules.  
 These rules form a \emph{conflict calculus}, enabling systematic exploration of formulas and selective conflict removal.
 
 \medskip
 
 \noindent
-\ref{syncnotation} summarizes the syntactic notations of our deductive system, grounded in the extensional semantics of \TDDLfm.  
+Table~\ref{syncnotation} summarizes the syntactic notations of our deductive system, grounded in the extensional semantics of \TDDLfm.  
 We use standard derivability and equivalence symbols, with their semantic counterparts defined over duty classes.
 
 \begin{table}[h]
@@ -1219,9 +1275,9 @@ $\phi \equiv \phi'$ & $\phi$ is equivalent to $\phi'$ & $\dutyclass{\phi} = \dut
 
 We now lift the punctual conflict analysis to a higher level of abstraction.  
 Rather than changing our fine-grained definition of conflicts, the following lemmas provide \emph{generalized management rules} that operate on non-atomic literals.  
-They consolidate multiple punctual conflicts into larger reasoning steps, allowing one to handle clusters of conflicting intervals in a single inference.  
+They lift the multiple punctual conflicts into larger reasoning steps, allowing one to handle clusters of conflicting intervals in a single inference.  
 These big-step rules cover two fundamental forms of normative tension: \emph{deontic} and \emph{ontic} conflicts.  
-Each lemma specifies the structural conditions under which such compound conflicts arise and how they can be either resolved or rewritten equivalently.
+Each lemma specifies the structural conditions under which such compound conflicts arise and how they can be resolved or equivalently rewritten.
 
 
 \begin{lemma}[Generalized management of Deontic Conflicts]\label{Gdeontic-conflict}
@@ -1241,24 +1297,18 @@ Let $\is$ and $\is'$ be interval sets and $\acta$ an action.
 \end{lemma}
 
 \noindent
-Case (i) expresses a \defn{total deontic conflict}: an obligation and a prohibition on the same action and time frame cannot coexist, making the conjunction unsatisfiable.  
-Case (ii) captures a \defn{partial deontic conflict}, where the overlap between obligation and prohibition is only partial; the formula remains satisfiable after removing the conflicting portion.
+Case (i) expresses a \defn{total deontic conflict}: When all time points of an obligation are included within the prohibition time points, then the conjunction is unsatisfiable. 
+Case (ii) captures a \defn{partial deontic conflict}, this cases illustrate the situation when not all time points of an obligation are included within prohibition time points, then only the included time points are removed, and the resulting rewriting is conflict-free.
 
 \begin{proof}
+
+For $\ob{\is}{a} \sqcap \forb{\is'}{a}$:
 \textbf{(i) T-DeoConf.}  
-If $\is \subseteq \is'$, each required point $t\in\is$ is also forbidden at $t\in\is'$, yielding punctual conflicts $\ob{\{[t,t]\}}{a}\sqcap\forb{\{[t,t]\}}{a}$.  
-No trace can satisfy both, hence the conjunction is unsatisfiable.
+ When $\is \subseteq \is'$,  by the semantic definition of \TDDLfm we have a quantifier clash, thus no trace can satisfy both, hence the conjunction is unsatisfiable.
 
 \smallskip
 \textbf{(ii) P-DeoConf.}  
-When $\is\cap\is'\neq\emptyset$ and $\is\not\subseteq\is'$, only points in $\is\cap\is'$ are conflicting.  
-Obligations outside the overlap remain valid.  
-Removing the conflicting portion yields the equivalent formula:
-\[
-\ob{\is}{a} \sqcap \forb{\is'}{a} 
-\dutyequiv 
-\ob{\is\ominus\is'}{a} \sqcap \forb{\is'}{a}.
-\]
+When $\is\cap\is'\neq\emptyset$ and $\is\not\subseteq\is'$, by the semantics definition, one can encode the quantified formula for each literal as a constraint and prune the conflicting time points.
 \end{proof}
 
 \begin{lemma}[Generalized management of Ontic Conflict]\label{lemma:ontic-conflict}
@@ -1271,30 +1321,29 @@ Then:
 \end{lemma}
 
 \noindent
-This rule captures the situation where more actions are obliged than available time points make simultaneous fulfilment impossible.  
-Partial ontic rewritings are intentionally omitted, as discussed earlier, due to combinatorial explosion.
+This rule captures the situation in which more actions are required than the available time points allow for simultaneous fulfillment.  
+We intentionally omit creating a partial ontic conflict rule, as discussed earlier in \ref{table:ontic-triple-conflict} , due to combinatorial explosion.
 
 \begin{proof}
-Let $\size{\is}=m<n$.  
+Assume $\size{\is}=m<n$.  
 Each $\ob{\is}{a_i}$ expands as $\bigsqcup_{t\in\is}\ob{\{[t,t]\}}{a_i}$; their conjunction enumerates all assignments of actions to time points.  
-Since $n>m$, some $t$ must host at least two actions $a_i,a_j$, producing punctual ontic conflicts
-$\ob{\{[t,t]\}}{a_i}\sqcap\ob{\{[t,t]\}}{a_j}\dutymodel\bot$.  
-By the pigeonhole principle~\cite{Dirichlet1834Vorlesungen,ajtai1994complexity}, every disjunct is unsatisfiable, hence the whole formula is unsatisfiable.
+This resulting encoding corresponds to the pigeonhole principle~\cite{Dirichlet1834Vorlesungen,ajtai1994complexity}, at least one action cannot be filled within the timeline specified by the interval sets.
 \end{proof}
-
+We now move to construct a proof system that supports a mechanized, proof-oriented study of conflicts in our logic.
 \subsection{Conflict Calculus}
 
-The conflict calculus in \ref{fig:conflict-calculus} consolidates nine inference rules previously derived as lemmas.  
-Together they form a structured system for detecting, rewriting, and resolving normative conflicts.
+The conflict calculus in \ref{fig:conflict-calculus} admits eight inference rules derived from  previously proven lemmas in Section~\ref{syntaxandsemantics}.  
+Together, they form a structured system for detecting, rewriting, and resolving normative conflicts.
 
 \begin{itemize}
-\item \textbf{(O-Union)} and \textbf{(F-Union)} merge adjacent or disjoint obligations and prohibitions into single literals, simplifying formulas after resolution.
-\item \textbf{($\bm{\bot\sqcap}$)} and \textbf{($\bm{\bot\sqcup}$)} propagate unsatisfiability through conjunctions and disjunctions.
-\item \textbf{($\bm{\sqcup\bot}$)} prunes unsatisfiable branches in disjunctions.
-\item \textbf{($\bm{\bot\equiv}$)} and \textbf{($\bm{\equiv\sqcap}$)} preserve (un)satisfiability under equivalence substitution.
-\item \textbf{(Distr1L)} distributes conjunction over disjunction to produce disjunctive normal form.
-\item \textbf{(T-DeoConf)} and \textbf{(P-DeoConf)} identify total and partial deontic conflicts, the latter enabling safe rewriting of overlapping intervals.
-\item \textbf{(OntConf)} generalizes punctual ontic conflicts, deriving unsatifiability when obligations outnumber time points.
+\item \textbf{(O-Union)} and \textbf{(F-Union)} correspond to the literal compression Lemma~{lemma:literal-compression}
+\item \textbf{($\bm{\bot\sqcap}$)} and \textbf{($\bm{\bot\sqcup}$)} streamline the construction of a proof of unsatisfiability in conjunction and disjunction of two formulas.
+\item \textbf{($\bm{\sqcup\bot}$)} prunes the unsatisfiable formula in its disjunction with another one.
+\item \textbf{($\bm{\bot\equiv}$)}  proves unsatisfiability through equivalence.
+\item \textbf{($\bm{\equiv\sqcap}$)} is a substituation in a conjunction through equivalence.
+\item \textbf{(Distr1L)} represents the distributivity rule.
+\item \textbf{(T-DeoConf)} and \textbf{(P-DeoConf)} respectively conclude unsatisfiability or prune punctual deontic conflicts as in Lemma~\ref{Gdeontic-conflict}.
+\item \textbf{(OntConf)} derives unsatifiability when obligations according to Lemma~\ref{lemma:ontic-conflict}.
 \end{itemize}
 
 \begin{figure}[h]
@@ -1345,25 +1394,25 @@ Together they form a structured system for detecting, rewriting, and resolving n
 \end{figure}
 
 \begin{example}[Analyzing $\UC$ via Conflict Calculus]
-$\text{Let }
-\UC_1' := \ob{\{[9,16]\}}{\delAtGate} \sqcap \MA \sqcap \SR, 
-\UC_2' := \ob{\{[9,16]\}}{\delAtPark} \sqcap \MA \sqcap \SR$\\
-and $\UC := \UC_1' \sqcup \UC_2'
-$
-with
-$
-\MA := \forb{\{[2,4],[8,24]\}}{\delAtGate}, 
-\quad
-\SR := \forb{\{[10,14]\}}{\delAtPark}.\\
-$
-A constructive way of prunning $\UC$ with be following the next three steps:\\
+Let $\UC := \UC_1' \sqcup \UC_2'$ where:
+\begin{align*}
+\UC_1' &:= \ob{\{[9,16]\}}{\delAtGate} \sqcap \MA \sqcap \SR, \\
+\UC_2' &:= \ob{\{[9,16]\}}{\delAtPark} \sqcap \MA \sqcap \SR,
+\end{align*}
+with:
+\begin{align*}
+\MA &:= \forb{\{[2,4],[8,24]\}}{\delAtGate}, \\
+\SR &:= \forb{\{[10,14]\}}{\delAtPark}.
+\end{align*}
+A constructive way to prune $\UC$ is by following these three steps:
+
 \textbf{Step 1: Total deontic conflict in $\UC_1'$.}
 \begin{prooftree}
 \AxiomC{}
-\RightLabel{\footnotesize (T-DeoConf)}
+\RightLabel{\small (T-DeoConf)}
 \UnaryInfC{$\ob{\{[9,16]\}}{\delAtGate}\sqcap\forb{\{[2,4],[8,24]\}}{\delAtGate}\vdash\bot$}
 \AxiomC{}
-\RightLabel{\footnotesize ($\bot\sqcap$)}
+\RightLabel{\small ($\bot\sqcap$)}
 \BinaryInfC{$\UC_1'\dutymodel\bot$}
 \end{prooftree}
 Thus $\UC_1'$ is unsatisfiable due to overlapping obligation and prohibition intervals on the same action.
@@ -1371,12 +1420,12 @@ Thus $\UC_1'$ is unsatisfiable due to overlapping obligation and prohibition int
 \textbf{Step 2: Partial deontic conflict in $\UC_2'$.}
 \begin{prooftree}
 \AxiomC{}
-\RightLabel{\footnotesize(P-DeoConf)}
+\RightLabel{\small (P-DeoConf)}
 \UnaryInfC{$\ob{\{[9,16]\}}{\delAtPark}\sqcap\forb{\{[10,14]\}}{\delAtPark}
 \dutyequiv
 \ob{\{[9,9],[15,16]\}}{\delAtPark}\sqcap\forb{\{[10,14]\}}{\delAtPark}$}
 \AxiomC{}
-\RightLabel{\footnotesize ($\equiv\sqcap$)}
+\RightLabel{\small ($\equiv\sqcap$)}
 \BinaryInfC{$\UC_2'\equiv\UC_2$}
 \end{prooftree}
 $\UC_2'$ is thus satisfiable after eliminating overlapping intervals.
@@ -1385,24 +1434,16 @@ $\UC_2'$ is thus satisfiable after eliminating overlapping intervals.
 \begin{prooftree}
 \AxiomC{$\UC_1'\dutymodel\bot$}
 \AxiomC{$\UC_2'\equiv\UC_2$}
-\RightLabel{\footnotesize ($\bot\sqcup$)}
+\RightLabel{\small ($\bot\sqcup$)}
 \BinaryInfC{$\UC_1'\sqcup\UC_2'\dutyequiv\UC_2$}
 \end{prooftree}
-Hence the global formula $\UC$ is equivalent to its conflict free refinement $\UC_2$.
+Hence the global formula $\UC$ is equivalent to its conflict-free refinement $\UC_2$.
 \end{example}
 
 \medskip
 \noindent
-The conflict calculus thus provides a uniform reasoning layer over \TDDLfm: each rule isolates minimal sources of unsatisfiability, supports controlled rewriting, and preserves equivalence where possible.  
-Its proof-theoretic structure also makes it directly implementable in theorem provers such as Coq, Isabelle, or Lean, where each rule can be encoded as a tactic enabling guided, reproducible proof search.  
-This opens a path toward an interactive assistant for designing consistent normative systems, capable of explaining, verifying, and refining specifications through structured derivations.
-
-        \section{Discussion of the Overall Framework}
-        This section situates our technical contributions within a structured methodology for analyzing and resolving conflicts in timed normative specifications. We first highlight the formal pipeline of results, which connects definitions, lemmas, algorithms, and theorems into a coherent workflow. We then explain how the framework can be used in practice, showing how each component interacts to refine normative specifications and support human-in-the-loop reasoning.
-        
-        \subsection{Answering the Research Questions Through Formal Results}
-
-This section situates our technical contributions within a structured methodology for analyzing and resolving conflicts. We demonstrate how the formal pipeline—connecting definitions, algorithms, and theorems—provides precise answers to the three research questions (RQ1--RQ3) posed in \ref{sec:overview}.
+The conflict calculus for \TDDLfm captures all types of deontic conflicts and only total ontic ones. It is designed with a set of simple rules to isolate the minimal sources of unsatisfiability and eliminate timed normative conflicts. The user may navigate through logical equivalence in any direction he wants. This formalism not only identifies unsatisfiability and conflicts but also provides a structured way to resolve them through systematic refinement.
+ We plan to encode the entire framework in a theorem prover such as Isabelle \cite{wenzel2008isabelle}, Lean \cite{de2015lean}, or Rocq \cite{bertot2013interactive} as future work.
 
 \subsubsection{Answering RQ1: The Relation between Unsatisfiability and Conflict}
 
@@ -1521,81 +1562,30 @@ Our framework provides a mixed answer: semantic preservation is guaranteed, but 
 
 
         \section{Related Work}
-        To our knowledge, this is the first framework to integrate systematically:
-        \begin{inparaenum}[(i)]
-        \item a metric-time deontic logic with action-based semantics;
-        \item structural use of interval sets for simplifying formula representations;
-        \item algorithmic techniques for detecting and eliminating conflicts;
-        \item a conflict calculus that supports formal, traceable derivations; and
-        \item a quantitative analysis of conflict density and conciseness in normative specifications and their refinements.
-        \end{inparaenum}
-        
-        
-        
-        % \begin{table}[h!]
-        % \centering
-        % \caption{Comparison of related frameworks along key conflict-handling dimensions.}
-        % \label{tab:related-work-comparison}
-        % \renewcommand{\arraystretch}{1.3}
-        % \begin{tabularx}{\textwidth}{|l|X|X|X|X|}
-        % \hline
-        % \textbf{Work} & \textbf{Timed Constraints} & \textbf{Conflict Types} & \textbf{Conflict Detection Mechanism} & \textbf{Conflict Elimination} \\
-        % \hline
-        % \textbf{\cite{colombo2014detecting}} &
-        % Timed traces with event triggers and deadlines; timing not encoded in the logic itself. &
-        % Deontic and a combination of achievement, maintenance, preemptive, and compensable. &
-        % Trace-based analysis, with manual annotations of action incompatibility and temporal alignment. &
-        % No algorithmic elimination; focus is on classification and modeling. \\
-        % \hline
-        % \textbf{\cite{pace2020general}} &
-        % Discrete time steps only; no metric constraints. &
-        % Primarily \emph{environmental} conflicts (generalized ontic). &
-        % Derivative semantics and constraints over traces of action sets to capture the evolution of the norms and constraints over time. &
-        % No formal elimination mechanism; detection only. \\
-        % \hline
-        % \textbf{\cite{DBLP:journals/flap/TamargoMRG21}} &
-        % Metric time using intervals &
-        % Temporal inconsistency due to overlapping rules; deontic conflicts only. &
-        % Belief revision via consistency-checking operator $\sigma$. &
-        % Partial elimination by trimming subintervals that cause contradiction. \\
-        % \hline
-        % \textbf{\cite{DBLP:conf/icail/GovernatoriR23}} &
-        % No metric constraints; defeasible logic setting. &
-        % Deontic conflict density (lack of clear resolution). &
-        % Defeasible inference rules; conflict density from unresolved rule conflict. &
-        % No elimination; conflict density is diagnosed, not removed. \\
-        % \hline
-        % \textbf{\cite{10.1145/3597503.3639093}}&  Time points (deadline).& vacuous and situational.& SMT solving via encoding to $FOL^*$ fragment. & Not addressed.\\
-        % \hline
-        % \textbf{This work} &
-        % Metric-time using interval sets. &
-        % Deontic and ontic conflicts based on overlapping obligations and prohibitions. &
-        % Syntactic and semantic detection using DPNF and a proof system. &
-        % Conflict calculus and elimination algorithms based on normalization and pruning. \\
-        % \hline
-        % \end{tabularx}
-        % \end{table}
-        
-        Existing works suggests many ways to define and detect normative conflicts with temporal reasoning. The majority of current frameworks either limit themselves to discrete-time models or employ only axiomatic approaches without providing operational steps for handling conflict. Our framework differs, introducing a syntactically sound and semantically founded methodology that incorporates normalization, algorithmic detection, conflict elimination, and formal conflict calculus. The following explanations make clear how our research compares to previous work.
-        
-        \paragraph{Conflicts Characterization}
-        Pace and Schapachnik~\cite{pace2020general} propose logical criteria for identifying conflicts in contracts using temporal deontic logic. Their framework operates in a discrete-time setting, where obligations are defined over abstract steps rather than metric time points. Notably, their primary focus lies in environmental conflicts, which is another type of ontic conflicts related to the environement constraint rather than the agent. A typical example involves a contract that obliges an agent to perform actions a, b, and c, while an external constraint prohibits executing all three simultaneously. These conflicts are not necessarily due to temporal contradictions, as we consider in our work when multiple obligations are assigned to distinct actions at the same time point, but rather arise from feasibility limitations imposed by the environment.
-        
-        A closer comparison can be drawn with the work of Colombo and Governatori~\cite{colombo2014detecting}, who present a temporal semantic framework for analyzing various types of obligations, standard, achievement, maintenance, preemptive, and compensable—using timed traces as semantic models. Their framework captures a broader typology of conflicts, including what we define as deontic conflicts as well as achievement/achievement conflicts, which in our setting correspond to ontic conflicts. While their use of timed traces enables reasoning about the evolution of obligations over time, timing constraints are not directly embedded in the logical syntax. Instead, they are modeled via external annotations such as triggers and deadlines. This externalization of timing has significant implications. For example, in their setting, conflict detection relies on manually specifying incompatibilities between actions such as declaring that ``going to the bar” and ``writing a paper” cannot occur simultaneously. This is necessary because actions are represented as atomic propositions, all of which may co-occur at the same time point unless explicitly constrained. In contrast, our logic internalizes timing constraints as first-class constructs. Conflicts arise not from assumed action incompatibilities but from the interaction of metric intervals within which obligations and prohibitions are specified. This intrinsic modeling of time allows us to detect inconsistencies purely based on the temporal semantics of the norms, without requiring auxiliary assumptions about the actions themselves. We acknowledge that, in practice, some actions can be concurrent; our minimal ontic assumption can be relaxed by replacing the single–action capacity with a general feasibility predicate. Thus, an expressive ontic layer lies between the two settings: Under this regime, exceptions are positive, one can explicitly declare which actions are co-executable, rather than attempting to enumerate all non-compatible pairs. 
-        
-        A framework is presented in \cite{10.1145/3597503.3639093} that models temporal constraints using deadlines, i.e, single  time point within which a prescribed event must or must not occur (e.g., “open the curtain within 30 minutes”). These constraints are not expressed as extended intervals such as $[10,14]$ or sets of disjoint intervals, but rather as single continuous windows anchored to specific triggering conditions. The framework does not reason over arbitrary collections of time periods; instead, it focuses on whether an event satisfies its associated deadline constraint. Within this setting, they distinguish two forms of normative conflict: vacuous conflicts, which arise when a rule can never be applied without violating another, for instance, one rule obliges opening the curtains while another forbids it in all cases; and situational conflicts, which emerge only under certain conditions, where otherwise non-conflicting rules issue contradictory demands when triggered simultaneously in a specific context. 
 
-        \paragraph{Conflict Elimination}
-A comparable strategy for conflict elimination in timed normative specifications is found in the work \cite{DBLP:journals/flap/TamargoMRG21}, which introduces a belief revision framework for legal systems based on temporalised logic. Their approach also addresses normative systems with discrete time, allowing for fine-grained control over the temporal applicability of norms. At the core of their framework lies a temporal revision operator, denoted $\sigma$, which maintains consistency when new normative clause is introduced. Rather than removing the entire conflicting rules, the operator identifies the specific temporal fragments,i.e., sub-intervals, responsible for the contradiction and selectively trims them.
+To our knowledge, our framework is the first to offer a systematic approach that studies metric-time deontic logic with action-based semantics with interval-set representation to compactly encode temporal constraints to offer syntactic and semantic study of timed normative conflicts by using algorithmic conflict detection and elimination, a proof-theoretic conflict calculus, and quantitative measures of conflict density and conciseness. We now proceed to a discussion of related work.
 
-In contrast, our approach differs in several key respects:
-\begin{inparaenum}[(i)]
-\item it addresses not only deontic conflicts but also ontic conflicts, as our logic is action-based;
-\item our logic does not support conditionals, while they do not consider disjunction;
-\item our conflict detection and elimination revises the entire normative system as a whole, rather than prioritizing the newly introduced norm over the existing ones;
-\item it leverages interval sets to yield a more concise and refined normative specification, whilst they solely rely on intervals; and \item our approach is semantic and syntax-based, equipped with algorithms and conflict calculus.
-\end{inparaenum}
 
+The closest work to our approach is Colombo and Governatori~\cite{colombo2014detecting}: 
+Conflicts are first characterized as unsatisfiable/non-compliant formulas, where the formulas are formed with untimed literals over action and states, and the models are timed traces where events capture \begin{inparaenum}[(i)]
+ \item the action performed by the agent, \item states of a system, and  \item the triggers and deadlines of the untimed literals \end{inparaenum}. Additionally, the logic relies on the specification assumptions to encode action incompatibilities, such as the fact that going to a pub is incompatible with submitting a research paper. Our framework, on the other hand, focuses on \begin{inparaenum}[(i)] \item actions only, \item uses literals tagged with timed constraints, \item characterizes conflicts as Minimal unsatisfiable subsets of a normal form, and \item Our definition of ontic conflicts, the equivalent of achievement achievement, rely on an axiom are never achivievable at the same time points (single action per event).\end{inparaenum} Nevertheless, we could relax this assumption by introducing a feasibility predicate that defines which actions are co-executable, in contrast to  which ones are non-co-executable, in order to encode real-life settings for continuous actions.  
+This intrinsic treatment of metric intervals allows purely semantic detection without auxiliary declarations about actions.  
+Nevertheless, our framework could relax the single-action assumption by introducing a feasibility predicate that defines which actions are co-executable, thereby bridging their semantic traces to our interval semantics.
+
+Tamargo et al.~\cite{DBLP:journals/flap/TamargoMRG21} study normative systems as dynamic systems in which rules are introduced or updated, and norms are timed. In this work, they use a belief-revision operator $\otimes$ that trims sub-intervals that lead to contradictions in the updated normative system. Their method partially removes conflicts while preserving as much temporal structure as possible.  
+Our approach differs in that it handles both deontic and ontic conflicts under a uniform action-based semantics, treats the entire specification rather than single insertions, and reasons at the level of interval sets rather than single intervals, thereby supporting concise rewritings after elimination.  Moreover, our conflict calculus provides a formal proof framework that explains each elimination step.
+
+Pace and Schapachnik~\cite{pace2020general} focus on another type of ontic conflicts, namely \emph{environmental conflicts} in logical time, which generalizes our ontic conflicts by formalizing more infeasible combinations of required actions due to external constraints, such as an agent cannot be in different places at the same time. The work uses a dynamic, operational approach to detect both deontic and environmental constraints as they may materialize over time.
+
+
+
+
+
+
+
+Another perspective on conflict detection is presented in~\cite{10.1145/3597503.3639093}, which models normative specifications as a set of rules that can express deadlines over time points, conditionals, and exceptions (defeaters). They distinguish mainly two types of conflicts: (i) \emph{vacuous} conflicts, where the involved rules can never be jointly satisfied, and (ii) \emph{situational} conflicts, which only arise under specific triggering conditions. While their specification language \tool{SLEEC} is more expressive than \TDDLfm, their conflicts specification is close to our deontic conflicts, but we specify a granularity at all time points where a literal is in force, and we also consider ontic conflicts. To detect conflicts, they encode the types of conflicts as unsatisfiability conditions and the normative specification into first-order logic with relational objects, and apply a causality check to find the root causes of the unsatisfiability of a formula by eliminating unnecessary rules for the proof. In our approach, we go further: even if the formula is unsatisfiable, we trim the unsatisfiable part of the rules.
+
+In summary, these cited frameworks focus on more expressive norms that are dynamic due to triggers and exceptions that are difficult to detect statically. On the other hand, our work established both an axiomatic and a semantic characterization of conflicts, which we study through a variety of methods, such as SAT solving, conflict-preserving rewriting, proof systems, and conflict elimination procedures.
 % \section{Conclusion}
 % This paper introduced a structured framework for reasoning about conflicts in normative systems specified in a metric-time. Our approach integrates syntactic normalization, SMT-based feasibility checks, a dedicated conflict detection algorithm, and a formal conflict calculus to classify and resolve both ontic and deontic inconsistencies. By internalizing temporal constraints as first-class logical constructs, our logic avoids reliance on external assumptions about action incompatibility and enables conflict detection based purely on the interaction of time-bounded norms.
 

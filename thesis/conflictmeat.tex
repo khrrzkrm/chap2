@@ -1,14 +1,14 @@
 \section{Syntactic Timed Normative Conflict Definition and Detection}
 \label{sec:conflicts}
 
-The previous sections established the semantics of \TDDLfm, including the representation of obligations and prohibitions over interval sets and the construction of normal forms. We now address how to capture \emph{conflicts} in temporal-deontic specifications formally.
+The previous sections established the semantics of \TDDLfm and the satisfiability problem on the logic as well as the construction of normal forms. We now address how to formally capture \emph{conflicts} in temporal-deontic specifications.
 
-Our motivation, grounded in practical use cases, is that deontic conflicts materialize at \emph{specific time points} that must be isolated and explained. The goal is not only to show that a specification is inconsistent, but to determine \emph{where}, \emph{when}, and \emph{why} inconsistency arises. We first define punctual ontic and deontic conflicts as atomic patterns. We then explain why these patterns do not suffice on their own, introduce syntax-aware invariants (\LUCO and \LAP) that stabilize conflict detection under rewriting, and finally develop a systematic procedure and quantitative measure that detect and classify all punctual conflicts that a formula \emph{has}.
+Our motivation, grounded in practical use cases, is that deontic conflicts materialize at \emph{specific time points} that must be isolated and explained. The goal is not only to show that a specification is inconsistent, but to determine \emph{where}, \emph{when}, and \emph{why} inconsistency arises. We first define punctual ontic and deontic conflicts as atomic patterns.  Then, we demonstrate a $\dpnf$ transformation to explicit punctual conflict and introduce syntax-aware invariants named \LUCO and \LAP that prove the correctness of the conflict detection under the \dpnf rewriting, and finally develop a systematic procedure and quantitative measure that detect and classify all punctual conflicts that a formula \emph{has}.
 
 
 
-\subsection{Syntactic Definitions for Conflicting Formulas}
-To reason about conflicts in \TDDLfm, we first need a precise vocabulary that identifies what constitutes a conflict and when a formula specifies a conflict. We therefore begin by isolating the most elementary patterns that arise at individual time points. These punctual patterns form the atomic units from which all further reasoning about conflicts in formulas \emph{has or specifies}.
+\subsection{Syntactic definitions for conflicting formulas}
+To reason about conflicts in \TDDLfm, we first need a precise vocabulary that identifies what constitutes a conflict and when a formula specifies a conflict. We therefore begin by isolating the most elementary patterns that materialize at individual time points. These punctual patterns form the atomic units from which all further reasoning about conflicts in formulas \emph{has or specifies}.
 
 \subsubsection{Punctual Conflicts: the Atomic Patterns}
 From a dilemma-oriented perspective, two types of timed normative conflicts arise. First, an agent may be simultaneously obliged and prohibited to perform the same action at the same time. Second, an agent may be obliged to perform two different actions at exactly the same time, while the agent can realize at most one of them. We formalize these punctual conflict patterns next.
@@ -16,7 +16,7 @@ From a dilemma-oriented perspective, two types of timed normative conflicts aris
 \begin{definition}[Punctual Conflicts]\label{puncttypes}
 Let $a,b\in\Sigma$ and $t\in\mathbb{N}$.
 \begin{itemize}
-    \item A \defn{punctual deontic conflict} (\textbf{P-Deon-Conf}) occurs when an obligation and a prohibition prescribe and forbid the same action at the same time:
+    \item A \defn{punctual deontic conflict}, written (\textbf{P-Deon-Conf}), is a  conjunction of obligation and a prohibition that prescribe and forbid the same action at the same time:
     \[
         \ob{\{[t,t]\}}{a} \sqcap \forb{\{[t,t]\}}{a}.
     \]
@@ -27,14 +27,12 @@ Let $a,b\in\Sigma$ and $t\in\mathbb{N}$.
 \end{itemize}
 \end{definition}
 
-These patterns are purely syntactic formulas of \TDDLfm. Whenever they appear as sub-terms of a product term composed of punctual literals (modulo commutativity and associativity), a conflict is present at that time point. A formula may contain one or several such conflicts as subformulas, and a single literal may participate in several conflicts.
+These patterns are purely syntactic formulas of \TDDLfm. Whenever they appear as sub-terms of a product term composed of punctual literals (modulo commutativity and associativity), a conflict is present at that time point. A formula may contain one or several such conflicts as sub-formulas, and a single literal may participate in several conflicts.
 
 \begin{example}[Punctual conflicts appear as sub-formulas]
-We illustrate three formulas where conflicts occur as sub-terms. Underlined sub-terms indicate punctual conflicts.
+We illustrate three formulas in which conflicts occur as sub-terms. Underlined sub-terms indicate punctual conflicts.
 
-
-
-$
+$$
 \phi_1 :=
 \Big(
   \underline{\ob{\{[2,2]\}}{\delAtPark} \,\sqcap\, \forb{\{[2,2]\}}{\delAtPark}}
@@ -42,12 +40,11 @@ $
   \ob{\{[2,2]\}}{\delAtGate} \,\sqcap\, \forb{\{[2,2]\}}{\pickU}
 \Big)
 \;\sqcup\;
-\ob{\{[0,7]\}}{\delAtGate}.
-$
-\vspace{0.5em}
+\ob{\{[0,7]\}}{\delAtGate}
+$$
 $\phi_1$ contains a punctual deontic conflict on $\delAtPark$ at $t=2$.
 
-$
+$$
 \phi_2 :=
 \Big(
   \underline{\ob{\{[5,5]\}}{\delAtPark} \,\sqcap\, \ob{\{[5,5]\}}{\delAtGate}}
@@ -56,30 +53,20 @@ $
 \Big(
   \underline{\ob{\{[5,5]\}}{\delAtPark} \,\sqcap\, \forb{\{[5,5]\}}{\delAtPark}}
 \Big)
-\;\sqcup\;
-\ob{\{[0,6]\}}{\pickU}.
-$
+$$
 
+The formula $\phi_2$ contains two punctual conflicts at $t=5$: one ontic and one deontic.
 
-
-Here, $\phi_2$ contains two punctual conflicts at $t=5$: one ontic and one deontic.
-
-
-
-$
+$$
 \phi_3 :=
 \Big(
   \tikzmark{bpark}\ob{\{[2,2]\}}{\delAtPark\tikzmark{epark}}
   \, \sqcap\,
   \tikzmark{bgate}\ob{\{[2,2]\}}{\delAtGate\tikzmark{egate}}
   \, \sqcap\,
-  \tikzmark{bpick}\ob{\{[2,2]\}}{\pickU\tikzmark{epick}}
+  \tikzmark{bpick}\ob{\{[3,3]\}}{\pickU\tikzmark{epick}}
 \Big)
-\;\sqcup\;
-\Big(
-  \ob{\{[2,2]\}}{\delAtPark}
-\Big).
-$
+$$
 
 \begin{tikzpicture}[remember picture,overlay]
   \draw ([yshift=-0.8ex]pic cs:bpark) -- ([yshift=-0.8ex]pic cs:egate);
@@ -93,12 +80,11 @@ $\phi_3$ contains three punctual ontic conflicts at $t=2$ between
 $\{\delAtGate,\delAtPark\}$,
 $\{\delAtPark,\pickU\}$, and
 $\{\delAtGate,\pickU\}$.
-Removing $\ob{\{[2,2]\}}{\delAtPark}$ eliminates all conflicts because this literal participates in each of them.
+As $\ob{\{[2,2]\}}{\delAtPark}$ is present in all conflicts, removing this literal alone is enough to resolve all conflicts in the formula.
 \end{example}
 
 \subsubsection{Why Punctual Conflicts Are Not Enough}
-
-Real specifications rarely contain explicit punctual literals. Interval literals may conceal conflicts that only become visible after decomposition. For example,
+In real-life normative specification, the clauses rarely talk about a conjunction of punctual literals, but they use intervals. For example:
 $\forb{\{[1,1]\}}{a}$ is atomic, whereas
 $\forb{\{[1,3]\}}{a}$ decomposes via Literal Compression:
 \[
@@ -111,51 +97,54 @@ $\forb{\{[1,1]\}}{a} \sqcap \ob{\{[1,1]\}}{a}$
 is visible in the decomposed form but \emph{not} in
 $\forb{\{[1,3]\}}{a} \sqcap \ob{\{[1,1]\}}{a}$.
 
-Another case arises when conflicting literals do appear in the formula, yet their interaction is hidden by disjunction and does not manifest as a single product term. For instance,
+The other direction is also possible; conflict interaction is hidden by disjunction and does not manifest as a single product term. For instance,
 \[
 (\ob{\{[1,1]\}}{a} \sqcup \ob{\{[2,3]\}}{a}) \sqcap \forb{\{[1,1]\}}{a}.
 \]
-By distributivity,\\
-\\
-$
+By distributivity,
+$$
 (\ob{\{[1,1]\}}{a} \sqcup \ob{\{[2,3]\}}{a}) \sqcap \forb{\{[1,1]\}}{a}
 \equiv
 (\ob{\{[1,1]\}}{a} \sqcap \forb{\{[1,1]\}}{a})
 \sqcup
 (\ob{\{[2,3]\}}{a} \sqcap \forb{\{[1,1]\}}{a}).
-$\\\\
-The first disjunct exposes a punctual conflict at $t=1$, while the second does not. This example shows that the conflict is not syntactically evident in the original formula but only appears after applying distributive expansion. 
+$$
+
+At $t=1$, the first disjunct exposes a punctual conflict. 
 
 Hence, identifying conflicts cannot rely solely on the surface structure of a formula: conflicts may be latent within interval composition or disjunctive structure and require specific \emph{rewriting} to be made explicit.
 
 \subsubsection{Why Naive Equivalence-Based Detection Fails}
 
-A first idea would be to declare that a formula “has a conflict’’ whenever it is semantically equivalent to another formula that visibly contains a punctual conflict as defined in \cite{DBLP:conf/jurix/KharrazSL24}. This criterion is too weak: Boolean equivalences can \emph{erase} genuine conflicts or \emph{introduce} spurious ones.
+A first idea would be to declare that a formula “has a conflict’’ whenever it is semantically equivalent to another formula that visibly contains a punctual conflict as defined in \cite{DBLP:conf/jurix/KharrazSL24}. This criterion is too weak: Boolean manipulations can erase genuine conflicts or introduce spurious ones.
 
 \begin{example}[Illustration of problems with naive equivalence-based detection]
-We demonstrate equivalences by erasing or introducing conflicts using the absorption properties of disjunction of an unsatisfiable formula with any other formula, as shown in Lemma~.\ref{empty_inter_union}.
+We demonstrate equivalences by erasing or introducing conflicts using the absorption properties of the disjunction of an unsatisfiable formula with any other formula, as shown in Lemma~.\ref{empty_inter_union}.
 \begin{inparaenum}[(i)]
 \item \textbf{Erasing a genuine conflict.}
 \[
   \phi := (\ob{\{[2,2]\}}{a} \sqcap \forb{\{[2,2]\}}{a}) \;\sqcup\; \phi'
 \]
-is equivalent to $\phi'$, so naive equivalence would falsely conclude that $\phi$ has no conflict.
+is equivalent to $\phi'$,  equivalence would falsely conclude that $\phi$ has no conflict.
 
 \item \textbf{Creating a spurious conflict.}
 \[
-  \phi' := \phi \;\sqcup\; (\ob{\{[3,3]\}}{a} \sqcap \forb{\{[3,3]\}}{a}).
+  \phi' := \phi \;\sqcup\; (\ob{\{[3,3]\}}{a} \sqcap \forb{\{[3,3]\}}{a})
 \]
 is equivalent to $\phi$, but naive equivalence would now falsely conclude that $\phi$ has a conflict.
 \end{inparaenum}
 \end{example}
-In this section, the notion of conflict is treated primarily as a syntactic phenomenon, rather than as a property defined over the full semantic domain, that is, the set of models. The goal is not merely to determine whether a specification admits some compliant execution, but to identify incompatible normative prescriptions directly at the level of their formal structure. By focusing on syntax, conflicts can be detected compositionally, prior to model construction, and in a way that scales with the size of the specification. This shift is deliberate: semantic emptiness of the model set is too coarse a signal, as it obscures where and why a specification becomes problematic.
+
+To avoid such pathologies, conflict extraction must respect the formula's syntactic structure.
 
 \subsubsection{Syntax-Aware Conflict Detection: LUCO and LAP}
 
 
-We therefore introduce two invariants that govern how literal refinements behave in conflict detection: (i) \emph{Lowest Upper Common Operator (LUCO):} preserves the Boolean position where literals meet; and (ii) \emph{Literal Ancestor Preservation (LAP):} ensures punctual descendants refine but never alter their ancestor literals.
+ 
 
-These invariants ensure that conflicts cannot vanish or appear spuriously during normalization.
+We introduce two invariants that govern how transforming literal behave in conflict detection: (i)  \emph{Lowest Upper Common Operator (\LUCO):} preserves the Boolean position where literals meet; and (ii) \emph{Literal Ancestor Preservation (\LAP):} ensures punctual descendants refine—but never alter—their ancestor literals.
+
+These invariants ensure that conflicts are not introduced nor hidden by the  \dpnf normalization.
 
 \begin{definition}[Lowest upper common Boolean operator under unique occurrence]\label{def:luco-unique}
 Let $\phi\in\TDDLfm$ and let $\mathsf{T}(\phi)$ be its Boolean syntax tree whose internal
@@ -166,9 +155,9 @@ denoted $\LUCO_\phi(\ell_i,\ell_j)$, is the unique node $v$ of $\mathsf{T}(\phi)
 \begin{enumerate}[(i)]
     \item $v$ is labeled by $\sqcap$ or $\sqcup$;
     \item $v$ lies on both root-to-$\ell_i$ and root-to-$\ell_j$ paths; and
-    \item no proper descendant of $v$ satisfies \emph{(i)} and \emph{(ii)}.
+    \item no descendant of $v$ satisfies \emph{(i)} and \emph{(ii)}.
 \end{enumerate}
-We write $\LUCO_\phi(\ell_i,\ell_j)=\sqcap$ (resp.\ $=\sqcup$) to denote its label.
+We write $\LUCO_\phi(\ell_i,\ell_j)=\sqcap$ (resp.\ $=\sqcup$) to denote the common operator label.
 \end{definition}
 
 
@@ -217,8 +206,7 @@ and for any $x\in\{\ell_1,\ell_2,\ell_3\}$ and $y\in\{\ell_4,\ell_5\}$,
 
 
 As literals in our logic are not atomic, we introduce the notion of ancestor preservation with respect to time points in interval sets.
-Informally, this invariant ensures that normalization only refines a literal: no new time points are introduced beyond those originally specified, and none of the initial ones are lost.
-The modality and action remain unchanged, and the resulting punctual descendants, when recombined through their \LUCO, reconstruct exactly the original literal.
+This invariant ensures that normalization only refines the syntactic representation of literals without changing their specified time points, deontic operator an action. For the specified time points espcially for this invariant, no time point is introduced and no time point is removed.
 
 
 \begin{definition}[Literal ancestor preservation (\LAP)]
@@ -232,9 +220,8 @@ We say that $\phi'$ satisfies \emph{literal ancestor preservation} of $\phi$ if 
     For every literal $\ell$ in $\phi$, the set of its descendants$\{\ell_1', \ell_2', \dots, \ell'_n \}$ in $\phi'$ (i.e.\ those having $\ell$ as ancestor) combine under the Boolean operator determined by their Lowest upper common Boolean operator in $\phi'$ to a sub-formula that is syntactically equivalent to $\ell$.
 \end{enumerate}
 \end{definition}
+With these invariants in hand, we can prove the correctness of our conflict detection in the next subsection.
 
-
-These invariants ensure that literals and their Boolean combinations are neither added nor altered during the successive normalizations, which is precisely the guarantee required to prove correctness.
 \subsubsection{A Stable Definition of “Has a Conflict’’}
 
 We now define the correct notion of when a formula \emph{has} a conflict.
@@ -247,7 +234,6 @@ A formula $\phi$ \defn{has a conflict} iff there exists a formula $\phi'$ such t
     \item $\phi'$ has a punctual conflict as a sub-formula.
 \end{enumerate}
 \end{definition}
-
 
 
 \begin{example}[Preliminary exhibition of conflicts]
@@ -263,16 +249,15 @@ and
 \]
 
 \noindent
-We justify that $\phi$ specifies the conflict $\ob{\{[2,2]\}}{a} \sqcap \forb{\{[2,2]\}}{a}$ as follows:
-
+ According to our definition, $\phi$ specifies the punctual deontic conflict at time point 2, $\ob{\{[2,2]\}}{a} \sqcap \forb{\{[2,2]\}}{a}$ as:
 \begin{enumerate}[(i)]
   \item \textbf{Semantic equivalence.}  
-  By construction, $\phi'$ is simply the punctual decomposition of $\phi$:
+  $\phi'$ is the punctual normal form of $\phi$:
   \[
     \ob{\{[2,3]\}}{a} \equiv \ob{\{[2,2]\}}{a} \sqcup \ob{\{[3,3]\}}{a}, \qquad
     \forb{\{[2,4]\}}{a} \equiv \forb{\{[2,2]\}}{a} \sqcap \forb{\{[3,4]\}}{a}.
   \]
-  Substituting these equivalences yields exactly $\phi'$, hence $\phi \equiv \phi'$.
+  These equivalences matches exactly $\phi'$, hence $\phi \equiv \phi'$.
 
   \item \textbf{\LUCO preservation.}  
   In $\phi$, the two literals $\ob{\{[2,3]\}}{a}$ and $\forb{\{[2,4]\}}{a}$ occur under a conjunctive node $\sqcap$.  
@@ -281,7 +266,7 @@ We justify that $\phi$ specifies the conflict $\ob{\{[2,2]\}}{a} \sqcap \forb{\{
   \item \textbf{\LAP preservation.}  
   Each punctual literal in $\phi'$ has a corresponding ancestor in $\phi$:
   \begin{itemize}
-    \item $\ob{\{[2,2]\}}{a}$ and $\ob{\{[3,3]\}}{a}$ are descendants of $\ob{\{[2,3]\}}{a}$, and their interval sets are contained in $[2,3]$.
+    \item $\ob{\{[2,2]\}}{a}$ and $\ob{\{[3,3]\}}{a}$ are descendants of $\ob{\{[2,3]\}}{a}$, and their interval sets are contained within in $[2,3]$.
     \item $\forb{\{[2,2]\}}{a}$ and $\forb{\{[3,4]\}}{a}$ are descendants of $\forb{\{[2,4]\}}{a}$, and their interval sets are contained in $[2,4]$.
   \end{itemize}
   Moreover, the descendants recombine conjunctively or disjunctively exactly as required to recover their ancestors. Hence \LAP\ is satisfied.
@@ -294,7 +279,7 @@ We justify that $\phi$ specifies the conflict $\ob{\{[2,2]\}}{a} \sqcap \forb{\{
 \end{enumerate}
 
 \noindent
-Therefore, $\phi$ \emph{has} a conflict according to Definition~\ref{def:has-conflict}, witnessed by $\phi'$.
+Therefore, $\phi$ \emph{has} a conflict according to Definition~\ref{def:has-conflict}, witnessed by the rewriting $\phi'$.
 \end{example}
 
 This definition stabilizes the notion of conflict under normalization: conflicts cannot disappear or be fabricated through Boolean transformations, and later sections will show that every conflict that a formula has can be made explicit in its \dpnf\ form.
@@ -308,7 +293,7 @@ The definition requires only that a formula have at least one punctual conflict,
 To exhibit such conflicts systematically, we define the \emph{disjunctive punctual normal form} (\dpnf). 
 In this form, each disjunct corresponds to a punctual product term, and conflicts can be localized 
 by analyzing these terms individually. 
-We prove that transformation into \dpnf\ preserves semantics, and we establish 
+We prove that the transformation into \dpnf\ preserves semantics, and we establish 
 soundness and completeness of the conflict-detection procedure 
 (Algorithm~\ref{fig:conflict-extraction}) with respect to the definition above. 
 This ensures that every punctual conflict present in a formula can be effectively detected, 
@@ -322,7 +307,7 @@ A high density reflects an increased level of normative inconsistency,
 reducing clarity for agents seeking to comply with the norms. 
 
 
-We now start by defining a new normal form specific to our logic in order to exhibit punctual conflict by decomposing literals into punctual literals.
+We now define a new normal form specific to our logic to exhibit punctual conflict by decomposing literals into punctual literals.
 
 \subsubsection{Punctual Normal Form}\label{subsec:pnf}
 
@@ -358,7 +343,7 @@ and, by orienting the equivalences \textbf{ObDis} and \textbf{FConj}, we obtain 
 \end{figure}
 
 \begin{example}
-For $\ob{\{[2,4],[6,8]\}}{a}$, applying \textbf{RightPunctOb} yields
+Conisder $\ob{\{[2,4],[6,8]\}}{a}$, applying \textbf{RightPunctOb} results in 
 \[
 \ob{\{[2,4],[6,8]\}}{a}
 \to
@@ -367,7 +352,7 @@ For $\ob{\{[2,4],[6,8]\}}{a}$, applying \textbf{RightPunctOb} yields
 introducing the punctual literal $\ob{\{[2,2]\}}{a}$.
 \end{example}
 
-Repeated application of these rules unrolls non-punctual intervals until their upper bounds. However, prohibitions may include infinite intervals (e.g.\ $[k,\infty]$), making unrestricted expansion non-terminating. To ensure finiteness, we define a bounded variant.
+Repeated application of these rules introduces new punctual conflicts, eventually reaching their upper bounds. However, prohibitions may include infinite intervals (e.g.\ $[k,\infty]$) leading to an infinite chain of repetition. As conflicts only occur between obligation and obligation and Prohibition and obligation, to ensure a good enough enrollment, we define a bounded variant.
 
 \begin{definition}[Punctual Normal Form up to \(k\)]
 Let \(k \in \mathbb{N}\).  
@@ -378,7 +363,7 @@ A formula $\phi$ is in \emph{punctual normal form up to \(k\)} if every literal 
 \end{itemize}
 \end{definition}
 
-We now guard the previous rules by a cutoff point \(k\), as shown below.
+We, for now, manually choose  a bound \(k\), for illustration purposes. Later we will show how to  choose it depending on the formula.
 
 \begin{figure}[h]
 \centering
@@ -465,57 +450,56 @@ Intervals exceeding the bound remain non decomposed, ensuring termination.
 We now compare the syntactic size of a formula with that of its punctual normal form.
 
 \begin{lemma}[Size Blow-Up of Literals under \pnf]\label{lem:pnf-literal-blowup}
-Let $\ell = \monadop{D}{\is}{a}$ be a literal of \TDDLfm, where $D \in \{\mathsf{O}, \mathsf{F}\}$, and let $k \in \mathbb{N}$ be a finite bound. Then:
+For any literal of \TDDLfm $\ell = \monadop{D}{\is}{a}$   and  $k \in \mathbb{N}$. We have:
 \[
 \frac{\size{\pnf(\ell,k)}}{\size{\ell}} 
-\le 5\,\expf(\is) - \frac{1}{\card(\is)} ,
+\le 5\,\expf(\is^k),
 \]
-where $\expf(\is) := \frac{\size{\is}}{\card(\is)}$ is the \emph{expansion factor} of the interval set $\is$.
+where $\is^k= \is \ominus [k, \infty]$ and $\expf(\is) := \frac{\size{\is}}{\card(\is)}$ is the \emph{expansion factor} of the interval set $\is$.
 \end{lemma}
 
 \begin{proof}
-For a literal $\ell = \monadop{D}{\is}{a}$,
+For  $\ell = \monadop{D}{\is}{a}$, we have the size of the literal
+$\size{\ell} = 2 + 2\card(\is)
+$ as defined in Definition.~\ref{def:size}
+
+By the definition.~\ref{def:pnf} for $\pnf$ for literals, each time point $t$ in $\is \ominus [k{+}1,\infty]$ becomes a punctual literal $\monadop{D}{\{[t,t]\}}{a}$, The returned formula is formed by conjunctions or disjunctions depending on $D$. The number of punctual literals is at most $\size{\is^k}$, and the number of binary connectives is $\size{\is^k} - 1$. Each punctual literal has a fixed size of $4$ , giving
+
 \[
-\size{\ell} = 2 + 2\card(\is),
+\size{\pnf(\ell,k)} \le 4\size{\is^k} + (\size{\is^k}-1) + C 
+= 5\size{\is^k} - 1 + C,
 \]
-counting the operator, action, and the two numeric bounds per interval.
+where $C$ accounts for a possible tail term $\monadop{D}{\is \cap [k+1, \infty]}{a}$,
 
-Under $\pnf$, each time point $t$ in $\is \ominus [k{+}1,\infty]$ becomes a punctual literal $\monadop{D}{\{[t,t]\}}{a}$, connected by conjunctions or disjunctions depending on $D$. The number of punctual literals is at most $\size{\is}$, and the number of binary connectives is $\size{\is} - 1$.
-
-Each punctual literal contributes a fixed size of $4$, giving
-\[
-\size{\pnf(\ell,k)} \le 4\size{\is} + (\size{\is}-1) + C 
-= 5\size{\is} - 1 + C,
-\]
-where $C$ accounts for a possible tail term and is absorbed in the bound.
-
-Hence,
+Thus, we can approximate the complexity by :
 \[
 \frac{\size{\pnf(\ell,k)}}{\size{\ell}}
-\le \frac{5\size{\is}-1}{2+2\card(\is)}
-= \frac{5\expf(\is)\card(\is)-1}{2+2\card(\is)}
-\le 5\,\expf(\is) - \frac{1}{\card(\is)} .
+\le \frac{5\size{\is^k}-1}{2+2\card(\is^k)}
+= \frac{5\expf(\is^k)\card(\is^k)-1}{2+2\card(\is^k)}
+\le 5\,\expf(\is^k) .
 \]
 \end{proof}
 
 \begin{lemma}[Formula Size Blow-Up and Average Expansion Factor]\label{lem:pnf-size-expansion}
 Let $\phi$ be a formula in \TDDLfm\ and $k \in \mathbb{N}$ a finite bound.
-Let $\phi_x$ be the set of literals of $\phi$, and $\mathcall{I}_\phi$ the set of interval sets occurring in those literals.
-Define the \emph{average expansion factor} of $\phi$ as:
-\[
-\expf_a(\phi) := 
-\frac{1}{\card(\mathcall{I}_\phi)}
-\sum_{\is \in \mathcall{I}_\phi} \expf(\is).
-\]
 Then the size of $\pnf(\phi,k)$ grows linearly with both $\expf_a(\phi)$ and $\size{\phi}$:
 \[
 \size{\pnf(\phi,k)} = 
 \mathcal{O}\big(\expf_a(\phi)\cdot \size{\phi}\big).
 \]
+
+Where 
+
+\begin{enumerate}
+\item $\expf_a(\phi) := 
+\frac{1}{\card(\mathcall{I}_\phi)}
+\sum_{\is \in \mathcall{I}_\phi} \expf(\is)$.
+\item  $\mathcall{I}_\phi$ is the array of interval sets occurring in the literals from  $\phi$ all reduced by the interval $[k+1,\infty]$.\\
+\end{enumerate}
 \end{lemma}
 
 
-\subsubsection{A \tool{DPNF} Algorithm for Enumerating Punctual Conflicts}\label{subsec:dpnf}
+\subsubsection{A \tool{DPNF} algorithm for enumerating punctual conflicts}\label{subsec:dpnf}
 
 To systematically expose all punctual conflicts specified by a formula, we exploit the punctual and disjunctive normal forms introduced earlier.  
 Given $\phi \in \TDDLfm$, we first transform it into $\pnf(\phi,k)$, where $k$ is the maximal time point appearing in any obligation literal of $\phi$.  
@@ -556,8 +540,7 @@ $\mathcall{PC} \gets \emptyset$ \tcp*{Initialize conflict set}
 \end{minipage}
 
 Here, \textsc{MaxOPoint}$(\phi)$ returns the largest finite time point from any obligation interval in $\phi$.  
-The algorithm then scans each product term of the disjunctive form and records all literal pairs matching the deontic or ontic conflict patterns, returning them as tuples $(\pt,\mathcall{C})$.
-
+The algorithm then scans each product term in the disjunctive form and records all literal pairs that match the deontic or ontic conflict patterns, returning them as tuples $(\pt,\mathcall{C})$.
 \begin{example}[Conflict detection and density]\label{ex:easy}
 To illustrate, consider a compact specification combining both deontic and ontic punctual conflicts:
 \[
@@ -666,10 +649,10 @@ For any $\phi\in\TDDLfm$ and $k\in\mathbb{N}$,
 \begin{proof}
 By Lemma~\ref{lemma:literal-compression}, $\pnf(\phi,k)\dutyequiv\phi$.  
 By Lemma~\ref{lem:dnf}(i), $\dnf(\phi)\dutyequiv\phi$.  
-Composing these yields $\dnf(\pnf(\phi,k))\dutyequiv\phi$.
+Composing the two preservation steps proves $\dnf(\pnf(\phi,k))\dutyequiv\phi$.
 \end{proof}
 
-Before proving correctness, we establish the \emph{structural invariants} preserved by the
+Before proving correctness, we establish that the \emph{structural invariants} are preserved by both the
 punctual and disjunctive normalizations. These invariants ensure that the transformations
 $\pnf$ and $\dnf$ maintain the Boolean hierarchy and the syntactic relationships between
 literals in~$\phi$. In particular:
@@ -691,11 +674,10 @@ $\hat\ell,\hat\ell'$ in $\pnf(\phi,k)$, we have
 \end{lemma}
 
 \begin{proof}
-By Definition~\ref{def:pnf}, $\pnf$ acts as homomorphism on conjunction and disjunction.
-Transformations occur locally: each literal is unfolded \emph{in place} into a disjunction
-(for $\tool{O}$) or conjunction (for $\tool{F}$) of punctual or residual components.
-No Boolean connective along the path from root to leaf is moved across levels.
-Hence the lowest upper common operator (\LUCO) dominating both positions remains unchanged.
+By Definition~\ref{def:pnf}, $\pnf$ each literal is unfolded \emph{in place} into a disjunction
+(for $\tool{O}$) or conjunction (for $\tool{F}$) of punctual or child components.
+No change occurs at the parent level for the boolean connective along the path from root to leaf as it is moved from one level to another.
+That is, the lowest upper common operator (\LUCO) for both positions remains unchanged.
 \end{proof}
 
 \begin{lemma}[Literal ancestor preservation under $\pnf$]\label{lem:pnf-ancestor}
@@ -709,16 +691,16 @@ literal $\ell$ in~$\phi$ with identical modality and action. Its interval set is
 in that of~$\ell$, corresponding to punctual points $t\le k$ or the residual tail.
 
 (\emph{Upward}) For any literal $\ell$ in~$\phi$, its descendants in $\pnf(\phi,k)$ are:
-(i) for $\tool{O}$, the family
+(a) for $\tool{O}$, the family
 $\{\ob{\{[t,t]\}}{a}\mid t\in\is\cap[0,k]\}$, possibly plus
 $\ob{\is\cap[k{+}1,\infty]}{a}$;
-(ii) for $\tool{F}$, the analogous conjunctive family.
+(b) for $\tool{F}$, the analogous conjunctive family.
 Their nearest common Boolean operator in $\pnf(\phi,k)$ is the one introduced locally at
-$\ell$, that is either a disjunction for $\tool{O}$ or a conjunction for $\tool{F}$, and by
+$\ell$, the disjunction for $\tool{O}$ or conjunction for $\tool{F}$, and by
 \textbf{ObDis}/\textbf{FConj} the resulting expression is syntactically equivalent to~$\ell$.
 \end{proof}
 
-\begin{lemma}[Witness punctualization under $\pnf$]\label{lem:witness-punct-pnf}
+\begin{lemma}[LUCO preservation under $\pnf$]\label{lem:witness-punct-pnf}
 Let $\phi\in\TDDLfm$ with unique literal occurrences and
 $k=\textsc{MaxOPoint}(\phi)$. Suppose literals
 $\ell=\monadop{D}{\is}{a}$ and $\ell'=\monadop{D'}{\is'}{a'}$
@@ -726,17 +708,19 @@ occur in~$\phi$ with $\LUCO_\phi(\ell,\ell')=\sqcap$ and share some
 $t\in\is\cap\is'$ where $t\le k$. Then $\pnf(\phi,k)$ contains punctual descendants
 $\hat\ell^p=\monadop{D}{\{[t,t]\}}{a}$ and
 $\hat\ell^{\prime p}=\monadop{D'}{\{[t,t]\}}{a'}$
-that remain under the same conjunctive~\LUCO relation.
+which stays under the same conjunctive~\LUCO relation.
 \end{lemma}
 
 \begin{proof}
-From Definition~\ref{def:pnf}, $t\le k$ and $t\in\is,\is'$ ensure creation of punctual
-descendants exactly at the positions of $\ell$ and $\ell'$. By Lemma~\ref{lem:pnf-luco},
-the corresponding conjunctive~\LUCO is preserved.
+
+By Definition~\ref{def:pnf}, the descendants $\hat\ell^p=\monadop{D}{\{[t,t]\}}{a}$ and
+$\hat\ell^{\prime p}=\monadop{D'}{\{[t,t]\}}{a'}$ remain in place.
+
+ By Lemma~\ref{lem:pnf-luco}, the \LUCO relation is preserved.
 \end{proof}
 
-\begin{lemma}[\LUCO preservation and localization under $\dnf$]\label{lem:dnf-luco}
-Let $\phi\in\TDDLfm$ with unique literal occurrences.
+\begin{lemma}[\LUCO and \LAP preservation under $\dnf$]\label{lem:dnf-luco}
+Let $\phi\in\TDDLfm$, we have :
 \begin{enumerate}[(i)]
 \item \textbf{LUCO preservation.}  
 For any literals $\ell,\ell'$ in $\phi$ and their descendants
@@ -752,16 +736,15 @@ If $\LUCO_\phi(\ell,\ell')=\sqcup$, no product term contains both.
 \end{lemma}
 
 \begin{proof}
-The $\dnf$ normalization is obtained by orienting distributivity
+The $\dnf$ normalization is obtained by orienting the distributivity rule to push the disjunction inside 
 (e.g.\ $\phi_1\sqcap(\phi_2\sqcup\phi_3)\!\to\!(\phi_1\sqcap\phi_2)\sqcup(\phi_1\sqcap\phi_3)$)
-Moreover, applying associativity and commutativity.  
-These rewritings never invert $\sqcap$/$\sqcup$ but only propagate one operator outward,
-So dominance relations along root-to-leaf paths remain intact.
+These rewritings do not change $\sqcap$/ into $\sqcup$  and vice-versa, but only propagate one operator outward,
+and that is how the original relations along root-to-leaf paths remain unchanged.
 
 (i) Suppose, for contradiction, that a pair of literals changes its \LUCO after
 normalization. Then their former lowest common operator either ceases to be common or
 lowest. Since $\dnf$ introduces no deeper operator and preserves labels, neither case can
-occur; hence \LUCO is preserved.
+occur: \LUCO is preserved.
 
 (ii) Under the cross-product semantics of $\dnf$, a conjunctive node yields product terms
 pairing one choice from each branch, so descendants under the same $\sqcap$ co-occur,
@@ -778,13 +761,13 @@ For the formula of Example~\ref{ex:AST},
 The \LUCO relations are preserved:
 \[
 \begin{aligned}
-\LUCO_{\dnf(\phi)}(\ell_1,\ell_3)&=\sqcap=\LUCO_{\phi}(\ell_1,\ell_3)\\
+\LUCO_{\dnf(\phi)}(\ell_1,\ell_3)&=\sqcap=\LUCO_{\phi}(\ell_1,\ell_3),\\
 \LUCO_{\dnf(\phi)}(\ell_2,\ell_3)&=\sqcap=\LUCO_{\phi}(\ell_2,\ell_3),\\
 \LUCO_{\dnf(\phi)}(\ell_4,\ell_5)&=\sqcap=\LUCO_{\phi}(\ell_4,\ell_5),\\
 \LUCO_{\dnf(\phi)}(\ell_1,\ell_2)&=\sqcup=\LUCO_{\phi}(\ell_1,\ell_2).
 \end{aligned}
 \]
-Thus, the \LUCO label is invariant, even though its syntactic position may shift.
+
 \end{example}
 
 \medskip
@@ -804,7 +787,7 @@ contains \emph{exactly all} the punctual conflicts specified by~$\phi$.
 \begin{proof}
 \textbf{(I) Soundness.}  
 For any $(\pt,\mathcall{C})\in\mathcall{PC}(\phi)$ and $\hat\ell\sqcap\hat\ell'\in\mathcall{C}$,
-the literals $\hat\ell,\hat\ell'$ are punctual and match either
+the literals $\hat\ell,\hat\ell'$ are punctual and match
 \textbf{(P-Deon-Conf)} or \textbf{(P-Ont-Conf)} within some product term of
 $\dnf(\pnf(\phi,k))$.  
 By Lemma~\ref{lem:pnf-ancestor}, each has an ancestor $\ell,\ell'$ in~$\phi$ with the
@@ -823,16 +806,12 @@ No conflict involves two prohibitions.
 By Lemmas~\ref{lem:pnf-luco} and~\ref{lem:dnf-luco}, all \LUCO relations are preserved, so no punctual literal is removed.
 
 \item \emph{All conflicts localized and enumerated.}  
-If the literals $\ell_i,\ell_j$ form a conflict in~$\phi$ with
+If $\ell_i,\ell_j$ specify a conflict in~$\phi$ with
 $\LUCO_\phi(\ell_i,\ell_j)=\sqcap$ and shared $t$, then by
 Lemma~\ref{lem:witness-punct-pnf} punctual descendants appear in $\pnf(\phi,k)$
 under the same~\LUCO.  
 By Lemma~\ref{lem:dnf-luco}(ii) they co-occur in a product term of
 $\dnf(\pnf(\phi,k))$. The algorithm checks all pairs, ensuring complete enumeration.
-
-% \item \emph{All conflict types covered.}  
-% By Lemma~\ref{lem:typeccomp}, punctual conflicts are exactly ontic or deontic.
-% Algorithm~\ref{fig:conflict-extraction} matches precisely these two cases.
 \end{enumerate}
 Combining (I) and (II) establishes the theorem.
 \end{proof}
@@ -861,33 +840,30 @@ $\size{\phi}$ and in the average expansion factor~$\expf_a(\phi)$:
 \[
 \size{\pnf(\phi,k)}\in\mathcall{O}\big(\expf_a(\phi)\cdot\size{\phi}\big).
 \]
-Hence this step is polynomial in $\size{\phi}$ when $\expf_a(\phi)$ is bounded.
+So this transformation step size remains polynomial in $\size{\phi}$ when $\expf_a(\phi)$ is bounded.
 
 \textbf{Step 2: Disjunctive normalization.}
 Lemma~\ref{lem:dnf} guarantees that every formula can be rewritten as an equivalent DNF
 $\phi'=\bigsqcup_i\phi_i'$, but distributing conjunctions over disjunctions introduces an
 exponential cross-product. Each obligation literal $\ob{\is}{a}$ in $\pnf(\phi,k)$ yields a
 disjunction of $\size{\is}$ punctual obligations, and each such disjunction multiplies the
-number of disjunct. Therefore, the number of product terms in
+number of disjuncts. Therefore, the number of product terms in
 $\dnf(\pnf(\phi,k))$ is exponential in the number of punctual obligations produced by $\pnf$,
 which itself is linear in $\expf_a(\phi)\cdot\size{\phi}$.
 
-Consequently,
+Conclusion,
 \[
 \size{\dnf(\pnf(\phi,k))}\in
 \mathcall{O}\!\left(2^{\expf_a(\phi)\cdot\size{\phi}}\right),
 \]
-and this bound characterizes the worst-case space of the normalization chain.
+and it captures  the worst-case space of the normalization chain.
 \end{proof}
 
 
-
-\subsection{Conflict Density}
-
-We now introduce a quantitative view of conflicts in \TDDLfm.  
-The \emph{conflict density} of a formula measures how frequently conflicts occur within its punctual representation.  
-A high conflict density indicates a restrictive or overloaded specification: it reduces the set of feasible behaviors, complicates compliance checking, and  complicates its interpretation.  
-We obtain a simple diagnostic tool for refining normative specifications by the following formal definition.
+\subsubsection{Conflict Density}
+We move now to introduce the \emph{conflict density} of a formula, which is a quantitative metric for conflicts presence in formulas from \TDDLfm.  
+The density measures how many conflicts occur within its punctual representation of a formula.  
+A high conflict density indicates a an overloaded specification with conflicting timed conditions: the set of feasible behaviors is less then the the timed conditions specified in the literals, which complicates compliance planning, and makes interpretation of the overall desired behavior more difficult. We compute this measure via a simple formal definition.
 
 \begin{definition}[Conflict density]\label{def:Conflict density-measure}
 Let $\phi$ be a formula in \TDDLfm and let $k=\textsc{MaxOPoint}(\phi)$.  
@@ -931,142 +907,128 @@ About $81\%$ of the punctual obligations in $\UC$ are involved in conflicts.
 
 A formula with $\cd(\phi)=0$ is \defn{conflict-free}; a formula with $\cd(\phi)=1$ is \defn{fully conflicting} in the sense that every product term in its \dpnf contains at least one punctual conflict.  The following section lifts these punctual patterns and the conflict density measure to a proof-theoretic level, by relating conflicts in \TDDLfm\ to minimal unsatisfiable subsets.
 
-\section{Semantic Characterization and Elimination of Timed Normative Conflicts}\label{sec:unsat-conflicts}
+\section{Semantic Characterization of Timed Normative Conflicts and Conflict Elimination}\label{sec:unsat-conflicts}
 
 This section lays the semantic basis for timed normative conflicts. We first recall propositional unsatisfiability, unsatisfiable cores, and minimal unsatisfiable subsets (MUS). We then transfer these notions to \TDDLfm\ by viewing product terms of the disjunctive punctual normal form (\dpnf) as local clause sets. The key outcome is that punctual conflicts in \TDDLfm\ coincide with MUSes over punctual literals inside a single product term. This yields an exact assessment and explainability for formula unsatisfiability via conflict density and supports conflict-free rewriting. We close with the syntactic cost of conflict elimination.
 
-\subsection{Unsatisfiable Cores and MUS in Propositional Logic}
+\subsection{Unsatisfiable cores and MUS in propositional logic}
 
-A propositional formula \(F\) is \emph{satisfiable} if some valuation makes \(F\) true, and \emph{unsatisfiable} otherwise. If \(F\) is unsatisfiable, an \emph{unsatisfiable core} is any subset \(F'\subseteq F\) that is unsatisfiable. Cores isolate unsatisfiable sub-formulas but may contain clauses that are not necessary for proving unsatisfiability of the overall formula, as studied in \cite{Cimatti2007UnsatCores}.
+When a formula from propositional logic \(F= f_1 \cap f_2 \dots f_n\) in CNF is unsatisfiable, an \emph{unsatisfiable core} is any subset \(F'\subseteq F\) of disjuncts that is unsatisfiable. Unsat cores are usually discovered during learning based SAT solving when the solver reaches a dead end.
 
-To address this limitation, the notion \emph{minimal unsatisfiable subset} (MUS) refines unsatisfiable cores by requiring irreducibility: an MUS is an unsat core \(U\subseteq F\) such that removing any clause makes \(U\) satisfiable. MUSes represent irreducible contradictions and are explored only when the studied formula is unsatisfiable. The structure and computation of MUSes have been widely studied \cite{MarquesSilva2010MUSsurvey,Liffiton2008MUS}, and it is well known that an unsatisfiable formula can contain several MUSes. A single clause may also appear in multiple MUSes, since different minimal combinations of clauses can independently give rise to unsatisfiability \cite{Liffiton2005AllMUS}.
+\emph{Minimal unsatisfiable subsets} (MUS) have been studied in \cite{MarquesSilva2010MUSsurvey} to refine unsat cores where a MUS is an unsat core \(U\subseteq F\) such that removing any clause from \(U\) makes it  satisfiable. The advantage of MUS over unsat cores is that it identifies which clauses cause unsatisfiability, reducing the unsat core from hundreds to tens, which is useful for debugging. Secondly, an unsatisfiable formula can contain several MUSes, which map directly to which clauses conflicts directly with others. A single clause may also appear in multiple MUSes, since different minimal combinations of clauses can independently give rise to unsatisfiability. The problem of enumerating all MUSes is nonetheless intractable because of the potentially exponential size of the result as discussed in \cite{Liffiton2008MUS}.  
 
-In our setting, this perspective is guided by the output of our conflict detection procedure (Algorithm~\ref{fig:conflict-extraction}): conflicts surface locally inside individual product terms of \dpnf, not across the disjunction. We therefore analyze MUSes \emph{per product term}, where the roles of clauses are played by punctual literals. The minimal unsatisfiable subsets of these literals are exactly the punctual conflicts that causes unsatisfiability in \TDDLfm.
+In our setting, this perspective is guided by the output of our conflict detection procedure Algorithm~\ref{fig:conflict-extraction}: conflicts surface locally inside individual product terms of \dpnf, not across the disjunction. We therefore analyze MUSes \emph{per product term}, where the roles of clauses are played by punctual literals. The minimal unsatisfiable subsets of these literals are exactly the punctual conflicts that cause unsatisfiability in \TDDLfm.
 
-\subsection{From Propositional MUSes to Punctual MUSes in \TDDLfm}
+\subsection{From propositional MUSes to punctual MUSes in \TDDLfm}
 
-In the propositional setting, MUS analysis is performed on sets of clauses. 
+In the propositional setting, MUS analysis is performed on sets of clauses, i.e a formula in CNF.
 A clause belongs to an MUS when it is part of the smallest subset of clauses that cannot all be true at the same time. 
-In \TDDLfm, the surface syntax contains interval-based obligations and prohibitions, but after unfolding to disjunctive punctual normal form, the structure becomes closer to the propositional one.
-Let \(\phi\) be a \TDDLfm\ formula. 
-For \(k=\textsc{MaxOPoint}(\phi)\),
-\[
-  \dpnf(\phi,k) \;=\; \bigsqcup_i \pt_i
-\]
-enumerates all product terms \(\pt_i\) that are conjunctions of punctual obligations and prohibitions that may be active up to \(k\). 
-Each \(\pt_i\) describes one complete punctual scenario: for each relevant time point and action it fixes whether the action is required, forbidden, or unconstrained. 
-Satisfiability of \(\pt_i\) is purely local: \(\pt_i\) is satisfiable if and only if there exists a timed trace that meets all these punctual requirements.
+In \TDDLfm, the surface syntax contains interval-based obligations and prohibitions, but after unfolding to disjunctive punctual normal form, the structure becomes closer to the propositional one, as the overall resulting DNF formula is formed by product terms that we can check for MUS
+ as in 
+$$\dpnf(\phi,k) \;=\; \bigsqcup_i \pt_i$$
+ The satisfiability of a product term $ pt_i$ depends on whether there exists a trace that jointly satisfies all its punctual literals . This introduces a key distinction: while the \dpnf of $\phi$
+ encodes all possible planning scenarios; each product term captures a local scenario in which specific temporal conditions are met.
+Unsatisfiability of \(\phi\) means that \emph{every} such local scenario is impossible, therefore every product term is unsatisfiable. The natural analogue of a clause-level MUS is then not a subset of the whole formula, but a minimal unsatisfiable subset of punctual literals \emph{inside a single product term}. 
+This is exactly what we call a punctual MUS in \TDDLfm.
 
-This suggests the following correspondence. 
-At the level of \dpnf, the global formula \(\phi\) behaves like a disjunction of local clause sets, one per product term. 
-Unsatisfiability of \(\phi\) means that \emph{every} such local scenario is impossible, therefore every product term is unsatisfiable. 
-Conversely, if some product term is satisfiable, then \(\phi\) is satisfiable because that term already provides a compliant behaviour. 
-The natural analogue of a clause level MUS is then not a subset of the whole formula, but a minimal unsatisfiable subset of punctual literals \emph{inside a single product term}. 
-This is exactly what we call a punctual MUS.
-
-Intuitively, a punctual MUS collects the smallest set of punctual prescriptions that cannot be jointly followed at the concrete times they refer to. 
-From a normative point of view, it isolates the exact punctual situation where an agent faces an impossible choice. 
-From a SAT viewpoint, it is the minimal unsatisfiable core at the level of punctual literals that sits inside one product term of the \dpnf.
+We aim to capture with punctual MUS both normative and SAT-based insights: (i) Normatively in the sense that the concept captures the exact moment or condition where an agent faces an impossible choice. From a SAT perspective as it exposes the minimal subset of constraints within one product term that render its corresponding trace invalid.
 
 \begin{definition}[Punctual MUS]\label{def:punctual-MUS}
-Let \(L=\{\ell_1,\dots,\ell_n\}\) be punctual literals taken from a single product term \(\pt_i\). 
+Let \(L=\{\ell_1,\dots,\ell_n\}\) be a set of punctual literals.
 The conjunction \(\bigsqcap_{\ell\in L}\ell\) is a \emph{punctual minimal unsatisfiable subset} if:
 \begin{enumerate}[(i)]
-  \item \(\bigsqcap_{\ell\in L}\ell\) is unsatisfiable under the trace semantics of \TDDLfm, and
-  \item for every nonempty strict subset \(L'\subset L\), the conjunction \(\bigsqcap_{\ell\in L'}\ell\) is satisfiable.
+  \item \(\bigsqcap_{\ell\in L}\ell\) is unsatisfiable, and
+  \item for any non empty strict subset \(L'\subset L\), the conjunction\(\bigsqcap_{\ell\in L'}\ell\) is satisfiable.
 \end{enumerate}
 \end{definition}
 
-Condition (i) states that the literals in \(L\) cannot all be enforced on any trace. 
-Condition (ii) is the minimality requirement, it ensures that each literal in \(L\) is necessary for the unsatisfiability and that no smaller subset already conflicts. 
-The definition is syntactic, since it speaks about inclusion between sets of literals, and semantic, since unsatisfiability is evaluated with respect to timed traces. 
-Punctual MUSes therefore mirror classical MUSes, but are grounded at the level of punctual normative statements in \TDDLfm.
+The two conditions reflect exactly the notion of MUS in propositional logic when the formula is a conjunction of literals.
 
-To understand the possible shape of punctual MUSes, we first look at the simplest building blocks. 
-Single punctual literals never generate conflicts, they always have a trivial satisfying trace.
+Our goal is to study all possible patterns of a set of literals that could specify an MUS. More precisely, we are interested in the possible size of MUS and the literals that could appear in a Mus. To do so, we progressively study larger sets, starting from 1, to determine the minimal size of an MUS.
 
-\begin{lemma}[Satisfiability of isolated punctual literals]\label{lem:punct-solo-sat}
-For any \(a\in\Sigma\) and \(t\in\mathbb{N}\), both \(\ob{\{[t,t]\}}{a}\) and \(\forb{\{[t,t]\}}{a}\) are satisfiable.
+\begin{lemma}[Satisfiability of punctual literals]\label{lem:punct-solo-sat}
+Any literal punctual from \TDDLfm is satisfiable.
 \end{lemma}
 
 \begin{proof}
-Witnesses are \(\trace{(a,t)}\) for \(\ob{\{[t,t]\}}{a}\) and \(\emptytrace\) for \(\forb{\{[t,t]\}}{a}\).
+Witnesses for \(\ob{\{[t,t]\}}{a}\) is \(\trace{(a,t)}\)  and \(\emptytrace\) for \(\forb{\{[t,t]\}}{a}\).
 \end{proof}
 
 Conflicts, therefore, appear only when we combine punctual literals. 
 We now show that there are exactly two kinds of minimal combinations that fail, which correspond to two very natural normative intuitions.
 
 \begin{lemma}[Deontic punctual conflict is a punctual MUS]\label{lem:punct-deontic}
-For any \(a\in\Sigma\) and \(t\in\mathbb{N}\), the set \(\{\ob{\{[t,t]\}}{a},\ \forb{\{[t,t]\}}{a}\}\) is a punctual MUS.
+the set \(\{\ob{\{[t,t]\}}{a},\ \forb{\{[t,t]\}}{a}\}\) is a punctual MUS.
 \end{lemma}
 
 \begin{proof}
-The conjunction is unsatisfiable, since no trace can both perform and avoid \(a\) at time \(t\). 
-Minimality follows from Lemma~\ref{lem:punct-solo-sat}, each literal alone is satisfiable.
+We have:
+\begin{itemize}
+\item By semantic definition, this pattern is unsatisfiable.
+\item Minimality follows from Lemma~\ref{lem:punct-solo-sat}; each literal alone is satisfiable.\end{itemize}
 \end{proof}
 
 \begin{lemma}[Ontic punctual conflict is a punctual MUS]\label{lem:punct-ontic}
-For any distinct \(a,b\in\Sigma\) and any \(t\in\mathbb{N}\), the set \(\{\ob{\{[t,t]\}}{a},\ \ob{\{[t,t]\}}{b}\}\) is a punctual MUS.
+the set \(\{\ob{\{[t,t]\}}{a},\ \ob{\{[t,t]\}}{b}\}\) is a punctual MUS.
 \end{lemma}
-
 \begin{proof}
-The conjunction is unsatisfiable, since the trace semantics admits at most one action at time \(t\). 
-Again, by Lemma~\ref{lem:punct-solo-sat} each singleton is satisfiable, so the pair is minimal.
+We have:
+\begin{itemize}
+\item This pattern is unsatisfiable as the trace semantics admits at most one action at time \(t\).
+\item Minimality follows from Lemma~\ref{lem:punct-solo-sat}.
+
+\end{itemize}
+
 \end{proof}
+
+
 
 These two lemmas show that direct normative conflicts at a point in time (obligate and forbid the same action) and physical or behavioural impossibility at a point in time (obligate two distinct actions that cannot both happen) are punctual MUSes. 
 The next lemma shows that there are no other punctual MUS patterns.
 
 \begin{lemma}[Completeness of punctual MUS types]\label{lem:punct-completeness}
-Every punctual minimally unsatisfiable subset in \TDDLfm\ is either a deontic or an ontic punctual conflict.
+In \TDDLfm, every punctual minimally unsatisfiable subset is either a deontic or an ontic punctual conflict.
 \end{lemma}
 
-
 \begin{proof}
-Exhaust over the identity of the actions and the equality of the time points. 
-If the time points differ, the literals constrain different instants and can always be satisfied together. 
-If they concern the same action at the same time, pairs of the form 
-\(\ob{\{[t,t]\}}{a}\) with \(\ob{\{[t,t]\}}{a}\) and 
-\(\forb{\{[t,t]\}}{a}\) with \(\forb{\{[t,t]\}}{a}\) 
-are redundant but satisfiable, while the mixed pair 
-\(\ob{\{[t,t]\}}{a}\) with \(\forb{\{[t,t]\}}{a}\) 
-produces a deontic punctual conflict.
+We explore all the possibilities of combinations of punctual literals as summarized:
 
-If they concern distinct actions at the same time, the pair 
-\(\ob{\{[t,t]\}}{a}\) with \(\ob{\{[t,t]\}}{b}\) 
-yields an ontic punctual conflict by the single–action–per–time semantics, whereas any combination that includes at least one prohibition, such as 
-\(\ob{\{[t,t]\}}{a}\) with \(\forb{\{[t,t]\}}{b}\), 
-remains satisfiable, since prohibitions do not force any action to occur.
+\begin{enumerate}
+\item If the time points differ, the conjunction of the two literals is satisfiable.
+\item If they concern the same action at the same time, pairs of the form $\ob{\{[t,t]\}}{a}$ with $\forb{\{[t,t]\}}{a}$
+produces a deontic punctual conflict. the pairs \(\ob{\{[t,t]\}}{a}\) with \(\ob{\{[t,t]\}}{a}\) and 
+\(\forb{\{[t,t]\}}{a}\) with \(\forb{\{[t,t]\}}{a}\) are redundant and consequently satisfiable as a unique literal.
 
+\item If they concern distinct actions at the same time,  any other combination than punctual ontic conflict from this pattern category would contain a prohibition and thus is satisfiable, since prohibitions do not force any action to occur.
+\end{enumerate}
 \end{proof}
 
+\begin{theorem}[Conflict detection algorithm is sound and complete for detecting all MUSes]\label{thm:mus-structure}
+
+Let $\phi$ be a formula from \TDDLfm. The Algorithm.~\ref{fig:conflict-extraction} is sound and complete for detecting all MUS for each product term in $\dpnf(\phi)$.
+
+\end{theorem}
+
+\begin{proof}
 Soundness follows from Lemmas~\ref{lem:punct-deontic} and \ref{lem:punct-ontic}, and completeness from Lemma~\ref{lem:punct-completeness}. 
 Every punctual MUS in \TDDLfm\ is therefore either deontic or ontic. 
-Algorithmically, this means that conflict detection at the punctual level reduces to a simple pattern matching task inside product terms of \dpnf. 
-Conceptually, it shows that all punctual minimal unsatisfiable subsets in \TDDLfm\ can be read as either “ought and ought not” for the same action at a time, or “ought and ought” for two incompatible actions at a time.
+Algorithmically, this means that conflict detection at the punctual level reduces to a simple pattern-matching task within the product terms of \dpnf. 
+\end{proof}
 
 
-\subsection{Unsatisfiability in Terms of Conflict Density}
+
+
+
+\subsection{Conflict density and exact unsatisfiability criterion}
 
 Let \(\cd(\phi)\) denote the fraction of product terms in \(\dpnf(\phi,k)\) that contain a punctual conflict. Write \(\Xi(\phi)\) for the number of product terms and \(\mathcall{PC}(\phi)\) for the set of conflicting product terms, so \(\cd(\phi)=\size{\mathcall{PC}(\phi)}/\Xi(\phi)\).
 
-\begin{lemma}[Fully conflicting implies unsatisfiable]\label{lem:full-conflict-implies-unsat}
+\begin{lemma}[Full conflict implies unsatisfiable]\label{lem:full-conflict-implies-unsat}
 If \(\cd(\phi)=1\), then \(\phi\) is unsatisfiable.
 \end{lemma}
 
 \begin{proof}
-Every product term in \(\dpnf(\phi,k)\) is unsatisfiable only if it contains a conflict. When the formula is fully conflicting it means that the number of conflicting product terms equals the number of product terms returned by the \(\dpnf(\phi,k)\), as each one is unstisfiable then the conjunction of n unsatisfiable product terms is also unsatisfiable as showed in Lemma~\ref{empty_inter_union}.
-\end{proof}
-
-\begin{theorem}[Punctual MUS structure of unsatisfiable product terms]\label{thm:mus-structure}
-Let $\pt$ be a product term in $\dpnf(\phi,k)$.  
-Then $\pt$ is unsatisfiable iff it contains a punctual deontic or ontic conflict.  
-Moreover, each such conflict forms a minimal unsatisfiable subset of punctual literals.
-\end{theorem}
-
-\begin{proof}[Proof sketch]
-If $\pt$ is unsatisfiable, minimality of the unsatisfiable conjunction of literals implies the existence of an unsatisfiable pair of punctual literals. By Lemma~\ref{lem:punct-completeness}, the only such pairs are the deontic or ontic patterns.  
-Conversely, any deontic or ontic punctual conflict yields an unsatisfiable and inclusion-minimal product term, since removing literals in MUS restores satisfiability.
+Every product term in \(\dpnf(\phi,k)\) is unsatisfiable, so their disjunction is unsatisfiable.
 \end{proof}
 
 \begin{corollary}[Unsatisfiable implies full conflict]\label{cor:unsat-implies-full-conflict}
@@ -1074,7 +1036,7 @@ If \(\phi\) is unsatisfiable, then \(\cd(\phi)=1\).
 \end{corollary}
 
 \begin{proof}
-\(\phi\) is the disjunction of its product terms. If \(\phi\) is unsatisfiable, each product term is unsatisfiable. By Theorem~\ref{thm:mus-structure}, each contains a punctual conflict, so every term is counted in \(\mathcall{PC}(\phi)\).
+\(\phi\) is the disjunction of its product terms. If \(\phi\) is unsatisfiable, each product term is unsatisfiable as each contains a punctual conflict, so every term is correctly accounted for in \(\mathcall{PC}(\phi)\).
 \end{proof}
 
 \begin{theorem}[Exact characterization of unsatisfiability]\label{thm:exact-unsat}
@@ -1085,16 +1047,16 @@ A formula \(\phi\in\TDDLfm\) is unsatisfiable if and only if \(\cd(\phi)=1\).
 Combine Lemma~\ref{lem:full-conflict-implies-unsat} with Corollary~\ref{cor:unsat-implies-full-conflict}.
 \end{proof}
 
-\subsection{Semantic Preserving Conflict-free Pruning and Induced Verbosity}
+\subsection{Semantic preserving Conflict-free pruning and induced verbosity}
 
-When \(\cd(\phi)<1\), at least one product term is conflict-free. Pruning all conflicting terms yields an equivalent conflict-free disjunction.
+After establishing that when the conflict density of a formula \(\cd(\phi)<1\) is still satisfiable, pruning all conflicting terms yields an equivalent conflict-free disjunction.
 
 \begin{theorem}[Conflict-free rewriting]\label{thm:cfr}
-If \(\cd(\phi)\neq1\), there exists \(\phi'\) with \(\phi\equiv\phi'\) and \(\cd(\phi')=0\).
+For any $\phi$ from \TDDLfm, if  $ \cd(\phi) \neq 1 $, then there exists $\phi’$ with $\phi \equiv \phi’$ with $\cd(\phi’)=0$.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-Compute \(k=\textsc{MaxOPoint}(\phi)\) and \(\phi_{\mathrm{dpnf}}=\bigsqcup_i \pt_i\). Use Algorithm~\ref{fig:conflict-extraction} to classify product terms. Let \(I=\{i\mid \pt_i \text{ has no punctual conflict}\}\). Set \(\phi'=\bigsqcup_{i\in I}\pt_i\). Removed terms are unsatisfiable, so \(\phi\equiv\phi'\), and by construction \(\cd(\phi')=0\).
+Using Algorithm.~\ref{fig:conflict-extraction}   computes first the \dpnf rewriting $\phi_{\mathrm{dpnf}}=\bigsqcup_i \pt_i$, then it classifies its product term. By computing a variant at the classification step, we can compute $\text{PT}\text{safe}={ \pt_i \mid \pt_i \in \phi{\mathrm{dpnf}}  \text{ with } \pt_i \text{ has no punctual conflict}}$ as illustrated in Algorithm~.\ref{alg:conflict-free-rewriting}. Set \(\phi’=\bigsqcup_{i\in I}\pt_i\). Consequently, all unsatisfiable product terms are filtered and $\phi \equiv \phi’$ by Lemma~.\ref{disjunctionissat}, and by construction $\cd(\phi’)=0$.
 \end{proof}
 
 \begin{algorithm}[H]
@@ -1112,20 +1074,21 @@ $k\gets\textsc{MaxOPoint}(\phi)$; \quad
 \(\Namb(\phi)\gets\bigsqcup_{\pt\in\CF}\pt\); \Return \(\Namb(\phi)\)
 \end{algorithm}
 
-Conflict elimination can enlarge the formula. In particular, avoiding simultaneous obligations at the same time forces \dnf\ to retain only assignments with pairwise distinct time points, which inflates the disjunction.
+Nonetheless, Conflict elimination could return larger formulas. In particular, many ontic conflicts in the \dpnf formula can lead to a significant blowup.
 
 \begin{example}
 \[
-\phi := 
-\ob{\{[0,3]\}}{\mathsf{a}} \sqcap
-\ob{\{[0,3]\}}{\mathsf{b}} \sqcap
-\ob{\{[0,3]\}}{\mathsf{c}}.
+\phi :=
+\ob{{[0,3]}}{\mathsf{a}} \sqcap
+\ob{{[0,3]}}{\mathsf{b}} \sqcap
+\ob{{[0,3]}}{\mathsf{c}}.
 \]
-\ref{table:ontic-triple-conflict} summarizes the transformation pipeline—\pnf, \dnf, conflict extraction, and the conflict-free rewriting $\Namb(\phi)$.  
-The final formula is roughly $20\times$ larger than the original.
+\ref{table:ontic-triple-conflict} summarizes the transformation pipeline from \pnf, \dnf, conflict extraction, to the conflict-free rewriting $\Namb(\phi)$.
+The final formula is roughly $20\times$ as large as the original.
 
-Intuitively, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.  
-To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4\!\cdot\!3\!\cdot\!2=24$ product terms.
+Intuitively, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.
+To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4!\cdot!3!\cdot!2=24$ product terms, which demonstrates a substantial increase.
+
 
 \begin{table}[h]
 \centering
@@ -1169,20 +1132,19 @@ $\phi := \ob{\{[0,3]\}}{\mathsf{a}} \sqcap \ob{\{[0,3]\}}{\mathsf{b}} \sqcap \ob
 \end{table}
 \end{example}
 
-Although this example illustrates worst case blow-ups, conflict-free formulas often admit concise equivalents by \emph{merging} punctual literals over the same action.  
-Disjunctions of punctual obligations can be compacted via \textbf{ObDis}, and conjunctions of punctual prohibitions via \textbf{FConj}.
+This example illustrates worst-case scenarios of a verbose conflict-free formula. Other formulas admit concise equivalents by \emph{merging} punctual literals specified for the same action: the disjunction of punctual obligations can be compacted via \textbf{ObDis}, and conjunctions of punctual prohibitions via \textbf{FConj}.
 
 \begin{example}
 \[
-\UC_2' :=
-\ob{\{[9,16]\}}{\delAtPark}
+\UC_2’ :=
+\ob{{[9,16]}}{\delAtPark}
 \sqcap
-\forb{\{[10,14]\}}{\delAtPark}
+\forb{{[10,14]}}{\delAtPark}
 \sqcap
-\forb{\{[2,4],[8,24]\}}{\delAtGate}.
+\forb{{[2,4],[8,24]}}{\delAtGate}.
 \]
-The conflict-free rewriting $\Namb(\UC_2')$ retains the non-conflicting obligations $t\!\in\!\{9,15,16\}$.  
-\ref{table:refactoring-uc2} compares the original, verbose rewriting, and a merged equivalent $\UC_2''$.
+The conflict-free rewriting $\Namb(\UC_2’)$ retains the non-conflicting obligations $t!\in!{9,15,16}$.
+\ref{table:refactoring-uc2} compares the original, verbose rewriting, and a merged equivalent $\UC_2’'$.
 
 \begin{table}[h]
 \centering
@@ -1211,11 +1173,11 @@ $\UC_2''$
 \caption{Refactoring a verbose conflict-free rewriting $\Namb(\UC_2')$ into a compact equivalent $\UC_2''$.}
 \label{table:refactoring-uc2}
 \end{table}
-Here $\UC_2''$ merges the surviving punctual obligations on \delAtPark\ into a single interval set, while prohibitions on \delAtGate\ are recombined into their original form.
+Here $\UC_2’'$ merges the surviving punctual obligations on \delAtPark\ into a single interval set, while prohibitions on \delAtGate\ are recombined into their original form.
 \end{example}
 
-These examples motivate a strategy of \emph{controlled conflict-density management}:  
-When conciseness is essential, designers may either  
-(i) keep compact high-level formulas that implicitly contain ontic conflicts and defer their resolution to planning, or  
-(ii) eliminate conflicts up front and refactor the resulting \dpnf\ with merging rules (\textbf{ObDis}, \textbf{FConj}) to restore compactness.  
+These examples motivate a strategy of \emph{controlled conflict-density management}:
+When the concise representation of a normative specification is essential, the user of the framework may choose between:
+(i) keeping formulas that contain ontic conflicts and optionally flagging them for online planning, or
+(ii) eliminate all conflicts and try refactor the resulting \dpnf\ using the merging rules (\textbf{ObDis}, \textbf{FConj}) to restore compactness.
 In the next section, we introduce a generalized punctual conflict rule that unifies deontic and ontic cases and enables concise and big-step reasoning without requiring any \dpnf rewriting.
