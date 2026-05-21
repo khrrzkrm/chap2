@@ -267,7 +267,7 @@ From these metric-timed traces, the behavior in each month is precise at a day l
 In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive. 
 In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, and then engages in active obstruction of occupancy by changing the lock.
 While this description is clear at the level of concrete events, it is not yet aligned with the contractual semantics, which operate on monthly obligations and joint outcomes rather than individual timestamps. This motivates the next step: synchronizing the agent-local traces into a common period-based structure that supports collaboration, interference, and normative evaluation.
-\subsubsection{Step 1: Abstraction into Periodic Synchronized Set trace}
+\subsubsection{Step 1: Abstraction into Periodic Synchronized Set Trace}
 Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
 the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
 within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
@@ -637,7 +637,7 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
     s^{0}_i := s^0_i,
     \qquad
     s^{k+1}_i := \delta_i(s^k_i, X_k)
-    \quad\text{for all }k \ge 1.
+    \quad\text{for all }k \ge 0.
     \]
     
     \noindent For finite input $X$ of length $n{+}1$ we write $|X|=n{+}1$ and 
@@ -791,11 +791,11 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \]
   and this run induces a \emph{unique word}
   \[
-  \pi \;=\; \trace{A_1,A_1,A_2,\dots} \;\in\; \big(2^{\Sigma_O^i \cup \Sigma_O^j}\big)^\omega,
+  \pi \;=\; \trace{A_1,A_2,A_3,\dots} \;\in\; \big(2^{\Sigma_O^i \cup \Sigma_O^j}\big)^\omega,
   \]
   where
   \[
-  A_t \;=\; \lambda_i(s_{i,t}) \cup \lambda_j(s_{j,t}), \qquad t \ge 0,
+  A_t \;=\; \lambda_i(s_{i,t}) \cup \lambda_j(s_{j,t}), \qquad t \ge 1,
   \]
   and the successor states are determined by
   \[

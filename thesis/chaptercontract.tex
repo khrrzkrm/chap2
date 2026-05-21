@@ -765,7 +765,7 @@ This abstraction allows the reader to focus on the semantic challenges of monito
   \]
   
   
-  \subsubsection{Synchronous Operator With Handshake Actions}
+  \subsubsection{Synchronous Operator with Handshake Actions}
   
   In many systems, certain actions can only be executed \emph{jointly} and must occur in \emph{the same round} for both agents. 
   Let $A\subseteq \Sigma_1\cap\Sigma_2$ denote the set of \defn{handshake actions}. 
@@ -1407,13 +1407,13 @@ This abstraction allows the reader to focus on the semantic challenges of monito
   \end{itemize}
   The \emph{language} $L(M_i \otimes M_j) \subseteq \Sigma^\omega$ consists of all infinite words
   \[
-  \trace{A_0, A_1, A_2 \dots}
+  \trace{A_1, A_2, A_3 \dots}
   \]
   such that there exists a run
   \[
-  (s^0_i, s^0_j) \xrightarrow{A_0} (s_{i,1}, s_{j,1}) \xrightarrow{A_1} (s_{i,2}, s_{j,2}) \xrightarrow{A_2} \dots
+  (s^0_i, s^0_j) \xrightarrow{A_1} (s_{i,1}, s_{j,1}) \xrightarrow{A_2} (s_{i,2}, s_{j,2}) \xrightarrow{A_3} \dots
   \]
-  with $A_k = \lambda_i(s_{i,k}) \cup \lambda_j(s_{j,k})$ for all $k \geq 0$.
+  with $A_k = \lambda_i(s_{i,k}) \cup \lambda_j(s_{j,k})$ for all $k \geq 1$.
   \end{definition}
   
   
@@ -1433,11 +1433,11 @@ This abstraction allows the reader to focus on the semantic challenges of monito
   \]
   and this run induces a \emph{unique word}
   \[
-  \pi \;=\; \trace{A_0,A_1,A_2,\dots} \;\in\; \big(2^{\Sigma_O^i \cup \Sigma_O^j}\big)^\omega,
+  \pi \;=\; \trace{A_1,A_2,A_3,\dots} \;\in\; \big(2^{\Sigma_O^i \cup \Sigma_O^j}\big)^\omega,
   \]
   where
   \[
-  A_t \;=\; \lambda_i(s_{i,t}) \cup \lambda_j(s_{j,t}), \qquad t \ge 0,
+  A_t \;=\; \lambda_i(s_{i,t}) \cup \lambda_j(s_{j,t}), \qquad t \ge 1,
   \]
   and the successor states are determined by
   \[

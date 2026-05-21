@@ -7,10 +7,10 @@ Our motivation, grounded in practical use cases, is that deontic conflicts mater
 
 
 
-\subsection{Syntactic definitions for conflicting formulas}
+\subsection{Syntactic Definitions for Conflicting Formulas}
 To reason about conflicts in \TDDLfm, we first need a precise vocabulary that identifies what constitutes a conflict and when a formula specifies a conflict. We therefore begin by isolating the most elementary patterns that materialize at individual time points. These punctual patterns form the atomic units from which all further reasoning about conflicts in formulas \emph{has or specifies}.
 
-\subsubsection{Punctual Conflicts: the Atomic Patterns}
+\subsubsection{Punctual Conflicts: The Atomic Patterns}
 From a dilemma-oriented perspective, two types of timed normative conflicts arise. First, an agent may be simultaneously obliged and prohibited to perform the same action at the same time. Second, an agent may be obliged to perform two different actions at exactly the same time, while the agent can realize at most one of them. We formalize these punctual conflict patterns next.
 
 \begin{definition}[Punctual Conflicts]\label{puncttypes}
@@ -288,7 +288,7 @@ The definition requires only that a formula have at least one punctual conflict,
 
 
 
-\subsection{Systematic Enumeration of all Punctual Conflicts}
+\subsection{Systematic Enumeration of All Punctual Conflicts}
 
 To exhibit such conflicts systematically, we define the \emph{disjunctive punctual normal form} (\dpnf). 
 In this form, each disjunct corresponds to a punctual product term, and conflicts can be localized 
@@ -499,7 +499,7 @@ Where
 \end{lemma}
 
 
-\subsubsection{A \tool{DPNF} algorithm for enumerating punctual conflicts}\label{subsec:dpnf}
+\subsubsection{A \tool{DPNF} Algorithm for Enumerating Punctual Conflicts}\label{subsec:dpnf}
 
 To systematically expose all punctual conflicts specified by a formula, we exploit the punctual and disjunctive normal forms introduced earlier.  
 Given $\phi \in \TDDLfm$, we first transform it into $\pnf(\phi,k)$, where $k$ is the maximal time point appearing in any obligation literal of $\phi$.  
@@ -911,7 +911,7 @@ A formula with $\cd(\phi)=0$ is \defn{conflict-free}; a formula with $\cd(\phi)=
 
 This section lays the semantic basis for timed normative conflicts. We first recall propositional unsatisfiability, unsatisfiable cores, and minimal unsatisfiable subsets (MUS). We then transfer these notions to \TDDLfm\ by viewing product terms of the disjunctive punctual normal form (\dpnf) as local clause sets. The key outcome is that punctual conflicts in \TDDLfm\ coincide with MUSes over punctual literals inside a single product term. This yields an exact assessment and explainability for formula unsatisfiability via conflict density and supports conflict-free rewriting. We close with the syntactic cost of conflict elimination.
 
-\subsection{Unsatisfiable cores and MUS in propositional logic}
+\subsection{Unsatisfiable Cores and MUS in Propositional Logic}
 
 When a formula from propositional logic \(F= f_1 \cap f_2 \dots f_n\) in CNF is unsatisfiable, an \emph{unsatisfiable core} is any subset \(F'\subseteq F\) of disjuncts that is unsatisfiable. Unsat cores are usually discovered during learning based SAT solving when the solver reaches a dead end.
 
@@ -1019,7 +1019,7 @@ Algorithmically, this means that conflict detection at the punctual level reduce
 
 
 
-\subsection{Conflict density and exact unsatisfiability criterion}
+\subsection{Conflict Density and Exact Unsatisfiability Criterion}
 
 Let \(\cd(\phi)\) denote the fraction of product terms in \(\dpnf(\phi,k)\) that contain a punctual conflict. Write \(\Xi(\phi)\) for the number of product terms and \(\mathcall{PC}(\phi)\) for the set of conflicting product terms, so \(\cd(\phi)=\size{\mathcall{PC}(\phi)}/\Xi(\phi)\).
 
@@ -1047,7 +1047,7 @@ A formula \(\phi\in\TDDLfm\) is unsatisfiable if and only if \(\cd(\phi)=1\).
 Combine Lemma~\ref{lem:full-conflict-implies-unsat} with Corollary~\ref{cor:unsat-implies-full-conflict}.
 \end{proof}
 
-\subsection{Semantic preserving Conflict-free pruning and induced verbosity}
+\subsection{Semantic-Preserving Conflict-Free Pruning and Induced Verbosity}
 
 After establishing that when the conflict density of a formula \(\cd(\phi)<1\) is still satisfiable, pruning all conflicting terms yields an equivalent conflict-free disjunction.
 

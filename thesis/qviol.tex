@@ -80,84 +80,55 @@ We summarize these properties in the following theorem, which establishes that t
 
 \begin{theorem}[Consistency of Quantitative and Tight Semantics]
   \label{thm:quant-consistency}
-  For any contract $C$ and finite trace $\pi$:
+  For any contract $C$ not containing the unblamable $\bot$ literal, and finite trace $\pi$, the quantitative violation score and the five-valued tight semantics are related as follows:
   \begin{enumerate}
-      \item \textbf{Zero Score Implications:}
-      If $\qsem{\pi, C} = 0$, then exactly one of the following three disjoint cases holds:
-      \begin{enumerate}
-        \item $\pi \satt C$ if and only if $\Prog(\pi, C) = \emptc$ and $\forall k < |\pi|-1, \Prog(\pi_k, C) \neq \emptc$.
-        \item $\pi \postsat C$ if and only if $\Prog(\pi, C) = \emptc$ and\\ $\exists k < |\pi|-1$ such that $\Prog(\pi_k, C) = \emptc$.
-        \item $\pi \presat C$ if and only if $\Prog(\pi, C) \neq \emptc$.
-      \end{enumerate}
-      
-      \item \textbf{Non-Zero Score Implications:}
-      If $\qsem{\pi, C} \neq 0$, then:
-      \begin{enumerate}
-        \item $\pi \violt C$ if and only if $\qsem{\pi, C} = 1$ and $\qsem{\pi_{|\pi|-1}, C} = 0$.
-        \item $\pi \postviol C$ if and only if $\qsem{\pi, C} > 1$ or ($\qsem{\pi, C} = 1$ and\\ $\qsem{\pi_{|\pi|-1}, C} = 1$).
-      \end{enumerate}
-      
-      \item \textbf{Reparation Cost:}
-      If $\pi$ satisfies $C$ strictly through a reparation mechanism (i.e., $\pi \satt C$ but primary obligations failed), then $\qsem{\pi, C} > 0$.
+      \item \textbf{Violation implies positive score.}
+      If $\pi \violt C$ or $\pi \postviol C$, then $\qsem{\pi, C} > 0$.
+
+      \item \textbf{Zero score excludes violation.}
+      If $\qsem{\pi, C} = 0$, then $\pi \presat C$, $\pi \satt C$, or $\pi \postsat C$.
+
+      \item \textbf{Score monotonicity.}
+      For any event $A \in \Gamma$, $\qsem{\pi \concat \trace{A}, C} \ge \qsem{\pi, C}$.
+
+      \item \textbf{Reparation cost (positive score without violation).}
+      The converse of (1) does not hold.
+      If $C = C_1 \repair C_2$ and $\pi \satt C$ through the reparation branch (i.e., some prefix tightly violates $C_1$ and the subsequent suffix satisfies $C_2$), then $\qsem{\pi, C} \ge 1$.
+      In particular, there exist traces with $\qsem{\pi, C} > 0$ and $\pi \satt C$.
   \end{enumerate}
   \end{theorem}
   
   \begin{proof}
-  We prove the implications by structural induction on the trace $\pi$ and the contract $C$, utilizing the definitions of the quantitative function $\qsem{}$ and the contract progression $\Prog$.
   \begin{enumerate}
-  \item Zero Score Implications ($\qsem{\pi, C} = 0$).
-  Assume $\qsem{\pi, C} = 0$. By the definition of the cumulative score, this implies that for all steps $i < |\pi|$, the instantaneous penalty is zero: $\qsem{\trace{A_i}, \Prog(\pi_i,C)} = 0$. Consequently, no tight violation has occurred at any step. The contract state evolves purely via $\Prog$ without triggering any penalty clauses.
+  \item \textbf{Violation implies positive score.}
+  Assume $\pi \violt C$.
+  By the tight violation semantics, $\pi$ is the earliest prefix at which a decisive failure occurs: there exists a residual contract $C_k = \Prog(\pi_k, C)$ and a step $A_k$ such that $\trace{A_k} \violt C_k$.
+  Since $C$ is $\bot$-free, this tight violation must stem from an active obligation, prohibition, or power.
+  By the definition of the instantaneous scoring function, $\qsem{\trace{A_k}, C_k} \ge 1$.
+  Since $\qsem{\pi, C}$ is the cumulative sum of non-negative instantaneous scores, we obtain $\qsem{\pi, C} \ge 1 > 0$.
   
-  \begin{enumerate}
-      \item Tight Satisfaction ($\satt$).
-      \begin{itemize}
-          \item $(\Rightarrow)$ Assume $\Prog(\pi, C) = \emptc$ and for all strict prefixes $\pi'$, $\Prog(\pi', C) \neq \emptc$.
-          The condition $\Prog(\pi, C) = \emptc$ indicates that the contract has been fully discharged. Since the score is 0, this discharge was not achieved via a violation-triggered path (e.g., a reparation where the primary failed). The absence of $\emptc$ in prior prefixes ensures that this is the \emph{first} moment of discharge. By Definition~\ref{def:binary-contract-semantics} (Tight Satisfaction), the first prefix to fully satisfy the obligations corresponds to $\satt$.
-          \item $(\Leftarrow)$ If $\pi \satt C$, the progression must reach $\emptc$ exactly at $\pi$. Since it is a \emph{tight} satisfaction, no proper prefix could have satisfied it (reached $\emptc$) earlier.
-      \end{itemize}
-      
-      \item Post Satisfaction ($\postsat$).
-      \begin{itemize}
-          \item The condition $\exists k < |\pi|$ such that $\Prog(\pi_k, C) = \emptc$ implies that the contract was already discharged at a previous step $k$.
-          \item By Definition~\ref{def:postprecont}, $\pi \postsat C$ holds if there exists a strict prefix that tightly satisfies $C$. Since the score is 0, the path to $k$ was compliant. Thus, the state remains $\emptc$ for the remainder of the trace, maintaining the $\postsat$ status.
-      \end{itemize}
-      
-      \item Pre Satisfaction ($\presat$).
-      \begin{itemize}
-          \item Assume $\Prog(\pi, C) \neq \emptc$. Since $\qsem{\pi, C} = 0$, no violation has occurred. However, the contract has not reduced to the empty contract $\emptc$, meaning active obligations remain.
-          \item This satisfies the definition of $\presat$: the trace is neither satisfied ($\satt/\postsat$) nor violated ($\violt/\postviol$). It is effectively ``pending.''
-      \end{itemize}
-  \end{enumerate}
+  If $\pi \postviol C$, then by definition there exists a strict prefix $\pi' \prec \pi$ with $\pi' \violt C$.
+  By the argument above, $\qsem{\pi', C} > 0$.
+  By monotonicity (part~3), $\qsem{\pi, C} \ge \qsem{\pi', C} > 0$.
   
-  \item Non-Zero Score Implications ($\qsem{\pi, C} > 0$).
-  Assume $\qsem{\pi, C} > 0$. This implies $\exists i$ such that $\qsem{\trace{A_i}, C_i} > 0$.
+  \item \textbf{Zero score excludes violation.}
+  This is the contrapositive of part~(1): the five verdicts $\{\presat, \satt, \postsat, \violt, \postviol\}$ partition all traces.
+  If both $\violt$ and $\postviol$ are excluded by part~(1), the remaining possibilities are exactly $\presat$, $\satt$, or $\postsat$.
   
-  \begin{enumerate}
-      \item Tight Violation ($\violt$).
-      \begin{itemize}
-          \item We consider the case where $\qsem{\pi, C} = 1$, the score of the immediate prefix is $0$ and let $n= \size{\pi}$.
-          \item $\qsem{\pi_{n-1}, C} = 0$ implies that for all previous steps, the contract was in a compliant state ($\presat$).
-          \item The jump to $\qsem{\pi, C} = 1$ implies that the instantaneous score at the last step $\qsem{\trace{A_{n-1}}, \Prog(\pi_{n-1},C)} = 1$.
-          \item A positive instantaneous score corresponds to a tight violation of the active residual contract.
-          \item Since this is the \emph{first} non-zero score, it corresponds to the \emph{first} prefix that triggers a violation. This corresponds to the definition of $\pi \violt C$.
-      \end{itemize}
-      
-      \item Post Violation ($\postviol$).
-      \begin{itemize}
-          \item The condition $\qsem{\pi, C} > 1$ or ($\qsem{\pi, C}=1$ and $\qsem{\pi_{n-1},C}=1$) implies that the violation score did not originate purely at the current step (or if it did, it was cumulative).
-          \item Specifically, if $\qsem{\pi_{n-2}, C} \ge 1$, then a violation occurred strictly in the past.
-          \item By Definition~\ref{def:postprecont}, if a strict prefix tightly violated the contract ($\violt$), the current trace is in $\postviol$. The non-zero score is carried forward monotonically.
-      \end{itemize}
-      
-      \item Reparation Cost.
-      \begin{itemize}
-          \item Consider a contract $C_{primary} \repair C_{repair}$.
-          \item If $\pi$ satisfies this strictly through the reparation mechanism, it means $\pi$ did \emph{not} satisfy $C_{primary}$.
-          \item By the definition of reparation progression, the transition to $C_{repair}$ occurs only if $\pi \violt C_{primary}$.
-          \item By the definition of the instantaneous scoring function for reparation,\\ $\qsem{\trace{A}, C_{primary} \repair C_{repair}} = 1 + \dots$ when the primary violates.
-      \end{itemize}
-      Therefore, the path involving the repair accumulates a score of at least 1 (the penalty for breaking the primary), confirming $\qsem{\pi, C} > 0$.
-  \end{enumerate}
+  \item \textbf{Score monotonicity.}
+  By the recursive definition of $\qsem{}$:
+  \[
+    \qsem{\pi \concat \trace{A}, C}
+    = \qsem{\pi, C} + \qsem{\trace{A},\, \Prog(\pi, C)}.
+  \]
+  Since $\qsem{\trace{A}, \Prog(\pi, C)} \ge 0$ for all $A$ and all residual contracts, the claim follows.
+  
+  \item \textbf{Reparation cost.}
+  Consider $C = C_1 \repair C_2$.
+  If $\pi \satt C$ through the reparation branch, then some prefix $\pi'$ tightly violates $C_1$.
+  By the definition of the instantaneous scoring function for reparation, the step at which $C_1$ is tightly violated contributes $\qsem{\trace{A}, C_1 \repair C_2} = 1 + \qsem{\trace{A}, C_2}$, yielding at least~$1$.
+  Since all subsequent instantaneous scores are non-negative, the cumulative score satisfies $\qsem{\pi, C} \ge 1$.
+  Hence, $\pi \satt C$ and $\qsem{\pi, C} > 0$ can coexist: the score records the cost of the reparation path even though the contract is ultimately satisfied.
 \end{enumerate}
   \end{proof}
 
@@ -524,12 +495,12 @@ This position-based scoring enables the precise localization of the time points 
 
 \begin{definition}[Accumulative Quantitative  Score]
     \label{def:quant-execution-score}
-    Let $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ be a Mono-Quantitative Mealy machine and let $\pi = \langle A_0, A_1, \dots, A_{n-1} \rangle \in \Gamma^*$ be a finite trace.
-    The execution of $\mathcal{M}^{qt}$ on $\pi$ produces an execution $\langle q_0, A_0, q_1, A_1 \dots, A_{n-1}, q_n \rangle$ such that $q_{i+1} = \delta(q_i, A_i)$ for all $0 \le i < n$.
+    Let $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ be a Mono-Quantitative Mealy machine and let $\pi = \langle A_1, A_2, \dots, A_{n} \rangle \in \Gamma^*$ be a finite trace.
+    The execution of $\mathcal{M}^{qt}$ on $\pi$ produces an execution $\langle q_0, A_1, q_1, A_2 \dots, A_{n}, q_n \rangle$ such that $q_{i} = \delta(q_{i-1}, A_i)$ for all $1 \le i \le n$.
     
     The \emph{quantitative score} of the trace $\pi$ on $\mathcal{M}^{qt}$, denoted as $\qscore( \mathcal{M}^{qt},\pi)$, is defined as the sum of the instantaneous scores of the states visited during the run, excluding the initial state:
     \[
-        \qscore( \mathcal{M}^{qt},\pi) = \sum_{i=0}^{\size{\pi}-1} \lambda(q_i,\pi(i)).
+        \qscore( \mathcal{M}^{qt},\pi) = \sum_{i=1}^{\size{\pi}} \lambda(q_{i-1},\pi(i)).
     \]
     \end{definition}
 
@@ -672,7 +643,7 @@ This shows that although the trace satisfies the guarded contract in the tight s
     
 
 \begin{theorem}[Correctness of Quantitative Monitor]
-Let $C$ be a contract and $\pi = \trace{A_0, \dots, A_n}$ be a trace.
+Let $C$ be a contract and $\pi = \trace{A_1, \dots, A_n}$ be a trace.
 Then the cumulative quantitative violation score is exactly the sum of the monitor outputs:
 \[
 \qsem{\pi, C} =\qscore( \qmc(C),\pi).
@@ -680,51 +651,51 @@ Then the cumulative quantitative violation score is exactly the sum of the monit
 \end{theorem}
 
 \begin{proof}
-Let $\pi = \trace{A_0,\dots,A_{n-1}}$ be a finite trace of length $n$.
-Write $q_0 := C$ and, for each $0 \le i < n$, define the unique run of $\qmc(C)$ on $\pi$ by
+Let $\pi = \trace{A_1,\dots,A_{n}}$ be a finite trace of length $n$.
+Write $q_0 := C$ and, for each $1 \le i \le n$, define the unique run of $\qmc(C)$ on $\pi$ by
 \[
-  q_{i+1} := \delta(q_i,A_i) = \Prog(\trace{A_i},q_i).
+  q_{i} := \delta(q_{i-1},A_i) = \Prog(\trace{A_i},q_{i-1}).
 \]
 By definition of the monitor output function, for every $i$ we have
 \[
-  \lambda(q_i,A_i) = \qsem{\trace{A_i},q_i}.
+  \lambda(q_{i-1},A_i) = \qsem{\trace{A_i},q_{i-1}}.
 \]
 Hence, by Definition~\ref{def:quant-execution-score},
 \[
   \qscore(\qmc(C),\pi) 
-  = \sum_{i=0}^{n-1} \lambda(q_i,A_i)
-  = \sum_{i=0}^{n-1} \qsem{\trace{A_i},q_i}.
+  = \sum_{i=1}^{n} \lambda(q_{i-1},A_i)
+  = \sum_{i=1}^{n} \qsem{\trace{A_i},q_{i-1}}.
 \]
 
 It remains to show that $\qsem{\pi,C}$ expands to the same sum.
 We prove by induction on $n$ that
 \[
-  \qsem{\pi,C} = \sum_{i=0}^{n-1} \qsem{\trace{A_i},q_i}.
+  \qsem{\pi,C} = \sum_{i=1}^{n} \qsem{\trace{A_i},q_{i-1}}.
 \]
 
 \paragraph{Base case ($n=1$).}
-If $\pi = \trace{A_0}$, then by Definition~(Quantitative Violation Semantics)
+If $\pi = \trace{A_1}$, then by Definition~(Quantitative Violation Semantics)
 \(
-  \qsem{\pi,C} = \qsem{\trace{A_0},C} = \qsem{\trace{A_0},q_0}.
+  \qsem{\pi,C} = \qsem{\trace{A_1},C} = \qsem{\trace{A_1},q_0}.
 \)
 This is exactly the required sum.
 
 \paragraph{Inductive step.}
 Assume the claim holds for all traces of length $n$.
-Let $\pi' = \trace{A_0,\dots,A_n}$ be a trace of length $n+1$.
+Let $\pi' = \trace{A_1,\dots,A_{n+1}}$ be a trace of length $n+1$.
 Unfolding the recursive definition of $\qsem{}$ yields
 \begin{align*}
-  \qsem{\pi',C} &= \qsem{\trace{A_0},C} + \qsem{\trace{A_1,\dots,A_n},\Prog(\trace{A_0},C)}\\
-  &= \qsem{\trace{A_0},q_0} + \qsem{\trace{A_1,\dots,A_n},q_1}.
+  \qsem{\pi',C} &= \qsem{\trace{A_1},C} + \qsem{\trace{A_2,\dots,A_{n+1}},\Prog(\trace{A_1},C)}\\
+  &= \qsem{\trace{A_1},q_0} + \qsem{\trace{A_2,\dots,A_{n+1}},q_1}.
 \end{align*}
 Applying the induction hypothesis to the suffix trace $\trace{A_1,\dots,A_n}$ with initial contract $q_1$ gives
 \[
-  \qsem{\trace{A_1,\dots,A_n},q_1} = \sum_{i=1}^{n} \qsem{\trace{A_i},q_i}.
+  \qsem{\trace{A_2,\dots,A_{n+1}},q_1} = \sum_{i=2}^{n+1} \qsem{\trace{A_i},q_{i-1}}.
 \]
 Therefore,
 \[
-  \qsem{\pi',C} = \qsem{\trace{A_0},q_0} + \sum_{i=1}^{n} \qsem{\trace{A_i},q_i}
-  = \sum_{i=0}^{n} \qsem{\trace{A_i},q_i}.
+  \qsem{\pi',C} = \qsem{\trace{A_1},q_0} + \sum_{i=2}^{n+1} \qsem{\trace{A_i},q_{i-1}}
+  = \sum_{i=1}^{n+1} \qsem{\trace{A_i},q_{i-1}}.
 \]
 This establishes the inductive claim.
 
@@ -910,45 +881,48 @@ So far, we have introduced two quantitative views of non-compliance. The first o
 
     \begin{lemma}[The relation of the blame score to the violation score]
         \label{lem:qsem-qblame-decomp}
-        Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
+        Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract not containing the unblamable $\bot$ literal.
         \[ \text{If }
         \qblame{\pi,C} = (n_1,n_2)
         \]
         is the quantitative blame vector for $\pi$ and $C$,
-        then the quantitative violation score decomposes as
+        then the quantitative violation score acts as a lower bound for the total assigned blame:
         \[
-        \qsem{\pi,C} = n_1 + n_2.
+        \qsem{\pi,C} \le n_1 + n_2.
         \]
         \end{lemma}
 
         \begin{proof}
-            We prove the claim by induction on the length of the trace $\pi$.
+            We prove the claim by induction on the length of the trace $\pi$ and structurally on the instantaneous evaluation.
             
             \paragraph{Base case.}
             Let $\pi=\trace{A}$ be a single-event trace.
             By Definitions~\ref{def:quant-blame} and (Quantitative Violation Semantics),
-            both $\qsem{\trace{A},C}$ and $\qblame{\trace{A},C}$ are defined solely from the
+            both $\qsem{\trace{A},C}$ and $\qblame{\trace{A},C}$ are defined from the
             instantaneous evaluation of the head literal $\LH(C)$.
             
             If $\trace{A}$ violates no active literal, then
             \[
             \qsem{\trace{A},C}=0
             \quad\text{and}\quad
-            \qblame{\trace{A},C}=(0,0).
+            \qblame{\trace{A},C}=(0,0), \text{ yielding } 0 \le 0+0.
             \]
-            If $\trace{A}$ violates $\LH(C)$ and the violation is attributed to agent $i$,
-            then
+            If $\trace{A}$ violates $\LH(C)$, then since $C$ is $\bot$-free, the violation must stem from a blamable duty.
+            Therefore $\qsem{\trace{A},C}=1$ and the blame attribution $\qblame{\trace{A},C}$ yields either $(1,0)$ or $(0,1)$. In both cases, $n_1+n_2 = 1$, yielding $1 \le 1$.
+
+            For the inductive structural step on conjunction $C = C_1 \wedge C_2$:
+            By the inductive hypothesis, if $\qblame{\trace{A},C_1} = (x_1, y_1)$ and $\qblame{\trace{A},C_2} = (x_2, y_2)$, then $\qsem{\trace{A},C_1} \le x_1 + y_1$ and $\qsem{\trace{A},C_2} \le x_2 + y_2$.
+            Thus, for the conjunction:
             \[
-            \qsem{\trace{A},C}=1
-            \quad\text{and}\quad
-            \qblame{\trace{A},C}=
-            \begin{cases}
-            (1,0) & \text{if } i=1,\\
-            (0,1) & \text{if } i=2.
-            \end{cases}
+            \qblame{\trace{A},C_1 \wedge C_2} = (x_1+x_2, y_1+y_2)
             \]
-            In all cases, $\qsem{\trace{A},C}=n_1+n_2$.
-            
+            and the sum of its components is $(x_1+x_2) + (y_1+y_2) = (x_1+y_1) + (x_2+y_2)$.
+            Since a double violation in a conjunction of literals may be counted as a single concurrent violation in the global quantitative score, but blame accumulates strictly for each agent, we have:
+            \[
+            \qsem{\trace{A},C_1 \wedge C_2} \le (x_1+y_1) + (x_2+y_2).
+            \]
+            Hence, the violation score is less than or equal to the total assigned blame.
+
             \paragraph{Inductive step.}
             Let $\pi=\trace{A}\concat \pi'$ with $\Prog(\trace{A},C)\neq\emptc$.
             By the recursive definitions,
@@ -975,23 +949,16 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             \]
             By the induction hypothesis,
             \[
-            \qsem{\pi',\Prog(\trace{A},C)}=b_1+b_2,
+            \qsem{\pi',\Prog(\trace{A},C)} \le b_1+b_2,
             \]
             and by the base case,
             \[
-            \qsem{\trace{A},C}=a_1+a_2.
+            \qsem{\trace{A},C} \le a_1+a_2.
             \]
-            Therefore,
+            Summing these inequalities gives
             \[
-            \qsem{\pi,C}
-            =
-            (a_1+a_2)+(b_1+b_2)
-            =
-            (a_1+b_1)+(a_2+b_2)
-            =
-            n_1+n_2,
+            \qsem{\pi,C} \le (a_1+b_1)+(a_2+b_2) = n_1+n_2.
             \]
-            as required.
             \end{proof}
 
             \begin{lemma}[Blame Score vs. Forward Blame Semantics]
@@ -1018,7 +985,7 @@ So far, we have introduced two quantitative views of non-compliance. The first o
                   \[
                   \pi' \vDash_{\bott_{S}} C.
                   \]
-                  Let $\pi' = \trace{A_0, \dots, A_k}$ be this decisive prefix.
+                  Let $\pi' = \trace{A_1, \dots, A_k}$ be this decisive prefix.
                   By the definition of tight blame semantics, the violation occurs at the last step $A_k$ against the residual contract $C_k = \Prog(\pi'[1,k-1], C)$.
                   Consequently, the instantaneous blame relation holds:
                   \[
@@ -1082,9 +1049,9 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             
             \begin{definition}[Quantitative blame execution score]
             \label{def:qbm-score}
-            Let $\qbm(C)=(Q,q_0,\Gamma,\delta,\lambda_{\mathbb{N}^2})$ and let $\pi=\langle A_0,\dots,A_{n-1}\rangle\in\Gamma^*$. The \emph{quantitative blame score} of $\pi$ on $\qbm(C)$ is
+            Let $\qbm(C)=(Q,q_0,\Gamma,\delta,\lambda_{\mathbb{N}^2})$ and let $\pi=\langle A_1,\dots,A_{n}\rangle\in\Gamma^*$. The \emph{quantitative blame score} of $\pi$ on $\qbm(C)$ is
             \[
-            \qscore(\qbm(C),\pi) := \sum_{i=0}^{n-1} \lambda_{\mathbb{N}^2}(q_i,A_i),
+            \qscore(\qbm(C),\pi) := \sum_{i=1}^{n} \lambda_{\mathbb{N}^2}(q_{i-1},A_i),
             \]
             where $q_{i+1}:=\delta(q_i,A_i)$ and the sum is component-wise.
             \end{definition}

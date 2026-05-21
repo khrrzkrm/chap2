@@ -531,7 +531,7 @@ We adopt a trace-based interpretation over finite timed words. A formula constra
 
 
 
-\subsubsection{Timed words semantics}\label{semantics}
+\subsubsection{Timed Words Semantics}\label{semantics}
 % \subsubsection{Timed Words Semantics}
 \begin{definition}[Satisfaction relation]\label{semantics}
 Given a finite \timedword $\tau \in \domtr$ and a formula $\phi$ from \TDDLfm, the satisfaction relation $\tau \dutysat \phi$ (read as``the \timedword $\tau$ satisfies the formula $\phi$'') is defined inductively on the structure of the formula $\phi$ as follows:
@@ -583,7 +583,7 @@ Another way of introducing negation could be at the level of actions. Although i
 
 
 
-\subsubsection{Extensional semantics}
+\subsubsection{Extensional Semantics}
  Another perspective of word semantics is known as extensional semantics, in which a formula is interpreted to be a set of acceptable behaviors. In such semantics, also known as model enumeration, the semantics of a formula are given in terms of the finite timed words that are models of its specifications. Specifically, the semantics of a formula are given by the set of words that adhere to its normative requirements. Formally, the language of a formula $\phi$, denoted by $\dutyclass{\phi}$, is the set of all \timedwords that satisfy $\phi$. In planning or normative settings, this set contains all compliant execution plans, which concretely delineate the possible successful agent behaviors under the given normative specification.
 
 \begin{definition}[Language of a Formula]\label{language}
@@ -934,7 +934,7 @@ These considerations conclude our overview of the semantic behavior of logical o
 The satisfiability problem plays a central role in assessing whether a timed normative specification is operationally meaningful. Before analyzing conflicts, we must first determine whether a formula admits at least one compliant execution trace. In the context of \TDDLfm, satisfiability captures the fundamental feasibility of fulfilling all obligations while respecting all prohibitions under metric time constraints.
 
 This subsection formalizes the satisfiability problem for our logic. We establish a tight bound on the size of witnessing timed words, position the problem within classical complexity theory, demonstrate the resolution procedure as well as its implementation, and introduce rules for composition with unsatisfiable formulas. These results provide the computational foundation for the subsequent conflict analysis, ensuring that the relationship between satisfiability and conflict is well-defined.
-\subsubsection{Definition and complexity}
+\subsubsection{Definition and Complexity}
 We define the unsatisfiability problem in a classical way for model basic logics where unsatisfiability relates to the inexistance of a trace satisfying a formula. 
 \begin{definition}[Satisfiability]\label{def:sat}
     A formula $\phi$ is \defn{satisfiable}, \emph{sat} for short, if and only if there exists a \timedword $\tau$ that  satisfies $\phi$:
@@ -1086,7 +1086,7 @@ This encoding preserves the satisfiability structure of the original Boolean for
 Given a bound $\kappa$ on the number of intervals in any formula $\phi$ from \TDDLfm, the satisfiability problem is $\mathsf{NP}$-complete w.r.t to $\eta(\phi)$, assuming $\kappa$ is polynomially bounded in $\eta(\phi)$.
 \end{corollary}
 
-\subsubsection{SMT encoding of the satisfiability problem}
+\subsubsection{SMT Encoding of the Satisfiability Problem}
 We encode the satisfiability problem of a formula from \TDDLfm on an instance of SMT solving using Linear Integer Arithmetic(LIA). Specifically, for every $\phi \in \TDDLfm$, we define $\zeta(\phi)$, such that $\phi$ is satisfiable if and only if $\zeta(\phi)$ is satisfiable.
 The mapping from $\phi$ to $\zeta(\phi)$ is decomposed into three parts.
 \paragraph{Timed words as constrained arrays of events:}
@@ -1599,20 +1599,47 @@ In summary, these cited frameworks focus on more expressive norms that are dynam
 
 % Additionally, we believe that our methodology could be replicated to other logics. The normalization pipeline, punctual conflict extraction, and SMT-based feasibility checks can be carried over to other timed or agent centred normative formalisms, and to specification languages that do not adopt \TDDLfm. We expect these techniques to serve as a reusable backbone for future calculi and tools that require transparent conflict detection and verifiable repair.
 
+This chapter presented \TDDLfm, a minimal metric-time normative logic in which normative specifications can be expressed over timed conditions as interval sets for obligation, prohibition, and their combination via disjunction and conjunction. The core backbone of this work is the formal pipeline for \emph{explainable} conflict analysis: with syntactic normalization to disjunctive/punctual forms, a sound QF-LIA encoding for satisfiability, a syntactic conflict-detection procedure, and a proof-theoretic conflict calculus. 
+
+
+
+\paragraph{Conflicts beyond satisfiability.} 
+
+By identifying the correspondence between punctual conflicts and Minimal Unsatisfiable Subsets (MUS) aby nd by introducing a proof-theoretic conflict calculus, we linked the syntactic and semantic properties of conflicts, which was straightforward at the beginning of this work. This correspondence is novel in the field of normative conflicts and precisely distinguishes the notion of unsatisfiability from normative conflicts.
+
+\paragraph{Conflicts Engineering.} 
+
+Beyond only detecting conflict, we also contributed to conflict engineering by: (i) defining a \emph{conflict-density} measure  to  reflect the severity  of conflicts in a formula and proving a \emph{pruning theorem} that proves that any partially conflicting specification has a semantically equivalent, conflict-free refinement; and (ii) establishing that \TDDLfm\ satisfiability is NP-complete with a tight QF-LIA encoding bounded by the number of obligations, along with explicit size blow-up bounds for conflict detection via \dpnf.
+
+\paragraph{The Trade-off of Static Resolution.} 
+
+We found out that the complete static conflict elimination often causes a significant syntactic blow-up. Especially when using the \dpnf repair algorithm. This suggests that forcing a specification to be entirely conflict-free at design time may sacrifice conciseness and readability. In practice, regulators might prefer to keep compact specifications and defer resolving some conflicts to the agent's operational planning at runtime. Our conflict calculus is an interactive way for choosing which conflict to keep or eliminate. We also avoided defining rules for eliminating partial ontic conflicts, as they lead to instances of large-scale blow-up.
 
 
 
 
 
-\section{Conclusion}
-We presented a micro metric-time normative logic, \TDDLfm, together with a pipeline for \emph{explainable} conflict analysis: syntactic normalization to disjunctive/punctual forms, a sound QF-LIA encoding for timed feasibility, a constructive conflict-extraction procedure, and a proof-theoretic conflict calculus. By internalising metric time via canonical interval sets and making the ontic resource constraint explicit (\emph{one action per time point}), conflicts arise transparently from the interaction of time-bounded norms and that constraint.
-Beyond detecting conflict, we contributed additionally by: (i) defining a \emph{conflict-density} measure and proving a \emph{pruning theorem} that rewrites any partially conflicting specification into a semantically equivalent, conflict-free refinement; and (ii) complexity/algorithms for \TDDLfm\ satisfiability is NP-complete with a tight QF-LIA encoding bounded by the number of obligations, together with explicit size blow-up bounds for punctualisation (showing the conciseness vs.\ conflict-elimination trade-off). 
+
+
+
+
+
+
 \paragraph{Transferability.}
-We believe that our methodology is transferable to many other existing logics: more precisely agent-centred timed deontic formalisms and other contract specification languages beyond \TDDLfm, providing a systematic approach to conflict detection and verifiable repair in contracts, autonomous agents, and legal compliance.
+
+ Our methodology could be applied to existing logics lacking frameworks for reasoning about conflicts. More specifically, agent-centered timed deontic formalisms. The core principles of this framework provide a systematic, reusable foundation for conflict reasoning, verifiable repair, and compliance monitoring across diverse normative  and ontic domains.
+
+
 
 \paragraph{Outlook.}
-We plan two enrich \TDDLfm gradually and in two different directions: (1) \emph{expressivity}: actions with duration and ought to be literals (defined on states), reparation operator, conditional/permission literals and a defeasibility layer; and (2) \emph{interaction}: frames for prevention/enabling/interference between actions, and relaxing the single-action ontic constraint. We expect the second direction to require substantial methodological changes for the full logic specified in \cite{kharraz2021timed}, since it requires additional structural properties on the underlying frames used to model the ontical properties of the enriched logic.
 
+We plan to enrich \TDDLfm gradually in two directions: (1) \emph{expressivity}: actions with duration and ought-to-be literals (defined on states), a reparation operator, conditional/permission literals, and a defeasibility layer; and (2) \emph{interaction}: frames for prevention, enabling, and interference between actions, and relaxing the single-action ontic constraint. We expect the second direction to require substantial methodological changes to the full logic specified in \cite{kharraz2021timed}, as it requires additional structural properties on the underlying frames used to model the ontic properties of the enriched logic.
+
+
+
+\paragraph{From Static Specifications to Dynamic Collaboration.} 
+
+Our study so far has focused on the time consistency of a specification from a single agent's perspective. However, real-world digital contracts govern interactions among multiple potentially adversarial parties. Even if a specification is statically conflict-free, an agent could still fail to comply at runtime due to interference or inaction by a collaborator. Having secured the static foundations of metric time norms, the next chapter turns attention to the dynamic lifecycle of contracts. We will explore how to monitor collaborative compliance at runtime and, when breaches occur, how to precisely assign blame among interacting agents.
 
 
 

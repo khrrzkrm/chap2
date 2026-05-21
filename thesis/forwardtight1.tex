@@ -614,15 +614,15 @@ Since all other transitions are unchanged and no ambiguity about the switching p
 
 
 
-\begin{remark}[Relation to Control Phases and Prior Work]
-  \label{rem:control-phases}
-  The structural constructions in Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair} serve as the static counterpart to the \emph{control-phase} view described in runtime verification frameworks such as \cite{falcone2009runtime,bartocci2018rv}.
-  While these standard frameworks often rely on an explicit control variable $m \in \{\mathbf{L}, \mathbf{R}\}$ to dynamically track whether the left ($\mathbf{L}$) or right ($\mathbf{R}$) component is active, our transformation embeds this logic directly into the transition graph.
-  We achieve this by eliminating the terminal states of the left monitor and redirecting the decisive transitions—$\topt$ for sequence and $\bott$ for reparation—to the initial state of the right monitor.
-  Consequently, this compile-time structure effectively encodes the operational behavior of a mode-augmented monitor that switches phases only when specific conditions are met.
-  This design parallels the phase-based semantics where control modes synchronize sub-monitors for sequential patterns like ``\emph{after $C$ succeeds, check $C'$}''.
-  Similarly, our reparation composition aligns with the ``\emph{compensatory phase}'' discussed in \cite{governatori2006formal}, where a secondary clause activates only after the primary obligation fails.
-  Thus, our constructions realize these phase shifts ($\mathbf{L} \to \mathbf{R}$) at the automaton level, eliminating the need for the explicit control variables used in prior work.
+\begin{remark}[Analogy with Thompson's Construction]
+  \label{rem:thompson-analogy}
+  The compositional monitor constructions in Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair} follow a pattern closely analogous to Thompson's construction for regular expressions~\cite{Thompson1968}.
+  In Thompson's method, sub-automata for smaller expressions are wired together via $\varepsilon$-transitions: for concatenation, the accepting state of the first fragment is linked to the start state of the second; for alternation, a new initial state fans out to both sub-fragments.
+  Our sequence and reparation compositions apply the same principle: the decisive states of the left monitor ($\topt$ for sequence, $\bott$ for reparation) are redirected to the initial state of the right monitor, effectively wiring the two sub-monitors into a single automaton.
+
+  The key difference is that we compose \emph{deterministic} Moore machines directly, without an intermediate nondeterministic step.
+  This is possible because the contract grammar of \cDL does not include a disjunction operator at the contract level: contracts are combined via conjunction, sequence, and reparation, all of which admit a deterministic left-to-right evaluation.
+  As a result, no subset construction or $\varepsilon$-closure is required, and the composed monitor is deterministic by construction.
   \end{remark}
 
 
