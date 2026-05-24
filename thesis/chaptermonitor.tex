@@ -1,6 +1,6 @@
 \chapter{Reasoning about Blame in Multi-Party Collaborative Contracts}\label{chap:monitoring}
 
-This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents, building on a corrected and reformulated syntax and semantics of our earlier work \cite{Kharraz23}. In a distributed setting, a core challenge is distinguishing the success of an action attributed to an agent from his attempts, as the success of this collaborative action may also depend on another agent's collaboration or non-interference. This distinction is essential for responsibility attribution in collaborative specifications, such as contracts, and cannot be reconstructed from standard trace semantics that do not reason at the attempt level. We establish a formal basis for blame attribution when contractual norms are not met. We built a  logic and a runtime verification pipeline capable of handling temporal constraints, reparable violations, and the open-ended structure of real-world contracts.
+This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents, building on a corrected and reformulated syntax and semantics of our earlier work \cite{Kharraz23}. In a distributed setting, a core challenge is distinguishing the success of an action attributed to an agent from his attempts, as the success of this collaborative action may also depend on another agent's collaboration or non-interference. This distinction is essential for responsibility attribution in collaborative specifications, such as contracts, and cannot be reconstructed from standard trace semantics that do not reason at the attempt level. We establish a formal basis for blame attribution when contractual norms are not met. We built a logic and a runtime verification pipeline capable of handling temporal constraints, reparable violations, and the open-ended structure of real-world contracts.
 
 
 
@@ -49,7 +49,7 @@ These considerations motivate the following questions from a formal methods pers
 
 \item How can open-ended clauses, specifically \emph{repetitions} of duties and rights, be specified and monitored within a contractual framework?
 
-\item How can quantitative blame be semantically defined and automatically monitored  to reflect legal reasoning ?
+\item How can quantitative blame be semantically defined and automatically monitored  to reflect legal reasoning?
 
 \end{enumerate}
 
@@ -64,9 +64,9 @@ To address these questions, we adopt a \emph{constructive formal methods} approa
 
 
 \paragraph{Phase 1: Semantic Trace Abstraction.}
-We suggest a Periodic Synchronous trace model in which events are sets of tagged actions by the agent's name, each event captures collaboration or obstruction during that period. The synchronization is soundly computed as a handshake of actions of the same types when both agents ``suggest " them during that period.
+We suggest a Periodic Synchronous trace model in which events are sets of tagged actions by the agent's name; each event captures collaboration or obstruction during that period. The synchronization is soundly computed as a handshake of actions of the same types when both agents ``suggest " them during that period.
 \paragraph{Phase 2: Denotational Specification.}
-We adopt a \emph{semantics-first} logic definition. We first focus on \emph{tightness}, i.e, the ability to render precise verdicts on finite prefixes. We start with binary compliance and refine it into a blame-assignment model. Secondly, we extend those semantics to the quantitative domain.
+We adopt a \emph{semantics-first} logic definition. We first focus on \emph{tightness}, i.e., the ability to render precise verdicts on finite prefixes. We start with binary compliance and refine it into a blame-assignment model. Secondly, we extend those semantics to the quantitative domain.
 \paragraph{Phase 3: Structural Synthesis.}
 We use \emph{automata-theoretic synthesis from semantics}. We propose sound and complete monitor construction to Moore and Mealy machines, employing structural induction and/or contract closures to ensure the monitor's structure mirrors the contract semantics.
 \paragraph{Formal Verification.}
@@ -75,7 +75,7 @@ We validate the correctness of the formal pipeline through \emph{conformance pro
 This chapter's contribution is a progressive framework for specifying and verifying collaborative normative systems at runtime, where the final result is obtained via a transition over four semantics. The primary contribution is a verified pipeline that grounds the semantics' soundness in legal reasoning and synthesizes this semantics into online monitors. The list of contributions is:
 \begin{enumerate}[Con1]
 \item \textbf{Attempt-Based Interaction Model.}
-We introduce a formal analysis that distinguishes an agent's \emph{attempt} from the \emph{interaction outcome}. Unlike models that conflate failure to act with blocked action, we treat non-interference as a first-class semantic property, enabling the verification of ``active participation’’.
+We introduce a formal analysis that distinguishes an agent's \emph{attempt} from the \emph{interaction outcome}. Unlike models that conflate failure to act with blocked action, we treat non-interference as a first-class semantic property, enabling the verification of ``active participation''.
 \item \textbf{The Two-Agents Collaborative Normative Logic (\cDL).}
 We formalize \cDL, a logic to capture our formal challenges. It extends standard deontic specifications with atomic responsibility modalities, regular expressions used to condition and guard the end sequences of norms, and explicit operators for repetition and contrary-to-duty reparations.
 \item \textbf{Theory of Tight and Quantitative Semantics.}
@@ -93,7 +93,7 @@ We contribute a formal definition of \emph{blame assignment} in cooperative sett
 
 \paragraph{Organization.}
 
-We first ground the problem in a rental-agreement example and extract the modeling requirements. We then develop the trace and synchronization layer for collaborative interaction, introduce the logic \cDL, and finally present the monitor-based semantics, blame attribution, and quantitative extensions alongside with their monitor constructions.
+We first ground the problem in a rental-agreement example and extract the modeling requirements. We then develop the trace and synchronization layer for collaborative interaction, introduce the logic \cDL, and finally present the monitor-based semantics, blame attribution, and quantitative extensions alongside their monitor constructions.
 
 
 
@@ -109,7 +109,7 @@ To illustrate the theoretical development in a concrete real-life contract, we e
 
 \begin{example}\label{ME}
 
-    We present the structure of this simplified rental contract in \ref{fig:ucd}, involving a tenant (agent~1) and a landlord (agent~2). The clauses illustrate cooperative actions such as paying rent and granting occupancy: payment requires both the tenant's offer and the landlord's acceptance, while occupancy requires both the tenant's willingness to occupy and the landlord's permission. The contract also includes a reparation clause and a termination condition, both of which are applied monthly and recur each month.
+    We present the structure of this simplified rental contract in \ref{fig:ucd}, involving a tenant (agent~1) and a landlord (agent~2). The clauses illustrate cooperative actions such as paying rent and granting occupancy: payment requires both the tenant's offer and the landlord's acceptance, while occupancy requires both the tenant's willingness to occupy and the landlord's permission. The contract also includes a reparation clause and a termination condition, both of which are applied monthly.
 
 
 
@@ -184,140 +184,191 @@ To illustrate the theoretical development in a concrete real-life contract, we e
 \end{example}
 
 \subsection{Illustrative Interaction Scenarios}
-To illustrate the practical implications of these clauses, we analyze three hypothetical execution traces over a timeline of months $t=1, 2, \dots$. These scenarios highlight the divergence between simple observation (what happened) and normative analysis (who is responsible).
+
+We analyze three hypothetical execution traces over the timeline $t=1, 2, \dots$, where each index corresponds to a month. These scenarios highlight the divergence between complete observation of the behaviors of both the landlord and the tenant, as reflected in the contract, and normative analysis, as reflected in a real-life court setting.
+
+
 
 \paragraph{Scenario 1: Obstruction (The ``Handshake'' Problem).}
+
 Consider the obligation to pay rent (Clause C1) at month $t=1$.
+
 \begin{itemize}
+
     \item \textbf{Action:} The tenant attempts to initiate the bank transfer.
+
     \item \textbf{Reaction:} The landlord, wishing to manufacture a reason for eviction, closes the receiving bank account or refuses the check.
+
     \item \textbf{Observable Outcome:} No money is transferred.
-    \item \textbf{Normative Analysis:} A naive monitor observing only ``payment status'' would flag a violation by the tenant. However, in a collaborative framework, the tenant has fulfilled their duty by \emph{attempting} the act. The failure is attributed to the landlord's interference, necessitating a distinction between \emph{attempted payment} and \emph{successful payment}.
+
+    \item \textbf{Normative Analysis:} The court will conclude the prevention of performance, and the blame will be attributed to the landlord. A naive monitor observing only the ``payment status'' would correctly detect the violation of the payment clause, but would attribute the blame to the tenant. However, in a collaborative framework we want to design, the tenant has fulfilled their duty by \emph{attempting} the act. The failure is attributed to the landlord's interference, necessitating a distinction between \emph{attempted payment} and \emph{successful payment}.
+
 \end{itemize}
+
+
 
 \paragraph{Scenario 2: Violation and Reparation (The CTD Chain).}
+
 Consider a scenario where the tenant genuinely runs out of funds.
+
 \begin{itemize}
+
     \item \textbf{Month 1:} tenant fails to pay rent.
+
     \item \textbf{Immediate Verdict:} Violation of C1. The contract enters a ``violated'' state.
-    \item \textbf{Normative Shift:} Clause C3 (Reparation) activates. The tenant now holds a \emph{secondary obligation}: pay Month 1 Rent + Month 2 Rent + 10\% Fee at Month 2.
-    \item \textbf{Month 2:} tenant pays the total accumulated amount.
+
+    \item \textbf{Month 2:} tenant pays the total accumulated fine amount.
+
     \item \textbf{Final Verdict:} The violation is considered \emph{repaired}, and the contract returns to a compliant state. The monitor must track this ``state recovery'' rather than permanently aborting at the first failure.
+
+\item \textbf{Normative Shift:} Clause C3 specifying the reparation activates. The tenant now holds a \emph{secondary obligation}: pay Month 1 Rent + Month 2 Rent + 10\% Fee at Month 2. As such, the violation of one norm does not necessarily imply the violation of the contract.
+
 \end{itemize}
+
+
 
 \paragraph{Scenario 3: Termination and Temporal Reconfiguration.}
-Consider the tenant exercising the power to terminate (Clause C5).
+
+Consider the tenant exercising the power to terminate as in Clause C5.
+
 \begin{itemize}
+
     \item \textbf{Month 5:} tenant issues a formal written notice to terminate.
-    \item \textbf{Normative Shift:} This is not a violation but a \emph{state change}. The contract, previously open-ended, is now fixed to terminate at Month 8 ($5+3$).
-    \item \textbf{Month 6--8:} The tenant stops paying rent, assuming the notice ended the contract immediately.
-    \item \textbf{Verdict:} Violation. The monitor must enforce that the \emph{obligations persist} during the notice period (Clause C5-i). The exercising of power did not delete the obligations but merely set a horizon for their expiration.
+
+    \item \textbf{Month 6-8:} The tenant stops paying rent, assuming the notice ended the contract immediately.
+
+  \item \textbf{Normative Shift:}  The contract turns into a \emph{finite horizon contract} as it is now fixed to terminate at Month $8=5+3$. 
+
+    \item \textbf{Verdict:} Violation and the blame will be attributed to the Landlord. The desired monitor semantics must enforce that the \emph{obligations persist} during the notice period. The exercising of power did not \emph{immediately} delete the obligations but merely set a horizon for their expiration.
+
 \end{itemize}
 
+
+
 \subsection{Formal Modeling Challenges}
+
 \label{subsec:formal-challenges}
+
+
 
 While conceptually straightforward, formalizing this contract requires resolving several semantic challenges that standard specification languages (such as LTL or standard Deontic Logic) fail to address adequately.
 
-\paragraph{1. The ``Handshake'' Semantics (Attempts vs.\ Outcomes).}
-Clauses C1 and C2 illustrate that compliance is a \emph{joint achievement}. For example, ``Rent Payment'' (C1) semantically implies that the tenant offers the money \emph{and} the landlord accepts it. Standard trace models often represent this as a single atomic event $pay$. However, in a dispute, we must distinguish between the tenant failing to offer rent (tenant violation) and the tenant offering but the landlord blocking the transfer (landlord interference).\\
-\textbf{Challenge 1:} The formalism must treat \emph{attempts} and \emph{successful outcomes} as distinct semantic layers to correctly attribute blame.
 
-\paragraph{2. Contrary-to-Duty Structures (Reparation).}
-Clause C3 introduces non-monotonicity. If C1 is violated, the contract does not simply evaluate to $\mathit{false}$ (breach). Instead, it transitions to a sub-ideal state where a secondary obligation (the late fee) becomes active. This creates a \emph{reparation chain}: Primary Duty $\to$ Violation $\to$ Secondary Duty.\\
+
+\paragraph{1. The ``Handshake'' Semantics (Attempts vs.\ Outcomes).}
+
+Clauses C1 and C2 illustrate that compliance is a \emph{joint achievement}. For example, ``Rent Payment'' (C1) semantically implies that the tenant offers the money \emph{and} the landlord accepts it. Standard trace models often represent this as a single atomic event $pay$. However, in a dispute, we must distinguish between the tenant failing to pay rent (tenant violation) and the tenant offering to pay but the landlord blocking the transfer (landlord interference).\\
+
+\textbf{Challenge 1:} The formalism must treat \emph{attempts} and \emph{successful outcomes} as distinct semantic layers, one for the fine-grained blame attribution, and may use the second for contract violation.
+
+\paragraph{2. Contrary-to-Duty Structures: Reparation}
+
+If C1 is violated, the contract does not simply conclude a violation, but instead, it transitions to a sub-ideal state in which a secondary reparation obligation becomes active. This creates a \emph{reparation chain}: Primary Duty $\to$ Violation $\to$ Secondary Duty.\\
+
 \textbf{Challenge 2:} The logic must support \emph{recoverable violations}, allowing the monitoring status to fluctuate between ``violated'' and ``repaired'' over time.
 
+
+
 \paragraph{3. Reactive Triggers and Monitoring Horizons.}
+
 Clause C4 (Repairs) imposes a duty with a relative deadline: ``within one month of request''. From a monitoring perspective, this requires \emph{forward-looking tightness}. We cannot wait for an infinite trace to determine if the repair happened.
-\\\textbf{Challenge 3:} The semantics must identify the \emph{exact finite prefix} where the deadline is missed to trigger a verdict immediately (eager rejection).
+
+\textbf{Challenge 3:} The semantics must identify the \emph{exact finite prefix} where the deadline is missed to trigger a verdict immediately (eager rejection).
+
+
 
 \paragraph{4. Hohfeldian Powers and Structural Change.}
+
 Clause C5 (Termination) represents a \emph{Power} rather than a simple duty. By exercising this power, the tenant unilaterally alters the normative landscape, changing an open-ended/infinite contract into a finite one (ending in 3 months).
-\\\textbf{Challenge 4:} The framework must model agents not only as actors within the rules but as entities capable of modifying the rules or their duration dynamically.
+
+\textbf{Challenge 4:} The framework must model agents not only as actors within the rules but as entities capable of modifying the rules or their duration dynamically.
+
+
 
 \subsection*{Summary}
+
 These scenarios motivate the need for a new logic of collaboration. This logic must represent strategies of multiple agents acting in tandem rather than in opposition, express obligations and powers in a uniform framework, capture open-ended dynamics, and support the analysis of compliance and blame. Such a framework requires both a formal model of interacting agent behaviors and a language with syntax and semantics suited to normative reasoning in collaborative, time-sensitive contracts.
 
-\paragraph{Construction of the Formal Framework}
-The domain of formal contract specification is rich, with established languages ranging from contract specification lanaguages \cite{HvitvedKZ12,diaz2013specification,farmer2016fcl} to deontic based logics \cite{governatori2005representing,azzopardi2021}.  However, these existing frameworks often lack the specific combination of features identified above. Some formalisms lack concrete trace semantics or do not support operational run-time monitoring. Others focus on normative states but fail to capture the nuances of collaborative action or joint achievements. Conversely, certain logics are too expressive or abstract for the specific monitoring features we aim to capture. Consequently, rather than constructing a formalism from scratch, we adopt the trace-based architecture of \cite{Azzopardi2016}, previously refined in \cite{Kharraz23}, as our operational baseline. This choice provides a sufficiently expressive language with well-studied operational semantics, which we extend with (i) a layer of abstraction for collaborative interaction, (ii) specific normative operators, and (iii) a denotational semantics alongside its sound monitoring semantics supporting (i) and (ii).
 
-  
+
+\paragraph{Construction of the Formal Framework}
+
+The domain of formal contract specification is rich, with established languages ranging from contract specification languages \cite{HvitvedKZ12,diaz2013specification,farmer2016fcl} to deontic-based logics \cite{governatori2005representing,azzopardi2021}.  However, these existing frameworks often lack the specific combination of features identified above. The deontic logic formalisms lack concrete trace semantics and thus do not support operational run-time monitoring. Temporal-logic-oriented frameworks focus on normative states but fail to capture the nuances of collaborative action or joint achievement.  Consequently, rather than constructing a formalism from scratch, we extend the existing work \cite{Azzopardi2016}, previously refined in \cite{Kharraz23}, as our operational baseline. This choice provides a sufficiently expressive language supporting basic aspects of contract with well-studied operational semantics, which we extend with (i) a layer of abstraction for collaborative interaction, (ii) specific normative operators, and (iii) a denotational semantics alongside its sound monitoring semantics supporting (i) and (ii).
+
+
+
 \section{Abstractions for Collaborative Interaction}
+
 \label{sec:multiagent-sync}
 
-This section builds on the trace models and synchronization operators introduced in \ref{traces}. We keep periodic synchronized set traces as the underlying execution model and define an interaction layer that (i) distinguishes agent-local attempts from jointly successful outcomes and (ii) prepares the ground for strategy analysis and, later, normative evaluation.
-
-The choice of synchronization is not cosmetic. It clarifies what constitutes feasible joint behavior, which, in turn, drives semantic validity, strategy quantification, and downstream analysis of compliance, responsibility, or blame.
-
-% 
-%   Synchronization disciplines adopt different assumptions about time. Interleaving and handshake reason about order without a global clock. Lockstep assumes a single round clock. Timed models use absolute time stamps. We work with two agents \(\agt=\{1,2\}\), discrete time \(\mathbb{N}\), and per-agent alphabets \(\Sigma_i\).  
 
 
+This section builds on the trace models and synchronization operators introduced in \ref{traces}. We keep periodic synchronized set traces as the underlying execution model and define an interaction layer that (i) distinguishes each agent's local attempts  and (ii) prepares the ground for strategy analysis and, later, normative evaluation by grouping those local attempts according to the contract periods.
 
 We introduce the attempted/successful abstraction, suited for capturing interference and collaboration between agents in the context of collaborative normative specifications, and discuss how it resembles and differs from existing synchronization techniques in the literature.
+
  This contribution is not cosmetic: it determines which joint behaviors are feasible, what formulas are satisfied, and how knowledge and responsibility are assessed.
 
 
-\paragraph{Method and structure.}
+ \paragraph{Method and structure.}
 
-To reason about \emph{attempted, prevented, and successful collaboration}, we introduce our contribution of attempted/successful
-abstraction on periodic, agent-tagged set traces of collaborative alphabets: (i) \emph{attempted} collaboration is captured by
-per-agent enabler sets (active participation) in a period; (ii) \emph{prevented} collaboration arises
-from blocker (non-interference violations); and (iii) \emph{successful} collaboration is defined by
-the operator \(\mathrm{Succ}\), the point-wise intersection of the two agents’ untagged suggested sets
-(equivalently, the set-theoretic image of lockstep-with-handshakes on the collaboration alphabet).
-
-\subsubsection{Modeling Requirements}
-\label{subsec:what-to-model}
-
-The aim is to capture two complementary facets of collaboration between agents that standard system-centric models overlook, as illustrated in Example~\ref{ME}:
-
-\begin{itemize}
+ To reason about \emph{attempted, prevented, and successful collaboration}, we introduce our contribution of attempted/successful
+ abstraction on periodic, agent-tagged set traces of collaborative alphabets: (i) \emph{attempted} collaboration is captured by
+ per-agent enabler sets (active participation) in a period; (ii) \emph{prevented} collaboration arises
+ from blocker (non-interference violations); and (iii) \emph{successful} collaboration is defined by
+ the operator \(\mathrm{Succ}\), the point-wise intersection of the two agents’ untagged suggested sets
+ (equivalently, the set-theoretic image of lockstep-with-handshakes on the collaboration alphabet).
+ 
+ \subsubsection{Modeling Requirements}
+ \label{subsec:what-to-model}
+ 
+ The aim is to capture two complementary facets of collaboration between agents that standard system-centric models overlook, as illustrated in Example~\ref{ME}:
+ 
+ \begin{itemize}
  \item \textbf{Negative performance (non-interference).}
  One agent must \emph{refrain} from actions that would block the other from achieving a legitimate objective.
- In a tenant--landlord scenario, the landlord should not perform blocking actions such as
- \(\textsf{cut\_power}\), \(\textsf{change\_lock}\), or \(\textsf{enter\_flat}\), which would hinder the tenant’s ability to \(\textsf{occupy}\) the flat.
-
+ In a tenant–landlord scenario, the landlord should not perform blocking actions such as
+ (\textsf{cut\_power}), (\textsf{change\_lock}), or (\textsf{enter\_flat}), which would hinder the tenant’s ability to (\textsf{occupy}) the flat.
+ 
  \item \textbf{Active participation (positive performance).}
-An agent must \emph{contribute} and perform actions that make the objective of the counterpart achievable within the agreed period.
- For example, the landlord should provide/confirm \(\textsf{account\_info}\), \(\textsf{ack\_pay}\), and \(\textsf{grant\_occ}\) upon settlement; symmetrically, the tenant should \(\textsf{pay\_rent}\) and not \(\textsf{return\_payment}\).
-\end{itemize}
-
-\noindent These performance aspects are common in normative / contract settings but are underexplored by classical synchronization operators (interleaving, lockstep), which specify \emph{how} events align rather than whether agents \emph{refrain} from harmful actions or \emph{contribute} enabling ones.
-
-\subsection{From Metric-Timed to Collaborative Periodic Synchronized Set Traces}
-
-In this subsection, we explicate the abstraction process as a two-step transformation starting from raw timed observations that record the timing and content of agent actions.
-First, these raw inputs are organized into \emph{agent-local metric-timed traces}, a format that strictly preserves individual responsibility and temporal order.
-From this metric foundation, we impose contractual granularity by aggregating behavior into \emph{period-based set traces} aligned with the contract's calendar.
-Finally, concrete actions within these sets are abstracted into \emph{collaborative objectives}.
-This yields a representation where attempts, obstructions, and potential joint successes can be analyzed independently.
-Throughout this pipeline, representational detail is reduced while ensuring that all normatively relevant distinctions are preserved.
-Crucially, no behavior is discarded or reinterpreted; rather, it is lifted to a level of abstraction suitable for contractual reasoning.
-Example~\ref{ex:timed-words-only} serves as the concrete starting point for this process, illustrating the four-month execution before any synchronization or success computation is applied.
-
-
-\begin{example}[Four-month rental dispute as metric-timed traces]
+ An agent must \emph{contribute} and perform actions that make the objective of the counterpart achievable within the agreed period.
+ For example, the landlord should provide/confirm (\textsf{account\_info}), (\textsf{ack\_pay}), and (\textsf{grant\_occ}) upon settlement; symmetrically, the tenant should (\textsf{pay\_rent}) and not (\textsf{return\_payment}).
+ \end{itemize}
+ 
+ Standard interleaving and lockstep semantics provide robust principles for combining agents’ actions over time. These standard models, however, abstract away from a distinct phenomenon central to normative reasoning: environment manipulation. The issue is not simply whether actions occur asynchronously, but whether an attempted action can be defeated by another agent altering the foundational settings before the attempted action. Standard semantics easily model a simple delay in a tenant's rent payment. Our trace abstraction allows us to still observe the landlord's action of closing his bank account, even without seeing the environment change. But a more fine-grained abstraction that also shows the account's state is still necessary.
+ 
+ \subsection{From Metric-Timed to Collaborative Periodic Synchronized Set Traces}
+ 
+ In this subsection, we explicate the abstraction process as a two-step transformation starting from two timed traces that record the timing and content of agent actions.
+ 
+ From these metric traces, where each event is a tuple of action and time point, we impose the contract-period granularity by aggregating behavior into \emph{period-based set of action traces} aligned with the contract’s period for repetition, where one event is a set of actions of all the actions performed during that time period.
+ Then we merge both agents' traces \emph{collaborative objectives}, where an event is a set of actions tagged by the agent that performed them.
+ This yields a representation where attempts, obstructions, and potential joint successes can be analyzed independently.
+ This trace transformation pipeline preserves the timing setting required for blame assignment, although it loses the timing of actions performed during the same period.
+ Crucially, no behavior is discarded or reinterpreted; rather, it is lifted to a level of abstraction suitable for contractual reasoning.
+ Example~\ref{ex:timed-words-only} illustrates four-month behaviors of both agents before our transformation is applied.
+ 
+ \begin{example}[Four-month rental dispute as metric-timed traces]
  \label{ex:timed-words-only}
  We return to the rental agreement introduced in Example~\ref{ME}, in which a tenant (agent~1) and a landlord (agent~2) have signed a monthly contract governing rent payments and occupancy.
  We observe their concrete behavior over a period of four months, corresponding to days $t\in\{0,\dots,120\}$.
  
  During the first month of observation, the tenant transfers the rent on day~5 (\textsf{pay\_rent}), yet does not move into the flat. One day later, on day~6, the landlord formally acknowledges receipt of the payment (\textsf{ack\_pay}).
-
-In the second month, the interaction becomes more active. On day~35, the tenant begins occupying the flat (\textsf{start\_occ}) and then makes the rent payment the next day. The landlord responds by issuing an administrative acknowledgement on day~37 (\textsf{ack\_pay}).
-
-In the third month, the dispute begins: the tenant continues to occupy the flat but makes no rent payments, while the landlord remains passive and takes no observable action.
-
-In the fourth month, the tenant attempts to address the earlier non-payment by transferring a late fee on day~95 (\textsf{pay\_rent\_f}). This attempt is immediately rejected by the landlord on the same day (\textsf{ref\_pay}). On the following day, day~96, the landlord escalates the situation by changing the lock, thereby actively preventing continued occupancy (\textsf{change\_lock}).
+ 
+ In the second month, the interaction becomes more active. On day~35, the tenant begins occupying the flat (\textsf{start\_occ}) and then makes the rent payment the next day. The landlord responds by issuing an administrative acknowledgment on day~37 (\textsf{ack\_pay}).
+ 
+ In the third month, the dispute begins: the tenant continues to occupy the flat but makes no rent payments, while the landlord remains passive and takes no observable action.
+ 
+ In the fourth month, the tenant attempts to address the earlier non-payment by transferring a late fee on day~95 (\textsf{pay\_rent\_f}). This attempt is immediately rejected by the landlord on the same day (\textsf{ref\_pay}). On the following day, day~96, the landlord escalates the situation by changing the lock, thereby actively preventing continued occupancy (\textsf{change\_lock}).
  From the concrete observations, we identify the following agent-local action alphabets:
  \[
-   \begin{aligned}
-   \Sigma_1 &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ},\ \textsf{stop\_occupy}\,\},\\
-   \Sigma_2 &= \{\,\textsf{ack\_pay},\ \textsf{grant\_occ},\ \textsf{ref\_pay},\ \textsf{change\_lock}\,\}.
-   \end{aligned}
+ \begin{aligned}
+ \Sigma_1 &= \{\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ},\ \textsf{stop\_occupy}\},\\
+ \Sigma_2 &= \{\textsf{ack\_pay},\ \textsf{grant\_occ},\ \textsf{ref\_pay},\ \textsf{change\_lock}\}.
+ \end{aligned}
  \]
  
- The observed behavior of each agent is encoded as a metric-timed trace, where each event is paired with its occurrence time:
+ The observed behavior of each agent can be represented as a metric-timed trace, where each event is paired with its occurrence time:
  $$
  \begin{aligned}
  \taumt_{1}
@@ -325,18 +376,18 @@ In the fourth month, the tenant attempts to address the earlier non-payment by t
  \taumt_{2}
  &=\trace{(\textsf{grant\_occ},1),\ (\textsf{ack\_pay},6),\ (\textsf{ack\_pay},37),\ (\textsf{ref\_pay},95),\ (\textsf{change\_lock},96)}.
  \end{aligned}
-$$
- These timed words constitute the most concrete representation of the interaction and serve as the starting point for the abstraction pipeline developed in this section.
+ $$
  \end{example}
+ 
+ In the first month, rent is paid by the tenant and correctly accepted by the landlord, and occupancy is granted but not yet exercised. In the second month, occupancy begins, and payment is acknowledged without conflict.
+ In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive.
+ In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, and then engages in active obstruction of occupancy by changing the lock.
+ While this description summarizes each agent's behavior, we still need to amend these traces to be easier to analyze in light of the semantics of our logic. We proceed to the first transformation, regrouping them by contract period.
+ \subsubsection{Step 1: Abstraction into Periodic Synchronized Set Trace}
+ Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
+ the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
+ within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
 
-From these metric-timed traces, the behavior in each month is precise at a day level and could be abstracted in a monthly view. In the first month, rent is paid and accepted, and occupancy is granted but not yet exercised. In the second month, occupancy begins, and payment is acknowledged without conflict.
-In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive. 
-In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, and then engages in active obstruction of occupancy by changing the lock.
-While this description is clear at the level of concrete events, it is not yet aligned with the contractual semantics, which operate on monthly obligations and joint outcomes rather than individual timestamps. This motivates the next step: synchronizing the agent-local traces into a common period-based structure that supports collaboration, interference, and normative evaluation.
-\subsubsection{Step 1: Abstraction into Periodic Synchronized Set Trace}
-Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
-the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
-within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
 
 \begin{definition}[Periodic synchronized set trace]\label{def:periodic}
   A \defn{periodic synchronized set trace} for agent $i$ over the alphabet $\Sigma_i$, relative to a global clock with a fixed period length, is an infinite sequence of action sets indexed from $1$:
@@ -374,7 +425,7 @@ The following definition formalizes this abstraction process by partitioning the
   \[
   \AGGI_x(\taumt) := \pi = \trace{A_1,\dots,A_K}
   \]
-  is defined by
+  where for any $k\in\{1,\dots,K\}$:
   \[
   A_k := \{\, a \in \Sigma \mid \exists\, t \in I_k:\ (a,t) \in \taumt \,\},
   \]
