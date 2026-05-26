@@ -386,7 +386,7 @@ We introduce the attempted/successful abstraction, suited for capturing interfer
  \subsubsection{Step 1: Abstraction into Periodic Synchronized Set Trace}
  Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
  the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
- within the same window into a \emph{set}. This yields a synchronous round-based abstraction aligned with the contract calendar.
+ within the same window into a \emph{set}. This ends up as a synchronous round-based abstraction aligned with the contract schedule.
 
 
 \begin{definition}[Periodic synchronized set trace]\label{def:periodic}
@@ -435,11 +435,7 @@ The following definition formalizes this abstraction process by partitioning the
   \]
   \end{definition}
   
-  \begin{proof}
-  By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
-  $t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
-  Since $k < \ell$, the windows are disjoint and strictly ordered (i.e., $\max(I_k) < \min(I_{\ell})$), which implies $t_a < t_b$.
-  \end{proof}
+
 
 \begin{lemma}[Order preservation under aggregation]
 \label{lem:agg-to-periodic}
@@ -460,14 +456,10 @@ Then aggregation preserves inter-period order in the following sense:
 \end{lemma}
 
 \begin{proof}
- By definition of $\AGGI_x$, membership $a \in A^{(i)}_k$ and $b \in A^{(i)}_{\ell}$ yields witnesses
- $t_a \in I_k$ and $t_b \in I_{\ell}$ with $(a,t_a),(b,t_b) \in \taumt_i$.
- Since $k < \ell$ implies $I_k < I_{\ell}$ by construction of the period windows,
- we obtain $t_a < t_b$.
+ By case analysis applied on the definition of $\AGGI_x$, assume $t_a \in I_k$ and $t_b \in I_{\ell}$. Any two events either fall into  (i) the same period $k=\ell$, which excludes the claim of the Lemma,  or (ii) into different periods preserving their strict temporal order.  For this case, By assumption,  $k < \ell$, the second case applies: $t_a \le \max(I_k) < \min(I_{\ell}) \le t_b$, hence $t_a < t_b$.
  \end{proof}
 
-Nevertheless, aggregation has a cost, as it loses intra-period order, action multiplicity, and exact timestamps. Therefore, selecting the appropriate period normalization is crucial.
-
+Nevertheless, aggregation has a cost, as it loses intra-period order, action multiplicity, and exact timestamps.
 \begin{example}[Transforming timed words into periodic set traces, continued from Example~\ref{ex:timed-words-only}]
 \label{ex:agg-30-locked}
 By fixing the period to 30, we can decompose the 120 days into 4 horizons:
@@ -494,20 +486,34 @@ $\textsf{pay\_rent\_f}\in \Aik{1}{4}$ (witness times $35<95$), and similarly for
 \end{example}
 
 \subsubsection{Step 2: Abstraction to a Collaboration Alphabet}
-The second aspect of the abstraction is the notion of interaction alphabets. The action alphabets of both agents are merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, the absence of an action in the event at Set $I_k$ indicates that the agent either did not perform it or actively performed a blocking action to prevent it. This abstraction is demonstrated using the running example, showing that it maintains the same meaning while reducing the number of action types. An operator is then introduced to compute the successful interaction at each period of the synchronized trace. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
+The second aspect of the abstraction is the notion of interaction alphabets. The action alphabet of both agents is merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, when no action is present in the event set $I_k$, the agent either did not perform it or actively performed a blocking action to prevent it. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
+
+
 
 We consider three collaborative objectives that are identified in the Example~\ref{ME}:
+
 \(\PAY\) (rent payment), \(\PAYF\) (penalty/late-fee payment), and \(\OCC\) (tenant’s occupancy).
+
 We write \(\Sigma_C=\{\PAY,\PAYF,\OCC\}\).
 
+
+
 In the next step, we need to define how the actions of the agents, namely $\Sigma_1$ and $\Sigma_2$, relate to collaborative action over $\Sigma_C$, more specifically, whether they are enabler or interference actions. We do not take the union \(\Sigma_1\cup\Sigma_2\) as a synchronization operator discussed in the \ref {operators}. Instead, we define a many-to-one \emph{abstraction} from concrete per-agent actions to the collaboration alphabet \(\Sigma_C\).
+
 On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. A chargeback \textsf{return\_payment} and \textsf{return\_payment\_f} are blocking: they nullify the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
 
 
+
+
+
 \paragraph{Distinguishing enabling from Blocking actions} For each agent \(i\in\{1,2\}\) we partition the alphabet into
+
 \(\SigA{i}\) (actions that constitute \emph{active participation}, i.e., enablers)
+
 and \(\SigI{i}\) (actions that constitute \emph{negative performance}, i.e., blockers), with
+
 \(\Sig{i}=\SigA{i}\cup\SigI{i}\), assuming that they are disjoint. In our running example:
+
 \[
 \begin{aligned}
 \SigA{1} &= \{\,\textsf{pay\_rent},\ \textsf{pay\_rent\_f},\ \textsf{start\_occ}\,\},\\
@@ -516,6 +522,7 @@ and \(\SigI{i}\) (actions that constitute \emph{negative performance}, i.e., blo
 \SigI{2} &= \{\,\textsf{ref\_pay},\ \textsf{change\_lock},\ \textsf{ref\_pay\_f} ,\ \textsf{enter\_flat}\,\}.
 \end{aligned}
 \]
+
 with:
 \[
 \Sig{1}=\SigA{1}\uplus\SigI{1},\qquad
@@ -523,21 +530,34 @@ with:
 \Sigma=\Sig{1}\cup\Sig{2}.
 \]
 
+
+
 For brevity, below we write the \emph{enabler} and \emph{blocker} sets as
 \[
-E_i:=\SigA{i}\quad\text{and}\quad B_i:=\SigI{i}\qquad(i\in\{1,2\}).
+E_i:=\SigA{i}\quad\text{and}\quad B_i:=\SigI{i}\qquad \text{for } i\in\{1,2\}.
 \]
+
 Presence of \(a\in E_i\) in period \(k\) signals that agent \(i\) took a
+
 \emph{positively contributing} action; presence of \(b\in B_i\) signals a
+
 \emph{defeating} (interfering) action. The absence of a symbol indicates it was not suggested/endorsed during that period.
 
-
 \paragraph{Transformation sketch} After defining this relation, we can transform any periodic synchronous word  $\pi_1$ over $\Sigma_1$ and $\pi_2$ over  $\Sigma_2$ to a corresponding word over $\Sigma_C$, written $\pi_i^C$:
+
 \begin{itemize}
+
 \item If an action $a$ is on event $A$ from $\pi_i$ and that action is in $E_i$, then this action is transformed to its equivalent collaborative action and inserted on the resulting word $\pi_i^C$.
+
 \item If an action $a$ is on event $A$ from $\pi_i$ and that action is in $B_i$, then this action is not transformed and not inserted on the resulting word $\pi_i^C$.
+
 \end{itemize}
+
 And additionally, we do not add any collaborative action not present in an event on the equivalent event in $\pi_i^C$ unless it is a continuous collaboration with implicit collaboration, as $\textsf{start\_occ}$ signals the start of occupying the flat, so it is kept inserted in the following events in the timed word of the tenant and landlord as long as tenant does not leave nor the landlord blocks actively the occupation.
+
+
+
+
 
 
 
@@ -593,20 +613,21 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   
   
   \subsubsection{Optional Step: Successful Collaboration Trace}
-  
+   
    The abstraction introduced so far separates agent-local attempts and interference while preserving all information required for responsibility analysis.
+
     In some situations, however, it is useful to additionally extract the \emph{jointly successful} outcomes that emerge when both agents contribute compatibly within the same contractual period.
-     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired from Definition~\ref{def:collapsed-hs}: a collaborative action is realized at a given period if and only if both agents propose it in that period. Technically, this is captured by erasing agent tags and intersecting the per-period action sets. Unlike earlier abstraction steps, this operator is not used as the primary semantic basis of the framework, since it intentionally discards information about obstruction and responsibility. Instead, it serves as a derived view that characterizes successful collaboration in isolation, making precise the connection between our attempt-based abstraction and classical handshake-based synchronization models.
-  
+
+     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired by Definition~\ref{def:collapsed-hs}: a collaborative action is realized at a given period if and only if both agents propose it in that period. The result is obtained by computing the succesful action according to the handshake mechanism studied in the preliminaries. 
   \begin{definition}[Successful collaboration operator]\label{successcomb}
-  Let  $\Sigma$ be an alphabet and let $\Sigma^{(1)}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
-  $\Sigma^{(2)}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
+  Let  $\Sigma$ be an alphabet and let $\Sigma^{1}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
+  $\Sigma^{2}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
   The \emph{successful collaboration operator}, written $\mathsf{Succ}$ of two periodic synchronous traces $\pi_1$ over $\Sigma^{(1)}$ and $\pi_2$ over $\Sigma^{(2)}$ on the same maximum horizon $T$ is defined event-wise by:
   \[\forall k\in\{1,\dots,T\},
   \mathrm{Succ}(\pi_1,\pi_2)[k]
   \ := \unlab\!\big(\pi_1[k]\big) \cap\ \unlab\!\big(\pi_2[k]\big).
   \]
-  where the function $\unlab$ is removing any of the agent identifiers tag from an event, \eg  $\unlab(\{\OCC^{2}\})=\{\OCC\}$ .
+  where the function $\unlab$ removes the agent identifier tags from the actions in each event, \eg  $\unlab(\{\OCC^{2}\})=\{\OCC\}$ .
   \end{definition}
   \begin{example}[Successful collaboration]
   From the two transformed traces  $\pi_1^{C}$ and $\pi_2^{C}$ from the Example~\ref{ex:collab}.
@@ -660,8 +681,9 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   {example:succ-meet}
   
   \noindent\textbf{Basic properties.}
-  Since \(\mathrm{Succ}\) is a point-wise set intersection after tag erasure,
-  it inherits three immediate facts:
+
+The \(\mathrm{Succ}\) is a point-wise set intersection after tag erasure; thus, it inherits three straightforward facts:
+
   \emph{(i) Commutative and idempotent}:
   \(\mathrm{Succ}(\pi_1,\pi_2)=\mathrm{Succ}(\pi_2,\pi_1)\) and
   \(\mathrm{Succ}(\pi,\pi)=\unlab(\pi)\).
@@ -673,29 +695,27 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   \emph{(iii) Absorbing empty trace}:
   if \(\forall k,\ \pi_2[k]=\emptyset\),
   then \(\forall k,\ \mathrm{Succ}(\pi_1,\pi_2)[k]=\emptyset\).
-  
+
   \begin{remark}{Relation to \(\parallel_{\mathrm{hs}}^{A}\).}
-  If we declare every collaborative objective to be a handshake,
-  \(A=\Sigma_C\), then the lockstep-with-handshakes product enforces that
-  \(\PAY\), \(\PAYF\), \(\OCC\) can only appear at a period when both agents
-  present the same letter. Concretely, if we view each period’s set
+  If we declare every collaborative objective to be a handshake, \(A=\Sigma_C\), then the lockstep-with-handshakes product enforces that \(\PAY\), \(\PAYF\), \(\OCC\) can only appear at a period when both agents present the same letter. Concretely, if we view each period’s set
   \(A^{(i)}_k\) as the multiset of letters occurring “at that round” and apply
-  \(\parallel_{\mathrm{hs}}^{A}\) round-wise, then after collapsing paired
-  handshakes to a single shared symbol (via \(\mathsf{coll}_A\)) and unlabeling,
-  we obtain exactly the success:
+  \(\parallel_{\mathrm{hs}}^{A}\) round-wise, then after collapsing the matched
+handshaked unlabelled actions, we obtain the success:
   \[
-  \mathrm{Succ}(\pi_1,\pi_2)
-  \ =\
-  \unlab\!\big(\mathsf{coll}_{\Sigma_C}\big(\pi_1\parallel_{\mathrm{hs}}^{\Sigma_C}\pi_2\big)\big),
+  \mathrm{Succ}(\pi_1,\pi_2) \ =\  \unlab\!\big(\mathsf{coll}_{\Sigma_C}\big(\pi_1\parallel_{\mathrm{hs}}^{\Sigma_C}\pi_2\big)\big),
   \]
-  i.e., \(\mathrm{Succ}\) is the set-theoretic intersection semantics of
-  lockstep-plus-handshakes on the collaboration alphabet.    
+
+where \(\mathrm{Succ}\) is the set-theoretic intersection semantics of
+lockstep and handshakes on the collaboration alphabet.    
+
   \end{remark}
-  However, this abstraction masks the specific source of interference, effectively hiding the agent responsible for the failure. As our framework aims to explicitly assign blame, we introduce this operator primarily as an optional view to characterize joint success.
+
+  However, this abstraction masks the specific source of interference, effectively hiding the agent responsible for the failure. As our framework explicitly assigns blame, we introduce this operator primarily as an optional view to characterize joint success.
+
   We now move to reasoning about strategies from agents, where each agent makes a plan based on the other agent's past behavior.
+
   \subsection{Interaction Strategies as Moore Machines}
-  Most monitoring approaches analyse compliance only after an execution has occurred. This chapter goes further by modelling how agents plan their interaction in anticipation of each other’s behavior. By representing strategies as Moore machines, we make responsibility analyzable as an ex ante property of interacting plans, not merely as a retrospective judgement over completed traces.
-  
+  Most two-agent automata constructions ignore agents' reactions to their counterparts' past moves and abstract away from this using nondeterminism. As a consequence, some non-possible executions are present in the model executions. In this subsection, encode this agent's strategies as Moore machines; each agent bases its next move on the other agents' last moves. By doing so, the composition of two Moore machines is an infinite word instead of a Moore machine or automaton.
   
 
 
@@ -823,8 +843,6 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   Transitions are guarded by the current letters of the agent \emph{other} (seen as a set).
 
   The tenant strategy and the landlord strategy are depicted explicitly by their Moore machine encoding in Figure~\ref{fig:moore-tenant-prod} and Figure~\ref{fig:moore-landlord-prods}, respectively.
-  
-  
   \[
   \begin{aligned}
   M_1^1&=(S,s_0,\ \Sigma_I^{(1)},\Sigma_O^{(1)},\ \delta_1,\lambda_1),
