@@ -456,7 +456,7 @@ Then aggregation preserves inter-period order in the following sense:
 \end{lemma}
 
 \begin{proof}
- By case analysis applied on the definition of $\AGGI_x$, assume $t_a \in I_k$ and $t_b \in I_{\ell}$. Any two events either fall into  (i) the same period $k=\ell$, which excludes the claim of the Lemma,  or (ii) into different periods preserving their strict temporal order.  For this case, By assumption,  $k < \ell$, the second case applies: $t_a \le \max(I_k) < \min(I_{\ell}) \le t_b$, hence $t_a < t_b$.
+ By case analysis applied on the definition of $\AGGI_x$, assume $t_a \in I_k$ and $t_b \in I_{\ell}$. Any two events either fall into  (i) the same period $k=\ell$, which does not concern the claim of the Lemma,  or (ii) into different periods preserving their strict temporal order.  For this case, By assumption,  $k < \ell$, the second case applies: $t_a \le \max(I_k) < \min(I_{\ell}) \le t_b$, hence $t_a < t_b$.
  \end{proof}
 
 Nevertheless, aggregation has a cost, as it loses intra-period order, action multiplicity, and exact timestamps.
@@ -492,21 +492,21 @@ The second aspect of the abstraction is the notion of interaction alphabets. The
 
 We consider three collaborative objectives that are identified in the Example~\ref{ME}:
 
-\(\PAY\) (rent payment), \(\PAYF\) (penalty/late-fee payment), and \(\OCC\) (tenant’s occupancy).
+\(\PAY\) (rent payment), \(\PAYF\) (penalty/late-fee payment), and \(\OCC\) (tenant's occupancy).
 
 We write \(\Sigma_C=\{\PAY,\PAYF,\OCC\}\).
 
 
 
-In the next step, we need to define how the actions of the agents, namely $\Sigma_1$ and $\Sigma_2$, relate to collaborative action over $\Sigma_C$, more specifically, whether they are enabler or interference actions. We do not take the union \(\Sigma_1\cup\Sigma_2\) as a synchronization operator discussed in the \ref {operators}. Instead, we define a many-to-one \emph{abstraction} from concrete per-agent actions to the collaboration alphabet \(\Sigma_C\).
+In the next step, we need to define how the actions of the agents, namely $\Sigma_1$ and $\Sigma_2$, relate to collaborative action over $\Sigma_C$, more specifically, whether they are enabler or interference actions. We do not take the union \(\Sigma_1\cup\Sigma_2\) as a synchronization operator discussed in Section~\ref{operators}. Instead, we define a many-to-one \emph{abstraction} from concrete per-agent actions to the collaboration alphabet \(\Sigma_C\).
 
-On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. A chargeback \textsf{return\_payment} and \textsf{return\_payment\_f} are blocking: they nullify the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
-
-
+On the tenant side, \textsf{pay\_rent} and \textsf{pay\_rent\_f} are enablers because they instantiate the tenant’s contribution toward \PAY and \PAYF; \textsf{start\_occ} is an enabler for \OCC because it is the tenant’s side of taking possession. Chargebacks \textsf{return\_payment} and \textsf{return\_payment\_f} are blocking: they nullify the very transfer that \PAY and \emph{PAY\_F} rely on. On the landlord side, \textsf{ack\_pay} enables \PAY, while \textsf{grant\_occ} enables \OCC by authorizing access. In contrast, \textsf{ref\_pay} blocks \PAY even if the tenant initiated payment, and \textsf{change\_lock}, \textsf{cut\_power}, or \textsf{enter\_flat} block \OCC by making continued possession impracticable or unlawful. This enabler/blocker partition is precisely what our “suggested/successful” abstraction needs: success in a period occurs when both sides propose the required enablers and neither side performs a blocker.
 
 
 
-\paragraph{Distinguishing enabling from Blocking actions} For each agent \(i\in\{1,2\}\) we partition the alphabet into
+
+
+\paragraph{Distinguishing enabling from blocking actions} For each agent \(i\in\{1,2\}\) we partition the alphabet into
 
 \(\SigA{i}\) (actions that constitute \emph{active participation}, i.e., enablers)
 
@@ -579,7 +579,7 @@ Using the traces from Example~\ref{ex:agg-30-locked},
 }.
 \end{aligned}
 \]
-With \(E_1(\PAY)=\{\textsf{pay\_rent}\}\),\(E_1(\PAYF)=\{\textsf{pay\_rent\_f}\}\)
+With \(E_1(\PAY)=\{\textsf{pay\_rent}\}\), \(E_1(\PAYF)=\{\textsf{pay\_rent\_f}\}\)
 \(E_2(\PAY)=\{\textsf{ack\_pay}\}\),
 \(B_2(\PAY)=\{\textsf{ref\_pay}\}\),
 \(E_1(\OCC)=\{\textsf{start\_occ}\}\),
@@ -618,20 +618,20 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
 
     In some situations, however, it is useful to additionally extract the \emph{jointly successful} outcomes that emerge when both agents contribute compatibly within the same contractual period.
 
-     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired by Definition~\ref{def:collapsed-hs}: a collaborative action is realized at a given period if and only if both agents propose it in that period. The result is obtained by computing the succesful action according to the handshake mechanism studied in the preliminaries. 
+     We introduce an optional transformation that computes such outcomes explicitly. The construction follows the same underlying principle as lockstep synchronization with handshakes  inspired by Definition~\ref{def:collapsed-hs}: a collaborative action is realized at a given period if and only if both agents propose it in that period. The result is obtained by computing the successful action according to the handshake mechanism studied in the preliminaries. 
   \begin{definition}[Successful collaboration operator]\label{successcomb}
-  Let  $\Sigma$ be an alphabet and let $\Sigma^{1}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
-  $\Sigma^{2}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
+  Let  $\Sigma$ be an alphabet and let $\Sigma^{(1)}:=\{\,a^{(1)}\mid a\in\Sigma\,\}$ and
+  $\Sigma^{(2)}:=\{\,a^{(2)}\mid a\in\Sigma\,\}$ be disjoint tagged copies.
   The \emph{successful collaboration operator}, written $\mathsf{Succ}$ of two periodic synchronous traces $\pi_1$ over $\Sigma^{(1)}$ and $\pi_2$ over $\Sigma^{(2)}$ on the same maximum horizon $T$ is defined event-wise by:
   \[\forall k\in\{1,\dots,T\},
   \mathrm{Succ}(\pi_1,\pi_2)[k]
   \ := \unlab\!\big(\pi_1[k]\big) \cap\ \unlab\!\big(\pi_2[k]\big).
   \]
-  where the function $\unlab$ removes the agent identifier tags from the actions in each event, \eg  $\unlab(\{\OCC^{2}\})=\{\OCC\}$ .
+  where the function $\unlab$ removes the agent identifier tags from the actions in each event, \eg,  $\unlab(\{\OCC^{(2)}\})=\{\OCC\}$.
   \end{definition}
   \begin{example}[Successful collaboration]
   From the two transformed traces  $\pi_1^{C}$ and $\pi_2^{C}$ from the Example~\ref{ex:collab}.
-  We illustrate \(\mathrm{Succ}(\pi_1^{C},\pi_2^{C})\)  in \ref{example:succ-meet}.
+  We illustrate \(\mathrm{Succ}(\pi_1^{C},\pi_2^{C})\) in Example~\ref{example:succ-meet}.
   \end{example}
 
   \boxalignfigure{ \resizebox{0.96\textwidth}{!}{
@@ -682,11 +682,11 @@ In \(\Ik{2}\), agent~1 pays the rent and occupies the flat and agent~2 contribut
   
   \noindent\textbf{Basic properties.}
 
-The \(\mathrm{Succ}\) is a point-wise set intersection after tag erasure; thus, it inherits three straightforward facts:
+The \(\mathrm{Succ}\) operator is a point-wise set intersection after tag erasure; thus, it inherits three straightforward facts:
 
   \emph{(i) Commutative and idempotent}:
   \(\mathrm{Succ}(\pi_1,\pi_2)=\mathrm{Succ}(\pi_2,\pi_1)\) and
-  \(\mathrm{Succ}(\pi,\pi)=\unlab(\pi)\).
+  \(\mathrm{Succ}(\pi^{(1)},\pi^{(2)})=\unlab(\pi)\).
   \emph{(ii) Monotone (pointwise \(\subseteq\))}: writing
   \(\pi\le\pi'\) to mean
   \(\forall k:\ \unlab(\pi[k])\subseteq\unlab(\pi'[k])\),
@@ -696,7 +696,7 @@ The \(\mathrm{Succ}\) is a point-wise set intersection after tag erasure; thus, 
   if \(\forall k,\ \pi_2[k]=\emptyset\),
   then \(\forall k,\ \mathrm{Succ}(\pi_1,\pi_2)[k]=\emptyset\).
 
-  \begin{remark}{Relation to \(\parallel_{\mathrm{hs}}^{A}\).}
+  \begin{remark}[Relation to \(\parallel_{\mathrm{hs}}^{A}\)]
   If we declare every collaborative objective to be a handshake, \(A=\Sigma_C\), then the lockstep-with-handshakes product enforces that \(\PAY\), \(\PAYF\), \(\OCC\) can only appear at a period when both agents present the same letter. Concretely, if we view each period’s set
   \(A^{(i)}_k\) as the multiset of letters occurring “at that round” and apply
   \(\parallel_{\mathrm{hs}}^{A}\) round-wise, then after collapsing the matched
@@ -715,7 +715,7 @@ lockstep and handshakes on the collaboration alphabet.
   We now move to reasoning about strategies from agents, where each agent makes a plan based on the other agent's past behavior.
 
   \subsection{Interaction Strategies as Moore Machines}
-  Most two-agent automata constructions ignore agents' reactions to their counterparts' past moves and abstract away from this using nondeterminism. As a consequence, some non-possible executions are present in the model executions. In this subsection, encode this agent's strategies as Moore machines; each agent bases its next move on the other agents' last moves. By doing so, the composition of two Moore machines is an infinite word instead of a Moore machine or automaton.
+  Most two-agent automata constructions ignore agents' reactions to their counterparts' past moves and abstract away from this using nondeterminism. As a consequence, some impossible executions are present in the model executions. In this subsection, we encode the agents' strategies as Moore machines; each agent bases its next move on the other agents' last moves. By doing so, the composition of two Moore machines produces an infinite word instead of a Moore machine or automaton.
   
 
 
@@ -823,7 +823,7 @@ lockstep and handshakes on the collaboration alphabet.
   \[\text{Let } 
   M_i \;=\; (S_i, s^0_i,\ \Sigma_I^i,\ \Sigma_O^i,\ \delta_i,\ \lambda_i) \text{ and } M_j \;=\; (S_j, s^0_j,\ \Sigma_I^j,\ \Sigma_O^j,\ \delta_j,\ \lambda_j) 
   \]
-  be two deterministic Moore machines, we say that \emph{$M_i$ and $M_j$ are complementary} if and only if:
+  be two deterministic Moore machines. We say that \emph{$M_i$ and $M_j$ are complementary} if and only if:
   \[ \Sigma_I^i = \Sigma_O^j \text{ and } \Sigma_O^i = \Sigma_I^j.\]
   \end{definition}
   In the following, we introduce an example of how to use Moore machines to capture two strategies that the landlord and the tenant should consider in the motivating example.
@@ -886,7 +886,7 @@ lockstep and handshakes on the collaboration alphabet.
       \item $\Sigma = 2^{\Sigma_O^i \cup \Sigma_O^j}$ is the \emph{joint alphabet},
       \item $Q = S_i \times S_j$ is the \emph{state space},
       \item $q_0 = (s^0_i, s^0_j)$ is the \emph{initial state},
-      \item $F = \emptyset$ ,
+      \item $F = \emptyset$,
       \item $\delta \subseteq Q \times \Sigma \times Q$ is the \emph{transition relation}, defined by
       \[
       \big((s_i,s_j),\, A,\, (s'_i,s'_j)\big) \in \delta
@@ -957,7 +957,7 @@ lockstep and handshakes on the collaboration alphabet.
   progress under synchronous feedback. Once a stable pair of states is reached, the product
   loops, generating the same joint output forever.
 
-  The individual Moore machines underlying the product construction are recalled in Figure~\ref{fig:moore-tenant-prod} and Figure~\ref{fig:moore-landlord-prods}, while their synchronous product is summarized in Figure~\ref{fig:product-sketch} and presented as a whole in \ref{fig:moore-product-full}.
+  The individual Moore machines underlying the product construction are recalled in Figure~\ref{fig:moore-tenant-prod} and Figure~\ref{fig:moore-landlord-prods}, while their synchronous product is summarized in Figure~\ref{fig:product-sketch} and presented as a whole in Figure~\ref{fig:moore-product-full}.
   \begin{figure}[h]
   \centering
   \begin{subfigure}[t]{0.70\textwidth}
@@ -1017,7 +1017,7 @@ lockstep and handshakes on the collaboration alphabet.
   \caption{tenant’s machine $M_1^1$, landlord’s machine $M_2^1$, and their product 
   automaton $M_1^1 \times M_2^1$. 
   Each product state is labeled by the joint output $\lambda_1(s_i^1)\cup\lambda_2(s_j^2)$.
-  In the transition, the $\overline{\PAY^{1}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{1}$, similarly $\PAY^{1}$ is a shorthand for any input set containing $\PAY^{1}$.} 
+  In the transition, the $\overline{\PAY^{(1)}}$ in the Moore machine $M_j$ is a shorthand for any input action set not containing the action $\PAY^{(1)}$; similarly, $\PAY^{(1)}$ is a shorthand for any input set containing $\PAY^{(1)}$.} 
   \label{fig:moore-product-full}
   \end{figure}
   
@@ -1026,28 +1026,38 @@ lockstep and handshakes on the collaboration alphabet.
   $\trace{\{\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\}~\
    (\{\OCC^{(1)},\PAY^{(1)},\OCC^{(2)},\PAY^{(2)}\})^\omega}.$
   \end{example}
-  This section establishes a disciplined abstraction pipeline that bridges concrete executions and normative reasoning. Starting from raw metric-timed observations, we progressively lifted behavior into agent-local periodic traces and then into a collaboration-oriented representation aligned with the contractual calendar.
-   The resulting model makes attempts, interference, and potential joint outcomes explicit without introducing interpretative assumptions or discarding observable behavior. Also, the modelization of strategies makes explicit how agents reason prospectively about each other’s behavior, enabling the analysis of compliance not only as an ex post property of traces (after the interaction has occurred), but as an ex ante property of interacting plans (before actions are taken, at the level of intended behavior).
-  Crucially, this abstraction separates what agents did from what jointly succeeded, preserving exactly the distinctions required for responsibility and blame attribution. The collaborative periodic trace thus serves as the semantic interface between concrete interaction data and the normative machinery introduced next.
- 
+  This subsection establishes a way to transform the agent plan and traces to accommodate higher-level reasoning about rules. We started with basic timed observations, then gradually turned them into periodic, synchronized traces.
+
+This model naturally accounts for attempts, interference, and joint outcomes without relying on external assumptions. It also facilitates the analysis of compliance both \emph{a posteriori} and \emph{a priori}, by enabling the evaluation of agent strategies and planned actions.
+
+Importantly, this approach separates individual compliance efforts from joint collaborative outcomes, providing the necessary granularity for blame assignment. The shared periodic trace thereby bridges raw interaction data and the normative logic developed in the following sections.
   
   \section{The Two-Agents Collaborative Normative Logic \cDL}
-  The abstraction developed in the previous section provides the execution model on which normative reasoning will be grounded. 
-  Having isolated agent-local attempts, interference, and collaborative outcomes at the level of contractual periods, we are now in a position to define a logic whose semantics are directly tied to this structure. 
-  The Two-Agents Collaborative Normative Logic (\cDL) is designed to speak about obligations, permissions, reparations, and powers over collaborative objectives, rather than low-level events.
-   Its formulas are interpreted over the collaborative periodic traces constructed earlier, ensuring that normative evaluation is sensitive to attempts and obstruction rather than mere success or failure.
-    In this way, \cDL does not abstract away interaction, but instead builds on the interaction model to provide precise, blame-aware contractual semantics.
+
+  The abstraction developed in the previous section provides the execution model for our normative reasoning. 
+
+  Having isolated individual attempts, interference, and joint outcomes, we now define a logic whose semantics are directly tied to this periodic structure. 
+  The Two-Agents Collaborative Normative Logic (\cDL) expresses obligations, permissions, reparations, and powers over collaborative objectives rather than low-level events.
+Its formulas are evaluated over collaborative periodic traces, ensuring that normative judgments remain sensitive to agent-specific attempts and obstruction.
+Thus, \cDL builds on the interaction model to provide precise, blame-aware contractual semantics.
+
+
 
   \subsection{Syntax of \cDL}
+
   In \ref{fig:cdl-syntax}, the syntax of \cDL\ is organized into three blocks: regular expressions, literals, and contracts.
 
+
+
   \paragraph{Regular expressions (\emph{re}).}
-  This block specifies \emph{when} clauses apply by describing patterns over monthly positions.
-  An \emph{atom} is a tagged action-set \(A \subseteq \Sigma\) stating what the two parties did in a month.
-  Complex expressions are formed with \emph{union} \((re \mid re)\), \emph{concatenation} \((re \cdot re)\) for next-month sequencing,
-  \emph{power} \(re^n\) (exactly \(n\) repetitions), and \emph{Kleene plus} \(re^+\) (one or more repetitions).
-  The \emph{wildcard} \(\Gamma\) is the union of all $A \subseteq \Sigma$ used to skip a position, and \(\emptyset\) denotes the \emph{empty set of actions}.
-  These constructs enable patterns such as “a repair is requested this month” (an atom), “after any number of months if Agent $1$ asks for termination (\(\Gamma \cdot\)), or “three consecutive months” \((re)^3\).
+
+Regular expressions in \cDL specify \emph{triggers and termination conditions} for contracts.
+
+  An \emph{atom} is a set of agent-tagged actions \(A \in 2^\Gamma\), representing the joint behavior of both parties in a single time step. 
+
+Regular expression combinations utilize classical operations: \emph{union} \((re \mid re)\), \emph{concatenation} \((re \cdot re)\) for temporal sequencing, \emph{power} \(re^n\) for exactly \(n\) repetitions, and \emph{Kleene plus} \(re^+\) for one or more repetitions. The \emph{wildcard} \(\Gamma\) denotes any $A \subseteq \Sigma$ and is used to advance by one timed position, while \(\emptyset\) represents the \emph{empty set of actions}.
+
+These constructs enable the specification of patterns such as: (i) ``When the flat repair is requested by agent 2 this month'', with the regular expression \(\notifrepair^{(2)}\), (ii) ``at any month after the start of the contract, if Agent $1$ requests termination'', with \(\Gamma^* \cdot \{\notifterm^{(1)}\}\), or (iii) ``after three consecutive months'', with the expression \(\Gamma^3\).
   \begin{figure}
   \centering
   \fbox{%
@@ -1099,20 +1109,22 @@ lockstep and handshakes on the collaboration alphabet.
  
   \paragraph{Literals (\emph{\(\ell\)}).}
   This block provides the primitive deontic statements for a single month:
-  \emph{obligation} \(\obl[p]{a}\), \emph{prohibition} \(\frb[p]{a}\), and \emph{power} \(\perm[p]{a}\),
-  plus the constants \emph{valid} \(\top\) and \emph{invalid} \(\bot\).
-  Here \(p \in \{1,2\}\) identifies the party (tenant or landlord) and \(a \in \Sigma_C\) is a collaboration action.
+  \emph{obligation} \(\obl[p]{a}\), \emph{prohibition} \(\frb[p]{a}\), and \emph{power} \(\perm[p]{a}\), and the two \emph{valid} \(\top\) and \emph{invalid} \(\bot\).
+  Here \(p \in \{1,2\}\) identifies the party in the set of the two agents, and \(a \in \Sigma_C\) is a collaboration action.
   Intuitively, literals say \emph{what} is required/forbidden/allowed of \emph{whom}, independently of timing. 
+
   \paragraph{Contracts (\emph{C}).}
-  This block composes literals into full specifications using:
-  \emph{conjunction} \((C \wedge C)\) to combine requirements in the same time position;
-  \emph{sequence} \((C;C)\) for next-time progression;
-  \emph{reparation} \((C \repair C')\) for contrary-to-duty fall-backs saying you are requested to perform $C$, if you fail you must conform to $C'$ in the next time position;
-  \emph{triggered} clauses \(\trig[re]{C}\) that activate \(C\) when a pattern \(re\) occurs;
-  \emph{guarded} clauses \(\guard[re]{C}\) that encapsulate conditions under which conforming to a contract is no longer necessary; 
-  \emph{n-repetition} clauses enforces the repetition of the enforcement of a contract $n$ times, with $n \in \mathbb{N^*}$; and finally, \emph{repetition} \(\repit{C}\) for the infinite repetition of the enforcement of a contract.
-  Together, these constructs could be used to capture the clauses of a contract, the conditions under which they are activated or terminated, and how the clauses relate to each other regarding reparations or the timing of their application. More specifically, the combination of repetition and a guarded contract can capture the notion of open-ended contracts.
-   In the following example, we illustrate how we could capture our use case.
+
+A contract is composed of a combination of literals using the following operators:
+\emph{conjunction} \((C \wedge C)\) to combine requirements in the same time position;
+\emph{sequence} \((C;C)\) for next-time progression;
+\emph{reparation} \((C \repair C')\) for contrary-to-duty fall-backs, which mandates $C$, but if $C$ is violated, enforces $C'$ as a fallback in the subsequent time step;
+\emph{triggered} clauses \(\trig[re]{C}\) that activate \(C\) when a pattern \(re\) occurs;
+\emph{guarded} clauses \(\guard[re]{C}\) that specify conditions under which a contract is terminated; 
+\emph{n-repetition} \(C^n\) enforces the contract for \(n\) consecutive steps (\(n \in \mathbb{N^*}\)); and finally, \emph{repetition} \(\repit{C}\) enforces the contract indefinitely.
+
+Together, these constructs formalize contractual clauses, their activation and termination conditions, and their temporal or reparative dependencies. In particular, combining repetition with a guarded contract captures the notion of open-ended agreements.
+
   \subsection{Illustrating the Encoding in \cDL for the Motivating Example}
   \begin{example}[Encoding the rental clauses in \cDL]
   \label{ex:contract-encoding}
@@ -1174,10 +1186,7 @@ lockstep and handshakes on the collaboration alphabet.
   \end{itemize}
   
   \medskip
-  This step-by-step encoding shows how \cDL\ integrates temporal regular patterns, deontic modalities, 
-  and event-triggered obligations in a single formalism.  
-  Clauses (C1–C5) together specify a full-cycle contract where collaborative actions such as payment, occupancy, repair, and termination are modeled as 
-  conditional and time-bounded obligations between the two agents.
+ Thus, clauses C1–C5 model the full lifecycle of the conditional and time-bounded obligations of the rental agreement.
   \end{example}
   
   The syntax above fixes \emph{what} can be expressed in \cDL.

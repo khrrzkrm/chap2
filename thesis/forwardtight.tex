@@ -2,34 +2,40 @@
 
 \paragraph{Methodological overview.}
 This section develops the forward-looking semantics and monitoring constructions in a layered manner.
-We first introduce tight satisfaction and violation as \emph{frontier-based} judgements over prefixes of a synchronous periodic trace.
-These judgements identify the unique decisive point at which a contract becomes irrevocably satisfied or violated.
+
+We first introduce tight satisfaction and violation as \emph{frontier-based} judgments over prefixes of a synchronous periodic trace.
+
+These judgments identify the unique decisive point at which a contract becomes irrevocably satisfied or violated.
+
 On top of this core semantics, we derive coarser verdicts, prove coherence properties, and construct Moore-style monitors that operationalize the semantics.
+
 The continuation of this development extends the same methodology to responsibility-aware verdicts and blame monitoring.
+
 \subsection{Denotational Semantics for Forward-Looking Tight Contract Satisfaction}\label{forwardsatsem}
-Fix the tagged collaboration alphabet $\Sigma = \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$
+
+For the tagged collaboration alphabet $\Sigma = \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$
 and the induced letter alphabet $\Gamma = 2^{\Sigma}$.
-Traces, prefixes, suffixes, and their basic operators are as defined in
-\ref{traces}.
-In this subsection, we only introduce the forward-looking semantic
-judgements used to evaluate contracts along such traces.
-\paragraph{Core tight judgements.}
-All semantic clauses below are stated relative to the prefix structure
-fixed in \ref{traces}.
-We define two tight relations (inductively on the syntax of $C$):
+Traces, prefixes, suffixes, and their basic operators are defined in \ref{traces}.
+In this subsection, we only introduce the forward-looking semantic judgments used to evaluate contracts along such traces.
+
+\paragraph{Core tight judgments.}
+
+All semantic clauses below are stated relative to the prefix structure fixed in \ref{traces}.
+
+We define two tight relations inductively on the syntax of $C$:
 \[
 \pi\ \satt\ C \quad\text{(tight satisfaction)},\qquad
 \pi\ \violt\ C \quad\text{(tight violation)}.
 \]
 Intuitively, $\satt$ holds exactly at the \emph{first prefix}
-where the contract becomes satisfied (acceptance frontier),
+where the contract becomes satisfied,
 and $\violt$ holds exactly at the \emph{first prefix}
-where it becomes violated (rejection frontier).
-\paragraph{Derived judgements.}
+where it becomes violated at the rejection frontier.
+\paragraph{Derived judgments.}
 Using these frontiers, we define the remaining derived relations of the five-valued semantics.
-By Lemma~\ref{lem:mutual prefix}, at most one tight frontier can occur along a fixed trace, so the clauses below classify a prefix by its position relative to this (unique, if it exists) decisive point.
+By Lemma~\ref{lem:mutual prefix}, at most one tight frontier can occur along a fixed trace, so the clauses below classify a prefix by its position relative to this unique earliest prefix when it exists.
 
-\begin{definition}[Post and Pre-satisfaction semantic definition]\label{def:postprecont}
+\begin{definition}[Post and pre-satisfaction semantic definition]\label{def:postprecont}
 For a contract $C$ and trace $\pi$ the Pre satisfaction relation $\presat$, the post satisfaction and violation relations, respectively $\postsat$ and $\postviol$ are defined on the structure of the trace $\pi$ and the tight satisfaction and violation relations:
 \[
 \begin{array}{rcl}
@@ -50,10 +56,9 @@ For a contract $C$ and trace $\pi$ the Pre satisfaction relation $\presat$, the 
 Each trace prefix is classified relative to the earliest decisive prefix: before it the trace is undecided ($\presat$), at it the contract is decided tightly ($\satt$ or $\violt$), and after it the trace is beyond the decision frontier ($\postsat$ or $\postviol$).
 The fact that these five regions are pairwise disjoint and jointly exhaustive is established formally in Theorem~\ref{thm:five-partition}.
 
-\medskip
-\paragraph{Collapsed two-valued judgements.}
-For downstream use (e.g., compliance checking), we collapse the five tight judgements into a two-valued view.
-For conservativeness, undecided prefixes are treated as violating, which prevents premature acceptance.
+\paragraph{Collapsed two-valued judgments.}
+For  the equivalence relation between the two semantics, we collapse the five tight judgments into a two-valued view.
+For the remaining verdicts, undecided prefixes are treated as violations, since verdict evolution is ignored in the two-valued semantics.
 \[
 \begin{array}{rcl}
 \pi \models_\top \ C
@@ -67,14 +72,13 @@ For conservativeness, undecided prefixes are treated as violating, which prevent
 \]
 Exactly one of $\pi\ \sat\ C$ or $\pi\ \viol\ C$ holds for every trace~$\pi$ and contract~$C$.
 This conservative collapse treats undecided prefixes as \emph{violating}
-(no premature acceptance) while still preserving the tight moment of satisfaction.
+for no premature acceptance while still preserving the tight moment of satisfaction.
 \subsubsection*{Literal Tight Semantics}
 Literals $\ell$ are decided in a single synchronous step.
-We therefore interpret them on a single event word $\trace{A}$ with $A\in\Gamma$
-(the set of actions that occurred in one period).
+We therefore interpret them on a single event word $\trace{A}$ with $A\in\Gamma$.
 
 \par
-We present the literal clauses for party $p=1$; the case $p=2$ is symmetric (by swapping $(\cdot)^{(1)}$ and $(\cdot)^{(2)}$).
+We present the literal clauses for party $p=1$; the case $p=2$ is symmetric by swapping $a^{(1)}$ and $a^{(2)}$.
 
 Intuitively, for party~1:
 (i) an \emph{obligation} $\obl[1]{a}$ requires the joint execution of $a^{(1)}$ and $a^{(2)}$;
@@ -84,10 +88,6 @@ party~2 simultaneously supports it with $a^{(2)}$.
 
 %
 \begin{definition}[Literal tight satisfaction]\label{def:lattsat}
-  For the empty trace, we have:
-  \[
-  \emptytrace\ \presat \ell \quad \text{for any literal } \ell.
-  \]
   Literals are decided on a single synchronous step. We define their semantics on a single event word $\trace{A}$ ($A\in\Gamma$) and the empty word $\emptytrace$.
   \[
   \emptytrace\ \presat \ell \quad \text{for any literal } \ell.
@@ -104,8 +104,6 @@ party~2 simultaneously supports it with $a^{(2)}$.
   \trace{A}\ \satt\ \perm[1]{a} &\mydef& \text{if }(a^{(1)}\in A) \text{ then }(a^{(2)}\in A).
   \end{array}
   \]
-  
-  \medskip
   
   \noindent\textbf{Tight violation.}
   For a single event word $\trace{A}$:
@@ -138,8 +136,7 @@ Also, $\trace{A'}\ \satt\ \perm[2]{a}$ holds vacuously since $a^{(2)}\notin A'$.
 \medskip
 \noindent\textbf{Two-event trace.}
 Consider $\trace{A,A'}$.
-Since literals are decided at the first letter,
-the overall collapsed verdict follows from $\trace{A}$ are post satisfaction or post violation:
+Since literals are decided at the first letter, the  verdict follows from post satisfaction or post violation for the prefix $\trace{A}$:
 \[
 \begin{array}{l}
 \trace{A,A'}\ \postsat\ \obl[1]{a},\\[4pt]
@@ -150,24 +147,22 @@ the overall collapsed verdict follows from $\trace{A}$ are post satisfaction or 
 \end{example}
 
 \subsubsection*{Binary Contract Operators Tight Semantics}
+
 \label{sec:tight-binary}
+
 Binary contract operators combine two contracts into structured compositions that capture
+
 parallel, sequential, or conditional behavior.  
-In \cDL\ we use
+
+In \cDL, binary contract compositions  are written $C~\textsf{op}~C’$, where
 \[
 \textsf{op} \in \{\wedge,\ ;\ ,\ \repair\},
 \]
-where $\wedge$ enforces \emph{both} components, $;$ demands \emph{first $C$ then $C'$},
-and $\repair$ means “if $C$ fails, \emph{repair} with $C'$.”
-
-\medskip
-\noindent\textbf{Reading guide (tight view).}
-All clauses below are tight: they identify the \emph{first decisive point}
-where satisfaction or violation becomes determined.
-For conjunction, the decisive point for satisfaction is the latter of the two individual successes; for violation, the first conjunct that fails.
-For sequencing, a split index $k$ witnesses that $C$ succeeds before $C'$ is checked.
-Reparation, on the other hand, requires that either $C$ succeeds directly, or, at the first tight violation of $C$, the repair $C'$ must succeed on the remainder.
-
+$\wedge$ specifies that \emph{both} contracts are to be enforced concurrently, the sequence operator $;$ enforces \emph{first the contract $C$ then $C'$}, while $\repair$ means ``enforce $C$; if it fails, then repair with $C'$''.
+\\ \noindent\textbf{Reading guide.}
+We only specify the tight semantics for those operators.   For conjunction, the decisive point for satisfaction is the latter of the two individual successes. Violation, on the other hand, is decided on the first conjunct that fails.
+For the remaining operators' semantics, a unique index $k$ is used to witness either the satisfaction or violation prefix for the right-hand side contract, say $C$ in $C \textsf{op} C’ $.
+For Reparation, the index $k$ is only computed when $C$ is violated. For conjunction, it is only used when the right-hand side contract is satisfied.
 \begin{definition}[Binary Contract Operators]
   \label{def:binary-contract-semantics}
   Let $\pi$ be a finite trace over $\Gamma = 2^{\Sigma}$ with  $s=\size{\pi}$.
@@ -214,13 +209,14 @@ Reparation, on the other hand, requires that either $C$ succeeds directly, or, a
 \end{definition}
 
 \paragraph{Semantics summary.}
-\emph{Conjunction} succeeds once both parts succeed (possibly at different times); its decisive index is the latter of the two.  
-It fails as soon as either part fails.  
-\emph{Sequence} requires a witness split $k$:
-first $C$ succeeds on $[1,k]$, then $C'$ on $[k{+}1,s]$.
-\emph{Reparation} allows $C'$ to take over at the first violation of $C$; overall success means either direct success of $C$
-or a violation-then-repair pattern.
 
+\emph{Conjunction} succeeds once both parts succeed; both contracts do not necessarily have to be satisfied at the same time point. Its decisive index is the latter of the two. It fails as soon as either part fails.
+
+\emph{Sequence} requires a witness split $k$: first $C$ succeeds on $[1,k]$, then $C'$ on $[k{+}1,s]$.
+
+\emph{Reparation} allows $C'$ to take over at the first violation of $C$; overall success means either direct success of $C$ or a violation-then-repair pattern.
+
+\todo{stopped here}
 
 \begin{lemma}[Local disjointness of tight satisfaction and violation for binary operators]
   \label{lem:binary-disjoint}
@@ -765,7 +761,7 @@ Since $\pi$ was arbitrary, the claim holds for all finite traces.
 
 
 \paragraph{Next step.}
-After establishing the forward tight satisfaction semantics in \cDL and studied their soundness. We now move from the denotational clauses to an operational view:  we construct the corresponding Moore-style monitors for the tight five-valued semantics and establish that their outputs coincide with the semantic judgements on every finite trace prefix.
+After establishing the forward tight satisfaction semantics in \cDL and studied their soundness. We now move from the denotational clauses to an operational view:  we construct the corresponding Moore-style monitors for the tight five-valued semantics and establish that their outputs coincide with the semantic judgments on every finite trace prefix.
 
 
 \input{forwardtight1.tex}
