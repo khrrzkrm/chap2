@@ -36,7 +36,7 @@ Using these frontiers, we define the remaining derived relations of the five-val
 By Lemma~\ref{lem:mutual prefix}, at most one tight frontier can occur along a fixed trace, so the clauses below classify a prefix by its position relative to this unique earliest prefix when it exists.
 
 \begin{definition}[Post and pre-satisfaction semantic definition]\label{def:postprecont}
-For a contract $C$ and trace $\pi$ the Pre satisfaction relation $\presat$, the post satisfaction and violation relations, respectively $\postsat$ and $\postviol$ are defined on the structure of the trace $\pi$ and the tight satisfaction and violation relations:
+For a contract $C$ and trace $\pi$, the Pre-satisfaction relation $\presat$, the post satisfaction and violation relations, respectively $\postsat$ and $\postviol$ are defined on the structure of the trace $\pi$ and the tight satisfaction and violation relations:
 \[
 \begin{array}{rcl}
 \pi\ \presat\ C
@@ -136,7 +136,7 @@ Also, $\trace{A'}\ \satt\ \perm[2]{a}$ holds vacuously since $a^{(2)}\notin A'$.
 \medskip
 \noindent\textbf{Two-event trace.}
 Consider $\trace{A,A'}$.
-Since literals are decided at the first letter, the  verdict follows from post satisfaction or post violation for the prefix $\trace{A}$:
+Since literals are decided at the first letter, the verdict follows from post satisfaction or post violation for the prefix $\trace{A}$:
 \[
 \begin{array}{l}
 \trace{A,A'}\ \postsat\ \obl[1]{a},\\[4pt]
@@ -148,26 +148,35 @@ Since literals are decided at the first letter, the  verdict follows from post s
 
 \subsubsection*{Binary Contract Operators Tight Semantics}
 
+
+
 \label{sec:tight-binary}
-
 Binary contract operators combine two contracts into structured compositions that capture
-
 parallel, sequential, or conditional behavior.  
 
 In \cDL, binary contract compositions  are written $C~\textsf{op}~C’$, where
 \[
 \textsf{op} \in \{\wedge,\ ;\ ,\ \repair\},
 \]
-$\wedge$ specifies that \emph{both} contracts are to be enforced concurrently, the sequence operator $;$ enforces \emph{first the contract $C$ then $C'$}, while $\repair$ means ``enforce $C$; if it fails, then repair with $C'$''.
-\\ \noindent\textbf{Reading guide.}
+$\wedge$ specifies that \emph{both} contracts are to be enforced concurrently, the sequence operator $;$ enforces \emph{first the contract $C$ then $C'$}, while $\repair$ means ``enforce $C$; if it fails, then repair with $C'$''.\\
+\noindent\textbf{Reading guide.}
+
 We only specify the tight semantics for those operators.   For conjunction, the decisive point for satisfaction is the latter of the two individual successes. Violation, on the other hand, is decided on the first conjunct that fails.
+
 For the remaining operators' semantics, a unique index $k$ is used to witness either the satisfaction or violation prefix for the right-hand side contract, say $C$ in $C \textsf{op} C’ $.
+
 For Reparation, the index $k$ is only computed when $C$ is violated. For conjunction, it is only used when the right-hand side contract is satisfied.
+
 \begin{definition}[Binary Contract Operators]
+
   \label{def:binary-contract-semantics}
+
   Let $\pi$ be a finite trace over $\Gamma = 2^{\Sigma}$ with  $s=\size{\pi}$.
+
   We use the notation $\pi_k = \pi[1,k]$ for the prefix of length $k$,
+
   and $\pi^k = \pi[k+1,s]$ for the suffix after $k$.
+
   \[
   \begin{array}{l@{\quad}c@{\quad}l}
   \multicolumn{3}{l}{\textbf{Conjunction }(C \wedge C')}\rule{0pt}{2.4ex}\\
@@ -183,7 +192,6 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
   (\pi\ \violt\ C\ \sor\ \pi\ \violt\ C')\ \nd\ \\
   & &\forall\,j \in [1, s-1]:\ \lnot(\pi_{j}\ \violt\ (C \wedge C')),
   \\[2ex]
-
   \multicolumn{3}{l}{\textbf{Sequence }(C\ ;\ C')}\rule{0pt}{2.4ex}\\
   \pi\ \satt\ C ; C'
   &\mydef&
@@ -194,7 +202,6 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
   \pi\ \violt\ C\ \sor\
   \exists\,k \in [1, s-1]:\ \pi_k\ \satt\ C\ \nd\ \pi^{k}\ \violt\ C',
   \\[2ex]
-
   \multicolumn{3}{l}{\textbf{Reparation }(C\ \repair\ C')}\rule{0pt}{2.4ex}\\
   \pi\ \satt\ C \repair C'
   &\mydef&
@@ -206,89 +213,33 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
   \exists\,k \in [1, s-1]:\ \pi_k\ \violt\ C\ \nd\ \pi^{k}\ \violt\ C'.
   \end{array}
   \]
+
 \end{definition}
+
+
 
 \paragraph{Semantics summary.}
 
+
+
 \emph{Conjunction} succeeds once both parts succeed; both contracts do not necessarily have to be satisfied at the same time point. Its decisive index is the latter of the two. It fails as soon as either part fails.
+
+
 
 \emph{Sequence} requires a witness split $k$: first $C$ succeeds on $[1,k]$, then $C'$ on $[k{+}1,s]$.
 
+
+
 \emph{Reparation} allows $C'$ to take over at the first violation of $C$; overall success means either direct success of $C$ or a violation-then-repair pattern.
 
-\todo{stopped here}
 
-\begin{lemma}[Local disjointness of tight satisfaction and violation for binary operators]
-  \label{lem:binary-disjoint}
-  Let $C,C'$ be contracts and let $\pi$ be a finite trace. Assume the following
-  induction hypotheses hold for the subcontracts:
-  \[
-  \neg\bigl(\pi \satt C \ \nd\ \pi \violt C\bigr)
-  \qquad\text{and}\qquad
-  \neg\bigl(\pi \satt C' \ \nd\ \pi \violt C'\bigr),
-  \]
-  and, moreover, the same disjointness holds for every suffix $\pi^{k}$ in place of $\pi$.
-  Then, for each binary operator $\textsf{op}\in\{\wedge,\ ;\ ,\ \repair\}$ we have
-  \[
-  \neg\bigl(\pi \satt (C\ \textsf{op}\ C') \ \nd\ \pi \violt (C\ \textsf{op}\ C')\bigr).
-  \]
-  \end{lemma}
-  
-  \begin{proof}
-    We prove the three cases by contradiction, using Definition~\ref{def:binary-contract-semantics}.
-    We also use Lemma~\ref{lem:mutual prefix} to rule out an opposite frontier on a strict prefix once a tight verdict holds on the full trace.
-    
-    \paragraph{Case $\wedge$.}
-    Assume $\pi \satt (C\wedge C')$ and $\pi \violt (C\wedge C')$.
-    From $\pi \satt (C\wedge C')$ there exist $k,k'\in[1,s]$ such that
-    $\pi_k \satt C$, $\pi_{k'} \satt C'$, and $s=\max(k,k')$.
-    From $\pi \violt (C\wedge C')$ we obtain $\pi \violt C$ or $\pi \violt C'$.
-    
-    If $\pi \violt C$, then:
-    (i) if $k=s$, we have $\pi \satt C$ and $\pi \violt C$, contradicting the disjointness hypothesis for $C$;
-    (ii) if $k<s$, then $\pi_k$ is a strict prefix of $\pi$ with $\pi_k \satt C$, contradicting Lemma~\ref{lem:mutual prefix}(2) instantiated with $C$ (since $\pi \violt C$ forbids any $j<s$ with $\pi_j \satt C$).
-    The case $\pi \violt C'$ is symmetric.
-    
-    \paragraph{Case conjunction$(;)$.}
-    Assume $\pi \satt (C;C')$ and $\pi \violt (C;C')$.
-    From satisfaction there exists $k\in[1,s-1]$ such that
-    $\pi_k \satt C$ and $\pi^{k} \satt C'$.
-    From violation either (i) $\pi \violt C$ or (ii) there exists $m\in[1,s-1]$ such that
-    $\pi_m \satt C$ and $\pi^{m} \violt C'$.
-    
-    In case (i), $\pi \violt C$ contradicts Lemma~\ref{lem:mutual prefix}(2) for $C$
-    because $\pi_k$ is a strict prefix with $\pi_k \satt C$.
-    
-    In case (ii), tight satisfaction of $C$ is a frontier event along prefixes of a fixed trace,
-    so $\pi_k \satt C$ and $\pi_m \satt C$ imply $k=m$.
-    Hence, the same suffix $\pi^{k}$ both tightly satisfies and tightly violates $C'$,
-    namely $\pi^{k} \satt C'$ and $\pi^{k} \violt C'$,
-    contradicting the suffix-disjointness hypothesis for $C'$.
-    
-    \paragraph{Case reparation $(\repair)$.}
-    Assume $\pi \satt (C\repair C')$ and $\pi \violt (C\repair C')$.
-    From $\pi \violt (C\repair C')$ there exists $k\in[1,s-1]$ such that
-    $\pi_k \violt C$ and $\pi^{k} \violt C'$.
-    From $\pi \satt (C\repair C')$ either (a) $\pi \satt C$ or (b) there exists $m\in[1,s-1]$ such that
-    $\pi_m \violt C$ and $\pi^{m} \satt C'$.
-    
-    In case (a), $\pi \satt C$ and the strict-prefix violation $\pi_k \violt C$ contradict
-    Lemma~\ref{lem:mutual prefix}(1) instantiated with $C$.
-    
-    In case (b), tight violation of $C$ is also a frontier event along prefixes of a fixed trace,
-    so $\pi_k \violt C$ and $\pi_m \violt C$ imply $k=m$.
-    Hence, the same suffix $\pi^{k}$ both violates and satisfies $C'$,
-    namely $\pi^{k} \violt C'$ and $\pi^{k} \satt C'$,
-    contradicting the suffix-disjointness hypothesis for $C'$.
-    
-    Thus in all three cases we reach a contradiction, so
-    $\neg\bigl(\pi \satt (C\ \textsf{op}\ C') \ \nd\ \pi \violt (C\ \textsf{op}\ C')\bigr)$.
-    \end{proof}
 
 
 
     \paragraph{Tight satisfaction (the later decisive prefix).}
+
     Consider the trace
+
     \[
     \pi_{\textsf{sat}} = \langle A_1, A_2\rangle,
     \qquad
@@ -297,25 +248,31 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
     \]
     Then
     $\trace{A_1}\ \satt\ C_2$
-    (vacuously, since $\OCC^{(1)}\notin A_1$ and no unsupported attempt occurs),
+    vacuously, since $\OCC^{(1)}\notin A_1$ and no unsupported attempt occurs,
     and
     $\pi_{\textsf{sat}}\ \satt\ C_3$,
     since $\pi[1,1]\ \violt\ \obl[1]{\PAY}$ and
     $\pi[2,2]\ \satt\ \obl[1]{\PAYF}$.
+
     Hence, by conjunction,
+
     $\pi_{\textsf{sat}}\ \satt\ (C_2 \wedge C_3)$,
+
     with decisive index $t=2$, the maximum of the two conjunct frontiers.
+
     
+
     \paragraph{Tight satisfaction (the earliest decisive prefix).}
-    For the single-event trace 
+
+    For the single-event trace we have
     \[
     \trace{A_1'} \quad\text{with}\quad A_1'=\{\OCC^{(2)},\PAY^{(1)},\PAY^{(2)}\},
     \]
     we have
-    $\trace{A_1'}\ \satt\ C_2$
-    and
-    $\trace{A_1'}\ \satt\ C_3$
-    (via the direct satisfaction of $\obl[1]{\PAY}$).
+    $\trace{A_1'}\ \satt\ C_2$ and
+  $\trace{A_1'}\ \satt\ C_3$
+
+Using the direct satisfaction of $\obl[1]{\PAY}$.
     Thus,
     \[
     \trace{A_1'}\ \satt\ (C_2 \wedge C_3),
@@ -332,23 +289,29 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
     \]
     In the first month,
     $\trace{A_1}\ \satt\ C_2$
-    and $\trace{A_1}\ \violt\ \obl[1]{\PAY}$,
-    while
+ and $\trace{A_1}\ \violt\ \obl[1]{\PAY}$, while
     $\trace{A_1}\ \presat\ C_3$
-    since the reparation in $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ has not yet been evaluated.
-    With split $k=1$,
+ since the reparation in $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ has not yet been evaluated.
+With the decomposition by $k=1$,
+
     $\pi[1,1]\ \violt\ \obl[1]{\PAY}$ and
+
     $\pi[2,2]\ \violt\ \obl[1]{\PAYF}$,
+
     hence
+
     $\pi_{\textsf{viol}}\ \violt\ C_3$.
+
     Thus, the overall violation arises from $C_3$, and by conjunction,
+
     $\pi_{\textsf{viol}}\ \violt\ (C_2 \wedge C_3)$,
+
     with decisive index $t=2$.
 
 \subsubsection*{Repetition Contracts Tight Semantics}
 \begin{definition}[Repetition Contracts]
   Let $\pi$ be a finite trace over the event alphabet $\Gamma = 2^{\Sigma}$, with $s=\size{\pi}$.
-  For $k\in\{1,\dots,s-1\}$, we denote by $\pi_k := \pi[1,k]$ the prefix of length $k$,
+  For $k\in [1,s-1]$, we denote by $\pi_k := \pi[1,k]$ the prefix of length $k$,
   and by $\pi^k := \pi[k+1,s]$ the corresponding suffix.
   Let $n \in \mathbb{N}^*$ be a strictly positive natural number.
   
@@ -375,75 +338,35 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
   \]
 \end{definition}
   \paragraph{Intuition.}
-  Repetition contracts express the iterative enforcement of a subcontract.
-  The finite form $C^n$ requires $C$ to hold $n$ times in sequence, each instance starting
-  immediately after the previous one completes.
-  The satisfaction condition unfolds recursively:
-  a trace satisfies $C^n$ if it can be decomposed into a prefix where $C$ holds,
-  followed by a suffix that satisfies $C^{n-1}$.
-  A violation occurs either when the first occurrence of $C$ fails, or when some later repetition cannot be fulfilled after a previously satisfied segment (captured by the split $\pi_k \satt C^m$ and $\pi^{k} \violt C$).
-  Hence, $C^n$ behaves as a \emph{sequential chain} of responsibilities and rights, and any broken link invalidates the entire chain.
-  
-  The infinite form $\repit{C}$ captures \emph{unbounded repetition}.
-  Since finite traces cannot exhibit infinite iteration,
-  $\repit{C}$ is never fully satisfied (\textsf{false} under tight semantics);
-  it is only meaningful with respect to violation:
-  a trace violates $\repit{C}$ once it violates one of its finite unfolding $C^n$.
-  Intuitively, $\repit{C}$ models \emph{renewable or continuing} contracts such as
-  subscriptions or recurring payments, where each cycle restarts the same normative
-  condition indefinitely.
 
-  % --- BEGIN INSERTED LEMMAS ---
-\begin{lemma}[Local disjointness for repetition contracts]
-  \label{lem:repetition-disjoint}
-  Let $C$ be a contract, $n\in\mathbb{N}^*$, and let $\pi$ be a finite trace.
-  Assume the induction hypothesis that for every finite trace $\pi_{\min}$ we have
-  $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$, and moreover the same disjointness
-  holds for every suffix $\pi_{\min}^k$ in place of $\pi_{\min}$.
-  Then:
-  $$
-  \neg\bigl(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n\bigr)
-  \quad\text{and}\quad
-  \neg\bigl(\pi\ \satt\ \repit{C}\ \nd\ \pi\ \violt\ \repit{C}\bigr).
-  $$
-  \end{lemma}
-  
-  \begin{proof}
-  We prove the two claims.
-  \paragraph{Finite repetition $C^n$.}
-  We argue by induction on $n$.
-  For $n=1$, we have $C^1\equiv C$ by definition, hence the claim follows from the hypothesis.
-  For $n>1$, the definition gives $\pi\ \satt\ C^n$ iff $\pi\ \satt\ C;C^{n-1}$.
-  Likewise, the violation clause for $C^n$ can only arise either from an initial violation of $C$,
-  or after some satisfied prefix where a later copy of $C$ is violated.
-  In either case, if we assume toward contradiction that
-  $\pi\ \satt\ C^n$ and $\pi\ \violt\ C^n$, then we obtain a contradiction with
-  (i) Lemma~\ref{lem:binary-disjoint} for the sequence operator (applied to $C$ and $C^{n-1}$),
-  (ii) the induction hypothesis for $C$, and
-  (iii) the induction hypothesis for $C^{n-1}$ together with the suffix-disjointness assumption.
-  Thus, $\neg(\pi\ \satt\ C^n\ \nd\ \pi\ \violt\ C^n)$ holds.
-  
-  \paragraph{Unbounded repetition $\repit{C}$.}
-  By definition, $\pi\ \satt\ \repit{C}$ is \emph{false} for every finite trace $\pi$.
-  Hence, $\pi$ cannot both tightly satisfy and tightly violate $\repit{C}$.
-  \end{proof}
-  
+  Repetition contracts express the iterative enforcement of a subcontract.
+   $C^n$, the n repition of a contract requires $C$ to be satisfied $n$ times in sequence.
+  The satisfaction unfolds as:
+  a trace satisfies $C^n$ if it can be decomposed into a prefix where the first satisfaction of $C$ holds,
+  followed by a  recursive satisfaction for a suffix that satisfies $n-1$ repetition of C.
+  A violation is raised either if the first occurrence of $C$ fails, or when some later repetition cannot be fulfilled after a previously satisfied segment.
+  Hence, $C^n$ behaves as a \emph{sequential chain} of responsibilities and rights, and any broken link invalidates the entire chain.
+
+  The infinite form $\repit{C}$ captures \emph{unbounded repetition}.
+  Since finite traces cannot represent infinite behaviors, $\repit{C}$ is never fully satisfied, as captured by the \textsf{false} under the tight semantics of tight satisfaction. Only violations and undecided verdicts can be computed.
+  a trace violates $\repit{C}$ once it violates one of its finite unfolding $C^n$.
+  Intuitively, $\repit{C}$ models \emph{renewable or continuing} contracts such as subscriptions or recurring payments, where each cycle restarts the same normative condition indefinitely.
+
   \subsubsection*{Regular Expression Binary Operator Semantics}
+
   \label{sec:regex-contract}
+
   Contracts guarded by regular expressions specify that a normative condition becomes active only after the trace matches a given regular pattern.  
   Such patterns, written $re$, are interpreted over the letter alphabet 
   $\Gamma = 2^{\Sigma}$ introduced above.  
-  They act as \emph{temporal triggers} that delimit
-  where an obligation, prohibition, or reparation clause starts to apply.
-  
-  Two guarded forms are distinguished:
+They act as \emph{temporal triggers} that delimit
+where an obligation, prohibition, or reparation clause starts to apply.
+Two regular expression conditional contracts  are distinguished:
   \begin{itemize}
-    \item The \emph{triggered contract} $\trig[re]{C}$, which activates $C$ as soon as a prefix of the trace matches $re$.
-    \item The \emph{guarded contract} $\guard[re]{C}$, which restricts $C$ to hold only while the trace remains within the language induced by $re$.
+    \item The \emph{triggered contract} $\trig[re]{C}$, which enforces the contract $C$ in the following time step after the prefix of the trace matches the regular expression $re$.
+
+    \item The \emph{guarded contract} $\guard[re]{C}$, which acts as a termination condition for $C$, the contract is to hold only for the prefix of the trace for which the prefix closure language of $re$ holds, that is, the undecided up to the tight satisfaction.
   \end{itemize}
-  The first captures temporal activation (“after the trigger, $C$ must hold”),
-  the second conditional persistence (“as long as $re$ remains possible, $C$ must hold”).
-  
   \begin{definition}[Triggered and Guarded Contracts]
     \label{def:trigger-guard-semantics}
     Let $\pi$ be a finite trace over $\Gamma = 2^{\Sigma}$ with  $s=\size{\pi}$.
@@ -476,57 +399,6 @@ For Reparation, the index $k$ is only computed when $C$ is violated. For conjunc
     Where $\pi\ \clossat\ X$ abbreviates $(\pi\ \presat\ X\ \sor\ \pi\ \satt\ X)$.
   \end{definition}
   
-  \begin{lemma}[Local disjointness for triggered and guarded contracts]
-    \label{lem:regex-disjoint}
-    Let $re$ be a regular expression over $\Gamma$ and let $C$ be a contract.
-    Assume disjointness for both components, namely for every finite trace $\pi_{\min}$:
-    \[
-    \neg(\pi_{\min}\ \satt\ re\ \nd\ \pi_{\min}\ \violt\ re)
-    \quad\text{and}\quad
-    \neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C),
-    \]
-    and assume the same disjointness holds for every suffix $\pi_{\min}^k$ in place of $\pi_{\min}$.
-    Then for every finite trace $\pi$:
-    $$
-    \neg\bigl(\pi\ \satt\ \trig[re]{C}\ \nd\ \pi\ \violt\ \trig[re]{C}\bigr)
-    \quad\text{and}\quad
-    \neg\bigl(\pi\ \satt\ \guard[re]{C}\ \nd\ \pi\ \violt\ \guard[re]{C}\bigr).
-    $$
-  \end{lemma}
-    
-  \begin{proof}
-    We treat the two constructors.
-    
-    \paragraph{Triggered $\trig[re]{C}$.}
-    Assume toward contradiction that $\pi\ \satt\ \trig[re]{C}$ and $\pi\ \violt\ \trig[re]{C}$.
-    From the violation clause, there exists $k \in [1, s-1]$ such that $\pi_k\ \satt\ re$ and $\pi^{k}\ \violt\ C$.
-    
-    From the satisfaction clause, either (a) $\pi\ \violt\ re$ or (b) there exists $m \in [1, s-1]$ such that $\pi_m\ \satt\ re$ and $\pi^{m}\ \satt\ C$.
-    
-    \noindent\emph{Case (a):} We have $\pi_k \satt re$ (from violation) and $\pi \violt re$ (from assumption).
-    By Lemma~\ref{lem:mutual prefix} (Mutual Prefix Exclusion applied to $re$), if a prefix $\pi_k$ tightly satisfies $re$, the full trace $\pi$ (which is an extension of $\pi_k$) cannot tightly violate $re$. Contradiction.
-    
-    \noindent\emph{Case (b):} We have $\pi_k \satt re$ and $\pi_m \satt re$.
-    By Lemma~\ref{lem:mutual prefix} applied to $re$, there is at most one prefix of $\pi$ that tightly satisfies $re$. Thus, $k=m$.
-    This implies we have both $\pi^{k}\ \violt\ C$ and $\pi^{k}\ \satt\ C$ on the \emph{same} suffix.
-    This contradicts the disjointness hypothesis for $C$ on the suffix $\pi^{k}$.
-    
-    Hence, $\pi$ cannot both tightly satisfy and tightly violate $\trig[re]{C}$.
-    \paragraph{Guarded $\guard[re]{C}$.}
-    Assume toward contradiction that $\pi\ \satt\ \guard[re]{C}$ and $\pi\ \violt\ \guard[re]{C}$.
-    By Definition~\ref{def:trigger-guard-semantics}, violation means $\pi\ \clossat\ re$ and $\pi\ \violt\ C$.
-    Satisfaction means either (i) $\pi\ \violt\ re$ and $\pi\ \clossat\ C$, or (ii) $\pi\ \clossat\ re$ and $\pi\ \satt\ C$.
-    
-    \noindent\emph{Case (ii):} This yields $\pi\ \clossat\ re$ (consistent) but $\pi\ \satt\ C$ and $\pi\ \violt\ C$. This contradicts the disjointness hypothesis for $C$.
-    
-    \noindent\emph{Case (i):} This yields $\pi\ \clossat\ re$ and $\pi\ \violt\ re$.
-    Expanding $\clossat$, this means $(\pi\ \presat\ re \sor \pi\ \satt\ re) \nd \pi\ \violt\ re$.
-    By the disjointness hypothesis for $re$, $\satt$ excludes $\violt$.
-    By Lemma~\ref{lem:mutual prefix}, $\presat$ excludes $\violt$.
-    Thus, Case (i) is impossible.
-    
-    Thus guarded contracts are also disjoint.
-  \end{proof}
 
 \begin{example}[Triggered and guarded contracts]
 \label{ex:trigger-guard}
@@ -613,156 +485,142 @@ $\pi_{\mathsf{viol}}\ \violt\ C_9$.
 
 \subsubsection*{Coherence of the Forward-Looking Contract Satisfaction Semantics}
 
-Coherence requires that for any fixed contract and trace, there is never more than one decisive verdict. A trace cannot both tightly satisfy and tightly violate the same contract on different prefixes, since this would yield two incompatible outcomes for a single execution. Forward semantics must therefore
-rule out situations where tight satisfaction appears on one prefix and tight violation appears on another prefix of the same trace. Ensuring this exclusion
-makes the decisive point unique, which is required to justify every verdict from $\tightverdicts$.
-The next lemma states this exclusion precisely by showing that the two frontiers cannot arise on distinct prefixes of the same trace.
+Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the 5 possible ones. But it also extends to prefix properties: no prefix can tightly satisfy a trace, since a suffix may violate it. The main focus lies on tight satisfaction and violation disjointedness and furthers to the semantic definion of the three other verdicts. The next lemma establishes this important result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
 
-\begin{lemma}[Mutual prefix exclusion tight satisfaction and violation]
+\begin{lemma}[Mutual prefix exclusion and disjointness of tight satisfaction and violation]
 \label{lem:mutual prefix}
-For every contract $C$ in \cDL\ and every finite trace $\pi$, the tight satisfaction and tight violation forward semantics are mutually exclusive, that is:
+For every contract $C$ in \cDL\ and every finite trace $\pi$:
 \begin{enumerate}
-  \item \emph{No earlier tight violation at or after tight satisfaction.}\\[2pt]
-   $\text {If }\displaystyle \pi\ \satt\ C \ \text{then}\ \nexists\,j<|\pi|:\ \pi[1,j]\ \violt\ C\big.$
+\item \emph{Point-wise disjointness.}
+$\neg\bigl(\pi\ \satt\ C\ \nd\ \pi\ \violt\ C\bigr).$
 
-  \item \emph{No earlier tight satisfaction at or after tight violation.}\\[2pt]
-  $\displaystyle \text {if } \pi\ \violt\ C \ \text{then}\ \nexists\,j<|\pi|:\ \pi[1,j]\ \satt\ C\big.$
+\item \emph{No earlier tight violation before tight satisfaction.}\\[2pt]
+If $\pi\ \satt\ C$, then $\nexists\,j<|\pi|:\ \pi[1,j]\ \violt\ C$.
+
+\item \emph{No earlier tight satisfaction before tight violation.}\\[2pt]
+If $\pi\ \violt\ C$, then $\nexists\,j<|\pi|:\ \pi[1,j]\ \satt\ C$.
 \end{enumerate}
-
-
-\end{lemma}
-
-\begin{proof}[Proof sketch]
-By structural induction on the syntactical structure of $C$.
-
-\smallskip
-\emph{Base case: literals.}
-By Definition~\ref{def:lattsat}, a literal is decided on a single letter:
-$\trace{A}\ \satt\ \ell$ iff the letter constraint holds, and
-$\trace{A}\ \violt\ \ell$ iff it does not. These are complements on that step, so the two implications are immediate, and uniqueness follows.
-
-\medskip
-\noindent\textbf{Inductive hypotheses.}
-Assume the theorem holds for subcontracts as needed below. We use:
-\[
-\begin{aligned}
-\text{(IH-$C$-sat)}\quad 
-&\forall\pi\; \bigl(\pi\ \satt\ C \Rightarrow \forall j<|\pi|:\neg(\pi[1,j]\ \violt\ C)\bigr),\\
-\text{(IH-$C$-viol)}\quad 
-&\forall\pi\; \bigl(\pi\ \violt\ C \Rightarrow \forall j<|\pi|:\neg(\pi[1,j]\ \satt\ C)\bigr),
-\end{aligned}
-\]
-and similarly (IH-$C'$-sat) and (IH-$C'$-viol) when a second operand $C'$ is present; for regex guards $re$ we use the same two clauses with $re$ in place of $C$.
-
-\paragraph{Conjunction $C\wedge C'$.}
-By Definition~\ref{def:binary-contract-semantics}, tight satisfaction requires
-first successes at some $k,k'$ with decisive index $j^\star=\max\{k,k'\}$.
-For every $j<j^\star$, either $j<k$ or $j<k'$ holds, hence by (IH-$C$-sat) and
-(IH-$C'$-sat) neither $\pi[1,j]\ \violt\ C$ nor $\pi[1,j]\ \violt\ C'$ holds.
-Since a tight violation of a conjunction is a tight violation of the conjunction,
-no $j<j^\star$ violates $C\wedge C'$. This proves the first implication.
-For the second, if some prefix tightly violates a conjunct, then by
-(IH-$C$-viol) or (IH-$C'$-viol) no earlier prefix tightly satisfies that conjunct, hence, no earlier prefix tightly satisfies the conjunction.
-
-\paragraph{Sequence $C;C'$.}
-By Definition~\ref{def:binary-contract-semantics}, tight satisfaction needs a split
-$k$ with $\pi[1,k]\ \satt\ C$ and $\pi[k{+}1,|\pi|]\ \satt\ C'$.
-For any $j\le k$, (IH-$C$-sat) forbids $\pi[1,j]\ \violt\ C$; for any
-$j>k$, (IH-$C'$-sat) applied to the suffix forbids $\violt C'$ before its
-own decisive point. A tight violation of $C;C'$ before satisfaction is either
-a violation of $C$ before $k$ or a violation of $C'$ after $k$, both excluded.
-The dual implication follows from (IH-$C$-viol) and (IH-$C'$-viol).
-
-\paragraph{Reparation $C\repair C'$.}
-By Definition~\ref{def:binary-contract-semantics}, either $C$ succeeds, or else at
-the first tight violation index $k$ of $C$ the repair $C'$ must succeed on
-$\pi^{k}$. In the first branch (IH-$C$-sat), it excludes earlier violations.
-In the second branch, (IH-$C$-viol) gives minimal property of the failure point of $C$,
-and (IH-$C'$-sat) on the suffix excludes earlier failure of the composite
-before its tight success. The dual implication is symmetric, using (IH-$C$-viol) and (IH-$C'$-viol).
-
-\paragraph{Finite repetition $C^n$.}
-Unfold $C^n \equiv C;(C^{n-1})$ and argue by a secondary induction on $n$,
-using the sequence case and the induction hypotheses for $C$ and $C^{n-1}$.
-
-\paragraph{Unbounded repetition $\repit{C}$.}
-Under tight semantics $\repit{C}$ never tightly satisfies and tightly violates
-iff some finite unrolling $C^m$ tightly violates. The two implications reduce
-to the finite case above.
-
-\paragraph{Triggered $\langle re\rangle C$.}
-By Definition~\ref{def:trigger-guard-semantics}, either $re$ is violated and the
-contract tightly satisfies vacuously, or there is a first $k$ with $\pi_k\ \satt\ re$
-and then the suffix must satisfy $C$. In the vacuous branch,
-(IH-$re$-viol) forbids any earlier tight satisfaction of $re$, so there is no
-earlier tight violation of the composite. In the active branch, the first match
-index $k$ is minimal by (IH-$re$-sat); before $k$ the composite is undecided, and
-after $k$ we apply (IH-$C$-sat)/(IH-$C$-viol) on the suffix to obtain both implications.
-
-\paragraph{Guarded $[re]\,C$.}
-While $\pi$ \emph{closes} $re$ (that is, $\pi$ is in the open region for $re$), any tight or post failure of $C$ yields a tight or post failure of the composite.
-Once $re$ becomes impossible, the composite satisfies provided $C$ has not failed.
-Combine (IH-$re$-sat) and (IH-$re$-viol) with (IH-$C$-sat) and (IH-$C$-viol),
-and the guarded case table in Definition~\ref{def:trigger-guard-semantics}, to derive the two implications.
-
-\medskip
-All constructors preserve the two “no-backtrack” properties; hence, the claim holds for all $C$.
-\end{proof}
-
-
-% --- BEGIN INSERTED LEMMA ---
-\begin{lemma}[Constructor-wise disjointness of the tight frontiers]
-\label{lem:constructor-disjoint}
-For every contract $C$ in \cDL\ and every finite trace $\pi$, we have
-\[
-\neg\bigl(\pi\ \satt\ C\ \nd\ \pi\ \violt\ C\bigr).
-\]
 \end{lemma}
 
 \begin{proof}
-By structural induction on the syntax of $C$.
+By structural induction on the syntax of $C$. In each case below, we prove all three claims simultaneously.
 
-\emph{Base: literals.} Disjointedness holds by Definition~\ref{def:lattsat}, since on a single letter the satisfaction and violation clauses are complementary.
+\smallskip
+\emph{Base case: literals.}
+By Definition~\ref{def:lattsat}, literals are all decided on a single letter trace:
+$\trace{A}\ \satt\ \ell$ iff the letter constraint holds, and
+$\trace{A}\ \violt\ \ell$ iff it does not. The conditions are all exclusive, as no literal can be simultaneously satisfied and violated under the same conditions on the unique event of the trace. Claim~(1) follows from that.
+Claims~(2) and~(3) follow by definition, because the only strict prefix of a single letter trace is $\emptytrace$, on which $\emptytrace\ \presat\ \ell$ holds by definition.
 
-\emph{Inductive steps.}
-For binary constructors $C_1\wedge C_2$, $C_1;C_2$, and $C_1\repair C_2$, the claim follows from Lemma~\ref{lem:binary-disjoint} and the induction hypotheses for $C_1$ and $C_2$ (including the required suffix form).
-For repetition constructors $C^n$ and $\repit{C}$, the claim follows from Lemma~\ref{lem:repetition-disjoint} and the induction hypothesis for $C$.
-For triggered and guarded constructors $\trig[re]{C}$ and $\guard[re]{C}$, the claim follows from Lemma~\ref{lem:regex-disjoint} together with the induction hypotheses for $re$ and $C$.
-Covering all contract constructors.
+\medskip
+\noindent\textbf{Inductive hypotheses.}
+Assume all three claims hold for every subcontract. We write:
+\[
+\begin{aligned}
+\text{(IH-$C$-1)}\quad
+&\forall\pi:\  \neg(\pi\ \satt\ C\ \nd\ \pi\ \violt\ C),\\
+\text{(IH-$C$-2)}\quad
+&\forall\pi:\  \bigl(\pi\ \satt\ C \Rightarrow \forall j<|\pi|:\neg(\pi[1,j]\ \violt\ C)\bigr),\\
+\text{(IH-$C$-3)}\quad
+&\forall\pi:\  \bigl(\pi\ \violt\ C \Rightarrow \forall j<|\pi|:\neg(\pi[1,j]\ \satt\ C)\bigr),
+\end{aligned}
+\]
+and similarly for a second operand $C'$ or a regex guard $re$.
+
+\paragraph{Conjunction $C\wedge C'$.}
+\emph{Claim~(1).}
+By contradiction, assume $\pi\ \satt\ (C\wedge C')$ and $\pi\ \violt\ (C\wedge C')$.
+From the tight satisfaction semantic conditions, there exist $k,k'\in[1,s]$ with $\pi_k\ \satt\ C$, $\pi_{k'}\ \satt\ C'$, and $s=\max(k,k')$. And From violation, $\pi\ \violt\ C$ or $\pi\ \violt\ C'$.
+If $\pi\ \violt\ C$: when $k=s$, we have $\pi\ \satt\ C$ and $\pi\ \violt\ C$, contradicting (IH-$C$-1). If $k<s$, the strict prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
+
+
+\emph{Claims~(2) and~(3).}
+Tight satisfaction establishes a unique index $j = \max(k,k')$ such that $\pi_k\ \satt\ C$ and $\pi_{k'}\ \satt\ C'$.
+For any $j' < j$, either $j' < k$ or $j' < k'$, so by (IH-$C$-2) and (IH-$C'$-2), neither conjunct is tightly violated at $\pi[1,j']$, hence $C\wedge C'$ is not violated either.
+For the dual, if $\pi\ \violt\ (C\wedge C')$ via a violation of conjunct $C$, then (IH-$C$-3) forbids any earlier $\pi[1,j']\ \satt\ C$, which is necessary for $\pi[1,j']\ \satt\ (C\wedge C')$.
+
+\paragraph{Sequence $C\mathbin{;}C'$.}
+\emph{Claim~(1).}
+Assume $\pi\ \satt\ (C;C')$ and $\pi\ \violt\ (C;C')$.
+From satisfaction, there exists $k\in[1,s{-}1]$ with $\pi_k\ \satt\ C$ and $\pi^{k}\ \satt\ C'$.
+From violation, either (i)~$\pi\ \violt\ C$, or (ii)~there exists $m$ with $\pi_m\ \satt\ C$ and $\pi^{m}\ \violt\ C'$.
+In case~(i), the prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
+In case~(ii), both (IH-$C$-2) and (IH-$C$-3) imply that tight satisfaction of $C$ occurs at a unique prefix, so $k = m$. Thus, $\pi^{k}\ \satt\ C'$ and $\pi^{k}\ \violt\ C'$, contradicting (IH-$C'$-1).
+
+\emph{Claims~(2) and~(3).}
+For any $j \le k$, (IH-$C$-2) ensures that $\pi[1,j]\ \violt\ C$. Similarly, for $j > k$, (IH-$C'$-2) on the suffix prevents violation of $C'$ before its tight point. Thus, there cannot exist any prefix that violates $C;C'$.
+
+
+\paragraph{Reparation $C\mathbin{\repair} C'$.}
+\emph{Claim~(1).}
+Assume $\pi\ \satt\ (C\repair C')$ and $\pi\ \violt\ (C\repair C')$.
+For the violation semantics, there exists $k$ with $\pi_k\ \violt\ C$ and $\pi^{k}\ \violt\ C'$.
+And for the satifaction semantics, either (a)~$\pi\ \satt\ C$, or (b)~there exists $m$ with $\pi_m\ \violt\ C$ and $\pi^{m}\ \satt\ C'$.
+In case~(a), $\pi\ \satt\ C$ with the strict-prefix violation $\pi_k\ \violt\ C$ contradicts (IH-$C$-2).
+In case~(b), tight violation of $C$ is unique by (IH-$C$-2) and (IH-$C$-3), so $k = m$.
+Next, using $\pi^{k}\ \violt\ C'$ and $\pi^{k}\ \satt\ C'$ contradicts (IH-$C'$-1).
+
+\emph{Claims~(2) and~(3).}
+In the no reparation case $\pi\ \satt\ C$, (IH-$C$-2) excludes earlier violations of $C$, so it applies for $C\repair C'$.
+In the repaired case, (IH-$C$-3) gives minimality of the failure point of $C$, and (IH-$C'$-2) on the suffix excludes earlier failure of the composition of both contracts before its tight success.
+
+
+\paragraph{Finite repetition $C^n$.}
+By unfolding the condition as $C^n \equiv C;(C^{n-1})$, the sequence is proved and by induction on $n-1$.
+
+\paragraph{Unbounded repetition $\repit{C}$.}
+By definition, $\pi\ \satt\ \repit{C}$ is \emph{false} for every finite trace. Hence, all the claims trivially hold by induction on C.
+
+
+\paragraph{Triggered $\langle re\rangle C$.}
+From Definition~\ref{def:trigger-guard-semantics}, either $re$ is violated leading to a vacuous satisfaction of the composed contract, or there is a first $k$ with $\pi_k\ \satt\ re$.
+
+\emph{Claim~(1).} Assume both $\pi\ \satt\ \trig[re]{C}$ and $\pi\ \violt\ \trig[re]{C}$.
+Violation necessitates that exists $k$ with $\pi_k\ \satt\ re$ and $\pi^{k}\ \violt\ C$.
+If the regular expression is not matched $\pi\ \violt\ re$, then $\pi_k\ \satt\ re$ with $\pi\ \violt\ re$ which contradicts (IH-$re$-2).
+If satisfaction also holds then there exists an $m$ with $\pi_m\ \satt\ re$ and $\pi^{m}\ \satt\ C$, then $k = m$ by the uniqueness of the tight frontier for $re$ (from (IH-$re$-2) and (IH-$re$-3)).
+This gives $\pi^{k}\ \satt\ C$ and $\pi^{k}\ \violt\ C$ on the same suffix, contradicting (IH-$C$-1).
+
+\emph{Claims~(2) and~(3).}
+In the vacuous satisfaction case, (IH-$re$-3) forbids any earlier $\pi[1,j]\ \satt\ re$, so there is no earlier prefix that activates the trigger to enforce C.
+In the active satisfaction case, (IH-$re$-2) gives minimality of $k$, for any prefix $k$, the composite semantics return the undecided verdict, and for any index before $k$, we apply (IH-$C$-2) and (IH-$C$-3) on its suffix.
+
+\paragraph{Guarded $[re]\,C$.}
+While $\pi$ \emph{closes} $re$ (i.e.\ $\pi\ \presat\ re$ or $\pi\ \satt\ re$), any tight failure of $C$ yields a tight failure of the composite.
+Once $re$ is violated, the composite satisfies provided $C$ has not yet failed.
+
+\emph{Claim~(1).}
+Violation requires $\pi\ \clossat\ re$ and $\pi\ \violt\ C$.
+Satisfaction requires either (i)~$\pi\ \violt\ re$ and $\pi\ \clossat\ C$, or (ii)~$\pi\ \clossat\ re$ and $\pi\ \satt\ C$.
+In case~(ii), $\pi\ \satt\ C$ and $\pi\ \violt\ C$ contradicts (IH-$C$-1).
+In case~(i), $\pi\ \clossat\ re$ and $\pi\ \violt\ re$:
+expanding $\clossat$, either $\pi\ \satt\ re$ and $\pi\ \violt\ re$ (contradicting (IH-$re$-1)) or $\pi\ \presat\ re$ and $\pi\ \violt\ re$ (contradicting the definition of $\presat$).
+
+\emph{Claims~(2) and~(3).}
+By (IH-$re$-2), (IH-$re$-3), (IH-$C$-2), and (IH-$C$-3) with the guarded case in Definition~\ref{def:trigger-guard-semantics} to derive both implications.
+
+\medskip
+All the contract literals and composition operators preserve the three claims. Thus, the lemma holds for all $C$.
 \end{proof}
-% --- END INSERTED LEMMA ---
 
 \begin{theorem}[Consistency of the forward-looking five tight semantics for \cDL]\label{thm:five-partition}
 The five forward satisfaction relations
 $\{\presat,\satt,\violt,\postsat,\postviol\}$ for \cDL are pairwise disjoint and jointly exhaustive.
 \end{theorem}
 \begin{proof}
-Fix a finite trace $\pi$ and contract $C$.
-We reason point-wise on prefixes of $\pi$ (as defined in \ref{traces}) and lift the result to the trace-level relations via Definition~\ref{def:postprecont}.
+We reason point-wise on prefixes of $\pi$, as defined in \ref{traces}, and lift the result to the trace-level relations via Definition~\ref{def:postprecont}. For any finite trace $\pi$ and contract $C$.
+By Lemma~\ref{lem:mutual prefix}, along a fixed trace, the two frontiers cannot both occur on possibly different prefixes: if some prefix tightly satisfies $C$, then no prefix tightly violates $C$, and conversely.
+Point-wise disjointness, i.e.\ $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$ for every prefix $\pi_{\min}$, follows as claim~(1) of the same lemma.
+Now consider any prefix position $j$ with $1\le j<|\pi|$ and the corresponding trace prefix $\pi[1,j]$.
+By Definition~\ref{def:postprecont}, for a given prefix $\pi_j$ exactly one of the following holds:
+(i) $\pi_{j}\ \presat\ C$, (ii) $\pi_{j}\ \satt\ C$, (iii) $\pi_{j}\ \violt\ C$, (iv) $\pi_{j}\ \postsat\ C$ , or
+(v) $\pi_{j}\ \postviol\ C$. These cases are mutually exclusive by Lemma~\ref{lem:mutual prefix}, which prevents mixing satisfaction-frontiers and violation-frontiers along the same trace.
 
-By Lemma~\ref{lem:mutual prefix}, along a fixed trace the two frontiers cannot both occur on (possibly different) prefixes: if some prefix tightly satisfies $C$, then no prefix tightly violates $C$, and conversely.
-Moreover, constructor-wise disjointness holds point wise for every prefix, that is, $\neg(\pi_{\min}\ \satt\ C\ \nd\ \pi_{\min}\ \violt\ C)$ for every prefix $\pi_{\min}$.
-This is established formally in Lemma~\ref{lem:constructor-disjoint}.
-
-Now consider any prefix position $j$ with $1\le j<|\pi|$ and view the corresponding trace prefix $\pi[1,j]$.
-By Definition~\ref{def:postprecont}, for a given prefix $\pi_{\min}:=\pi[1,j]$ exactly one of the following holds:
-(i) $\pi_{\min}\ \presat\ C$ (no earlier prefix of $\pi_{\min}$ is decisive),
-(ii) $\pi_{\min}\ \satt\ C$,
-(iii) $\pi_{\min}\ \violt\ C$,
-(iv) $\pi_{\min}\ \postsat\ C$ (some earlier prefix of $\pi_{\min}$ tightly satisfies $C$), or
-(v) $\pi_{\min}\ \postviol\ C$ (some earlier prefix of $\pi_{\min}$ tightly violates $C$).
-These cases are mutually exclusive by the local disjointness results above together with Lemma~\ref{lem:mutual prefix}, which prevents mixing satisfaction-frontiers and violation-frontiers along the same trace.
-
-Therefore, the five relations $\{\presat,\satt,\violt,\postsat,\postviol\}$ are pairwise disjoint and jointly exhaustive on prefixes of $\pi$.
-Since $\pi$ was arbitrary, the claim holds for all finite traces.
+Therefore, the five semantics definitions for $\{\presat,\satt,\violt,\postsat,\postviol\}$ are pairwise disjoint and jointly exhaustive of all prefixes of any trace $\pi$.
 \end{proof}
 
-
-
-
 \paragraph{Next step.}
-After establishing the forward tight satisfaction semantics in \cDL and studied their soundness. We now move from the denotational clauses to an operational view:  we construct the corresponding Moore-style monitors for the tight five-valued semantics and establish that their outputs coincide with the semantic judgments on every finite trace prefix.
-
+After establishing the forward tight satisfaction semantics in \cDL and studying their well-formedness, we move  to the operational view: we construct the corresponding Moore-style monitors for the tight five-valued semantics and establish that their outputs coincide with the semantic judgments on every finite trace prefix.
 
 \input{forwardtight1.tex}
 

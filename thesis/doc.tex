@@ -1,0 +1,123 @@
+Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the 5 possible ones. But it also extends to prefix properties: no prefix can tightly satisfy a trace, since a suffix may violate it. The main focus is on tight satisfaction and violation disjointedness. The next lemma establishes this important result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
+
+\begin{lemma}[Mutual prefix exclusion and disjointness of tight satisfaction and violation]
+\label{lem:mutual prefix}
+For every contract $C$ in \cDL\ and every finite trace $\pi$:
+\begin{enumerate}
+\item \emph{Point-wise disjointness.}
+$\neg\bigl(\pi\ \satt\ C\ \nd\ \pi\ \violt\ C\bigr).$
+
+\item \emph{No earlier tight violation before tight satisfaction.}\\[2pt]
+If $\pi\ \satt\ C$, then $\nexists\,j<|\pi|:\ \pi[1,j]\ \violt\ C$.
+
+\item \emph{No earlier tight satisfaction before tight violation.}\\[2pt]
+If $\pi\ \violt\ C$, then $\nexists\,j<|\pi|:\ \pi[1,j]\ \satt\ C$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+By structural induction on the syntax of $C$. In each case below, we prove all three claims simultaneously.
+
+\smallskip
+\emph{Base case: literals.}
+By Definition~\ref{def:lattsat}, literals are all decided on a single letter trace:
+$\trace{A}\ \satt\ \ell$ iff the letter constraint holds, and
+$\trace{A}\ \violt\ \ell$ iff it does not. The conditions are all exclusive, as no literal can be simultaneously satisfied and violated under the same conditions on the unique event of the trace. Claim~(1) follows from that.
+Claims~(2) and~(3) follow by definition, because the only strict prefix of a single letter trace is $\emptytrace$, on which $\emptytrace\ \presat\ \ell$ holds by definition.
+
+\medskip
+\noindent\textbf{Inductive hypotheses.}
+Assume all three claims hold for every subcontract. We write:
+\[
+\begin{aligned}
+\text{(IH-$C$-1)}\quad
+&\forall\pi:\  \neg(\pi\ \satt\ C\ \nd\ \pi\ \violt\ C),\\
+\text{(IH-$C$-2)}\quad
+&\forall\pi:\  \bigl(\pi\ \satt\ C \Rightarrow \forall j<|\pi|:\neg(\pi[1,j]\ \violt\ C)\bigr),\\
+\text{(IH-$C$-3)}\quad
+&\forall\pi:\  \bigl(\pi\ \violt\ C \Rightarrow \forall j<|\pi|:\neg(\pi[1,j]\ \satt\ C)\bigr),
+\end{aligned}
+\]
+and similarly for a second operand $C'$ or a regex guard $re$.
+
+\paragraph{Conjunction $C\wedge C'$.}
+\emph{Claim~(1).}
+By contradiction, assume $\pi\ \satt\ (C\wedge C')$ and $\pi\ \violt\ (C\wedge C')$.
+From the tight satisfaction semantic conditions, there exist $k,k'\in[1,s]$ with $\pi_k\ \satt\ C$, $\pi_{k'}\ \satt\ C'$, and $s=\max(k,k')$. And From violation, $\pi\ \violt\ C$ or $\pi\ \violt\ C'$.
+If $\pi\ \violt\ C$: when $k=s$, we have $\pi\ \satt\ C$ and $\pi\ \violt\ C$, contradicting (IH-$C$-1). If $k<s$, the strict prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
+
+
+\emph{Claims~(2) and~(3).}
+Tight satisfaction establishes a unique index $j = \max(k,k')$ such that $\pi_k\ \satt\ C$ and $\pi_{k'}\ \satt\ C'$.
+For any $j' < j$, either $j' < k$ or $j' < k'$, so by (IH-$C$-2) and (IH-$C'$-2), neither conjunct is tightly violated at $\pi[1,j']$, hence $C\wedge C'$ is not violated either.
+For the dual, if $\pi\ \violt\ (C\wedge C')$ via a violation of conjunct $C$, then (IH-$C$-3) forbids any earlier $\pi[1,j']\ \satt\ C$, which is necessary for $\pi[1,j']\ \satt\ (C\wedge C')$.
+
+\paragraph{Sequence $C\mathbin{;}C'$.}
+\emph{Claim~(1).}
+Assume $\pi\ \satt\ (C;C')$ and $\pi\ \violt\ (C;C')$.
+From satisfaction, there exists $k\in[1,s{-}1]$ with $\pi_k\ \satt\ C$ and $\pi^{k}\ \satt\ C'$.
+From violation, either (i)~$\pi\ \violt\ C$, or (ii)~there exists $m$ with $\pi_m\ \satt\ C$ and $\pi^{m}\ \violt\ C'$.
+In case~(i), the prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
+In case~(ii), both (IH-$C$-2) and (IH-$C$-3) imply that tight satisfaction of $C$ occurs at a unique prefix, so $k = m$. Thus, $\pi^{k}\ \satt\ C'$ and $\pi^{k}\ \violt\ C'$, contradicting (IH-$C'$-1).
+
+\emph{Claims~(2) and~(3).}
+For any $j \le k$, (IH-$C$-2) ensures that $\pi[1,j]\ \violt\ C$. Similarly, for $j > k$, (IH-$C'$-2) on the suffix prevents violation of $C'$ before its tight point. Thus, there cannot exist any prefix that violates $C;C'$.
+
+
+\paragraph{Reparation $C\mathbin{\repair} C'$.}
+\emph{Claim~(1).}
+Assume $\pi\ \satt\ (C\repair C')$ and $\pi\ \violt\ (C\repair C')$.
+For the violation semantics, there exists $k$ with $\pi_k\ \violt\ C$ and $\pi^{k}\ \violt\ C'$.
+And for the satifaction semantics, either (a)~$\pi\ \satt\ C$, or (b)~there exists $m$ with $\pi_m\ \violt\ C$ and $\pi^{m}\ \satt\ C'$.
+In case~(a), $\pi\ \satt\ C$ with the strict-prefix violation $\pi_k\ \violt\ C$ contradicts (IH-$C$-2).
+In case~(b), tight violation of $C$ is unique by (IH-$C$-2) and (IH-$C$-3), so $k = m$.
+Next, using $\pi^{k}\ \violt\ C'$ and $\pi^{k}\ \satt\ C'$ contradicts (IH-$C'$-1).
+
+\emph{Claims~(2) and~(3).}
+In the no reparation case $\pi\ \satt\ C$, (IH-$C$-2) excludes earlier violations of $C$, so it applies for $C\repair C'$.
+In the repaired case, (IH-$C$-3) gives minimality of the failure point of $C$, and (IH-$C'$-2) on the suffix excludes earlier failure of the composition of both contracts before its tight success.
+
+
+\paragraph{Finite repetition $C^n$.}
+By unfolding the condition as $C^n \equiv C;(C^{n-1})$, the sequence is proved and by induction on $n-1$.
+
+\paragraph{Unbounded repetition $\repit{C}$.}
+By definition, $\pi\ \satt\ \repit{C}$ is \emph{false} for every finite trace. Hence, all the claims trivially hold by induction on C.
+
+
+\paragraph{Triggered $\langle re\rangle C$.}
+From Definition~\ref{def:trigger-guard-semantics}, either $re$ is violated leading to a vacuous satisfaction of the composed contract, or there is a first $k$ with $\pi_k\ \satt\ re$.
+
+\emph{Claim~(1).} Assume both $\pi\ \satt\ \trig[re]{C}$ and $\pi\ \violt\ \trig[re]{C}$.
+Violation necessitates that exists $k$ with $\pi_k\ \satt\ re$ and $\pi^{k}\ \violt\ C$.
+If the regular expression is not matched $\pi\ \violt\ re$, then $\pi_k\ \satt\ re$ with $\pi\ \violt\ re$ which contradicts (IH-$re$-2).
+If satisfaction also holds then there exists an $m$ with $\pi_m\ \satt\ re$ and $\pi^{m}\ \satt\ C$, then $k = m$ by the uniqueness of the tight frontier for $re$ (from (IH-$re$-2) and (IH-$re$-3)).
+This gives $\pi^{k}\ \satt\ C$ and $\pi^{k}\ \violt\ C$ on the same suffix, contradicting (IH-$C$-1).
+
+\emph{Claims~(2) and~(3).}
+In the vacuous satisfaction case, (IH-$re$-3) forbids any earlier $\pi[1,j]\ \satt\ re$, so there is no earlier prefix that activates the trigger to enforce C.
+In the active satisfaction case, (IH-$re$-2) gives minimality of $k$, for any prefix $k$, the composite semantics return the undecided verdict, and for any index before $k$, we apply (IH-$C$-2) and (IH-$C$-3) on its suffix.
+
+\paragraph{Guarded $[re]\,C$.}
+While $\pi$ \emph{closes} $re$ (i.e.\ $\pi\ \presat\ re$ or $\pi\ \satt\ re$), any tight failure of $C$ yields a tight failure of the composite.
+Once $re$ is violated, the composite satisfies provided $C$ has not yet failed.
+
+\emph{Claim~(1).}
+Violation requires $\pi\ \clossat\ re$ and $\pi\ \violt\ C$.
+Satisfaction requires either (i)~$\pi\ \violt\ re$ and $\pi\ \clossat\ C$, or (ii)~$\pi\ \clossat\ re$ and $\pi\ \satt\ C$.
+In case~(ii), $\pi\ \satt\ C$ and $\pi\ \violt\ C$ contradicts (IH-$C$-1).
+In case~(i), $\pi\ \clossat\ re$ and $\pi\ \violt\ re$:
+expanding $\clossat$, either $\pi\ \satt\ re$ and $\pi\ \violt\ re$ (contradicting (IH-$re$-1)) or $\pi\ \presat\ re$ and $\pi\ \violt\ re$ (contradicting the definition of $\presat$).
+
+\emph{Claims~(2) and~(3).}
+By (IH-$re$-2), (IH-$re$-3), (IH-$C$-2), and (IH-$C$-3) with the guarded case in Definition~\ref{def:trigger-guard-semantics} to derive both implications.
+
+\medskip
+All constructors preserve the three claims; hence, the lemma holds for all $C$.
+\end{proof}
+
+\begin{theorem}[Consistency of the forward-looking five tight semantics for \cDL]\label{thm:five-partition}
+The five forward satisfaction relations
+$\{\presat,\satt,\violt,\postsat,\postviol\}$ for \cDL are pairwise disjoint and jointly exhaustive.
+\end{theorem}
+\begin{proof}
