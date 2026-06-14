@@ -1,8 +1,6 @@
 \subsection{Monitor Construction for Tight Contract Satisfaction}
-
-In the previous section, we established the mathematical rules that define exactly when a contract is satisfied or violated. 
-Now, we turn those abstract definitions into an operational implementation: a finite-state monitor that tracks compliance step-by-step as events occur. 
-We design these as Moore-style machines, which means the monitor maintains a running summary of the interaction; every state corresponds directly to one of the five possible verdicts (such as "tight satisfaction" or "undecided"). By ensuring these monitors update deterministically with every new event, we create a reliable, automated way to check compliance that matches our theoretical rules perfectly.
+Building on the formal definition of \cDL traces' semantics, we define an operational implementation using a finite-state monitor that incrementally tracks compliance accordingly.
+Those monitors are designed as Moore-style machines, maintaining a running summary of the interaction in which each state is labeled with one of the five possible verdicts. This deterministic evaluation provides an automated mechanism for compliance checking that conforms strictly to the prefix semantics of \cDL.
 \begin{definition}[Moore machine on tight satisfaction verdicts]
     \label{def:tightsatmon}
     The \emph{Moore machine on tight satisfaction verdicts}, written $\tmon$, is a Moore machine whose output alphabet is the five-valued verdict set $\tightverdicts$.
@@ -12,10 +10,9 @@ We design these as Moore-style machines, which means the monitor maintains a run
     \]
     where:
     \begin{enumerate}
-    \item The output alphabet formed by 5 letters is 
-    \[
-    \tightverdicts = \{\mathsf{?},\topt,\bott,\topp,\botp\}.
-    \]
+    \item The output alphabet  is 
+    $\tightverdicts = \{\mathsf{?},\topt,\bott,\topp,\botp\},$
+    
     \item $Q$ is the set of states and $q_0\in Q$ is the initial state,
     \item $\Gamma$ is the input event alphabet,
     \item $\delta: Q \times \Gamma \to Q$ is the transition function,
@@ -71,23 +68,9 @@ emits exactly the verdict prescribed by the five-valued tight semantics, that is
 \[
 \lambda_5\bigl(\delta(q_0,\pi_k)\bigr) \;=\; \semfive{\pi_k \vDash C}.
 \]
-All operator-specific constructions are designed to preserve this invariant under
-synchronous product, redirection, and state elimination.
-Correctness lemmas below establish that the invariant holds inductively for each
-contract constructor. 
+We rely on correctness lemmas to establish, inductively, that this invariant holds for all monitor constructors. The next subsections construct the tight satisfaction monitors compositionally based on the contract syntax. 
 
-We construct in the next subsections the tight satisfaction monitors compositionally from the syntax of contracts.
-The construction proceeds by structural induction on the contract and associates to each
-contract operator a corresponding monitor-combination operator.
-Conceptually, this follows the classical construction paradigm of Thompson for regular expressions,
-where complex behaviors are obtained by composing simpler automata.
-However, rather than constructing an intermediate nondeterministic automaton and determinizing it afterward,
-we perform the construction directly at the level of deterministic Moore machines.
-In particular, verdict propagation is built into the states and outputs of the monitor from the outset,
-so that tight satisfaction and violation are observed incrementally on prefixes of the trace.
-This avoids a separate determinization step and ensures that the monitor semantics coincides
-by construction with the five-valued tight semantics.
-
+In our construction, we use the same principle as Thompson's construction for regular expressions. However, we do not have an intermediate transformation to non-deterministic automata. Instead, the construction is performed directly on deterministic Moore machines. Verdict propagation is encoded natively in the monitor's states and their labels, allowing tight satisfaction and violation to be observed on trace prefixes.
 \subsubsection*{Construction for Literal Contracts}
 \paragraph{From Tight Semantics to 5-Valued Monitoring.}
 The literal clauses above define one-step satisfaction and violation judgments for a single event word $\trace{A}$.
@@ -126,10 +109,9 @@ $
 \end{itemize}
 \end{definition}
 
-\paragraph{Intuition.} For every atomic literal, the monitor construction initializes at $q_0$, emitting the undecided verdict $\mathsf{?}$ to reflect the absence of decisive information.
-Upon consuming the first event, the execution crosses the decisive frontier, transitioning to either $q_s$ (success at frontier) with verdict $\topt$ if the literal is satisfied, or $q_v$ (violation at frontier) with verdict $\bott$ if it is violated.
-On the next step after this decision, the monitor enters the stable regions $q_{ps}$ (post-success) or $q_{pv}$ (post-violation), where it permanently emits $\topp$ or $\botp$ respectively.
-These indices explicitly encode the temporal relationship to the frontier, distinguishing the exact moment of decision from the immutable history of the trace.
+\paragraph{Construction mechanism.} For an atomic literal, the monitor initializes at $q_0$, emitting the undecided verdict $\mathsf{?}$.
+Upon consuming the first event, the execution transitions to either $q_s$ with verdict $\topt$ if the literal is satisfied, or $q_v$ with verdict $\bott$ if it is violated.
+On any subsequent step, the monitor enters the absorbing states $q_{ps}$ or $q_{pv}$, permanently emitting $\topp$ or $\botp$ respectively.
 
 \begin{figure}[h!]
 \centering
@@ -185,9 +167,9 @@ Let $C$ and $C'$ be contracts in \cDL, and let
 \tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5).
 \]
 The tight satisfaction monitor construction for the conjunction
-$C \wedge C'$, written $\tsmc_{\wedge}(C,C')$, is defined as:
+$C \wedge C'$, written $\tsmc_{\wedge}(\tsmc(C),\tsmc(C'))$, is defined as:
 \[
-\tsmc_{\wedge}(C,C')
+\tsmc_{\wedge}(\tsmc(C),\tsmc(C'))
   = (Q_{\wedge}, q_0^{\wedge}, \Gamma, \tightverdicts, \delta_{\wedge}, \lambda_5^{\wedge}).
 \]
 
@@ -250,7 +232,7 @@ The monitor for $C \wedge C'$ checks both components at the same time and decide
   \topp \sqcap \topp = \topp,
   \]
   The conjunction is only permanently satisfied when both parts are permanent.
-  \emph{Note:} The case $\topt \sqcap \topp = \topt$ reflects that if one component is exactly at its satisfaction frontier ($\topt$) while the other is already past it ($\topp$), the conjunction as a whole is determined by the later of the two, effectively placing the global frontier at the current step.
+  \emph{Note:} The case $\topt \sqcap \topp = \topt$ reflects that if one component is exactly at its satisfaction frontier ($\topt$) while the other is already past it ($\topp$), the conjunction as a whole is determined by the latter of the two, effectively placing the global frontier at the current step.
   \item If both sides are undecided or only partly satisfied, the result stays $\mathsf{?}$:
   \[
   \mathsf{?}\sqcap v = \mathsf{?}\quad\text{for }v\in\{\mathsf{?},\topt,\topp\},
@@ -314,13 +296,11 @@ into the initial state of $C'$. This yields a tight prefix monitor that exactly 
   \label{rem:contradicting-literals}
     Consider the literal pairs $\obl[1]{a}\wedge\frb[1]{a}$ and $\perm[1]{a}\wedge\frb[2]{a}$ are contradictory in the sense that no single event $A\in\Gamma$ can satisfy both components simultaneously as in Definition \ref{def:lattsat}, there semantics clash:
     
-   $ \nexists A\in\Gamma:\ \bigl(\trace{A}\ \satt\ \obl[1]{a}\ \land\ \trace{A}\ \satt\ \frb[1]{a}\bigr), \nd\\
-    \nexists A\in\Gamma:\ \bigl(\trace{A}\ \satt\ \perm[1]{a}\ \land\ \trace{A}\ \satt\ \frb[2]{a}\bigr).$
+   $ \nexists A\in\Gamma:\ \bigl(\trace{A}\ \satt\ \obl[1]{a}\ \land\ \trace{A}\ \satt\ \frb[1]{a}\bigr)$
   
     Consequently, following the in the synchronous-product conjunction rules from $\lambda_{5}^{\textsf{comb}}$ \\
     $$
-    \tsmc_{\wedge}\bigl(\tsmc(\obl[1]{a}),\tsmc(\frb[1]{a})\bigr),\\
-    \tsmc_{\wedge}\bigl(\tsmc(\perm[1]{a}),\tsmc(\frb[2]{a})\bigr),
+    \tsmc_{\wedge}\bigl(\tsmc(\obl[1]{a}),\tsmc(\frb[1]{a})\bigr)
   $$
     no state with output $\topt$ or $\topp$ is reachable.
     Tight acceptance for these conjunctions is therefore unreachable: every execution either remains undecided or produces a tight or post violation, aligning exactly with the five-valued tight semantics as shown in \ref{fig:tsmc-obl-and-frb-unreachable}.
@@ -349,14 +329,11 @@ into the initial state of $C'$. This yields a tight prefix monitor that exactly 
   \label{fig:tsmc-obl-and-frb-unreachable}
   \end{figure}
   
-  \paragraph{Perspective of unsatisfiability via monitor structure.}
-  This observation suggests a natural automata-theoretic characterization of contract unsatisfiability.
-  We propose to study this property by identifying contracts whose tight satisfaction monitors admit no accepting behaviors.
-  Specifically, we define a contract $C$ as unsatisfiable if \emph{every} run of its corresponding tight forward monitor construction $\tsmc(C)$ inevitably reaches a tight violation state $\bott$ and subsequently the permanent violation sink $\botp$.
-  In graph-theoretic terms, this condition holds if the monitor graph contains no infinite path that avoids $\bott$.
-  This definition links semantic inconsistency to operational inevitability, enabling unsatisfiability checks via reachability analysis rather than direct semantic reasoning.
-  
+  \paragraph{Unsatisfiability and conflicts via monitor structure.}
+The example above illustrates unsatifiability: a contract $C$ is unsatisfiable whenever every run of $\tsmc(C)$ reaches $\bott$ and then $\botp$, that is, whenever no state labeled $\topt$ or $\topp$ is reachable from $q_0$. Checking unsatisfiability thus reduces to a reachability query.
 
+However, for the case $\perm[1]{a}\wedge\frb[2]{a}$, the conflict only raises whe agent 1 uses his right. Which is not easly spotable at both the semantics and the tight monitor construction as reaching a tight satifaction state is still possible. This case motivates a more refined classification of right and duty conflicts.
+  
 
 \begin{definition}[Sequential Monitor Construction]
 \label{def:moore-seq}
@@ -412,7 +389,7 @@ $C\,;\,C'$, written $\tsmc_{\bm{;}}(C,C')$, is defined as:
 \end{definition}
 
 \noindent
-\textbf{Intuition.}
+\textbf{Construction mechanism.}
 The construction implements the idea that $C$ must succeed tightly before
 $C'$ becomes active. All states of $C$ that already correspond to tight
 satisfaction ($\lambda_5(x)=\topt$ or $\topp$) are removed, since execution
@@ -426,89 +403,89 @@ trace.
 
 \begin{lemma}[Correctness of the sequential monitor construction]
 \label{lem:seq-correct}
-Let the two $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
-and let $\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))
+Let the two $\tsmc©$ and $\tsmc(C’)$ be the monitors for $C$ and $C’$,
+and let $\tsmc_{\bm{;}}(\tsmc©,\tsmc(C’))
 = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor outputs the same verdict according to the sequence semantics:
 \[
 \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)=
-\semfive{\pi \vDash C;C'}.
+\semfive{\pi \vDash C;C’}.
 \]
 \end{lemma}
-\textbf{Proof.}
-The proof is by induction on the length of the input trace $\pi$.
 
-    \begin{proof}
-        Let $M:=\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$.
-        We prove by induction on $n:=|\pi|$ that
-        \[
-        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
-        \;=\;
-        \semfive{\pi \vDash C;C'}.
-        \]
-        
-        \paragraph{Base case ($n=0$).}
-        For $\pi=\emptytrace$ we have $\delta_{;}(q_0^{;},\emptytrace)=q_0$ and thus
-        \[
-        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\emptytrace)\big)=\lambda_5(q_0)=\mathsf{?}.
-        \]
-        This matches the tight semantics of $C;C'$ on the empty trace: no decisive prefix for $C$ has been reached and $C'$ cannot be active yet.
-        
-        \paragraph{Inductive step.}
-        Assume the claim holds for all traces of length $n$.
-        Let $\pi$ be a trace of length $n{+}1$ and write $\pi=\pi'\concat\trace{A}$ with $|\pi'|=n$ and $A\in\Gamma$.
-        Let $s:=\delta_{;}(q_0^{;},\pi')$ be the state reached after reading $\pi'$.
-        We distinguish whether the monitor is already executing the right component.
-        
-        \smallskip
-        \noindent\emph{Case 1: $s\in Q'$.}
-        Then, by Definition~\ref{def:moore-seq}, $\delta_{;}(s,A)=\delta'(s,A)$ and $\lambda_5^{;}(s)=\lambda'_5(s)$, hence
-        \[
-        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
-        =
-        \lambda'_5\big(\delta'(s,A)\big).
-        \]
-        Reaching a state of $Q'$ means that the switch from $C$ to $C'$ has already happened at some earlier prefix, and from that point on the sequential monitor behaves exactly as the monitor for $C'$ on the remaining suffix.
-        Therefore the tight semantics of $C;C'$ on $\pi$ is determined by the verdict of $C'$ on that suffix.
-        By correctness of $\tsmc(C')$ (established for the tight monitor construction),
-        the right-hand side equals $\semfive{\pi \vDash C;C'}$.
-        
-        \smallskip
-        \noindent\emph{Case 2: $s\in Q$.}
-        Let $t:=\delta(s,A)$ be the next state of the left monitor.
-        There are two subcases.
-        
-        \smallskip
-        \noindent\emph{Case 2(a): $\lambda_5(t)=\topt$.}
-        Then Definition~\ref{def:moore-seq} redirects the transition to $q'_0$, so $\delta_{;}(s,A)=q'_0$ and
-        \[
-        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
-        =
-        \lambda_5^{;}(q'_0)
-        =
-        \lambda'_5(q'_0)
-        =
-        \mathsf{?}.
-        \]
-        Semantically, this is exactly the step where $C$ reaches its tight satisfaction frontier on the prefix $\pi$, and the contract $C'$ becomes active on the remaining suffix.
-        At this switching moment, the suffix is empty, so the status of $C'$ is undecided, and the sequence verdict is $\mathsf{?}$.
-        Thus the monitor output matches $\semfive{\pi \vDash C;C'}$.
-        
-        \smallskip
-        \noindent\emph{Case 2(b): $\lambda_5(t)\notin\{\topt,\topp\}$.}
-        Then the switch has not occurred, so $\delta_{;}(s,A)=t$ and $\lambda_5^{;}(t)=\lambda_5(t)$.
-        Therefore
-        \[
-        \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
-        =
-        \lambda_5(t)
-        =
-        \semfive{\pi \vDash C}.
-        \]
-        Before $C$ reaches tight satisfaction, the sequence semantics is governed by the left component on the current prefix, hence $\semfive{\pi \vDash C}=\semfive{\pi \vDash C;C'}$ in this case.
-        So the equality holds.
-        
-        All cases agree with the semantic clauses of sequential composition, so the induction closes.
-        \end{proof}
+
+\begin{proof}
+    We prove by induction on the length of the input trace $n:=|\pi|$.
+    Let $M:=\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. We have:
+    \[
+    \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+    \;=\;
+    \semfive{\pi \vDash C;C'}.
+    \]
+    
+    \paragraph{Base case ($n=0$).}
+    For $\pi=\emptytrace$ we have $\delta_{;}(q_0^{;},\emptytrace)=q_0$ and thus
+    \[
+    \lambda_5^{;}\big(\delta_{;}(q_0^{;},\emptytrace)\big)=\lambda_5(q_0)=\mathsf{?}.
+    \]
+    This matches the tight semantics of $C;C'$ on the empty trace: no decisive prefix for $C$ has been reached, and $C'$ cannot be active yet.
+    
+    \paragraph{Inductive step.}
+    Assume the claim holds for all traces of length $n$.
+    Let $\pi$ be a trace of length $n{+}1$ and write $\pi=\pi'\concat\trace{A}$ with $|\pi'|=n$ and $A\in\Gamma$.
+    Let $s:=\delta_{;}(q_0^{;},\pi')$ be the state reached after reading $\pi'$.
+    We distinguish whether the monitor is already executing the right component.
+    
+    \smallskip
+    \noindent\emph{Case 1: $s\in Q'$.}
+    Then, by Definition~\ref{def:moore-seq}, $\delta_{;}(s,A)=\delta'(s,A)$ and $\lambda_5^{;}(s)=\lambda'_5(s)$, hence
+    \[
+    \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+    =
+    \lambda'_5\big(\delta'(s,A)\big).
+    \]
+    Reaching a state of $Q'$ means that the switch from $C$ to $C'$ has already happened at some earlier prefix, and from that point on, the sequential monitor behaves exactly as the monitor for $C'$ on the remaining suffix.
+    Therefore, the tight semantics of $C;C'$ on $\pi$ is determined by the verdict of $C'$ on that suffix.
+    By correctness of $\tsmc(C')$ (established for the tight monitor construction),
+    the right-hand side equals $\semfive{\pi \vDash C;C'}$.
+    
+    \smallskip
+    \noindent\emph{Case 2: $s\in Q$.}
+    Let $t:=\delta(s,A)$ be the next state of the left monitor.
+    There are two subcases.
+    
+    \smallskip
+    \noindent\emph{Case 2(a): $\lambda_5(t)=\topt$.}
+    Then Definition~\ref{def:moore-seq} redirects the transition to $q'_0$, so $\delta_{;}(s,A)=q'_0$ and
+    \[
+    \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+    =
+    \lambda_5^{;}(q'_0)
+    =
+    \lambda'_5(q'_0)
+    =
+    \mathsf{?}.
+    \]
+    This emulates exactly the semantic step where $C$ reaches the tight satisfaction frontier on the prefix $\pi$, and the contract $C'$ is then enforced on the remaining suffix of the trace.
+    At this phase switch, the suffix is empty, so the status of $C'$ is undecided, and the sequence verdict is $\mathsf{?}$.
+    Thus, the monitor output matches $\semfive{\pi \vDash C;C'}$.
+    
+    \smallskip
+    \noindent\emph{Case 2(b): $\lambda_5(t)\notin\{\topt,\topp\}$.}
+    in the switch has not occurred, so $\delta_{;}(s,A)=t$ and $\lambda_5^{;}(t)=\lambda_5(t)$.
+    Therefore
+    \[
+    \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
+    =
+    \lambda_5(t)
+    =
+    \semfive{\pi \vDash C}.
+    \]
+    Before $C$ reaches tight satisfaction, the sequence semantics is evaluated for the left component on the current prefix, hence $\semfive{\pi \vDash C}=\semfive{\pi \vDash C;C'}$ in this case. So the equality holds.
+    
+    All the possible cases are enumerated and proved, so the induction holds.
+    \end{proof}
+
+
 
 
 
@@ -522,7 +499,7 @@ The proof is by induction on the length of the input trace $\pi$.
 be the tight satisfaction monitors for $C$ and $C'$.  
 The monitor for the reparation contract $C\repair C'$, written
 \[
-\tsmc_{\repair}(C,C'),
+\tsmc_{\repair}(\tsmc(C),\tsmc(C')),
 \]
 is defined as the tuple
 \[
@@ -570,7 +547,7 @@ is defined as the tuple
 
 
 \noindent
-\textbf{Intuition.}
+\textbf{Construction mechanism.}
 The reparation operator activates the secondary contract $C'$ after the primary contract $C$ reaches a tight failure. The construction mirrors the sequential case, except that the redirection applies to transitions leading to a tight violation of $C$ rather than to those leading to tight satisfaction.
 
 All states of $C$ whose verdicts are already violating
@@ -606,7 +583,7 @@ This corresponds precisely to the semantic clause that activates the reparation 
 From that point on, the monitor evolves exactly as $\tsmc(C')$ on the remaining suffix.
 By the inductive correctness of the tight monitor construction for $C'$, the emitted verdict coincides with the tight semantics of $C'$ on that suffix.
 
-Since all other transitions are unchanged and no ambiguity about the switching point is possible, the monitor output agrees with the tight semantics of $C\repair C'$ on all finite traces.
+Since all other transitions remain unchanged and the decisive repair point is unique to each trace, the proof holds.
 \end{proof}
 
 
@@ -617,12 +594,11 @@ Since all other transitions are unchanged and no ambiguity about the switching p
 \begin{remark}[Analogy with Thompson's Construction]
   \label{rem:thompson-analogy}
   The compositional monitor constructions in Definitions~\ref{def:moore-seq} and~\ref{def:moore-repair} follow a pattern closely analogous to Thompson's construction for regular expressions~\cite{Thompson1968}.
-  In Thompson's method, sub-automata for smaller expressions are wired together via $\varepsilon$-transitions: for concatenation, the accepting state of the first fragment is linked to the start state of the second; for alternation, a new initial state fans out to both sub-fragments.
-  Our sequence and reparation compositions apply the same principle: the decisive states of the left monitor ($\topt$ for sequence, $\bott$ for reparation) are redirected to the initial state of the right monitor, effectively wiring the two sub-monitors into a single automaton.
-
+Our sequence and reparation constructions work the same way as for the sequence construction in Thomson’s method: when the left monitor reaches its decisive state, $\topt$ for sequence and $\bott$ for reparation, the transition is redirected to the right monitor's initial state.
   The key difference is that we compose \emph{deterministic} Moore machines directly, without an intermediate nondeterministic step.
-  This is possible because the contract grammar of \cDL does not include a disjunction operator at the contract level: contracts are combined via conjunction, sequence, and reparation, all of which admit a deterministic left-to-right evaluation.
+  This is possible because the contract grammar of \cDL does not include a disjunction operator at the contract level: contracts are combined via conjunction, sequence, and reparation, all of which admit a deterministic left-to-right evaluation. Another possible explanation is the eager definition of tight semantics itself, where we always pick the shortest prefix that satisfies or violates the contract.
   As a result, no subset construction or $\varepsilon$-closure is required, and the composed monitor is deterministic by construction.
+
   \end{remark}
 
 
@@ -664,7 +640,7 @@ emits $\bott$ and then $\botp$ forever.
 is activated, and we move to the waiting state $s_1$ (still $\mathsf{?}$). From $s_1$,
 \,$\PAYF^\surd$\ discharges the reparation and triggers $\topt$; otherwise
 \,$\PAYF^{\times}$\ yields $\bott$. After $\topt$ (accepting frontier), all continuations
-are in $\topp$; after $\bott$ (reject frontier) all continuations are in $\botp$.
+are in $\topp$. After $\bott$ (reject frontier) all continuations are in $\botp$.
 Thus, the decisive index for the conjunction is the latter of the two successes when both succeed, or the earlier tight failure when any conjunct fails, exactly as the figure shows.
 \begin{figure*}[h!]
 \centering
@@ -854,7 +830,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
       \begin{enumerate}
           \item 
       \textbf{Guard-active region ($q\in Q_r^{\text{open}}$).}
-      Let $q'=\delta_r(q,A)$.
+      Let $q'=\delta_r(q,A)$, and denote $Q_r^{v} := \{\,q \in Q_r \mid \lambda_5^r(q) = v\,\}$.
       \[
       \delta_{\trigg}(q,A)=
       \begin{cases}
@@ -900,7 +876,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     \end{definition}
     
     
-    \paragraph{Intuition.}
+    \paragraph{Construction mechanism.}
     The trigger monitor is obtained with the same redirection recipe used for sequence, but applied to the trigger.
     Keep only states that are still open in the trigger (outputs in \(\{\,\mathsf{?},\topt,\topp\,\}\)). Remove its decisive states.
     Redirect every transition that would be the first tight match of the triggering regular expression (the step that enters \(\topt\)) to the initial state of the contract monitor \(C\).
@@ -935,7 +911,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
     The value
     \[
     \lambda_5^{\trigg}\bigl(\delta_{\trigg}(q_0^{\trigg},\emptytrace)\bigr)
-      = \lambda_5^r(r_0) = \mathsf{?}
+      = \lambda_5^{\trigg}(r_0) = \mathsf{?} \quad \text{(since } r_0 \in Q_r^{\text{open}}\text{)}
     \]
     coincides with the tight semantics of $\trig[re]{C}$ on the empty trace: no trigger has fired, and no violation has occurred.
     
@@ -1092,54 +1068,86 @@ We move now to guarded contracts monitor construction. Unlike conjunction, the g
       \]
       \end{definition}
       
-      \paragraph{Intuition.}
-      The guarded monitor construction separates the detection of the decisive frontier from the maintenance of the stable verdict.
+ \paragraph{Construction mechanism.}
+
+      The guarded monitor separates the detection of the decisive frontier from the maintenance of the stable verdict.
+
       
+
       \smallskip
+
       \noindent\emph{Phase~1: Tight-core product.}
-      The core machine $M_{\guardd}^{\circ}$ restricts the synchronous product to the ``active'' regions of the components. Its responsibility is solely to identify the \emph{earliest decisive prefix}.
-      While the interaction is undecided, the monitor evolves within this core.
-      If the guard closes safely or the contract succeeds, the core reaches a state labeled $\topt$.
-      Conversely, if the contract is breached while the guard is active, the core reaches a state labeled $\bott$.
+
+      The core machine $M_{\guardd}^{\circ}$ restricts the synchronous product to the active regions of the components to identify the earliest decisive prefix.
+
+      If the guard closes or the contract succeeds, the core transitions to a state labeled $\topt$.
+
+   In the other case, if the contract is breached while the guard is still active, the resulting composition reaches a state labeled $\bott$.
+
       
+
       \smallskip
-      \noindent\emph{Phase~2: Post-verdict stabilization.}
-      The full monitor wraps the core with a transition logic that enforces stability.
-      Instead of computing product states for the post-regions (which would be redundant), the transition function detects when the core has reached a frontier.
-      If the current state emits a tight verdict ($\topt$ or $\bott$), the \emph{next} transition leaves the core and enters the corresponding global sink ($q_{\topp}$ or $q_{\botp}$).
-      This ensures that the monitor emits the tight verdict for exactly one step, preserving the boundary semantics, before stabilizing permanently.
+
+      \noindent\emph{Phase~2: Post-verdict sinks.}
+
+      The full monitor extends the core with a transition logic that routes tight states to permanent sinks.
+
+      If the current state is a tight verdict ($\topt$ or $\bott$), the following transition leaves the enforcement phase and enters the corresponding fresh global sink ($q_{\topp}$ or $q_{\botp}$).
+
       
+
       \begin{lemma}[Correctness of the guarded monitor construction]
       \label{lem:guard-correct}
       \[\text{Let }
       \tsmc_{\guardd}(\tsmc_{re}(\re),\tsmc(C))
-        =(Q_{\guardd},q_0^{\guardd},\Gamma,\tightverdicts,\delta_{\guardd},\lambda_5^{\guardd})
+        =(Q_{\guardd},(r_0,c_0),\Gamma,\tightverdicts,\delta_{\guardd},\lambda_5^{\guardd})
       \]
+
       be the monitor constructed in Definition~\ref{def:moore-guard}.
+
       Then, for every finite trace $\pi$,
       \[
-      \lambda_5^{\guardd}\bigl(\delta_{\guardd}(q_0^{\guardd},\pi)\bigr)
+      \lambda_5^{\guardd}\bigl(\delta_{\guardd}((r_0,c_0),\pi)\bigr)
         \;=\;
       \semfive{\pi \vDash \guard[re]{C}}.
       \]
+
       \end{lemma}
+
       \noindent\textbf{Proof sketch.}
-      The proof relies on the decomposition of the trace into a decisive prefix and a stable suffix.
+
+      The proof is based  on the decomposition of the trace into a decisive prefix and a sink state for the suffix.
+
       
+
       \smallskip
+
       \emph{Tight-core correctness.}
-      For any prefix $\pi$ that has not strictly passed a decisive point, the monitor remains in the core set $Q_r^{\circ} \times Q_c^{\circ}$.
+
+      For any prefix $\pi$ that has not strictly passed a tight verdict of one of the original sub-automata, the monitor remains in the core set $Q_r^{\circ} \times Q_c^{\circ}$.
+
       In this region, $\delta_{\guardd}$ acts as a standard synchronous product.
-      The core output function $\lambda_{\guardd}^{\circ}$ directly implements the tight semantic clauses: it evaluates to $\bott$ upon an active violation, and to $\topt$ upon release (guard failure) or active satisfaction.
+
+      The enforcement phase part of the monitor outputs function $\lambda_{\guardd}^{\circ}$ directly implements the tight semantic clauses: it evaluates to $\bott$ upon an active violation, and to $\topt$ upon release (guard failure) or active satisfaction.
+
       Thus, as long as the semantics evaluate to $\{\mathsf{?}, \topt, \bott\}$, the monitor output matches the semantics.
+
       
+
       \smallskip
+
       \emph{Post-verdict correctness.}
+
       Once the monitor reaches a state $s$ with a tight verdict (e.g., $\lambda(s)=\topt$), the semantic evaluation of the trace $\pi$ is exactly $\topt$.
+
       For any extension $\pi \cdot A$, the semantics require the verdict to become $\topp$.
+
       The transition function satisfies this by definition: $\delta_{\guardd}(s, A) = q_{\topp}$.
-      Since $q_{\topp}$ is absorbing and outputs $\topp$, the monitor correctly stabilizes.
+
+      Since $q_{\topp}$ is a sink state and outputs $\topp$, the monitor correctly 
+
       The same reasoning applies to the violation case ($\bott \text{ to } \botp$).
+
       \qed
 
 
@@ -1150,22 +1158,16 @@ We move now to guarded contracts monitor construction. Unlike conjunction, the g
 
 \subsubsection*{Construction for repetition contracts}
 
-Repetition contracts describe behaviors that must be satisfied several times in
-sequence. The monitor construction follows the intuition that each repetition runs an independent copy of the monitor for $C$, with the next copy becoming active exactly when the previous one reaches tight success. For finite
-repetition $C^n$, this results in $n$ chained monitors. For unbounded
-repetition $\repit{C}$, we obtain an infinite cycle without ever reporting
-tight success.
+Repetition contracts enforce the sequential satisfaction of a behavior over multiple iterations. The construction chains independent copies of the monitor for $C$, activating the next copy when the previous one reaches tight success. For finite repetition $C^n$, this yields $n$ linked monitors. For unbounded repetition $\repit{C}$, the construction forms an infinite cycle.
 
-\medskip
-The following constructions make these ideas explicit.
 \begin{definition}[Tight monitor construction for finite repetition $\tsmc_\nrep(n,C)$]
 \label{def:moore-repeat-finite}
 \[\text{Let } \tsmc(C)=(Q,q_0,\Gamma,\tightverdicts,\delta,\lambda_5)\]
 be the five-valued tight satisfaction monitor for $C$.  
 For $n\in\mathbb{N}^*$, the tight monitor for the finite repetition contract
-$\tsmc_\nrep(n,C)$ is defined as
+$\tsmc_\nrep(n,\tsmc(C))$ is defined as
 \[
-\tsmc_{\nrep}(n,C)
+\tsmc_{\nrep}(n,\tsmc(C))
   := (Q_{\nrep},q_0^{\nrep},\Gamma,\tightverdicts,\delta_{\nrep},\lambda_5^{\nrep}).
 \]
 
@@ -1183,11 +1185,11 @@ Write $q_0^{(i)}$ for the copy of $q_0$.
 \noindent\emph{State space and start state.}
 \[
 Q_{\nrep}
-  := \Bigl(\bigcup_{i=1}^n Q^{(i)}\Bigr)\cup\{q_{\topp},q_{\botp}\},
+  := \Bigl(\bigcup_{i=1}^{n-1} \bigl(Q^{(i)} \setminus Q^{(i)}_{\top}\bigr)\Bigr) \cup Q^{(n)},
 \qquad
 q_0^{\nrep} := q_0^{(1)},
 \]
-where $q_{\topp}$ and $q_{\botp}$ are fresh post-success and post-failure sinks.
+where $Q^{(i)}_{\top} = \{\, q^{(i)} \in Q^{(i)} \mid \lambda_5^{(i)}(q^{(i)}) \in \{\topt,\topp\}\,\}$.
 
 \medskip
 \noindent\emph{Transition function.}  
@@ -1198,44 +1200,19 @@ For $1\le i\le n-1$:
 q_0^{(i+1)}
    & \text{if }\lambda_5^{(i)}(\delta^{(i)}(q^{(i)},A))=\topt,\\[2pt]
 \delta^{(i)}(q^{(i)},A)
-   & \text{if }\lambda_5^{(i)}(\delta^{(i)}(q^{(i)},A))
-      \notin\{\topt,\topp\}.
+   & \text{otherwise}.
 \end{cases}
 \]
 For the last copy $i=n$:
 \[
-\delta_{\nrep}(q^{(n)},A)=
-\begin{cases}
-q_{\topp}
-   & \text{if }\lambda_5^{(n)}(\delta^{(n)}(q^{(n)},A))=\topt,\\[2pt]
-\delta^{(n)}(q^{(n)},A)
-   & \text{if }\lambda_5^{(n)}(\delta^{(n)}(q^{(n)},A))
-      \notin\{\topt,\topp\}.
-\end{cases}
-\]
-Sink states absorb:
-\[
-\delta_{\nrep}(q_{\topp},A)=q_{\topp},
-\qquad
-\delta_{\nrep}(q_{\botp},A)=q_{\botp}.
+\delta_{\nrep}(q^{(n)},A) = \delta^{(n)}(q^{(n)},A).
 \]
 
 \medskip
 \noindent\emph{Output function.}
-For $q^{(i)}\in Q^{(i)}$:
+The output function simply maps directly to the native outputs of the components:
 \[
-\lambda_5^{\nrep}(q^{(i)})=
-\begin{cases}
-\bott & \text{if }\lambda_5^{(i)}(q^{(i)})=\bott,\\
-\mathsf{?} & \text{if }\lambda_5^{(i)}(q^{(i)})
-            \in\{\mathsf{?},\topt,\topp\}.
-\end{cases}
-\]
-For sink states:
-\[
-\lambda_5^{\nrep}(q_{\topp})=\topp,
-\qquad
-\lambda_5^{\nrep}(q_{\botp})=\botp.
+\lambda_5^{\nrep}(q^{(i)}) = \lambda_5^{(i)}(q^{(i)}) \quad \text{for all } i \in \{1,\dots,n\}.
 \]
 
 \medskip
@@ -1246,7 +1223,7 @@ This completes the construction of the five-valued monitor for $C^n$.
 \begin{lemma}[Correctness of the finite repetition monitor]
 \label{lem:repeat-finite-correct}
 For every finite trace $\pi$, contract $C$, and
-$\tsmc_{\nrep}(n,C)
+$\tsmc_{\nrep}(n,\tsmc(C))
   := (Q_{\nrep},q_0^{\nrep},\Gamma,\tightverdicts,\delta_{\nrep},\lambda_5^{\nrep})$, the following holds
 \[
 \lambda_5^{\nrep}\bigl(\delta_{\nrep}(q_0^{\nrep},\pi)\bigr)
@@ -1254,10 +1231,6 @@ $\tsmc_{\nrep}(n,C)
 \]
 \end{lemma}
 
-
-
-
-In the next sections, we use the definitions of the different languages in the semantics of \cdl, along with automata constructions and transformations, to enable automatic detection of violations and the attribution of blame for synchronous interactions over contracts in \cDL.
 
 
 \begin{definition}[Tight monitor construction for unbounded repetition $\repit{C}$]
@@ -1268,7 +1241,7 @@ In the next sections, we use the definitions of the different languages in the s
 be the tight satisfaction monitor for $C$.
 The monitor for the unbounded repetition $\repit{C}$ is defined as
 \[
-\tsmc_{\text{Rep}}
+\tsmc_{\mathit{Rep}}(\tsmc(C))
   := (Q_\omega,q_0,\Gamma,\tightverdicts,\delta_\omega,\lambda_5^{\omega})
 \]
 where the construction removes all success states of $C$ and redirects
@@ -1298,13 +1271,9 @@ q_0
 
 \medskip
 \noindent\emph{Output function.}
-The monitor never declares satisfaction:
+The monitor never declares satisfaction, as the success states were removed. Its outputs correspond directly to the native outputs of the remaining states:
 \[
-\lambda_5^{\omega}(q)=
-\begin{cases}
-\bott & \text{if }\lambda_5(q)=\bott,\\[2pt]
-\mathsf{?} & \text{if }\lambda_5(q)\in\{\mathsf{?},\topt,\topp\}.
-\end{cases}
+\lambda_5^{\omega}(q) = \lambda_5(q).
 \]
 
 This yields the tight five-valued monitor for $\repit{C}$.
@@ -1313,7 +1282,7 @@ This yields the tight five-valued monitor for $\repit{C}$.
 \begin{lemma}[Correctness of the unbounded repetition monitor]
 \label{lem:repeat-unbounded-correct}
 For every finite trace $\pi$, and
-$\tsmc_{\repit{}}(C)
+$\tsmc_{\mathit{Rep}}(\tsmc(C))
   := (Q_\omega,q_0,\Gamma,\tightverdicts,\delta_\omega,\lambda_5^{\omega})$
 , the following holds
 \[
@@ -1321,6 +1290,7 @@ $\tsmc_{\repit{}}(C)
   = \semfive{\pi \vDash \repit{C}}.
 \]
 \end{lemma}
+\textbf{Proof sketch.}
 The monitor never emits $\topt$ nor $\topp$, because tight satisfaction of
 $\repit{C}$ is false.  
 It emits $\bott$ (and then permanently $\botp$) exactly when some iteration of
@@ -1376,7 +1346,7 @@ and moves to \(s^t\). Any continuation moves to the post-acceptance state
 
 \medskip
 \noindent\textbf{(c) Guarded product
-\(\tsmc_\guardd(\tsmc_{re}(re),\tsmc(\repit{C_3})\)
+\(\tsmc_\guardd(\tsmc_{re}(re),\tsmc(\repit{C_3}))\)
 (Figure~\ref{fig:guard-repC3}).}
 The product is organised by verdict class:
 violating states on the left, undecided states in the centre, and
@@ -1554,7 +1524,6 @@ and $\overline{T} := \Gamma\setminus T$ denotes its absence.
 
 
 
-The guarded open-ended contract illustrates how the automaton constructions combine.  
-The unbounded repetition of \(C_3\) enforces an indefinite sequence of payments with repair, and the regular expression \(re\) recognizes the first occurrence of a termination notice.  
-The guarded product synchronizes both behaviors: while the guard is open, all failures of \(\repit{C_3}\) propagate to the global verdict; once the guard closes, the open-ended obligation is discharged, and the monitor collapses to post acceptance provided that no violation has occurred.  
-This example shows that the tight constructions scale to nested patterns of sequencing, repetition, guarding, and reparation while still preserving a direct correspondence with the prefix semantics of \cDL.
+The unbounded repetition of \(C_3\) enforces an infinite sequence of payments with repair when payment first fails. The regular expression \(re\) captures the termination notice.
+
+The guarded product synchronizes according to its definition: (1) when the guard remains open, all failures of \(\repit{C_3}\) propagate to the global verdict, and (2) when the guard activates, the open-ended obligation is discharged. The monitor then collapses to post acceptance, provided that no violation has occurred.
