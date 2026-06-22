@@ -1,30 +1,39 @@
 % 
 
 \section{Quantitative Violation Semantics}
-The basic restriction of the forward-looking tight satisfaction semantics, as defined in the previous section, resides in its binary and prefix-closed nature.
-In that framework, the monitoring process halts definitively at the first tight violation.
-Despite being computationally efficient for stopping compliance systems (e.g., an access control system that is failing), this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
-It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time, a critical requirement for comprehensive legal responsibility.
+
+The basic restriction of the forward-looking tight satisfaction semantics, as defined in the previous section, resides in its binary and prefix-closed nature. In that framework, the monitoring process halts definitively at the first tight violation.
+Despite being computationally efficient for stopping compliance systems, such as when a safety-critical property is failing, this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
+
+It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time, a critical requirement for complete legal responsibility.
 To tackle this limitation, it is necessary to transition from a boolean verdict to a \emph{quantitative semantics}, changing the emphasis from the question ``Did a violation occur?'' to ``How many violations occurred, and what was their magnitude?''
 
 
+
+
+
 \paragraph{The Challenge of Temporal Scope.}
+
 A prerequisite for counting violations is defining the temporal window over which the contract is evaluated.
+
 In contrast to traditional model checking, which commonly analyzes systems that are supposed to run forever, contract monitoring operates on finite, evolving prefixes.
+
 We identify two primary strategies for defining this scope:
 
+
+
 \begin{enumerate}
-    \item \textbf{Static Pre-computation:} One might attempt to calculate a fixed duration $T$ for a contract $C$.
-    However, contracts containing unbounded repetitions ($\repit{C}$) or input-dependent regular expressions (guards/triggers) do not have a statically determinable length.
-   
-    \item \textbf{Dynamic On-the-Fly Detection:} The alternative is to determine the contract's status dynamically at every step.
-    Here, the monitor continuously computes a \emph{residual contract}—a formula representing what remains to be fulfilled given the history of events.
-   
+    \item \textbf{Static Pre-computation:} One might attempt to calculate a fixed duration $T$ for a contract $C$ for this window of enforcement.
+  However, contracts containing unbounded repetitions ($\repit{C}$) or input-dependent regular expressions guards and triggers do not have a statically determinable or unique \emph{contract length}.
+    \item \textbf{Dynamic On-the-Fly Detection:} The alternative is to determine the contract's status dynamically at every step. The monitor continuously computes a formula representing what remains from the contract to enforce given the history of events.
 \end{enumerate}
 
-This work adopts a \emph{Dynamic On-the-Fly} approach, utilizing a structural tracking mechanism formalized as the \emph{Contract Progress Monitor} (\CPM). The \CPM functions as a derivative operator: given a contract $C$ and an incoming event, it computes the residual contract $C'$ to be enforced in the next time step. By decoupling the maintenance of contract state (via the \CPM) from the evaluation of compliance (via a scoring function), this architecture enables a modular framework that tracks active duties, manages contrary-to-duty (CTD) transitions, and attributes blame with precision over time. The scoring function is critical, providing a quantitative measure of adherence that transcends binary verification to assess the \emph{degree} of compliance. This interaction with the \CPM quantifies the magnitude of violations, yielding a nuanced view of contractual performance that enhances both accountability and enforcement precision.
 
-Regarding computational complexity, we rely on the following finiteness hypothesis: the set of reachable residual contracts is finite.
+
+This work adopts a functional approach, using a structural tracking mechanism formalized as the \emph{Contract Progress Monitor} (\CPM). The \CPM functions as a derivative operator: given a contract $C$ and an incoming event, it computes the residual contract $C_{res}$ to be enforced in the next time step. This allows decoupling the monitoring of the contract's progress from the verdict on its compliance. Additionally, a scoring function defined on natural numbers, rather than on the 5-point semantics, provides a quantitative measure of adherence that goes beyond binary verification to assess the \emph{degree} of compliance. Most importantly, an interplay between contract monitoring progress and scoring progress is necessary to compute the correct degree of violation/blame.
+
+Regarding computational complexity, we assume without proving the following: the set of reachable residual contracts is finite.
+
 We state this property formally in Claim~\ref{clm:rrcs-finite} and leave a complete proof and an effective enumeration algorithm to future work.
 
 \subsection{Contract Progress Monitor}
@@ -41,46 +50,46 @@ For the empty trace $\emptytrace$, $\Prog(\emptytrace, C) := C$.
 For a single event step $\trace{A}$ with $A \in \Gamma$, the function is defined on the structure of $C$ as follows.
 
 \paragraph{Literals (State Update).}
-For any literal $\ell$ (obligation, permission, or prohibition):
+For any literal $\ell \in \{\obl[i]{a}, \frb[i]{a}, \perm[i]{a} \mid i \in \{1,2\}, a \in \Sigma\} \cup \{\bot, \top\}$, the progress function is defined as:
 \[
 \Prog(\trace{A}, \ell) := \emptc.
 \]
 \emph{Rationale:} Structurally, a literal applies to a single time step.
-Once the $A$ step occurs, the literal is consumed.
-Whether $A$ satisfied or violated $\ell$ is immaterial to the \emph{progression} (the duty is passed); the violation is recorded separately by the quantitative scoring function defined later.
+Once the $A$ step occurs, the literal enforcement is \emph{consumed}.
+Whether the event $A$ satisfied or violated $\ell$ is irrelevant to the \emph{progression}, since the violation is recorded independently by the quantitative scoring function we define later.
 
 
 \paragraph{Conjunction (Parallel Progress).}
 \[
-\Prog(\trace{A}, C_1 \wedge C_2) := \Prog(\trace{A}, C_1) \wedge \Prog(\trace{A}, C_2)
+\Prog(\trace{A}, C \wedge C') := \Prog(\trace{A}, C) \wedge \Prog(\trace{A}, C').
 \]
-We assume the symbolic identity where $\emptc$ is the neutral element for conjunction: $\emptc \wedge C' \equiv C'$.
+With the standard symbolic identity where $\emptc$ is the neutral element for conjunction: $\emptc \wedge C' \equiv C'$.
 
 
 \paragraph{Sequence (Sequential Handover).}
-For a sequence $C_1 ; C_2$, progression determines if the current step concludes $C_1$:
+For a sequence $C ; C'$, progression determines if the current step concludes $C$:
 \[
-\Prog(\trace{A}, C_1 ; C_2) := 
+\Prog(\trace{A}, C ; C') := 
 \begin{cases}
-  \Prog(\trace{A}, C_1) ; C_2 & \text{if } \Prog(\trace{A}, C_1) \neq \emptc, \\
-  \Prog(\trace{A}, C_2) & \text{if } \Prog(\trace{A}, C_1) = \emptc.
+  \Prog(\trace{A}, C) ; C' & \text{if } \Prog(\trace{A}, C) \neq \emptc, \\
+  C' & \text{if } \Prog(\trace{A}, C) = \emptc.
 \end{cases}
 \]
-If $C_1$ is discharged by step $A$ (i.e., its residual is $\emptc$), the monitor immediately activates the first step of the next portion $C_2$.
+If $C$ is discharged by step $A$ (i.e., its residual is $\emptc$), the monitor immediately activates the first step of the next portion $C'$.
 
 
 \paragraph{Reparation (Contrary-to-Duty Branching).}
 The reparation construct is unique because its structural progression depends on the satisfaction of the primary obligation.
 This is the only case where $\Prog$ relies on the tight satisfaction relation ($\satt, \violt, \presat$) to determine the path:
 \[
-\Prog(\trace{A}, C_1 \repair C_2) := 
+\Prog(\trace{A}, C \repair C') := 
 \begin{cases}
-  \Prog(\trace{A}, C_1) \repair C_2 & \text{if } \trace{A} \presat C_1 \text{ (Pending)}, \\
-  \Prog(\trace{A}, C_2) & \text{if } \trace{A} \violt C_1 \text{ (Repair)}, \\
-  \emptc & \text{if } \trace{A} \satt C_1 \text{ (Discharge)}.
+  \Prog(\trace{A}, C) \repair C' & \text{if } \trace{A} \presat C \text{ (Pending)}, \\
+  C' & \text{if } \trace{A} \violt C \text{ (Repair)}, \\
+  \emptc & \text{if } \trace{A} \satt C \text{ (Discharge)}.
 \end{cases}
 \]
-If a violation occurs ($\trace{A} \violt C_1$), the primary contract is discarded, and the secondary contract $C_2$ is activated immediately for the \emph{next} step.
+If a violation occurs, i.e., $\trace{A} \violt C$, the primary contract is discarded, and the secondary contract $C'$ is activated immediately for the \emph{next} step.
 
 
 \paragraph{Repetition.}
@@ -96,6 +105,7 @@ These constructs rely on regular expression matching.
 \Prog(\trace{A}, \guard[re]{C}) :=
 \begin{cases}
   \emptc & \text{if } \trace{A} \satt \guard[re]{C} \text{ (release)}, \\
+  \emptc & \text{if } \trace{A} \violt re \text{ (Guard failed)}, \\
   \guard[\Prog_{re}(\trace{A}, re)]{\Prog(\trace{A}, C)} & \text{otherwise (Guard persists)}.
 \end{cases}
 \]
@@ -108,13 +118,13 @@ These constructs rely on regular expression matching.
 \end{cases}
 \]
 
-Where the regular progress function $\Prog_{re}: \Gamma^1 \times \cDL_{re} \to \cDL_{re} $ is defined for traces of length 1, and is defined only when $\trace{A} \presat \re$ (where $\trace{A}$ is the trace consisting of the single event $A$).
- We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon$.
+Where the regular progress function $\Prog_{re}: \Gamma^1 \times \cDL_{re} \to \cDL_{re} $ is defined for any trace $\trace{A}$ consisting of a single event $A$.
+ We do not need to use $\epsilon_{re}$ as we did for the contract as $\epsilon$ is already defined in the syntax of regular expression, with $\Prog_{re}(\trace{A},\epsilon):= \epsilon_C$.
 
  \paragraph{Atomic regular expressions.}
  For an atomic letter-test $B \in \Gamma$,
  \[
- \Prog_{re}(A, B) :=
+ \Prog_{re}(\trace{A}, B) :=
  \begin{cases}
  \epsilon & \text{if } A = B,\\
  \emptyset & \text{otherwise}.
@@ -127,7 +137,7 @@ For $\re \cdot \re'$, the progression is defined as:
 \Prog_{re}(\trace{A}, \re \cdot \re') := 
     \Prog_{re}(\trace{A}, re) \cdot re'.
 \]
-\noindent\emph{Remark.} whenever a residual of the left part reduces to $\epsilon$, we use the standard identity $(\epsilon)\cdot re' \equiv re'$ to simplify the resulting expression.
+\noindent\emph{Remark.} Whenever a residual of the left part reduces to $\epsilon$, we use the standard identity $\epsilon \cdot re' \equiv re'$ to simplify the resulting expression.
 
 
 
@@ -137,27 +147,27 @@ For $re \mid re'$, the progression is defined by distinguishing cases based on v
 \Prog_{re}(\trace{A}, re \mid re') := \begin{cases} 
 \Prog_{re}(\trace{A}, re') & \text{if } \trace{A} \violt re ,\\
 \Prog_{re}(\trace{A}, re) & \text{if } \trace{A} \violt re' ,\\
-\Prog_{re}(\Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A}, re') & \text{otherwise}.
+\Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A}, re') & \text{otherwise}.
 \end{cases}
 \]
 
-\paragraph{n-repetition}
+\paragraph{$n$-Repetition}
 For $\re^n$, with $n \in \mathbb{N}^*$ the progression is defined as:
 \[
 \Prog_{re}(\trace{A}, re^n) := \Prog_{re}(\trace{A},re)\cdot re^{n-1}.
 \]
 
 
-\paragraph{$+$ Operator}
+\paragraph{The $+$ Operator}
 For $\re^+$, the progression is defined as:
 \[
 \Prog_{re}(\trace{A}, re^+) := \Prog_{re}(\trace{A}, re) \mid \Prog_{re}(\trace{A},re)\cdot re^+.
 \]
 
-Moving up for the special case of single event traces, for $\pi = \trace{A} \circ \pi'$ with
-$A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix. Then:
+Moving from the special case of single event traces, for $\pi = \trace{A} \cdot \pi'$ with
+$A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix, we have:
 \[
-  \Prog(\trace{A} \circ \pi', C) :=
+  \Prog(\trace{A} \cdot \pi', C) :=
   \begin{cases}
     \emptc & \text{if } \Prog(\trace{A}, C) = \emptc, \\[4pt]
     \Prog\bigl(\pi',\,\Prog(\trace{A}, C)\bigr) & \text{otherwise}.
@@ -166,13 +176,13 @@ $A \in \Gamma$ the first event and $\pi' \in \Gamma^*$ the remaining suffix. The
 
 
 \end{definition}
-The helper function $\Prog_{re}$ computes the residual regular expression following an idea from Brzozowski's derivative~\cite{brzozowski1964derivatives} of the regular expression. In our case, it is tuned for the tight semantics.
+The helper function $\Prog_{re}$ computes the residual regular expression following the same idea from Brzozowski's derivative~\cite{brzozowski1964derivatives} on regular expressions. In our case, it is tuned for the tight semantics.
 
-\begin{lemma}[Termination]
+\begin{remark}[Termination of the Contract Progression Function]
   For each finite trace $\pi$ and contract $C$, the computation of $\Prog(\pi,C)$ terminates.
   Moreover, the recursion on the trace unfolds for at most $|\pi|$ steps.
-  \end{lemma}
-To illustrate the \CPM, the evolution of the residual contract under different traces is examined. The evaluation initiates with the fundamental building block of normative enforcement: the reparation.
+  \end{remark}
+To illustrate the \CPM, we examine the evolution of the residual contract under different traces. The evaluation begins with the fundamental building block of normative enforcement: the reparation.
 
 \begin{example}[Progression of Reparation]
 \label{ex:prog-repit}
@@ -222,7 +232,7 @@ The residual contract after Month~1 is therefore $\emptc$, meaning that no furth
       \draw[dotted](e2.south)--(r2.north);
     \end{tikzpicture}
     }}
-    {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which no reparation is  required}
+    {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace that requires no reparation.}
     {example:prog-repair1}
     {\vspace{8pt}}{\vspace{-12pt}}
 
@@ -230,11 +240,11 @@ The residual contract after Month~1 is therefore $\emptc$, meaning that no furth
 \noindent\textbf{Scenario 2: Violation and Repair.}
 Consider the trace $\pi=\trace{A_1,A_2}$.
 In Month~1, the tenant fails to pay rent, that is,
-$\PAY^{(1)}\notin A_1$ (or equivalently, $\trace{A_1}\ \violt\ \obl[1]{\PAY}$). We illustrate this scenario in \ref{example:prog-repair2}
+$\PAY^{(1)}\notin A_1$ (or equivalently, $\trace{A_1}\ \violt\ \obl[1]{\PAY}$). We illustrate this scenario in \ref{example:prog-repair2}.
 As a consequence, the \CPM activates the reparation branch.
 The residual contract after Month~1 is $\obl[1]{\PAYF}$, obliging the tenant to pay the fine in Month~2.
 
-  \boxalignfigure{\resizebox{0.7\textwidth}{!}{%
+  \boxalignfigure{\resizebox{0.8\textwidth}{!}{%
   \begin{tikzpicture}[y=1.6cm,x=3.0cm]
   
     \tikzset{
@@ -271,12 +281,12 @@ The residual contract after Month~1 is $\obl[1]{\PAYF}$, obliging the tenant to 
   
   \end{tikzpicture}
   }}
-  {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace for which required a reparation}
+  {Progression on $ \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}$ with a trace that requires a reparation.}
   {example:prog-repair2}
   {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
 
-After establishing the evolution of single-step reparations, the analysis is extended to ongoing contracts. The following example demonstrates how the \CPM handles infinite streams with recurring duties, showing how violations in one period persist into subsequent periods.
+After establishing the evolution of single-step reparations, the analysis is extended to still open-ended contracts. The following example demonstrates how the \CPM handles infinite streams with recurring duties, showing how violations in one period persist into subsequent periods.
 
 \begin{example}[Progression of Infinite Repetition]
 Consider the recurring contract $\repit{C_3}$, where the tenant must pay rent (or a fine) every month.
@@ -334,7 +344,8 @@ This results in an accumulation of duties: the fine from Month 2 and the new ren
 
 While repetitions capture simple recurring duties, more complex contracts are often bound by conditions. The following analysis studies how the \CPM handles \emph{guarded contracts}, in which the outer structure (the guard) and the inner structure (the obligations) evolve independently until a termination event occurs.
 
-\begin{example}[Progression of Guarded Contracts]
+
+\begin{example}[Progression of Guarded Contracts]~\\
 A guarded contract that persists until a termination notice ($\notifterm$) is issued is examined.
 \[ \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}} \]
 
@@ -450,19 +461,20 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
   
 \end{example}
 
-We now turn to the notion of reachable residual contracts. This construction is essential for monitor synthesis under the quantitative semantics introduced above. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set captures precisely this state space.
+We now turn to the formal study of the notion of reachable residual contracts. This notion is essential for synthesizing monitors under the quantitative semantics introduced above, since we want the monitor to be represented as a finite-state machine. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set captures precisely the state space of the monitor construction.
+
+
 
 \begin{definition}[Reachable Residual Contract Set from a Contract]
-  Let $C \in \cDL$. The \emph{reachable residual contract set} of $C$, written $\rrcs{C}$, is
-  \[
-    \rrcs{C} := \{\, C_r \in (\cDL \cup \{\emptc\}) \mid \exists \pi \in \Gamma^*: \Prog(\pi,C)= C_r \,\}.
-  \]
+  Let $C \in \cDL$. The \emph{reachable residual contract set} of $C$, written $\rrcs{C}$, is formally defined as:
+  \[    \rrcs{C} := \{\, C_r \in (\cDL \cup \{\emptc\}) \mid \exists \pi \in \Gamma^*: \Prog(\pi,C)= C_r \,\}.  \]
   \end{definition}
+
 \begin{claim}[Finiteness of Reachable Residual Contracts]\label{clm:rrcs-finite}
+
   For every contract $C \in \cDL$, the reachable residual contract set $\rrcs{C}$ is finite.
   \end{claim}
-  \paragraph{Justification (informal).}
-The claim follows from the finiteness of the syntactic structure of $C$ and the fact that the progression function $\Prog$ rewrites contracts using only subcontracts of $C$, residuals of regular expressions appearing in $C$, and the distinguished terminal contract $\emptc$. No new contract structure is generated beyond these components.
-
-We plan to make this argument constructive by defining, as future work, a function that computes $\rrcs{C}$ exhaustively and terminates after finitely many steps. This function will form the basis for an explicit monitor construction and for complexity bounds on the quantitative semantics.
+  \vspace{-2em}
+  \paragraph{Intuition.}
+The claim follows from the finite syntactic structure of $C$.  The progression function $\Prog$ rewrites contracts using only sub-contracts of the contract, residuals of regular expressions, and the contract terminal state $\emptc$. No new syntactic contract is generated beyond its components.
 \input{qviol}

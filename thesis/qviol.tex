@@ -1,6 +1,6 @@
 \subsection{Quantitative Monitoring of Contract Compliance}
 
-To define a quantitative violation semantics that persists beyond the first violation prefix, we rely on the \emph{Contract Progress function} as the underlying state-transition mechanism. The progression function $\Prog$ dynamically evolves the contract after each observation, producing a sequence of \emph{residual contracts} that represent the exact normative state at each time step. By updating the contract state incrementally, we ensure that the violation score for any given event is calculated strictly against the specific literals in force at that moment, accounting for all prior satisfactions, discharges, or triggered reparations. This updated residual is then propagated to the subsequent evaluation step.
+To define a quantitative violation semantics that persists beyond the first violation prefix, we rely on the \emph{Contract Progress Function} as the underlying state-transition mechanism. The progression function $\Prog$ dynamically evolves the contract after each observation, producing a sequence of \emph{residual contracts} that represent the exact normative state at each time step. By updating the contract state incrementally, we ensure that the violation score for any given event is calculated strictly against the specific literals in force at that moment, accounting for all prior satisfactions, discharges, or triggered reparations. This updated residual is then propagated to the subsequent evaluation step.
 
 As an optimization, we define a helper function to evaluate only the currently enforced literal for a given event, rather than re-traversing the whole contract structure.
 
@@ -126,7 +126,7 @@ We summarize these properties in the following theorem, which establishes that t
   \item \textbf{Reparation cost.}
   Consider $C = C_1 \repair C_2$.
   If $\pi \satt C$ through the reparation branch, then some prefix $\pi'$ tightly violates $C_1$.
-  By the definition of the instantaneous scoring function for reparation, the step at which $C_1$ is tightly violated contributes $\qsem{\trace{A}, C_1 \repair C_2} = 1 + \qsem{\trace{A}, C_2}$, yielding at least~$1$.
+  By the definition of the instantaneous scoring function for reparation, the step at which $C_1$ is tightly violated contributes $\qsem{\trace{A}, C_1 \repair C_2} = 1 + \qsem{\trace{A}, C_2}$, contributing at least~$1$.
   Since all subsequent instantaneous scores are non-negative, the cumulative score satisfies $\qsem{\pi, C} \ge 1$.
   Hence, $\pi \satt C$ and $\qsem{\pi, C} > 0$ can coexist: the score records the cost of the reparation path even though the contract is ultimately satisfied.
 \end{enumerate}
@@ -555,7 +555,7 @@ To make the monitor construction constructive and finite, we define it inductive
     \]
     This residual is represented as state $q_2$.
     
-    If $A \in \overline{\PAY^{(12)}}$, the primary obligation is violated. This yields a unit penalty
+    If $A \in \overline{\PAY^{(12)}}$, the primary obligation is violated. This produces a unit penalty
     \[
     \qsem{\trace{A},q_0} = 1,
     \]
@@ -565,13 +565,13 @@ To make the monitor construction constructive and finite, we define it inductive
     \]
     which is represented as state $q_1$.
     
-    From $q_1$, the head obligation is now the fine obligation $\obl[1]{\PAYF}$. Again, only events that affect its satisfaction or the guard condition are relevant. If $A \in \PAYF^{(12)}$ and no termination notification occurs, the fine is satisfied with zero cost and progression returns to the repetition residual $q_2$. If $A \in \overline{\PAYF^{(12)}}$ and no termination occurs, the fine is violated, yielding cost $1$, but progression still returns to the repetition, as the fine obligation is consumed after one step.
+    From $q_1$, the head obligation is now the fine obligation $\obl[1]{\PAYF}$. Again, only events that affect its satisfaction or the guard condition are relevant. If $A \in \PAYF^{(12)}$ and no termination notification occurs, the fine is satisfied with zero cost and progression returns to the repetition residual $q_2$. If $A \in \overline{\PAYF^{(12)}}$ and no termination occurs, the fine is violated, incurring a cost of $1$, but progression still returns to the repetition, as the fine obligation is consumed after one step.
     
-    If a termination notification $A \in \notifterm^{(1)}$ occurs in state $q_1$, the guard condition is fulfilled. Progression, therefore, yields the empty contract $\emptc$, independently of whether the fine is satisfied or violated, while the instantaneous cost is determined by the compliance of the active head obligation at that step.
+    If a termination notification $A \in \notifterm^{(1)}$ occurs in state $q_1$, the guard condition is fulfilled. Progression, therefore, results in the empty contract $\emptc$, independently of whether the fine is satisfied or violated, while the instantaneous cost is determined by the compliance of the active head obligation at that step.
     
-    From $q_2$, the repetition phase is stable. Successful payment events $A \in \PAY^{(12)}$ yield zero cost and leave the residual unchanged, resulting in a self-loop. Failed payment events incur a unit penalty and return progress to the fine residual $q_1$. As before, the occurrence of a termination notification immediately discharges the contract to $\emptc$, with the instantaneous cost reflecting whether the payment obligation was satisfied at that final step.
+    From $q_2$, the repetition phase is stable. Successful payment events $A \in \PAY^{(12)}$ produce zero cost and leave the residual unchanged, resulting in a self-loop. Failed payment events incur a unit penalty and return progress to the fine residual $q_1$. As before, the occurrence of a termination notification immediately discharges the contract to $\emptc$, with the instantaneous cost reflecting whether the payment obligation was satisfied at that final step.
     
-    Collecting all distinct residuals reachable from $q_0$ under these event classes yields exactly the states and transitions shown in \ref{fig:qmc-guard-repit}.
+    Collecting all distinct residuals reachable from $q_0$ under these event classes generates exactly the states and transitions shown in \ref{fig:qmc-guard-repit}.
     
     
     
@@ -683,7 +683,7 @@ This is exactly the required sum.
 \paragraph{Inductive step.}
 Assume the claim holds for all traces of length $n$.
 Let $\pi' = \trace{A_1,\dots,A_{n+1}}$ be a trace of length $n+1$.
-Unfolding the recursive definition of $\qsem{}$ yields
+Unfolding the recursive definition of $\qsem{}$ gives
 \begin{align*}
   \qsem{\pi',C} &= \qsem{\trace{A_1},C} + \qsem{\trace{A_2,\dots,A_{n+1}},\Prog(\trace{A_1},C)}\\
   &= \qsem{\trace{A_1},q_0} + \qsem{\trace{A_2,\dots,A_{n+1}},q_1}.
@@ -756,7 +756,7 @@ While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, i
 The recursive clause uses the usual component-wise addition on $\mathbb{N}^2$: if an event contributes $(i,j)$ at the current step and the suffix contributes $(k,l)$, then their sum is $(i+k,\,j+l)$. Hence, the blame vector accumulated over a trace counts, for each agent separately, how many step-local violations were attributed to that agent along the unique progress-induced run. This corresponds to the scalar accumulation in $\qsem{}$, but preserves per-agent accountability.
 
 \paragraph{Why there is no $(1,1)$ case.}
-We do not include a rule for a joint violation vector $(1,1)$ in the definition of $\qblame{\trace{A}, C}$, such as a hypothetical condition $\trace{A} \vDash_{\bottp{12}} \LH(C)$. This is intentional: for the atomic head literal $\LH(C)$, the blame verdicts used in $\vDash_{\bottp{i}}$ are mutually exclusive in the underlying tight blame semantics, so a single literal cannot be violated by both agents in the same step. When multiple obligations are active concurrently, the conjunction case $C=C_1\wedge C_2$ already captures multiple violations in one step by summing the vectors returned for each component, and this can yield a total vector whose two components are both positive, but only via \emph{distinct} literals.
+We do not include a rule for a joint violation vector $(1,1)$ in the definition of $\qblame{\trace{A}, C}$, such as a hypothetical condition $\trace{A} \vDash_{\bottp{12}} \LH(C)$. This is intentional: for the atomic head literal $\LH(C)$, the blame verdicts used in $\vDash_{\bottp{i}}$ are mutually exclusive in the underlying tight blame semantics, so a single literal cannot be violated by both agents in the same step. When multiple obligations are active concurrently, the conjunction case $C=C_1\wedge C_2$ already captures multiple violations in one step by summing the vectors returned for each component, and this can produce a total vector whose two components are both positive, but only via \emph{distinct} literals.
 
 \begin{remark}[Duplication under identical conjunctions]
   \label{rem:blame-duplication}
@@ -818,7 +818,7 @@ We do not include a rule for a joint violation vector $(1,1)$ in the definition 
   \]
   
   \emph{Cumulative result.}
-  The tight semantics yields $\pi \satt C_3$,
+  The tight semantics evaluates to $\pi \satt C_3$,
   while blame semantics records a single tight violation by agent~1.
   The quantitative score is obtained by summation:
   \[
@@ -836,7 +836,7 @@ We do not include a rule for a joint violation vector $(1,1)$ in the definition 
   \[
   \trace{A_1} \vDash_{\bottp{\{2\}}} \perm[1]{\OCC}.
   \]
-  Simultaneously, the obligation $\obl[1]{\PAY}$ is violated, yielding
+  Simultaneously, the obligation $\obl[1]{\PAY}$ is violated, generating
   \[
   \trace{A_1} \vDash_{\bottp{\{1\}}} \obl[1]{\PAY}.
   \]
@@ -905,16 +905,16 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             \[
             \qsem{\trace{A},C}=0
             \quad\text{and}\quad
-            \qblame{\trace{A},C}=(0,0), \text{ yielding } 0 \le 0+0.
+            \qblame{\trace{A},C}=(0,0), \text{ returning } 0 \le 0+0.
             \]
             If $\trace{A}$ violates $\LH(C)$, then since $C$ is $\bot$-free, the violation must stem from a blamable duty.
-            Therefore $\qsem{\trace{A},C}=1$ and the blame attribution $\qblame{\trace{A},C}$ yields either $(1,0)$ or $(0,1)$. In both cases, $n_1+n_2 = 1$, yielding $1 \le 1$.
+            Therefore $\qsem{\trace{A},C}=1$ and the blame attribution $\qblame{\trace{A},C}$ produces either $(1,0)$ or $(0,1)$. In both cases, $n_1+n_2 = 1$, evaluating to $1 \le 1$.
 
             For the inductive structural step on conjunction $C = C_1 \wedge C_2$:
             By the inductive hypothesis, if $\qblame{\trace{A},C_1} = (x_1, y_1)$ and $\qblame{\trace{A},C_2} = (x_2, y_2)$, then $\qsem{\trace{A},C_1} \le x_1 + y_1$ and $\qsem{\trace{A},C_2} \le x_2 + y_2$.
             Thus, for the conjunction:
             \[
-            \qblame{\trace{A},C_1 \wedge C_2} = (x_1+x_2, y_1+y_2)
+            \qblame{\trace{A},C_1 \wedge C_2} = (x_1+x_2, y_1+y_2).
             \]
             and the sum of its components is $(x_1+x_2) + (y_1+y_2) = (x_1+y_1) + (x_2+y_2)$.
             Since a double violation in a conjunction of literals may be counted as a single concurrent violation in the global quantitative score, but blame accumulates strictly for each agent, we have:
@@ -1083,7 +1083,7 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             $\lambda_{\mathbb{N}^2}(q_0,A)=\qblame{\trace{A},C}$
             by Definition~\ref{def:qbm}. The next state is
             $q_1=\delta(q_0,A)=\Prog(\trace{A},C)$.
-            Therefore, unfolding Definition~\ref{def:qbm-score} yields
+            Therefore, unfolding Definition~\ref{def:qbm-score} provides
             \[
             \qscore(\qbm(C),\pi)
             = \qblame{\trace{A},C} + \qscore(\qbm(q_1),\pi').
@@ -1126,7 +1126,7 @@ We use the following event classes (as shorthand predicates over a letter $A\sub
 
 The crucial point is that the conjunction is \emph{additive} at a time point.
 Hence, when both conjuncts are violated in the same step, we add their blame contributions component-wise.
-In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ yields $(1,1)$, while the joint failure $\OCC^\times\wedge \PAY^{\text{blk}}$ yields $(0,2)$ since both violations are blamed on agent $2$.
+In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ produces a score of $(1,1)$, while the joint failure $\OCC^\times\wedge \PAY^{\text{blk}}$ results in $(0,2)$ since both violations are blamed on agent $2$.
 
 \begin{figure}[h!]
 \centering
@@ -1607,7 +1607,9 @@ This shift also applies to graded responsibility. While SCM derives degrees of r
 
 The compilation of logical specifications into executable monitors has long been a central focus of the Runtime Verification (RV) community. A cornerstone of this effort is the automata-based approach of Leucker and Schallhart, which systematically translates temporal specifications into monitors with verdicts provably aligned with the underlying logic~\cite{leucker2011teaching}. Complementing this logical rigor in data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa excel in this domain by supporting expressive stream transformations, a capability essential for monitoring numerical properties over evolving data streams~\cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
 
-The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction paradigm advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition. The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches state valuations with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
+The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction paradigm advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition.
+% TODO: Mention that the state space of this monitor, our reachable residual set of contracts, is closely related to the closure of an LTL formula, as introduced by Vardi and Wolper \cite{VardiWolper1986}.
+The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches state valuations with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
 
 
 

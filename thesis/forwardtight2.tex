@@ -649,18 +649,17 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 \subsection{Conclusion and Limitation}      
 We have presented a first family of forward-looking semantics and a corresponding monitor construction that refine the standard satisfaction verdicts by assigning responsibility. 
 This approach is computationally efficient and provides immediate feedback on the \emph{status} of the contract, enabling runtime enforcement and dispute resolution at the moment of the breach.
-However, this prefix-based view, represents a traditional and theoretic point of view of runtine verification, is a na implies a limitation regarding the completeness of the violation history. 
-The semantics is designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. 
-Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
-A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment. The resulting problem is that any subsequent violations committed by other agents at later time steps are ignored. This limitation is particularly evident for open-ended contracts involving the repetition operator. 
+However, this prefix-based view represents a traditional, theoretical perspective on runtime verification in a true or false lazy computation, which implies a limitation in the completeness of the violation history:
+the semantics are designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
+A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment. The resulting problem is that any subsequent violations committed by other agents at later time steps are ignored. This limitation is particularly evident for open-ended contracts as our motivating example where the termination of the contract enforcement is non related to the first violation. 
 
 As illustrated by the monitor for $\repit{C_3}$ (\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
 Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
 Therefore, while this first family of semantics is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction beyond the first violation.
 
-This is a notable flaw, as in law and normative systems, one typically has to account for all violations to determine the full extent of liability or penalties.
-Capturing such multi-point violations would require a mechanism to reset or accumulate, and parallelize monitoring threads after a failure.
-Finally, extending this framework to support a cumulative blame semantics suggests interesting theoretical challenges that we attempt to solve in the next part.
+ In contracts law, one always has to account for all violations to determine the full extent of liability or penalties for litigation.
+Capturing such multi-point violations would require a mechanism to accumulate and memories blames for all violation and keeps the responsability of each violation too. 
+In the next section, we developp a first version of refined semantics where we keep a score for violation as well as a blame score for each agent.
 
 % \begin{theorem}[Correctness of the blame monitor]
 % \label{thm:bm-correct}
