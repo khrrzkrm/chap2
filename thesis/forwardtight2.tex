@@ -113,9 +113,7 @@ Where $\dbot$ stands for a non violation verdict, that is, $\dbot \in \{\,?,\ \t
 \paragraph{Intuition.}
 The three cases summarize the possible outcomes of forward-looking blame.
 The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contracts could be violated at the same time point, in this case, the agent or agents responsible for \emph{both simultaneous} violation get the blame.
-
 For the rest of the operators,  blame  follows a similar definition as the tight violation, with $k \in [0, \size{\pi}]$:
-
 \paragraph{Sequence.}
 For \(S\subseteq\{1,2\}\), contracts \(C,C'\) in \cDL, and a synchronous trace \(\pi\):
 \[
@@ -138,6 +136,38 @@ For \(S\subseteq\{1,2\}\), the blame for a reparation contract \(C\repair C'\) i
 \pi^k\ \vDash_{\bottp{S}}\ C'.
 \]
 \paragraph{Intuition.}  A reparation clause becomes active only after a violation of \(C\). The global blame set \(S\), therefore, corresponds to the agents responsible for violating the reparation \(C'\) once it is triggered. The blame for $C$ is not considered, as one cares only for the overall violation of the combined contracts.
+
+\paragraph{Finite repetition.}
+For $S\subseteq\{1,2\}$ and a finite repetition contract $C^n$:
+\[
+\pi\ \vDash_{\bottp{S}}\ C^n \;\iff\;
+\begin{cases}
+\pi\ \vDash_{\bottp{S}}\ C,\\[2pt]
+\exists \pi_k\ \vDash_{\topt} \ C \ \nd\ \pi^{k}\ \vDash_{\bottp{S}}\ C^{n-1}.
+\end{cases}
+\]
+
+\paragraph{Unbounded repetition.}
+For $S\subseteq\{1,2\}$ and an unbounded repetition contract $\repit{C}$:
+\[
+\pi\ \vDash_{\bottp{S}}\ \repit{C} \;\iff\; \exists n \ge 1 \text{ such that } \pi\ \vDash_{\bottp{S}}\ C^n.
+\]
+\paragraph{Intuition.} For repetition, the blame is assigned to the first iteration that violates the contract.
+
+\paragraph{Trigger.}
+For $S\subseteq\{1,2\}$ and a triggered contract $\trig[re]{C}$:
+\[
+\pi\ \vDash_{\bottp{S}}\ \trig[re]{C} \;\iff\;
+\exists\,k \text{ such that } \pi_k\ \vDash_{\topt}\ re \ \nd\ \pi^{k}\ \vDash_{\bottp{S}}\ C.
+\]
+
+\paragraph{Guard.}
+For $S\subseteq\{1,2\}$ and a guarded contract $\guard[re]{C}$:
+\[
+\pi\ \vDash_{\bottp{S}}\ \guard[re]{C} \;\iff\;
+(\forall j \le |\pi|: \neg(\pi_j \vDash_{\topt} re)) \ \nd\ \pi\ \vDash_{\bottp{S}}\ C.
+\]
+\paragraph{Intuition.} For triggered and guarded contracts, the control is determined by the regular expression. The blame is always inherited from $C$ exactly when the contract mandates $C$ to hold.
 
 
 \begin{example}[Witness traces for all blame verdicts]
@@ -186,16 +216,15 @@ $\pi_3 \vDash_{\bottp{\{2\}}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
 \begin{lemma}[Tight forward blame is deterministic]
 \label{lem:blame-deterministic}
 For every trace $\pi\in\Gamma^*$ and every contract $C$ in \cDL, there exists a unique verdict
+
 $v\in\mathbb{V}_{11}$ such that $\pi\ \vDash_{v}\ C$.
-Equivalently, for all $v,v'\in\mathbb{V}_{11}$,
+That is, for all $v,v'\in\mathbb{V}_{11}$,
 \[
 \pi\ \vDash_{v}\ C\ \land\ \pi\ \vDash_{v'}\ C\ \Longrightarrow\ v=v'.
 \]
 \end{lemma}
-
 \begin{proof}
 By structural induction on $C$.
-
 \paragraph{Literals.}
 For $C=\ell$, the blame rules in Definition~\ref{def:lockstep-hs} distinguish violations by a finite case split on the current letter $A\in\Gamma$.
 In each case, at most one blame set is applicable.
@@ -203,18 +232,17 @@ For instance, for $\obl[p]{a}$, either $a^{(p)}\notin A$ (yielding $\bottp{\{p\}
 The clauses for $\frb[p]{a}$ and $\perm[p]{a}$ are analogous.
 Post blame is uniquely determined because $\botpp{S}$ holds exactly when some earlier prefix had the corresponding tight blame $\bottp{S}$.
 
+
+
 \paragraph{Boolean and temporal constructors.}
-Assume determinism holds for strict subcontracts.
+Assuming the hypothesis holds for $C_1$ and $C_2$, we prove the composition by combining them.
 For conjunction $C_1\wedge C_2$, the inductive hypothesis yields unique verdicts $v_1$ and $v_2$ for $C_1$ and $C_2$ on $\pi$.
-The conjunction clause then produces a unique combined verdict: if exactly one side is a tight (or post) blame verdict, it is selected; if both are blame verdicts, the blame set is uniquely $S_1\cup S_2$; otherwise the result is the unique non-violating combination.
-
+The conjunction clause then produces a unique combined verdict: it matches a unique blame set for both contracts by inductive hypothesis and the union operation is also deterministic.
 For sequence $C_1;C_2$, the semantics activates $C_2$ only after $C_1$ reaches tight success ($\topt$) and otherwise propagates the unique verdict of $C_1$.
-Thus there is no ambiguity between blaming $C_1$ and blaming $C_2$.
-
+Thus, there is no ambiguity between blaming $C_1$ and blaming $C_2$.
 For reparation $C_1\repair C_2$, the repair is triggered by the first decisive violation of $C_1$.
 The triggering point is unique because the underlying tight regions are prefix-monotone, and the inductive hypothesis yields a unique verdict for the suffix evaluated against $C_2$.
-Hence the overall blame verdict is unique.
-
+Hence, the overall verdict of blame is unique.
 All remaining constructors follow the same pattern: control flow is determined by the underlying tight verdicts, and blame information is carried along deterministically by the inductive hypothesis.
 Therefore, for every $\pi$ and $C$, exactly one verdict in $\mathbb{V}_{11}$ applies.
 \end{proof}
@@ -233,73 +261,25 @@ The tight forward semantics is a refinement of forward tight semantics, that is 
 \]
 \end{theorem}
 
+
+
 \begin{proof}
     We prove the statement by structural induction on the contract $C$.
-    
-    \paragraph{Base case: literals.}
-    Let $C=\ell$ be a literal, and let $\pi\in\Gamma^*$ be a finite trace.
-    
-    \smallskip
-    \noindent\emph{Case $|\pi|=0$.}
-    By Definition~\ref{def:lattsat}, we have $\emptytrace\ \presat\ \ell$ for every literal $\ell$.
-    Hence the corresponding five-valued verdict is the undecided one, namely $\semfive{\emptytrace,\ell}=?$.
-    On the blame side, there is no letter to trigger any tight blame clause, and post blame is defined only from an earlier tight blame.
-    Therefore $\semelf{\emptytrace,\ell}=?$.
-    This establishes the three non-violating cases in the displayed refinement table for $\pi=\emptytrace$.
-    
-    \smallskip
-    \noindent\emph{Case $|\pi|\ge 1$.}
-    Write $\pi=\trace{A}\concat \pi'$ with $A\in\Gamma$.
-    
-    First, consider the five-valued semantics. By Definition~\ref{def:lattsat}, literals are decided on the first letter:
-    exactly one of $\trace{A}\ \satt\ \ell$ or $\trace{A}\ \violt\ \ell$ holds.
-    
-    Now consider the blame semantics for literals .
-    If $\trace{A}\ \satt\ \ell$, then no blame violation verdict applies at the first step, so $\semelf{\pi,\ell}\in\{?,\topt,\topp\}$ and the collapse leaves it unchanged. Hence $\semfive{\pi,\ell}\in\{?,\topt,\topp\}$ matches the same non-violating region.
-    
-    If instead $\trace{A}\ \violt\ \ell$, then by the literal blame rules the violation is refined into a (unique) blame set $S\subseteq\{1,2\}$:
-    for $\obl[p]{a}$ there are exactly the two exclusive cases
-    $a^{(p)}\notin A$ and $a^{(p)}\in A\land a^{(\bar p)}\notin A$,
-    for $\frb[p]{a}$ there is the single case $\{a^{(1)},a^{(2)}\}\subseteq A$,
-    and for $\perm[p]{a}$ there is the single case $a^{(p)}\in A\land a^{(\bar p)}\notin A$.
-    Thus $\semelf{\pi,\ell}=\bottp{S}$ at the decisive step and, by the post clause, $\semelf{\trace{A}\concat\pi',\ell}=\botpp{S}$ for every non-empty suffix $\pi'$.
-    Collapsing erases $S$, yielding $\bott$ at the tight step and $\botp$ afterwards, which is exactly the five-valued classification of a literal (tight violation at the first letter, then post violation).
-    Hence the refinement statement holds for literals.
-    
-    \paragraph{Inductive step.}
-    Assume the statement holds for all strict subcontracts of $C$ (and for the required suffix evaluations in the operators that split the trace).
-    We show it holds for $C$ by considering the outermost constructor.
-    
-    \paragraph{Conjunction $C=C_1\wedge C_2$.}
-    By the inductive hypothesis, for each $i\in\{1,2\}$ the blame verdict on $C_i$ collapses to the five-valued verdict on $C_i$.
-    In the blame semantics, the only difference from the five-valued semantics is that whenever a violation occurs, it carries a blame set, and when both sides violate at the same decisive point, the blame sets are unioned.
-    Erasing the blame set therefore yields exactly the same coarse outcome as in the five-valued semantics:
-    non-violating combinations stay in $\{?,\topt,\topp\}$, tight blame collapses to $\bott$, and post blame collapses to $\botp$.
-    Hence the equivalence holds for $C_1\wedge C_2$.
-    
-    \paragraph{Sequence $C=C_1;C_2$.}
-    Both semantics use the same control flow: $C_2$ is evaluated only after the unique split point where $C_1$ reaches tight success, and otherwise the verdict is inherited from $C_1$.
-    The blame semantics again only refines violations by attaching a blame set.
-    By the inductive hypothesis on $C_1$ and on $C_2$ evaluated on the suffix beyond the split, collapsing the blame verdict yields exactly the five-valued verdict for $C_1;C_2$.
-    
-    \paragraph{Reparation $C=C_1\repair C_2$.}
-    Both semantics activate $C_2$ precisely at the first tight violation of $C_1$.
-    The five-valued semantics records only whether the composite ends in $\bott$ or $\botp$ (or remains non-violating), while the blame semantics records the same region but decorates violation with a blame set.
-    By the inductive hypothesis for $C_1$ and for $C_2$ on the triggered suffix, erasing the blame set yields the same coarse verdict as in the five-valued semantics.
-    Hence the equivalence holds for $C_1\repair C_2$.
-    
-    \paragraph{Repetition and regex constructors.}
-    For $C^n$, $\repit{C}$, $\trig[re]{C}$, and $\guard[re]{C}$, the blame clauses mirror the five-valued clauses and differ only by refining violation outcomes with blame sets (and propagating them to the post region).
-    Applying the inductive hypothesis to the involved subcontracts (and to the required suffixes) and then erasing the blame sets yields the corresponding five-valued verdict in each case.
-    
-    Thus all constructors preserve the refinement property. Therefore the statement holds for all contracts $C$.
-    \end{proof}
+\paragraph{Base case: literals.}
+For literals, blame is sensitive to the tagged agent assigned to the literal. In both cases, the blame is attributed based on disjoint conditions, but their union covers exactly all the cases that are not literal violations.
+\paragraph{Inductive step.}
+Assume the statement holds for all strict subcontracts of $C$. 
+For the conjunction $C=C_1\wedge C_2$, if a blame set is assigned to one component for a fixed prefix, then that is the case for the violation semantics. In the case where both contracts are violated simultaneously, the assigned blame set is their union, which is the only difference from the violation.
+For all other compound operators, namely sequence, repetition, trigger, and guard, the blame semantics are carried in the exact same manner as the violation semantics by propagating their inductive blame set.
+The uniqueness of the blame set follows from Lemma~\ref{lem:blame-deterministic}.
+
+\end{proof}
 
 \subsection{From Tight Contract Satisfaction Monitor to Tight Blame Monitor}
 
-In the previous subsection, we defined a denotational blame semantics that refines tight and post violations by assigning responsibility to one or both agents. We now show that this refinement can be realized operationally.
+In the previous subsection, we defined a denotational blame semantics that refines tight and post violations by assigning responsibility to one or both agents. We now show that this refinement can be implemented in practice.
 Unlike the tight satisfaction monitor, which groups all violations into a single generic $\bott$ verdict, the blame monitor must distinguish between different causes of violation.
-Therefore, we cannot simply relabel the outputs of the existing monitor; we must construct a new monitor whose state space explicitly encodes these distinctions.
+Therefore, we cannot simply relabel the outputs of the Moore machine on tight satisfaction verdicts as the literals blame, for obligations and permissions, is symmetric. Instead, the monitor construction is constructed in our next definitions from the semantics again while reusing some core ideas from the previous monitor construction.
 
 \begin{definition}[Moore machine on blame verdicts]
 \label{def:blamemonitor}
@@ -332,7 +312,7 @@ For any literal $\ell$ (including obligations, permissions, and constants $\top,
 \bmc_{\mathit{lit}}(\ell) = (Q_{\ell}, q_0, \Gamma, \mathbb{V}_{11}, \delta_{\ell}, \lambda_{11}).
 \]
 \begin{itemize}
-    \item \textbf{State Space:} The set $Q_{\ell}$ contains a start state, success states, and specific blame states for any valid blame set $S$ associated with $\ell$ (where $S=\emptyset$ for $\bot$):
+    \item \textbf{State Space:} The set $Q_{\ell}$ contains a start state, success states, and specific blame states for any valid blame set $S$ associated with $\ell$, where $S=\emptyset$ for $\bot$:
     \[
     Q_{\ell} = \{q_0, q_s, q_{ps}\} \cup \bigcup_{S} \{q_{\bott}^S, q_{\botp}^S\}.
     \]
@@ -357,11 +337,26 @@ For any literal $\ell$ (including obligations, permissions, and constants $\top,
     $q_{\botp}^S \mapsto \botpp{S}$.
 \end{itemize}
 
-\paragraph{Inductive Step: Other Operators.}
-For Sequence ($C_1 ; C_2$), Reparation ($C_1 \repair C_2$), Repetition ($C^n, \repit{C}$), and Guarded contracts, the construction follows the exact same mapping and redirection to states as the Tight Satisfaction Monitor constructions (Definitions \ref{def:moore-seq} to \ref{def:moore-repeat-unbounded}), with one key adaptation:
+\paragraph{Conjunction $C \wedge C'$.}
+The blame monitor for conjunction $\bmc(C \wedge C')$ runs the two sub-monitors synchronously on the Cartesian product of their state spaces, identical to the tight satisfaction construction. Let $q$ and $q'$ be states from the monitors for $C$ and $C'$ respectively, and let $\lambda_{11}$ and $\lambda'_{11}$ be their respective output functions. The output function $\lambda_{11}^{\wedge}$ explicitly combines blame sets when both states indicate a violation in the exact same step, where (q,q') is the product state in $\bmc(C \wedge C')$:
+\[
+\lambda_{11}^{\wedge}(q, q') =
+\begin{cases}
+\bottp{S \cup S'} & \text{if } \lambda_{11}(q) = \bottp{S} \text{ and } \lambda'_{11}(q') = \bottp{S'}, \\
+\bottp{S} & \text{if } \lambda_{11}(q) = \bottp{S} \text{ and } \lambda'_{11}(q') \in \{\mathsf{?}, \topp, \topt\}, \\
+\bottp{S'} & \text{if } \lambda'_{11}(q') = \bottp{S'} \text{ and } \lambda_{11}(q) \in \{\mathsf{?}, \topp, \topt\}, \\
+\botpp{S \cup S'} & \text{if } \lambda_{11}(q) = \botpp{S} \text{ and } \lambda'_{11}(q') = \botpp{S'}, \\
+\botpp{S} & \text{if } \lambda_{11}(q) = \botpp{S} \text{ and } \lambda'_{11}(q') \in \{\mathsf{?}, \topp, \topt\}, \\
+\botpp{S'} & \text{if } \lambda'_{11}(q') = \botpp{S'} \text{ and } \lambda_{11}(q) \in \{\mathsf{?}, \topp, \topt\}, \\
+\lambda_{5}^{\wedge}(q, q') & \text{otherwise (non-violating cases)}.
+\end{cases}
+\]
+
+\paragraph{Other Operators.}
+For Sequence ($C ; C'$), Reparation ($C \repair C'$), Repetition ($C^n, \repit{C}$), and Guarded contracts, the construction follows the exact same mapping and redirection to states as the Tight Satisfaction Monitor constructions in Definitions \ref{def:moore-seq} to \ref{def:moore-repeat-unbounded}, with one key adaptation:
 \begin{itemize}
     \item \textbf{Matching Blame States:} Wherever the tight monitor construction redirects a generic violation state (outputting $\bott$), the blame monitor construction redirects \emph{all} corresponding specific blame states (outputting $\bottp{S}$ for any $S$).
-    \item \textbf{Example (Reparation):} In $\tsmc_{\repair}$, transitions to any state $q$ where $\lambda_5(q)=\bott$ are redirected to the initial state of $C_2$. In $\bmc_{\repair}$, transitions to \emph{any} state $q$ where $\lambda_{11}(q)=\bottp{S}$ (regardless of $S$) are redirected to the initial state of $C_2$.
+    \item \textbf{Example (Reparation):} In $\tsmc_{\repair}$, transitions to any state $q$ where $\lambda_5(q)=\bott$ are redirected to the initial state of $C'$. In $\bmc_{\repair}$, transitions to \emph{any} state $q$ where $\lambda_{11}(q)=\bottp{S}$ (regardless of $S$) are redirected to the initial state of $C'$.
 \end{itemize}
 This preserves the control-flow semantics of the operators: for example, in reparation, \emph{any} fault by \emph{any} party in the primary contract triggers the secondary contract, effectively masking the initial blame in favor of the reparation's outcome.
 \end{definition}
@@ -376,11 +371,11 @@ Let $C$ be a contract in \cDL. For every finite trace $\pi$, the output of the b
 
 \begin{proof}
 The proof proceeds by structural induction on $C$.
+The proof proceeds by structural induction on $C$.
 \begin{itemize}
-    \item \textbf{Literals:} The state splitting in $\bmc_{\mathit{lit}}$ explicitly encodes the blame partition rules. For $\obl[p]{a}$, the transition $\delta_{\ell}$ ensures that a trace with $a^{(p)} \notin A$ reaches $q_{\bott}^p$, while a trace with blocked cooperation reaches $q_{\bott}^{\bar{p}}$. This matches the semantic definition.
-    \item \textbf{Conjunction:} The product construction explores all pairs of states. The definition of $\lambda_{11}^{\wedge}$ explicitly calculates $S_1 \cup S_2$ when both components are in violation states, and selects the single responsible party when only one violates. This matches the semantic clause $\pi \vDash_{\bottp{S_1 \cup S_2}} C_1 \wedge C_2$.
-    \item \textbf{Other Operators:} The correctness relies on the fact that operators like Sequence and Reparation are defined by switching control based on the \emph{presence} of a violation (or success), not the \emph{content} of the blame.
-    For instance, in $C_1 \repair C_2$, the semantics state that if $C_1$ fails (regardless of $S$), we evaluate $C_2$. The monitor construction realizes this by redirecting all transitions targeting any $\bottp{S}$-labeled state of $C_1$ to the start of $C_2$. Thus, the initial blame $S$ is discarded (masked) exactly as prescribed by the semantics, and the final verdict is determined by $C_2$.
+\item \textbf{Literals:} The states output function $\bmc_{\mathit{lit}}$ matches explicitly the blame partition rules.
+\item \textbf{Conjunction:} The construction definition for pairs of states $\lambda_{11}^{\wedge}$ outputs the blame state  $S \cup S’$ when both components are in violation states, and selects the single responsible party when only one violates. This matches the semantic clause $\pi \vDash_{\bottp{S \cup S’}} C \wedge C’$.
+\item \textbf{Other Operators:} The correctness relies on the fact that operators like Sequence and Reparation are defined by switching control phase and only editing the \emph{content} of the blame.
 \end{itemize}
 \end{proof}
 
@@ -652,25 +647,20 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
       \end{example}     
       
 \subsection{Conclusion and Limitation}      
-      We have presented forward-looking semantics and a corresponding monitor construction that refine the standard satisfaction verdicts by assigning responsibility. 
-      This approach is computationally efficient and provides immediate feedback on the \emph{status} of the contract, allowing for runtime enforcement and dispute resolution at the moment a breach occurs.
-      
-      However, this prefix-based view naturally implies a limitation regarding the completeness of the violation history. 
-      The semantics is designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. 
-      Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
-      A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment.
-      Consequently, any subsequent violations committed by other agents at later time steps are effectively masked by the first failure.
-      
-      This limitation is particularly evident in open-ended contracts involving the repetition operator. 
-      As illustrated by the monitor for $\repit{C_3}$ (\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
-      Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
-      Therefore, while this framework is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction. 
-      This is a notable constraint, as in law and normative systems, one typically has to account for all violations to determine the full extent of liability or penalties.
-      Capturing such multi-point violations would require a mechanism to reset or parallelize monitoring threads after a failure, rather than absorbing them into a permanent sink.
-      
-      Finally, extending this framework to support a cumulative blame semantics suggests interesting theoretical challenges. 
-      In particular, the interaction between timed operators and conjunctions complicates fault aggregation. 
-      For instance, determining whether overlapping failures in concurrent branches or repeated violations within sliding time windows should be counted as distinct or continuous breaches requires a more complex, possibly non-monotonic, judgment structure than the one presented here.     
+We have presented a first family of forward-looking semantics and a corresponding monitor construction that refine the standard satisfaction verdicts by assigning responsibility. 
+This approach is computationally efficient and provides immediate feedback on the \emph{status} of the contract, enabling runtime enforcement and dispute resolution at the moment of the breach.
+However, this prefix-based view, represents a traditional and theoretic point of view of runtine verification, is a na implies a limitation regarding the completeness of the violation history. 
+The semantics is designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. 
+Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
+A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment. The resulting problem is that any subsequent violations committed by other agents at later time steps are ignored. This limitation is particularly evident for open-ended contracts involving the repetition operator. 
+
+As illustrated by the monitor for $\repit{C_3}$ (\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
+Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
+Therefore, while this first family of semantics is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction beyond the first violation.
+
+This is a notable flaw, as in law and normative systems, one typically has to account for all violations to determine the full extent of liability or penalties.
+Capturing such multi-point violations would require a mechanism to reset or accumulate, and parallelize monitoring threads after a failure.
+Finally, extending this framework to support a cumulative blame semantics suggests interesting theoretical challenges that we attempt to solve in the next part.
 
 % \begin{theorem}[Correctness of the blame monitor]
 % \label{thm:bm-correct}
