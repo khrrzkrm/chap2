@@ -39,7 +39,7 @@
 %   \item classify any strict extension \emph{after} these frontiers as ``post'' acceptance/rejection;
 %   \item mark all prefixes that are still undecided but extendable to acceptance as \emph{pre-eager}.
 % \end{itemize}
-% This yields determinacy (exactly one verdict per prefix), uniqueness of frontiers,
+% This produces determinacy (exactly one verdict per prefix), uniqueness of frontiers,
 % and monotone \emph{evolution} of verdicts along extensions—properties crucial for
 % correctness, fairness, and auditable timing in contracts.
 
@@ -59,7 +59,7 @@
 % This requires a prefix-sensitive notion of evaluation together with \emph{eagerness}: we must identify the \emph{first} prefix at which the behavior becomes satisfied or becomes impossible.
 % This viewpoint diverges from plain set membership.
 % For example, if $L=\{a\}$, the word $aa$ is not in $L$ (it is rejected by language membership).
-% However, for behavioral monitoring, the prefix $a$ already establishes success; the second $a$ is merely an irrelevant extension, not a failure.
+% However, for behavioral monitoring, the prefix $a$ already defines success; the second $a$ is merely an irrelevant extension, not a failure.
 
 % Our objective is to formalize this shift by partitioning $\Sigma^*$ into regions that isolate these \emph{boundaries of decision}, explicitly resolving conflicts between ``bad words'' and ``extensions of good words'' in favor of the latter.
 
@@ -75,14 +75,14 @@
 %     \end{enumerate}
 % \end{definition}
 
-% Applying the minimal frontier operator yields two sets of candidates:
+% Applying the minimal frontier operator produces two sets of candidates:
 % \begin{itemize}
 %     \item $\minlang{L}$: The candidates for \emph{Eager Acceptance} (shortest words in $L$).
 %     \item $\minlang{\badclass{L}}$: The candidates for \emph{Eager Rejection} (shortest words deviating from $L$).
 % \end{itemize}
 
 % \subsubsection{The Priority of Acceptance}
-% A rigorous definition of monitoring behavior requires resolving semantic overlaps between these frontiers.
+% A formal definition of monitoring behavior requires resolving semantic overlaps between these frontiers.
 % A word can be a minimal bad prefix while simultaneously extending a minimal accepted word (e.g., as noted, $aa$ regarding $L=\{a\}$).
 
 % To ensure deterministic, forward-looking behavior, we enforce a \textbf{priority of acceptance}:
@@ -243,7 +243,7 @@
 %   are classified as post-acceptance rather than as violations.
   
   
-%   This yields the canonical five-region partition of $\Sigma^*$ by $\Sigma+$ saturation:
+%   This produces the canonical five-region partition of $\Sigma^*$ by $\Sigma+$ saturation:
 %  \[
 % \begin{array}{rcll}
 % \Pre{L} &:=& \closureclass{\minlang{L}}\setminus \minlang{L}
@@ -326,7 +326,7 @@
 %       Analogously, if $\semfive{u \vDash L}=\botp$, there exists a unique strict prefix
 %       $u'\prec u$ such that $\semfive{u' \vDash L}=\bott$.
 
-%       \item \textbf{Determinism:} Since the partition in Theorem \ref{thm:five-way} is disjoint and complete, the semantics yields exactly one verdict for any input trace.
+%       \item \textbf{Determinism:} Since the partition in Theorem \ref{thm:five-way} is disjoint and complete, the semantics produces exactly one verdict for any input trace.
 %   \end{enumerate}
 % \end{theorem}
 
@@ -863,7 +863,7 @@ Consider the language $L=\{a,ab,bb\}$ over $\Sigma=\{a,b\}$. The minimized five-
 \caption{Minimized five-valued Moore machine for $L=\{a,ab,bb\}$.
 Each node displays its identifier and output verdict.
 Green states indicate satisfaction, red states indicate violation, and gray states remain undecided.
-Starting from $s_0$, inputs $a$ or $bb$ yield $\topt$, input $ba$ yields $\bott$,
+Starting from $s_0$, inputs $a$ or $bb$ yield $\topt$, input $ba$ produces $\bott$,
 and subsequent inputs transition to the irreversible post-frontier states $\topp$ or $\botp$.}
 \label{fig:moore-tight-compact}
 \end{figure}
@@ -1019,7 +1019,7 @@ We build $\aut_{\varepsilon}(re)$ by structural recursion on $re$, using the
 usual two distinguished states $(s_{\mathrm{in}},s_{\mathrm{out}})$ per fragment
 and $\varepsilon$-transitions for wiring~\cite{Thompson1968,HopcroftUllman2001,Sipser2012}. The only twist is how we
 treat letters, since an atom $\mathsf{A}$ matches \emph{any} $\Gamma$-letter $X$
-that \emph{covers} $\mathsf{A}$ (Definition~\ref{def:re-semantics}).
+that \emph{covers} $\mathsf{A}$, as in Definition~\ref{def:re-semantics}.
 
 \begin{itemize}
 
@@ -1251,7 +1251,7 @@ $re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
 \end{example}
 % \subsubsection{From Language Automaton to Tight Monitor Construction}
 
-% This subsection explains how the deterministic language automaton obtained for a regular expression is lifted into a tight monitor. A language automaton recognizes complete words of a regular expression, whereas a tight monitor must classify every prefix of every word into one of the five semantic regions. The transition structure of the automaton is therefore preserved, and only the output behavior changes: each state receives a tight verdict according to the five-valued prefix semantics. This yields the tight monitor for regular expressions introduced in Definition~\ref{def:tsmc-re}.
+% This subsection explains how the deterministic language automaton obtained for a regular expression is lifted into a tight monitor. A language automaton recognizes complete words of a regular expression, whereas a tight monitor must classify every prefix of every word into one of the five semantic regions. The transition structure of the automaton is therefore preserved, and only the output behavior changes: each state receives a tight verdict according to the five-valued prefix semantics. This produces the tight monitor for regular expressions introduced in Definition~\ref{def:tsmc-re}.
 
 % We now recall the components used in this transformation and show how to convert the DFA into a Moore machine with tight verdicts.
 
@@ -1363,7 +1363,7 @@ $re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
 % \caption{Minimized five-valued Moore machine for $L=\{a,ab,bb\}$.
 % Each node shows its name and output verdict ($\tightverdicts$).
 % Green states denote satisfaction, red denotes violation, and gray denotes undecided.
-% From $s_0$, input $a$ or $bb$ yields~$\topt$, input $ba$ yields~$\bott$,
+% From $s_0$, input $a$ or $bb$ produces~$\topt$, input $ba$ produces~$\bott$,
 % and further inputs move to the post-frontier verdicts $\topp$ or $\botp$.}
 % \label{fig:moore-tight-compact}
 % \end{figure}
@@ -1464,7 +1464,7 @@ $re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
 % post regions $\IAL{L}$ and $\IRL{L}$, and one language difference realizes the
 % acceptance-first tie-break $\ERL{L} := \minlang{\badclass{L}}\setminus \IAL{L}$.
 
-% Practically, the approach is modular: each region is an ordinary DFA; scalable: construct only the reachable part of products and minimize components; and reusable across
+% Practically, the approach is modular: each region is an ordinary DFA; adaptable: construct only the reachable part of products and minimize components; and reusable across
 % specifications that share the same $L$. Conceptually, it aligns the linguistic requirements of normative systems, where norms enter into force at exact positions, with
 % executable monitors whose decisions are fair (no premature verdicts) and final
 % (no evolution to the opposite verdict). In short, standard automata technology, assembled carefully, delivers a monitor that is \emph{correct by design}.
@@ -1472,7 +1472,7 @@ $re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
 % \subsection{Illustration Through Regular Expressions from \cDL}
 % \label{subsec:re-tight}
 
-% This section demonstrates the process of defining monitors for regular expressions from \cDL. The procedure begins by specifying the language semantics of the regular expression, followed by a standard transformation into a deterministic automaton. Subsequently, the transformation described in the previous subsection is applied to construct the five tight semantic monitors for the formula.
+% This section shows the process of defining monitors for regular expressions from \cDL. The procedure begins by specifying the language semantics of the regular expression, followed by a standard transformation into a deterministic automaton. Subsequently, the transformation described in the previous subsection is applied to construct the five tight semantic monitors for the formula.
 % This subsection fixes the semantics of the regular expressions that act as temporal guards in \cDL.
 
 % \subsubsection{Semantics for Regular Expressions from \cDL}
@@ -1733,7 +1733,7 @@ $re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
 % We now close the pipeline from guards to monitors.
 % Starting from a regular expression $\re$ in \cDL, we have fixed its denotational language $\Lang{\re}\subseteq\Gamma^*$ (Definition~\ref{def:re-semantics}) and we can obtain a completed DFA for this language by the standard NFA-to-DFA constructions.
 % What remains is to turn this language recognizer, which only decides membership of whole words, into an executable artefact that classifies \emph{every prefix} according to the tight regions introduced earlier.
-% The construction below performs exactly this lift: it wraps $\Lang{\re}$ into the five-region Moore machine and thereby yields a tight satisfaction monitor whose output coincides with the five-valued prefix semantics on all prefixes.
+% The construction below performs exactly this lift: it wraps $\Lang{\re}$ into the five-region Moore machine and thereby produces a tight satisfaction monitor whose output coincides with the five-valued prefix semantics on all prefixes.
 
 % \subsubsection{From Language Automaton to Tight Monitor Construction}\label{subsec:re-to-monitor}
 

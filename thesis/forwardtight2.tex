@@ -236,12 +236,12 @@ Post blame is uniquely determined because $\botpp{S}$ holds exactly when some ea
 
 \paragraph{Boolean and temporal constructors.}
 Assuming the hypothesis holds for $C_1$ and $C_2$, we prove the composition by combining them.
-For conjunction $C_1\wedge C_2$, the inductive hypothesis yields unique verdicts $v_1$ and $v_2$ for $C_1$ and $C_2$ on $\pi$.
+For conjunction $C_1\wedge C_2$, the inductive hypothesis produces unique verdicts $v_1$ and $v_2$ for $C_1$ and $C_2$ on $\pi$.
 The conjunction clause then produces a unique combined verdict: it matches a unique blame set for both contracts by inductive hypothesis and the union operation is also deterministic.
 For sequence $C_1;C_2$, the semantics activates $C_2$ only after $C_1$ reaches tight success ($\topt$) and otherwise propagates the unique verdict of $C_1$.
 Thus, there is no ambiguity between blaming $C_1$ and blaming $C_2$.
 For reparation $C_1\repair C_2$, the repair is triggered by the first decisive violation of $C_1$.
-The triggering point is unique because the underlying tight regions are prefix-monotone, and the inductive hypothesis yields a unique verdict for the suffix evaluated against $C_2$.
+The triggering point is unique because the underlying tight regions are prefix-monotone, and the inductive hypothesis produces a unique verdict for the suffix evaluated against $C_2$.
 Hence, the overall verdict of blame is unique.
 All remaining constructors follow the same pattern: control flow is determined by the underlying tight verdicts, and blame information is carried along deterministically by the inductive hypothesis.
 Therefore, for every $\pi$ and $C$, exactly one verdict in $\mathbb{V}_{11}$ applies.
@@ -300,7 +300,7 @@ where:
 \end{enumerate}
 \end{definition}
 
-We now define the construction function $\bmc(C)$ inductively. This follows the same structural approach as the tight satisfaction monitor construction $\tsmc(C)$ (Definition~\ref{def:tsmc}), but creates distinct states for distinct blame assignments.
+We now define the construction function $\bmc(C)$ inductively. This follows the same structural approach as the tight satisfaction monitor construction $\tsmc(C)$ in Definition~\ref{def:tsmc}, but creates distinct states for distinct blame assignments.
 
 \begin{definition}[Blame Monitor Construction]
 \label{def:bmc}
@@ -585,7 +585,7 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 
 
     \begin{example}[Blame Monitor for $\repit{C_3}$]
-      The figure below shows the blame monitor for the unbounded repetition of the rent-and-reparation contract. The generic violation state $q_{\bott}$ from the standard monitor is split into $s_{\bott}^1$ and $s_{\bott}^2$. Crucially, once the monitor transitions to a post-violation sink (e.g., $s_{\botp}^1$), it loops on any input $\Gamma$. This demonstrates the "first blame" limitation: if the tenant is blamed for missing a fine, the monitor will never blame the landlord for any future misconduct.
+      The figure below shows the blame monitor for the unbounded repetition of the rent-and-reparation contract. The generic violation state $q_{\bott}$ from the standard monitor is split into $s_{\bott}^1$ and $s_{\bott}^2$. Crucially, once the monitor transitions to a post-violation sink such as $s_{\botp}^1$, it loops on any input $\Gamma$. This shows the "first blame" limitation: if the tenant is blamed for missing a fine, the monitor will never blame the landlord for any future misconduct.
       
       \begin{figure}[h!]
       \centering
@@ -648,13 +648,13 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
       
 \subsection{Conclusion and Limitation}      
 We have presented a first family of forward-looking semantics and a corresponding monitor construction that refine the standard satisfaction verdicts by assigning responsibility. 
-This approach is computationally efficient and provides immediate feedback on the \emph{status} of the contract, enabling runtime enforcement and dispute resolution at the moment of the breach.
+This approach is computationally fast and provides immediate feedback on the \emph{status} of the contract, enabling runtime enforcement and dispute resolution at the moment of the breach.
 However, this prefix-based view represents a traditional, theoretical perspective on runtime verification in a true or false lazy computation, which implies a limitation in the completeness of the violation history:
 the semantics are designed to detect the \emph{first} decisive violation that renders the contract permanently unsatisfiable. Once the monitor transitions to a post-violation sink state ($\botpp{S}$), the verdict becomes immutable. 
 A practical consequence of this property is that, even when processing infinite words or streams, the monitor can be programmed to halt execution immediately after the first tight violation is detected, as no future event can alter the blame assignment. The resulting problem is that any subsequent violations committed by other agents at later time steps are ignored. This limitation is particularly evident for open-ended contracts as our motivating example where the termination of the contract enforcement is non related to the first violation. 
 
 As illustrated by the monitor for $\repit{C_3}$ (\ref{fig:rep-c3_blame}), if the tenant is blamed for failing to pay the reparation in one cycle, the monitor enters the sink state $s_{\botp}^1$. 
-Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle (e.g., by blocking a valid payment attempt), the monitor remains fixed on the initial verdict $\botpp{1}$. 
+Even if the interaction continues and the landlord subsequently violates their permission or obligation in a future cycle, such as by blocking a valid payment attempt, the monitor remains fixed on the initial verdict $\botpp{1}$. 
 Therefore, while this first family of semantics is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction beyond the first violation.
 
  In contracts law, one always has to account for all violations to determine the full extent of liability or penalties for litigation.

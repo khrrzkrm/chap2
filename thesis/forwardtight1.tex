@@ -142,7 +142,7 @@ shorten >=1pt,auto,node distance=28mm,semithick,
 \caption{Compact 5-verdict Moore machine for the obligation literal
 $\obl[1]{a}$. 
 Each node displays its internal state and the corresponding output verdict $\in\tightverdicts$.
-The first joint execution of $a^{(1)}$ and $a^{(2)}$ yields~$\topt$,
+The first joint execution of $a^{(1)}$ and $a^{(2)}$ produces~$\topt$,
 otherwise~$\bott$; subsequent steps emit the post-frontier verdicts
 $\topp$ or $\botp$.}
 \label{fig:moore-obligation-compact}
@@ -290,7 +290,7 @@ constructed monitors $\tsmc(C)$ and $\tsmc(C')$, the monitor for the composite
 contract $C\,;\,C'$ must first execute $C$ on the incoming trace and, once $C$
 reaches tight satisfaction, must continue execution with $C'$ on the remaining
 suffix. The construction below reuses the state spaces of both components by redirecting transitions that correspond to the tight success of $C$
-into the initial state of $C'$. This yields a tight prefix monitor that exactly matches the semantics of sequential composition.
+into the initial state of $C'$. This produces a tight prefix monitor that exactly matches the semantics of sequential composition.
 
 \begin{remark}[Contradicting literals]
   \label{rem:contradicting-literals}
@@ -639,7 +639,7 @@ emits $\bott$ and then $\botp$ forever.
 (iii) If \,$\OCC^\surd \land \PAY^{\times}$\ holds, the reparation branch of $C_3$
 is activated, and we move to the waiting state $s_1$ (still $\mathsf{?}$). From $s_1$,
 \,$\PAYF^\surd$\ discharges the reparation and triggers $\topt$; otherwise
-\,$\PAYF^{\times}$\ yields $\bott$. After $\topt$ (accepting frontier), all continuations
+\,$\PAYF^{\times}$\ produces $\bott$. After $\topt$ (accepting frontier), all continuations
 are in $\topp$. After $\bott$ (reject frontier) all continuations are in $\botp$.
 Thus, the decisive index for the conjunction is the latter of the two successes when both succeed, or the earlier tight failure when any conjunct fails, exactly as the figure shows.
 \begin{figure*}[h!]
@@ -1158,7 +1158,7 @@ We move now to guarded contracts monitor construction. Unlike conjunction, the g
 
 \subsubsection*{Construction for repetition contracts}
 
-Repetition contracts enforce the sequential satisfaction of a behavior over multiple iterations. The construction chains independent copies of the monitor for $C$, activating the next copy when the previous one reaches tight success. For finite repetition $C^n$, this yields $n$ linked monitors. For unbounded repetition $\repit{C}$, the construction forms an infinite cycle.
+Repetition contracts enforce the sequential satisfaction of a behavior over multiple iterations. The construction chains independent copies of the monitor for $C$, activating the next copy when the previous one reaches tight success. For finite repetition $C^n$, this produces $n$ linked monitors. For unbounded repetition $\repit{C}$, the construction forms an infinite cycle.
 
 \begin{definition}[Tight monitor construction for finite repetition $\tsmc_\nrep(n,C)$]
 \label{def:moore-repeat-finite}
@@ -1276,7 +1276,7 @@ The monitor never declares satisfaction, as the success states were removed. Its
 \lambda_5^{\omega}(q) = \lambda_5(q).
 \]
 
-This yields the tight five-valued monitor for $\repit{C}$.
+This produces the tight five-valued monitor for $\repit{C}$.
 \end{definition}
 
 \begin{lemma}[Correctness of the unbounded repetition monitor]
@@ -1524,7 +1524,7 @@ and $\overline{T} := \Gamma\setminus T$ denotes its absence.
 
 
 
-The unbounded repetition of \(C_3\) enforces an infinite sequence of payments with repair when payment first fails. The regular expression \(re\) captures the termination notice.
+The unbounded repetition of \(C_3\) enforces an infinite sequence of payments with repair when payment first fails. The regular expression \(re\) represents the termination notice.
 
 The guarded product synchronizes according to its definition: (1) when the guard remains open, all failures of \(\repit{C_3}\) propagate to the global verdict, and (2) when the guard activates, the open-ended obligation is discharged. The monitor then collapses to post acceptance, provided that no violation has occurred.
 

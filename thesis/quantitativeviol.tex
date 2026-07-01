@@ -3,7 +3,7 @@
 \section{Quantitative Violation Semantics}
 
 The basic restriction of the forward-looking tight satisfaction semantics, as defined in the previous section, resides in its binary and prefix-closed nature. In that framework, the monitoring process halts definitively at the first tight violation.
-Despite being computationally efficient for stopping compliance systems, such as when a safety-critical property is failing, this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
+Despite being computationally fast for stopping compliance systems, such as when a safety-critical property is failing, this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
 
 It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time, a critical requirement for complete legal responsibility.
 To tackle this limitation, it is necessary to transition from a boolean verdict to a \emph{quantitative semantics}, changing the emphasis from the question ``Did a violation occur?'' to ``How many violations occurred, and what was their magnitude?''
@@ -75,7 +75,7 @@ For a sequence $C ; C'$, progression determines if the current step concludes $C
   C' & \text{if } \Prog(\trace{A}, C) = \emptc.
 \end{cases}
 \]
-If $C$ is discharged by step $A$ (i.e., its residual is $\emptc$), the monitor immediately activates the first step of the next portion $C'$.
+If $C$ is discharged by step $A$, meaning its residual is $\emptc$, the monitor immediately activates the first step of the next portion $C'$.
 
 
 \paragraph{Reparation (Contrary-to-Duty Branching).}
@@ -286,7 +286,7 @@ The residual contract after Month~1 is $\obl[1]{\PAYF}$, obliging the tenant to 
   {\vspace{8pt}}{\vspace{-12pt}}
 \end{example}
 
-After establishing the evolution of single-step reparations, the analysis is extended to still open-ended contracts. The following example demonstrates how the \CPM handles infinite streams with recurring duties, showing how violations in one period persist into subsequent periods.
+After establishing the evolution of single-step reparations, the analysis is extended to still open-ended contracts. The following example shows how the \CPM handles infinite streams with recurring duties, showing how violations in one period persist into subsequent periods.
 
 \begin{example}[Progression of Infinite Repetition]
 Consider the recurring contract $\repit{C_3}$, where the tenant must pay rent (or a fine) every month.
@@ -347,8 +347,7 @@ While repetitions capture simple recurring duties, more complex contracts are of
 
 \begin{example}[Progression of Guarded Contracts]~\\
 A guarded contract that persists until a termination notice ($\notifterm$) is issued is examined.
-\[ \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}} \]
-
+$$ \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}} $$
 \noindent\textbf{Trace 1: Successful Termination.}
 The tenant pays in Month~1 ($A_1$) and issues a termination notice in Month~2 ($A_2$), as illustrated in \ref{example:prog-guard1}.
 \begin{itemize}
@@ -410,7 +409,7 @@ In this scenario, the tenant pays in Month~1 but fails to pay in Month~2 (and gi
     \item Simultaneously, the inner contract $\repit{C_3}$ processes the event. Since rent was not paid, the inner contract evolves into a reparation state ($\obl[1]{\PAYF}$).
     \item The resulting residual is a guarded reparation:\\ $\guard[\notifterm^{(1)} \mid \Gamma^+ \cdot \notifterm^{(1)}]{(\obl[1]{\PAYF} ; \repit{C_3})}$.
 \end{itemize}
-This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the content inside (the obligations) evolves and accumulates violations independently.
+This illustrates how the \CPM maintains the outer guard structure while the inner obligations evolve and accumulate violations independently.
 
   \boxalignfigure{\resizebox{0.95\textwidth}{!}{%
   \begin{tikzpicture}[y=1.8cm,x=4.7cm]
@@ -461,20 +460,20 @@ This illustrates how the \CPM maintains the ``wrapper'' (the guard) while the co
   
 \end{example}
 
-We now turn to the formal study of the notion of reachable residual contracts. This notion is essential for synthesizing monitors under the quantitative semantics introduced above, since we want the monitor to be represented as a finite-state machine. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set captures precisely the state space of the monitor construction.
+We now turn to the formal study of the notion of reachable residual contracts. This notion is essential for synthesizing monitors under the quantitative semantics introduced above, since we want the monitor to be represented as a finite-state machine. While the progression function describes how a single event advances a contract, monitor construction requires a global view of all contract states that may arise under arbitrary traces. The reachable residual contract set represents precisely the state space of the monitor construction.
 
 
 
-\begin{definition}[Reachable Residual Contract Set from a Contract]
+\begin{definition}[Reachable Residual Contract Set of a Contract]
   Let $C \in \cDL$. The \emph{reachable residual contract set} of $C$, written $\rrcs{C}$, is formally defined as:
   \[    \rrcs{C} := \{\, C_r \in (\cDL \cup \{\emptc\}) \mid \exists \pi \in \Gamma^*: \Prog(\pi,C)= C_r \,\}.  \]
   \end{definition}
 
 \begin{claim}[Finiteness of Reachable Residual Contracts]\label{clm:rrcs-finite}
 
-  For every contract $C \in \cDL$, the reachable residual contract set $\rrcs{C}$ is finite.
+  For every contract $C \in \cDL$, its reachable residual contract set $\rrcs{C}$ is finite.
   \end{claim}
   \vspace{-2em}
   \paragraph{Intuition.}
-The claim follows from the finite syntactic structure of $C$.  The progression function $\Prog$ rewrites contracts using only sub-contracts of the contract, residuals of regular expressions, and the contract terminal state $\emptc$. No new syntactic contract is generated beyond its components.
+The claim follows from the finite syntactic structure of $C$ and the progression function $\Prog$. The function $\Prog$ rewrites contracts using only sub-contracts of the contract, residuals of regular expressions, and the contract terminal state $\emptc$. That is, no new syntactic contract is generated beyond its components and the recursive applications of the recusive application of the progression function always terminates without exploring all the possible traces.
 \input{qviol}

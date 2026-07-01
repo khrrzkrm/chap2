@@ -1,16 +1,21 @@
 \subsection{Quantitative Monitoring of Contract Compliance}
 
-To define a quantitative violation semantics that persists beyond the first violation prefix, we rely on the \emph{Contract Progress Function} as the underlying state-transition mechanism. The progression function $\Prog$ dynamically evolves the contract after each observation, producing a sequence of \emph{residual contracts} that represent the exact normative state at each time step. By updating the contract state incrementally, we ensure that the violation score for any given event is calculated strictly against the specific literals in force at that moment, accounting for all prior satisfactions, discharges, or triggered reparations. This updated residual is then propagated to the subsequent evaluation step.
+To define a quantitative violation semantics that continues beyond the first violation prefix, we define the Contract Progress Function as the main state-transition mechanism. The progression function $\Prog$ updates the contract after each observation, creating a sequence of residual contracts that show the exact normative state at each time step. By updating the contract state with each event, we make sure the violation score for any event is calculated only against the specific literals in effect at that time. The updated residual is then used in the next evaluation step.
+
+
 
 As an optimization, we define a helper function to evaluate only the currently enforced literal for a given event, rather than re-traversing the whole contract structure.
 
+
+
 \begin{definition}[Literal Head]
+
     Let $\epsilon_\ell$ be a distinguished symbol denoting the absence of an immediately available literal.
-    The \emph{literal head} function
-    \[
-      \LH : \cDL \rightharpoonup (\ell \cup \{\epsilon_\ell\}),
-    \]
-    is a partial function defined inductively on the structure of contracts as follows:
+    The \emph{literal head} function, written
+    $
+      \LH : \cDL \rightharpoonup (\ell \cup \{\epsilon_\ell\})
+    $,
+    is the partial function defined inductively on the structure of contracts as follows:
     \[
     \begin{aligned}
     \LH(\ell) &:= \ell. \\[2pt]
@@ -31,13 +36,14 @@ As an optimization, we define a helper function to evaluate only the currently e
     \end{aligned}
     \]
     \end{definition}
-    We explicitly exclude conjunctions ($C \wedge C'$) from the domain of $\LH$ because (i) they would necessitate a codomain of literal sets, and (ii) they are handled via recursive decomposition in the quantitative semantics definition.
+    We do not define the function for conjunctions ($C \wedge C'$). This is because it would require a codomain of literal sets, which will be handled later via recursive decomposition in the definition of quantitative semantics.
     We now define the quantitative violation semantics based on two components: \begin{inparaenum} \item the progress monitor, which identifies the remaining parts of a contract to be evaluated, and \item a scoring mechanism that evaluates each event against the head literal of the residual contract returned by $\Prog$. \end{inparaenum} The final score is the sum of violations for each event along the trace.
 
   \begin{definition}[Quantitative Violation Semantics]
+  \label{def:quant-viol-sem}
     Let $\trace{A}$ be a single event trace over $\Gamma$, $\pi$ be a (possibly empty) finite trace in $\Gamma^*$, and $C$ be a contract from $\cDL$.
     We define the \emph{quantitative violation semantics}, denoted by $\qsem{}: \Gamma^* \times \cDL \to \mathbb{N} $, which maps a trace and a contract to a natural number representing the violation score.
-    The function is defined recursively by evaluating the head of the trace ($\trace{A}$) and propagating the residual contract to the tail ($\pi$):
+    The function is defined recursively by evaluating the head of the trace ($\trace{A}$) and propagating the residual contract to the tail of the trace, symbolized by $\pi$:
 \begin{align}
 \qsem{\trace{A}\concat \pi, C}
 &:= \qsem{\trace{A}, C } + \qsem{\pi, \Prog(\trace{A},C)}, \\
@@ -50,7 +56,7 @@ As an optimization, we define a helper function to evaluate only the currently e
     \[
     \qsem{\trace{A}, C} :=
     \begin{cases} 
-      \qsem{\trace{A},C_1} + \qsem{\trace{A}, C_2} & \text{if } C = C_1 \wedge C_2, \\
+      \qsem{\trace{A},C} + \qsem{\trace{A}, C'} & \text{if } C \wedge C', \\
       0 &\text{if } \lnot(\trace{A} \violt \LH(C))\\ & \sor \LH(C)= \epsilon_{\ell},\\
       1 & \text{if } \trace{A} \violt \LH(C). \\
     \end{cases}
@@ -58,26 +64,28 @@ As an optimization, we define a helper function to evaluate only the currently e
     \end{definition}
 
 Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract execution as a path-accumulation problem. At every time step, the function performs three operations:
+
 \begin{enumerate}
+
     \item \textbf{Snapshots the penalty:} It calculates $\qsem{\trace{A}, C}$, asking ``Given the current literals from $C$, does the current event $A$ violate any of them?'' This is a stateless check based purely on the structure of $C$ at that instant.
-    \item \textbf{Updates the state:} It computes $\Prog(\trace{A}, C)$, effectively moving the contract pointer forward (e.g., from a paid obligation to the next month's rent, or from a violated duty to a reparation).
+    \item \textbf{Updates the state:} It computes $\Prog(\trace{A}, C)$ by moving the contract after consuming the head event of the trace forward, e.g., from a paid obligation to the next month's rent, or from a violated duty to a reparation.
     \item \textbf{Accumulates:} It adds the snapshot penalty to the result of the recursive call on the remaining trace using the \emph{new} state.
 \end{enumerate}
 
-Explicit handling of Sequence and Reparation is managed by the contract progress function, which ensures that ``zero-delay'' transitions are penalized correctly. For instance, if a contract requires $C_1$ then $C_2$, and an event discharges $C_1$ but violates $C_2$ in the same step, the summation logic ($\qsem{\trace{A}, C_1} + \qsem{\trace{A}, C_2}$) ensures the violation of $C_2$ is not ignored simply because it appeared in a continuation.
+The contract progress function handles Sequence and Reparation directly, making sure that transitions with no delay are penalized properly. For example, if a contract requires $C$ then $C'$, and an event completes $C$ but violates $C'$ at the same time, the summation logic ($\qsem{\trace{A}, C} + \qsem{\trace{A}, C'}$) makes sure the violation of $C'$ is still counted, even if it happens in a continuation.
+The definition of the instantaneous score $\qsem{\trace{A}, C}$ rests on distinguishing between \textbf{concurrent} (parallel) obligations and \textbf{structural} (atomic) constraints. It decouples the measurement of the score  of non-compliance from the binary verification of specific rules.
 
-The definition of the instantaneous score $\qsem{\trace{A}, C}$ rests on distinguishing between \textbf{concurrent} (parallel) obligations and \textbf{structural} (atomic) constraints. It decouples the measurement of the ``volume'' of non-compliance from the binary verification of specific rules.
 \paragraph{Additivity of Concurrency.}
-For $\qsem{\trace{A}, C_1 \wedge C_2} := \qsem{\trace{A}, C_1 } + \qsem{\trace{A}, C_2}$, it captures the ``width'' of the violation as shown in \ref{fig:joint-blame}. In normative systems, a conjunction represents distinct, independent obligations that are active simultaneously. By summing the scores, the function ensures that the penalty is proportional to the number of distinct parallel duties neglected in a single instant, preventing ``violation masking'' where a single boolean verdict could hide multiple breaches.
-
+For $\qsem{\trace{A}, C \wedge C'} := \qsem{\trace{A}, C } + \qsem{\trace{A}, C'}$, this shows the "width" of the violation, as in \ref{fig:joint-blame}. In these systems, a conjunction means there are separate, independent obligations occurring simultaneously. By adding the scores, the function ensures the penalty matches the number of parallel duties missed at that moment, so that multiple breaches are not hidden by a single yes-or-no result.
 \paragraph{Binary Structural Verdict.}
-For constructs that are not distinct parallel duties (such as literals, sequences, or reparations), the definition relies on the binary tight violation relation ($\violt$). This captures the ``existence'' of a fault in a non-decomposable structure. For example, a single atomic duty ($\obl{a}$) can only be violated once per step.
+For cases that are not separate parallel duties, like literals, sequences, or reparations, the definition uses the binary tight violation relation ($\violt$). This shows whether there is a fault in a structure that cannot be broken down further. For example, a single atomic duty ($\obl{a}$) can only be violated once in each step.
 
 \paragraph{Separation of State and Score.}
 This approach assumes that the complexity of temporal evolution is handled by $\Prog$, while $\qsem{}$ handles the instantaneous cost. By reducing non-conjunction cases to a simple check ($\trace{A} \violt C$), the definition asserts that scoring is local (checking if the current active node is broken), while progression is temporal (handling the flow from one obligation to the next).
+We summarize these properties in the following theorem, which defines that the quantitative score is a monotonically increasing function that acts as a ``super-set'' of the binary violation semantics. While a binary trace might be ``Satisfied'' (via reparation), the quantitative score reveals the true cost of that path.
 
-We summarize these properties in the following theorem, which establishes that the quantitative score is a monotonically increasing function that acts as a ``super-set'' of the binary violation semantics. While a binary trace might be ``Satisfied'' (via reparation), the quantitative score reveals the true cost of that path.
 
+We study in the next theorem the different correspondance between the five quantitative verdicts and the forward-looking tight semantics.
 \begin{theorem}[Consistency of Quantitative and Tight Semantics]
   \label{thm:quant-consistency}
   For any contract $C$ not containing the unblamable $\bot$ literal, and finite trace $\pi$, the quantitative violation score and the five-valued tight semantics are related as follows:
@@ -91,50 +99,61 @@ We summarize these properties in the following theorem, which establishes that t
       \item \textbf{Score monotonicity.}
       For any event $A \in \Gamma$, $\qsem{\pi \concat \trace{A}, C} \ge \qsem{\pi, C}$.
 
-      \item \textbf{Reparation cost.}
-      The converse of (1) does not hold. In other words, a positive score is not equivalent to a violation.
-      If $C = C_1 \repair C_2$ and $\pi \satt C$ through the reparation branch (i.e., some prefix tightly violates $C_1$ and the subsequent suffix satisfies $C_2$), then $\qsem{\pi, C} \ge 1$.
-      In particular, there exist traces with $\qsem{\pi, C} > 0$ and $\pi \satt C$.
+      \item \textbf{Positive score does not imply violation.}
+      If $\qsem{\pi, C} > 0$, then $\pi$ does not necessarily violate $C$.
   \end{enumerate}
   \end{theorem}
   
   \begin{proof}
+
   \begin{enumerate}
+
   \item \textbf{Violation implies positive score.}
-  Assume $\pi \violt C$.
-  By the tight violation semantics, $\pi$ is the earliest prefix at which a decisive failure occurs: there exists a residual contract $C_k = \Prog(\pi_k, C)$ and a step $A_k$ such that $\trace{A_k} \violt C_k$.
-  Since $C$ is $\bot$-free, this tight violation must stem from an active obligation, prohibition, or power.
-  By the definition of the instantaneous scoring function, $\qsem{\trace{A_k}, C_k} \ge 1$.
-  Since $\qsem{\pi, C}$ is the cumulative sum of non-negative instantaneous scores, we obtain $\qsem{\pi, C} \ge 1 > 0$.
-  
-  If $\pi \postviol C$, then by definition there exists a strict prefix $\pi' \prec \pi$ with $\pi' \violt C$.
-  By the argument above, $\qsem{\pi', C} > 0$.
-  By monotonicity (part~3), $\qsem{\pi, C} \ge \qsem{\pi', C} > 0$.
-  
+
+Assume $\pi \violt C$.
+According to the tight violation semantics, $\pi$ is the earliest prefix at which a decisive failure occurs.
+There is a residual contract $C_k = \Prog(\pi_k, C)$ and a step $A_k$ so that $\trace{A_k} \violt C_k$.
+
+Because $C$ does not contain $\bot$, this tight violation must come from an active obligation, prohibition, or power.
+By the definition of the instantaneous scoring function, $\qsem{\trace{A_k}, C_k} \ge 1$.
+
+Because $\qsem{\pi, C}$ adds up non-negative instantaneous scores, we have $\qsem{\pi, C} \ge 1 > 0$.
+
+If $\pi \postviol C$, then by definition there is a strict prefix $\pi' \prec \pi$ such that $\pi' \violt C$.
+By the argument above, $\qsem{\pi', C} > 0$.
+By monotonicity, as shown in part 3, $\qsem{\pi, C} \ge \qsem{\pi', C} > 0$.
+
   \item \textbf{Zero score excludes violation.}
-  This is the contrapositive of part~(1): the five verdicts $\{\presat, \satt, \postsat, \violt, \postviol\}$ partition all traces.
-  If both $\violt$ and $\postviol$ are excluded by part~(1), the remaining possibilities are exactly $\presat$, $\satt$, or $\postsat$.
-  
+
+This is the contrapositive of part (1): the five verdicts $\{\presat, \satt, \postsat, \violt, \postviol\}$ divide all traces into separate cases.
+If both $\violt$ and $\postviol$ are ruled out by part (1), the only remaining options are $\presat$, $\satt$, or $\postsat$.
+
   \item \textbf{Score monotonicity.}
-  By the recursive definition of $\qsem{}$:
+
+Using the recursive definition of $\qsem{}$:
   \[
     \qsem{\pi \concat \trace{A}, C}
     = \qsem{\pi, C} + \qsem{\trace{A},\, \Prog(\pi, C)}.
   \]
-  Since $\qsem{\trace{A}, \Prog(\pi, C)} \ge 0$ for all $A$ and all residual contracts, the claim follows.
-  
-  \item \textbf{Reparation cost.}
-  Consider $C = C_1 \repair C_2$.
-  If $\pi \satt C$ through the reparation branch, then some prefix $\pi'$ tightly violates $C_1$.
-  By the definition of the instantaneous scoring function for reparation, the step at which $C_1$ is tightly violated contributes $\qsem{\trace{A}, C_1 \repair C_2} = 1 + \qsem{\trace{A}, C_2}$, contributing at least~$1$.
-  Since all subsequent instantaneous scores are non-negative, the cumulative score satisfies $\qsem{\pi, C} \ge 1$.
-  Hence, $\pi \satt C$ and $\qsem{\pi, C} > 0$ can coexist: the score records the cost of the reparation path even though the contract is ultimately satisfied.
+Because $\qsem{\trace{A}, \Prog(\pi, C)} \ge 0$ for every $A$ and all residual contracts, the claim holds.
+
+  \item \textbf{Positive score does not imply violation.}
+
+  Consider $C \repair C'$.
+If $\pi \satt C \repair C'$ after violating $C$, then there is a prefix $\pi'$ that tightly violates $C$.
+
+According to the definition of the instantaneous scoring function, since $\LH(C \repair C') = \LH(C)$ and $\trace{A} \violt \LH(C)$, the step where $C$ is tightly violated produces $\qsem{\trace{A}, C \repair C'} = 1$.
+
+Since all later instantaneous scores are non-negative, the total score satisfies $\qsem{\pi, C} \ge 1$.
+
+Therefore, $\pi \satt C$ and $\qsem{\pi, C} > 0$ can both be true. The score keeps track of the cost of the reparation path, even if the contract is eventually satisfied.
+
 \end{enumerate}
+
   \end{proof}
 
-This theorem highlights the utility of the quantitative approach for post-hoc analysis: distinguishing between a ``perfect'' execution (Score 0) and a ``compliant but costly'' execution (Score $>0$, e.g., paying fines), a distinction lost in the binary $\satt$ verdict.
 
-To illustrate the lemma and the violation semantics, we study several examples:
+To illustrate the quantitative violation semantics and the theorem claims, we study several examples:
 
 \begin{example}[Reparation: Tight vs.\ Quantitative Evaluation (Extension of Example~\ref{ex:prog-repit}, \ref{example:prog-repair1}, and \ref{example:prog-repair2})]\label{ex:eval-reparation}
 We revisit Example~\ref{ex:prog-repit} and explicitly evaluate both the forward-looking tight semantics and the quantitative violation semantics at each step.
@@ -468,17 +487,16 @@ Thus, $\pi' \presat C$ in the tight semantics but $\qsem{\pi',C}=1$, directly il
 \end{example}
 
 \paragraph{Conclusion.}
-This section introduced the quantitative violation semantics $\qsem{}$ as a trace-level cost measure that complements the tight, three-valued contract semantics. By coupling a local, instantaneous penalty with the residual evolution induced by the progress function $\Prog$, $\qsem{}$ cleanly separates temporal state change from scoring, while remaining sensitive to reparations, sequencing, and other structural constructs. Theorem~\ref{thm:quant-consistency} makes this link precise: a zero score characterizes traces that are fully compliant (either tightly satisfied, post-satisfied, or still pending), whereas any positive score pinpoints the presence and persistence of violations, including those that are later repaired and therefore masked at the level of a binary satisfaction verdict. The subsequent examples validate this intuition operationally by tracking $\Prog$, $\qsem{}$, and $\semfive{}$ point-wise, showing how the quantitative view supports post hoc audit, comparison of alternative executions, and downstream optimization tasks where ``satisfied'' is not a sufficient notion of quality.
+This section introduced the quantitative violation semantics $\qsem{}$, which computes a violation score that provides more information than three-valued contract semantics. By computing the violation score on the fly and the residual evolution using the progress function $\Prog$, $\qsem{}$ cleanly separates temporal state change from scoring. The state of the contract is still sensitive to reparations, sequencing, and other structural constructs. The Theorem~\ref{thm:quant-consistency} serves as a consistency bridge to the 5 tight semantics. The next challenge is the monitor construction: since, under the tight semantics, no score had to be computed, we need a different mechanism to progressively compute the score. 
 
 \subsection{Quantitative Violation Monitor Construction}
-While the forward-looking tight semantics employed Moore machines to output decisive verdicts based on the state (halting at the first decisive frontier), the quantitative semantics requires a monitor that persists on the extended run to accumulate violation points over time.
-To achieve this, we transition from the Moore architecture to a \emph{Mono-Quantitative Mealy machine}.
-Unlike the previous approach, this monitor generates outputs on transitions, mapping each specific input event—given the current contract state—to an instantaneous violation score from the set of natural numbers.
-Consequently, the overall score for a given trace is derived from the cumulative sum of the machine's transition outputs at each execution step.
-This position-based scoring enables the precise localization of the time points at which violations occur, thereby enhancing explainability.
+The quantitative semantics requires a monitor that continues along the extended run to accumulate violation points over time. We need a machine to produce natural numbers as the output alphabet, in contrast to the forward blame semantics, which outputs verdicts from .
+To track the score accurately, the system changes from a Moore machine to a Mealy machine. The quantitative monitor  gives outputs during transitions, assigning each input event a violation score based on the current contract state. The total score for a trace is the sum of these outputs at each step.
+This position-based scoring makes it possible to pinpoint exactly when violations happen, which helps make the results easier to understand.
+
 \begin{definition}[Mono-Quantitative Mealy machine]
   \label{def:quant-monitor}
-  The \emph{Mono-Quantitative Mealy machine}, written $\mathcal{M}^{qt}$, is a Mealy machine whose output alphabet is $\mathbb{N}$ (representing a score). It is defined as a tuple:
+  The \emph{Mono-Quantitative Mealy machine}, written $\mathcal{M}^{qt}$, is a Mealy machine whose output alphabet is $\mathbb{N}$. It is defined as a tuple:
   \[
   \mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda),
   \]
@@ -488,11 +506,13 @@ This position-based scoring enables the precise localization of the time points 
     \item $q_0 \in Q$ is the initial state.
     \item $\Gamma$ is the input event alphabet.
     \item $\delta: Q \times \Gamma \to Q$ is the transition function.
-    \item $\lambda: Q \times \Gamma \to \mathbb{N}$ is the scoring (output) function.
+    \item $\lambda: Q \times \Gamma \to \mathbb{N}$ is the output function.
   \end{enumerate}
   \end{definition}
 
-
+  THe output function $\lambda$ produces a score of the transition that represents the degree of violation of the contract by the transition.
+ We define next the accumulative quantitative score of a trace from a run of the mono-quantitative Mealy machine.
+  \newpage
 \begin{definition}[Accumulative Quantitative  Score]
     \label{def:quant-execution-score}
     Let $\mathcal{M}^{qt} = (Q, q_0, \Gamma, \delta, \lambda)$ be a Mono-Quantitative Mealy machine and let $\pi = \langle A_1, A_2, \dots, A_{n} \rangle \in \Gamma^*$ be a finite trace.
@@ -504,7 +524,8 @@ This position-based scoring enables the precise localization of the time points 
     \]
     \end{definition}
 
-To make the monitor construction constructive and finite, we define it inductively. However, since the states represent residual contracts, the primary challenge lies in bounding the state space. To address this, we leverage the \emph{Reachable Residual Contract Set} ($\rrcs{C}$), which we claim to be finite relative to the contract literals and regular expressions.
+We define an inductive construction of the quantitative violation monitor based on the definition of the progress function and the quantitative violation semantics where the states represent residual contracts.
+ The primary formal property we want to prove for this monitor construction is to bound the state space. We rely on the Claim \ref{clm:rrcs-finite} where the \emph{Reachable Residual Contract Set} ($\rrcs{C}$) is claimed to be finite relative to the structure of the contract $C$.
 
 \begin{definition}[Quantitative Violation Monitor Construction]
   \label{def:qmc}
@@ -522,7 +543,7 @@ To make the monitor construction constructive and finite, we define it inductive
     We construct (a finite fragment of) the quantitative monitor $\qmc(C)$ for the guarded contract
     \[
       C := \guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}},
-      \qquad\text{where }\; C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
+     \text{ where }\; C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
     \]
     Let $re := \Gamma^+ \cdot \notifterm^{(1)}$.
     We write $\guard[re]{\repit{C_3}}$ for the guard instance used below.
@@ -643,7 +664,8 @@ This shows that although the trace satisfies the guarded contract in the tight s
     
 
 \begin{theorem}[Correctness of Quantitative Monitor]
-Let $C$ be a contract and $\pi = \trace{A_1, \dots, A_n}$ be a trace.
+\label{thm:correctness-qmc}
+Let $C$ be a contract from \cDL and $\pi = \trace{A_1, \dots, A_n}$ be a trace.
 Then the cumulative quantitative violation score is exactly the sum of the monitor outputs:
 \[
 \qsem{\pi, C} =\qscore( \qmc(C),\pi).
@@ -651,72 +673,43 @@ Then the cumulative quantitative violation score is exactly the sum of the monit
 \end{theorem}
 
 \begin{proof}
+
 Let $\pi = \trace{A_1,\dots,A_{n}}$ be a finite trace of length $n$.
-Write $q_0 := C$ and, for each $1 \le i \le n$, define the unique run of $\qmc(C)$ on $\pi$ by
+
+Let $q_0 := C$ and, for each $1 \le i \le n$,  the unique run of $\qmc(C)$ on $\pi$ is
 \[
   q_{i} := \delta(q_{i-1},A_i) = \Prog(\trace{A_i},q_{i-1}).
 \]
-By definition of the monitor output function, for every $i$ we have
+
+By the definition of the construction $\qmc(C)$, the transition function $\delta$ applies with $\Prog$ and the output function $\lambda$  with the instantaneous score at the specific event:
 \[
-  \lambda(q_{i-1},A_i) = \qsem{\trace{A_i},q_{i-1}}.
+  \delta(q,A) = \Prog(\trace{A},q), \qquad \lambda(q,A) = \qsem{\trace{A},q}.
 \]
-Hence, by Definition~\ref{def:quant-execution-score},
+By Definition~\ref{def:quant-execution-score}, we get
 \[
   \qscore(\qmc(C),\pi) 
   = \sum_{i=1}^{n} \lambda(q_{i-1},A_i)
   = \sum_{i=1}^{n} \qsem{\trace{A_i},q_{i-1}}.
 \]
-
-It remains to show that $\qsem{\pi,C}$ expands to the same sum.
-We prove by induction on $n$ that
-\[
-  \qsem{\pi,C} = \sum_{i=1}^{n} \qsem{\trace{A_i},q_{i-1}}.
-\]
-
-\paragraph{Base case ($n=1$).}
-If $\pi = \trace{A_1}$, then by Definition~(Quantitative Violation Semantics)
-\(
-  \qsem{\pi,C} = \qsem{\trace{A_1},C} = \qsem{\trace{A_1},q_0}.
-\)
-This is exactly the required sum.
-
-\paragraph{Inductive step.}
-Assume the claim holds for all traces of length $n$.
-Let $\pi' = \trace{A_1,\dots,A_{n+1}}$ be a trace of length $n+1$.
-Unfolding the recursive definition of $\qsem{}$ gives
-\begin{align*}
-  \qsem{\pi',C} &= \qsem{\trace{A_1},C} + \qsem{\trace{A_2,\dots,A_{n+1}},\Prog(\trace{A_1},C)}\\
-  &= \qsem{\trace{A_1},q_0} + \qsem{\trace{A_2,\dots,A_{n+1}},q_1}.
-\end{align*}
-Applying the induction hypothesis to the suffix trace $\trace{A_1,\dots,A_n}$ with initial contract $q_1$ gives
-\[
-  \qsem{\trace{A_2,\dots,A_{n+1}},q_1} = \sum_{i=2}^{n+1} \qsem{\trace{A_i},q_{i-1}}.
-\]
-Therefore,
-\[
-  \qsem{\pi',C} = \qsem{\trace{A_1},q_0} + \sum_{i=2}^{n+1} \qsem{\trace{A_i},q_{i-1}}
-  = \sum_{i=1}^{n+1} \qsem{\trace{A_i},q_{i-1}}.
-\]
-This establishes the inductive claim.
-
-Combining the two displayed equalities, we obtain\\
-\(
-  \qsem{\pi,C} = \sum_{i=0}^{n-1} \qsem{\trace{A_i},q_i} = \qscore(\qmc(C),\pi).
-\)
+By unrolling the inductive definition of the semantics $\qsem{\pi, C}$ to single events, we get the same sum. At each step, we remove the first event $A_i$, add $\qsem{\trace{A_i}, q_{i-1}}$, and continue with the rest using the updated contract $q_i = \Prog(\trace{A_i}, q_{i-1})$. After $n$ steps, we establish the following equality:
+\[  \qsem{\pi,C} = \sum_{i=1}^{n} \qsem{\trace{A_i},q_{i-1}} = \qscore(\qmc(C),\pi). \qedhere \]
 \end{proof}
 
 \paragraph{Conclusion of the quantitative monitor construction.}
-The monitor construction $\qmc(C)$ gives a finite, executable representation of the quantitative violation semantics whenever the set of reachable residual contracts under $\Prog$ is finite. Its key benefit is operational: instead of re-evaluating a contract from scratch on each prefix, we track the evolving residual contract as the current state, and we emit a local score via $\lambda(q,A)=\qsem{\trace{A},q}$. The correctness theorem above guarantees that summing these transition-local outputs exactly recovers the trace-level cost $\qsem{\pi,C}$. In the next section, we refine this cost into an \emph{attribution} measure by splitting the accumulated score across agents.
+
+The monitor construction $\qmc(C)$ provides a finite and executable way to represent quantitative violation semantics, as long as the set of reachable residual contracts under $\Prog$ is finite. The main advantage is practical: instead of starting over with each prefix, we keep track of the current residual contract as the state and produce a local score using $\lambda(q,A)=\qsem{\trace{A},q}$. The correctness theorem ensures that adding up these local outputs gives the same trace-level cost $\qsem{\pi,C}$. In the next section, we will refine this cost into an attribution measure by establishing a score for each agent.
+
+
 
 \subsection{Quantitative Blame Semantics}
-While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, it does not explain \emph{who} caused the deviation in a multi-agent setting. Quantitative blame addresses this gap by refining each unit violation into an agent-indexed contribution. Concretely, we replace the scalar output alphabet $\mathbb{N}$ by vectors in $\mathbb{N}^2$, where the first component counts violations attributed to agent $1$ and the second counts violations attributed to agent $2$. The definition below corresponds to the structure of $\qsem{}$ and reuses the same progress-based unfolding of residual contracts.
+We now want to define quantitative blame to break down each violation into contributions from each agent. Specifically, we change the output from a single number $\mathbb{N}$ to a vector in $\mathbb{N}^2$, where the first entry counts violations by agent 1 and the second by agent 2. The definition below follows the structure of $\qsem{}$ and uses the same progress-based approach to residual contracts.
 
 \begin{definition}[Quantitative Blame Semantics]
     \label{def:quant-blame}
     Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
-    The \emph{quantitative blame semantics} is a function
+    The \emph{quantitative blame semantics} is the function
     \[
-      \qblame{\cdot} : \Gamma^* \times \cDL \to \mathbb{N}^,
+      \qblame{\cdot} : \Gamma^* \times \cDL \to \mathbb{N}^2,
     \]
     that maps a trace and a contract to a blame vector $(n_1,n_2)$, where
     $n_i$ counts the number of violations attributed to agent $i$.
@@ -737,8 +730,8 @@ While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, i
     \[
     \qblame{\trace{A}, C} :=
     \begin{cases}
-      \qblame{\trace{A},C_1} + \qblame{\trace{A},C_2}
-        & \text{if } C = C_1 \wedge C_2, \\[6pt]
+      \qblame{\trace{A},C} + \qblame{\trace{A},C'}
+        & \text{if } C \wedge C', \\[6pt]
       
       (1,0)
         & \text{if } \trace{A} \vDash_{\bottp{\{1\}}} \LH(C), \\[4pt]
@@ -752,20 +745,16 @@ While $\qsem{\pi,C}$ reports \emph{how much} a trace deviates from a contract, i
     \]
     \end{definition}
 
-\paragraph{Additivity and accumulation.}
-The recursive clause uses the usual component-wise addition on $\mathbb{N}^2$: if an event contributes $(i,j)$ at the current step and the suffix contributes $(k,l)$, then their sum is $(i+k,\,j+l)$. Hence, the blame vector accumulated over a trace counts, for each agent separately, how many step-local violations were attributed to that agent along the unique progress-induced run. This corresponds to the scalar accumulation in $\qsem{}$, but preserves per-agent accountability.
-
-\paragraph{Why there is no $(1,1)$ case.}
-We do not include a rule for a joint violation vector $(1,1)$ in the definition of $\qblame{\trace{A}, C}$, such as a hypothetical condition $\trace{A} \vDash_{\bottp{12}} \LH(C)$. This is intentional: for the atomic head literal $\LH(C)$, the blame verdicts used in $\vDash_{\bottp{i}}$ are mutually exclusive in the underlying tight blame semantics, so a single literal cannot be violated by both agents in the same step. When multiple obligations are active concurrently, the conjunction case $C=C_1\wedge C_2$ already captures multiple violations in one step by summing the vectors returned for each component, and this can produce a total vector whose two components are both positive, but only via \emph{distinct} literals.
+The definition uses the forward-looking blame semantics on the literal head of the contact. For the conjunction case, the function sums up the score of each conjunct separately as: (i) the literal head function is not defined for conjunction, and (ii) the score has to be summed where for one event an agent can be blamed $n \geq 0$ times depending on the number of conjunctions in the contracts. 
 
 \begin{remark}[Duplication under identical conjunctions]
   \label{rem:blame-duplication}
   In the case of conjunction, the quantitative blame semantics is strictly additive.
-  Consequently, if $C_1 = C_2$, then for any trace $\pi$ we obtain
+  Consequently, if $C = C'$, then for any trace $\pi$ we obtain
   \[
-  \qblame{\pi, C_1 \wedge C_1} = 2 \times \qblame{\pi, C_1},
+  \qblame{\pi, C \wedge C} = 2 \times \qblame{\pi, C},
   \]
-  despite the logical equivalence $C_1 \wedge C_1 \equiv C_1$.
+  despite the logical equivalence $C \wedge C \equiv C$.
   This behavior is intentional: our construction treats conjunction as a syntactic operator denoting parallel normative instances, and ignores the idempotent semantic property.
   Accordingly, the quantitative semantics counts violations per syntactic occurrence of a duty rather than per semantic equivalence class.
   Unlike the analysis in \ref{chap:conflict}, this chapter focuses primarily on monitor synthesis and therefore does not address semantic properties of \cDL.
@@ -893,39 +882,52 @@ So far, we have introduced two quantitative views of non-compliance. The first o
         \end{lemma}
 
         \begin{proof}
-            We prove the claim by induction on the length of the trace $\pi$ and structurally on the instantaneous evaluation.
+            We will prove the claim using induction on the length of the trace $\pi$ and by examining the structure of the instantaneous evaluation.
+
             
+
             \paragraph{Base case.}
+
             Let $\pi=\trace{A}$ be a single-event trace.
-            By Definitions~\ref{def:quant-blame} and (Quantitative Violation Semantics),
+
+            By Definitions~\ref{def:quant-blame} and~\ref{def:quant-viol-sem},
+
             both $\qsem{\trace{A},C}$ and $\qblame{\trace{A},C}$ are defined from the
+
             instantaneous evaluation of the head literal $\LH(C)$.
+
             
-            If $\trace{A}$ violates no active literal, then
+
+If $\trace{A}$ does not violate any active literal, then
             \[
             \qsem{\trace{A},C}=0
             \quad\text{and}\quad
             \qblame{\trace{A},C}=(0,0), \text{ returning } 0 \le 0+0.
             \]
-            If $\trace{A}$ violates $\LH(C)$, then since $C$ is $\bot$-free, the violation must stem from a blamable duty.
-            Therefore $\qsem{\trace{A},C}=1$ and the blame attribution $\qblame{\trace{A},C}$ produces either $(1,0)$ or $(0,1)$. In both cases, $n_1+n_2 = 1$, evaluating to $1 \le 1$.
 
-            For the inductive structural step on conjunction $C = C_1 \wedge C_2$:
-            By the inductive hypothesis, if $\qblame{\trace{A},C_1} = (x_1, y_1)$ and $\qblame{\trace{A},C_2} = (x_2, y_2)$, then $\qsem{\trace{A},C_1} \le x_1 + y_1$ and $\qsem{\trace{A},C_2} \le x_2 + y_2$.
-            Thus, for the conjunction:
-            \[
-            \qblame{\trace{A},C_1 \wedge C_2} = (x_1+x_2, y_1+y_2).
-            \]
-            and the sum of its components is $(x_1+x_2) + (y_1+y_2) = (x_1+y_1) + (x_2+y_2)$.
-            Since a double violation in a conjunction of literals may be counted as a single concurrent violation in the global quantitative score, but blame accumulates strictly for each agent, we have:
-            \[
-            \qsem{\trace{A},C_1 \wedge C_2} \le (x_1+y_1) + (x_2+y_2).
-            \]
-            Hence, the violation score is less than or equal to the total assigned blame.
+If $\trace{A}$ violates $\LH(C)$, and since $C$ does not contain $\bot$, the violation must come from a blamable duty.
 
+Therefore, $\qsem{\trace{A},C}=1$, and the blame attribution $\qblame{\trace{A},C}$ gives either $(1,0)$ or $(0,1)$. In both cases, $n_1+n_2 = 1$, so $1 \le 1$ holds.
+
+
+
+Now consider the inductive step for the conjunction $C \wedge C'$:
+
+By the inductive hypothesis, if $\qblame{\trace{A},C} = (x_1, y_1)$ and $\qblame{\trace{A},C'} = (x_2, y_2)$, then $\qsem{\trace{A},C} \le x_1 + y_1$ and $\qsem{\trace{A},C'} \le x_2 + y_2$.
+Therefore, for the conjunction:
+            \[
+            \qblame{\trace{A},C \wedge C'} = (x_1+x_2, y_1+y_2).
+            \]
+The sum of these components is $(x_1+x_2) + (y_1+y_2) = (x_1+y_1) + (x_2+y_2)$.
+A double violation in a conjunction of literals may count as a single concurrent violation in the global quantitative score, but blame is still added separately for each agent. Therefore, we have:
+            \[
+            \qsem{\trace{A},C \wedge C'} \le (x_1+y_1) + (x_2+y_2).
+            \]
+
+Thus, the violation score is always less than or equal to the total assigned blame.
             \paragraph{Inductive step.}
             Let $\pi=\trace{A}\concat \pi'$ with $\Prog(\trace{A},C)\neq\emptc$.
-            By the recursive definitions,
+            By the inductive definition,
             \[
             \qsem{\pi,C}
             =
@@ -934,19 +936,19 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             \qsem{\pi',\Prog(\trace{A},C)},
             \]
             and
-            \[
+            $
             \qblame{\pi,C}
             =
             \qblame{\trace{A},C}
             +
             \qblame{\pi',\Prog(\trace{A},C)}.
-            \]
-            Write
-            \[
+            $\\ \\
+            Let
+            $
             \qblame{\trace{A},C}=(a_1,a_2)
             \quad\text{and}\quad
             \qblame{\pi',\Prog(\trace{A},C)}=(b_1,b_2).
-            \]
+            $\\ \\
             By the induction hypothesis,
             \[
             \qsem{\pi',\Prog(\trace{A},C)} \le b_1+b_2,
@@ -961,10 +963,12 @@ So far, we have introduced two quantitative views of non-compliance. The first o
             \]
             \end{proof}
 
-            \begin{lemma}[Blame Score vs. Forward Blame Semantics]
+            Now we study the relation between the quantitative blame semantics and the forward blame semantics.
+
+            \begin{lemma}[Quantitative Blame Semantics vs. Forward Blame Semantics]
                 \label{lem:qblame-vs-forward}
                 Let $\pi \in \Gamma^*$ be a finite trace and $C \in \cDL$ be a contract.
-                If the forward blame monitor assigns blame to a set of agents $S \subseteq \{1,2\}$ on $\pi$, then the corresponding component(s) of the persistent quantitative blame vector are non-zero. Formally,
+                If the forward blame monitor assigns blame to a set of agents $S \subseteq \{1,2\}$ on $\pi$, then the corresponding components of the persistent quantitative blame vector are non-zero. Formally,
                 \[
                   \text{if } \fb{\pi,C} = \bott_{S} \sor \fb{\pi,C} = \botp_{S}
                 \]
@@ -980,7 +984,7 @@ So far, we have introduced two quantitative views of non-compliance. The first o
                 \end{lemma}
                 \begin{proof}
                   Assume that the forward blame monitor assigns a violation verdict attributed to $S$ on trace $\pi$.
-                  By the consistency of the forward blame monitor with the denotational semantics (Theorem~\ref{thm:bm-correct}), the condition $\fb{\pi,C} \in \{ \bott_{S}, \botp_{S} \}$ implies that there exists a prefix $\pi' \preceq \pi$ such that $\pi'$ is a tight violation of $C$ attributed to $S$.
+                  By Theorem~\ref{thm:bm-correct}, the condition $\fb{\pi,C} \in \{ \bott_{S}, \botp_{S} \}$ implies that there exists a prefix $\pi' \preceq \pi$ such that $\pi'$ is a tight violation of $C$ attributed to $S$.
                   That is:
                   \[
                   \pi' \vDash_{\bott_{S}} C.
@@ -1008,7 +1012,7 @@ So far, we have introduced two quantitative views of non-compliance. The first o
                   \[
                   1 \in S \implies u \ge 1, \quad \text{and} \quad 2 \in S \implies v \ge 1.
                   \]
-                  Since the quantitative blame accumulates vectors in $\mathbb{N}^2$ (non-negative components), the final vector $(x,y) = \qblame{\pi,C}$ must satisfy $x \ge u$ and $y \ge v$.
+                  Since the quantitative blame accumulates vectors in $\mathbb{N}^2$, the final vector $(x,y) = \qblame{\pi,C}$ must satisfy $x \ge u$ and $y \ge v$.
                   
                   Therefore:
                   \[
@@ -1017,9 +1021,8 @@ So far, we have introduced two quantitative views of non-compliance. The first o
                   \[
                   2 \in S \implies y \ge 1 \implies y \neq 0.
                   \]
-                  This concludes the proof.
               \end{proof}
-
+After establishing formal properties on the new defined quantitative blame semantics relative to other semantics, we move now to the quantitative blame monitor construction.
 
                 \subsection{Quantitative Blame Monitor Construction}
                 \label{subsec:qbm}
@@ -1170,7 +1173,7 @@ Note the two joint-failure cases: $(1,1)$ when the violations are blamed on diff
 
 % At the lowest level, each agent performs \emph{tagged actions} from a specific alphabet $\Sigma_C^{(p)}$. These represent unilateral attempts to fulfill a duty or exercise a power. To reason about the joint outcome of these attempts, we aggregate them into \emph{synchronous snapshots}.
 % At every time step $i$, the set of all actions performed by both agents is collected into a single letter $A_i \in \Gamma$, where $\Gamma = 2^{\Sigma_C^{(1)} \cup \Sigma_C^{(2)}}$.
-% This transformation yields a trace $\pi = \langle A_1, A_2, \dots \rangle \in \Gamma^*$, which serves as the uniform input for all subsequent semantic layers.
+% This transformation produces a trace $\pi = \langle A_1, A_2, \dots \rangle \in \Gamma^*$, which serves as the uniform input for all subsequent semantic layers.
 
 % Figure~\ref{fig:trace-generation} illustrates this abstraction process, highlighting how independent agent streams are fused into the single observation sequence processed by the monitor.
 
@@ -1296,7 +1299,7 @@ Note the two joint-failure cases: $(1,1)$ when the violations are blamed on diff
 
 % \subsection{The Formal Pipeline: Semantic Consistency}
 % The final pillar of the framework ensures the trustworthiness of the generated monitors.
-% We establish a hierarchy of semantics, ranging from the fundamental tight satisfaction to the sophisticated quantitative blame assignment.
+% We establish a hierarchy of semantics, ranging from the fundamental tight satisfaction to the advanced quantitative blame assignment.
 % At each level, we define a denotational semantics (mathematical ground truth) and a corresponding operational monitor (algorithmic implementation), linking them via correctness theorems.
 
 % \begin{itemize}
@@ -1474,7 +1477,7 @@ To recover this information, the quantitative framework developed here explicitl
 This separation allows contracts to be monitored beyond the first violation while preserving a precise account of how and when non-compliance occurs.
 
 The structural backbone of this approach is provided by the Contract Progress Monitor.
-By evolving contracts into residual contracts after each observed event, the monitor captures the exact normative state at every time step, including sequencing, reparations, repetitions, guards, and triggers.
+By evolving contracts into residual contracts after each observed event, the monitor represents the exact normative state at every time step, including sequencing, reparations, repetitions, guards, and triggers.
 Crucially, this progression is defined independently of scoring.
 Violations do not halt execution but rather guide structural evolution, such as activating repair clauses or advancing repetitions.
 This architectural choice ensures that temporal behavior remains faithful to the contract structure while enabling quantitative reasoning on top.
@@ -1486,7 +1489,7 @@ The resulting quantitative score refines classical satisfaction and violation ju
 A zero score characterizes fully compliant executions, including those still pending, while any positive score witnesses the existence and persistence of violations, even when they are later repaired.
 
 A key technical insight is that this framework admits a finite operational realization whenever the set of reachable residual contracts is finite.
-This reachable set captures exactly the state space induced by progression under arbitrary traces.
+This reachable set represents exactly the state space induced by progression under arbitrary traces.
 Finiteness of this set follows from the syntactic finiteness of contracts and the derivative-style evolution of regular expressions.
 Such an observation justifies monitor construction and bounds the complexity of quantitative monitoring, remaining independent of trace length.
 
@@ -1510,14 +1513,14 @@ Such an extension would allow the semantics to distinguish between unwillingness
 This distinction opens the door to new verdict types, such as ``shared loss'' or ``frustration of purpose,'' where the burden of reparation is distributed between agents rather than assigned to a single defaulter.
 
 Finally, the current reparation operator is agnostic regarding the party responsible for the violation.
-In a contract $C_1 \repair C_2$, the secondary contract $C_2$ is triggered regardless of which specific clause in $C_1$ was violated or which agent was responsible.
+In a contract $C \repair C'$, the secondary contract $C'$ is triggered regardless of which specific clause in $C$ was violated or which agent was responsible.
 This agnosticism does not reflect legal practice, where the remedy always depends on the specific breach and the party at fault.
 A necessary extension of this work requires a \emph{parametrized reparation operator} that assigns different secondary obligations depending on the specific agent blamed for the initial violated contract.
 For instance, if a joint project fails because Agent A did not pay, the reparation should differ from the case where Agent B did not work.
 Distinguishing these scenarios requires a richer syntax that propagates blame information into the reparation phase.
 \section{Related Work}
 \label{sec:related-work}
-Having successfully established the formal semantics and automata-theoretic constructions for \cDL, we now move to discuss the broader research landscape. In this section, we situate our framework against its closest progenitors, specifically \logic{STIT} logic and the \logic{CSL} specification language, and contrast it with orthogonal approaches in runtime verification and causal reasoning. This comparison clarifies how the synthesis for \cDL of collaborative agency and state-based reparation addresses a gap in the governance of autonomous digital interactions. We begin by examining the two formalisms that most directly study responsibility in multi-agent settings and contract specifications, before broadening the analysis to complementary notions of causality and algorithmic verification.
+Having successfully established the formal semantics and automata-theoretic constructions for \cDL, we now move to discuss the broader research field. In this section, we situate our framework against its closest progenitors, specifically \logic{STIT} logic and the \logic{CSL} specification language, and contrast it with orthogonal approaches in runtime verification and causal reasoning. This comparison clarifies how the synthesis for \cDL of collaborative agency and state-based reparation addresses a gap in the governance of autonomous digital interactions. We begin by examining the two formalisms that most directly study responsibility in multi-agent settings and contract specifications, before broadening the analysis to complementary notions of causality and algorithmic verification.
 \subsection{Closest Formalisms: \logic{STIT} and \logic{CSL}}
 \paragraph{Inspiration and Context.}
 The development of \cDL has been significantly inspired by the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. In the following section, we aim to highlight the main differences between these formalisms and \cDL in the most faithful way possible, focusing on the specific divergence in their treatment of agency, reparation, and blame assignment.
@@ -1530,8 +1533,8 @@ Consequently, while the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl
 
 \paragraph{\cDL vs. \logic{CSL}.}
 While \logic{CSL} also formalizes multi-party contracts through an trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:
-(i) \emph{Action Semantics:} \logic{STIT} models the causal ``attempt'' and potential interference (blocking) through simultaneous choice partitions. In contrast, \logic{CSL} abstracts away action generation entirely, assuming a fixed input trace of timestamped events. Consequently, \logic{CSL} does not account for blocked actions; the success of an obligation depends solely on whether the assigned agent performs the action on the trace, ignoring external interference.
-(ii) \emph{Blame and Quantification:} While \logic{STIT} evaluates the entire history, allowing for properties like ``repeatedly seeing to it'', \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously (i.e., $|B| > 1$) if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach. We illustrate in \ref{fig:csl-payment-loop} the closest encoding for $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ in \logic{CSL}.
+(i) \emph{Action Semantics:} \cDL models the causal ``attempt'' and potential interference  through its synchronized collaborative round structure. In contrast, \logic{CSL} abstracts away action generation entirely, assuming a fixed input trace of timestamped events. Consequently, \logic{CSL} does not account for blocked actions; the success of an obligation depends solely on whether the assigned agent performs the action on the trace, ignoring external interference.
+(ii) \emph{Blame and Quantification:} While \cDL tracks the entire run cumulatively, \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously, that is, when for the blame set $B$, we have $|B| > 1$, if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach. We illustrate in \ref{fig:csl-payment-loop} the closest encoding for $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ in \logic{CSL}.
 \begin{figure}[t]
   \centering
   \begin{minipage}{0.92\textwidth}
@@ -1563,8 +1566,8 @@ While \logic{CSL} also formalizes multi-party contracts through an trace-based m
   \label{fig:csl-payment-loop}
   \end{figure}
 
-\subsection{Broader Landscape and Orthogonal Approaches}
-Having established the precise relationship between \cDL and its closest formalisms, we now broaden our scope. This section situates the proposed \textbf{Two-Agents Collaborative Normative Logic (\cDL)} within the wider landscape of formal methods, deontic logic, and multi-agent systems (MAS) \cite{bulling2015strategic,HvitvedKZ12}.
+\subsection{Broader Field and Orthogonal Approaches}
+Having established the precise relationship between \cDL and its closest formalisms, we now broaden our scope. This section situates the proposed \textbf{Two-Agents Collaborative Normative Logic (\cDL)} within the wider field of formal methods, deontic logic, and multi-agent systems (MAS) \cite{bulling2015strategic,HvitvedKZ12}.
 
 The distinguishing thesis is that existing frameworks either idealize away the \emph{bilateral} and \emph{interference-prone} character of contracts, or they fail to translate their rich semantics into lightweight, trace-first monitoring artefacts suitable for runtime accountability \cite{broersen2011probabilistic,halpern2016causality,sanchez2018online}.
 
@@ -1584,7 +1587,7 @@ Runtime verification (RV) adapts temporal reasoning to finite domains, introduci
 
 
 \paragraph{The persistence distinction.}
-Standard RV monitors are often \emph{abortive}: once a property is definitively violated or satisfied, the monitor halts or issues a terminal verdict \cite{leucker2011teaching,Bauer2011}. \cDL instead adopts a \emph{persistent}, contract-centred view. The Contract Progress Function $\Prog$ evolves a normative state machine that reacts to violations (e.g., by activating reparations) and continues monitoring the residual contract, thus supporting long-horizon accountability rather than one-shot property checking.
+Standard RV monitors are often \emph{abortive}: once a property is definitively violated or satisfied, the monitor halts or issues a terminal verdict \cite{leucker2011teaching,Bauer2011}. \cDL instead adopts a \emph{persistent}, contract-centred view. The Contract Progress Function $\Prog$ evolves a normative state machine that reacts to violations, such as by activating reparations, and continues monitoring the residual contract, thus supporting long-horizon accountability rather than one-shot property checking.
 
 \subsubsection{Normative Contrary to Duty handling: From Kripke Models to Trace Decomposition}
 Standard Deontic Logic (SDL) provides a modal foundation for obligations but notoriously struggles with CTD scenarios, such as the Chisholm paradox, where violations give rise to new obligations that can render the theory inconsistent \cite{VonWright1951,Chisholm1963,carmo2001deontic}. Dyadic deontic logics and Input/Output logic address CTDs by conditioning obligations on explicit contexts or input situations \cite{DBLP:conf/deon/BenzmullerFP18,Makinson2000}.
@@ -1601,18 +1604,18 @@ Structural causal models (SCM) provide a principled account of causality and res
 
 The causal question addressed by SCM is inherently counterfactual: explaining responsibility by asking what \emph{would} have happened under alternative actions. Such reasoning presupposes an explicit causal model of the environment and its dynamics. In contrast, \cDL adopts a \emph{normative} notion of causality grounded in the rules of the contract itself. Responsibility is not derived from hypothetical alternatives, but from compliance with, or deviation from, the obligations explicitly stated in the contract. A violation is explained by identifying which contractual rule was breached on the observed trace, and blame is assigned to the party whose required contribution was missing, delayed, or blocked according to that rule.
 
-This shift also applies to graded responsibility. While SCM derives degrees of responsibility from counterfactual minimality, \cDL defines degrees of responsibility internally. Grading is computed from the contract structure and its progress semantics—for instance, by counting or weighting violations along the progress-induced run. The resulting notion of responsibility is contract-relative and trace-based: it answers who is responsible, and to what extent, according to the agreed normative commitments rather than an external causal model.
+This shift also applies to graded responsibility. While SCM derives degrees of responsibility from counterfactual minimality, \cDL defines degrees of responsibility internally. Grading is computed from the contract structure and its progress semantics, for instance by counting or weighting violations along the progress-induced run. The resulting notion of responsibility is contract-relative and trace-based: it answers who is responsible, and to what extent, according to the agreed normative commitments rather than an external causal model.
 
 \subsubsection{Monitoring Methodology: Correct-by-Construction meets Stream Processing}
 
-The compilation of logical specifications into executable monitors has long been a central focus of the Runtime Verification (RV) community. A cornerstone of this effort is the automata-based approach of Leucker and Schallhart, which systematically translates temporal specifications into monitors with verdicts provably aligned with the underlying logic~\cite{leucker2011teaching}. Complementing this logical rigor in data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa excel in this domain by supporting expressive stream transformations, a capability essential for monitoring numerical properties over evolving data streams~\cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
+The compilation of logical specifications into executable monitors has long been a central focus of the Runtime Verification (RV) community. A cornerstone of this effort is the automata-based approach of Leucker and Schallhart, which systematically translates temporal specifications into monitors with verdicts provably aligned with the underlying logic~\cite{leucker2011teaching}. Complementing this logical rigor in data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa excel in this domain by supporting descriptive stream transformations, a capability essential for monitoring numerical properties over evolving data streams~\cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
 
-The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction paradigm advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition.
+The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction model advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition.
 % TODO: Mention that the state space of this monitor, our reachable residual set of contracts, is closely related to the closure of an LTL formula, as introduced by Vardi and Wolper \cite{VardiWolper1986}.
 The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches state valuations with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
 
 
 
-In conclusion, The \cDL framework occupies a distinct and deliberately hybrid position within the monitoring landscape. On the one hand, its tight forward semantics aligns with the classical correct-by-construction philosophy: every monitor is a deterministic Moore machine whose states and transitions are justified directly by the contract's denotational semantics. This guarantees semantic faithfulness and enables precise reasoning about satisfaction, violation, and responsibility at the trace level. On the other hand, its quantitative layer departs from purely verdict-oriented monitoring, adopting ideas from stream runtime verification to accumulate step-local scores over time. This combination is not accidental; whereas pure automata-based monitors lack the means to retain quantitative information beyond the first decisive verdict, pure stream-based approaches often lack a mechanism of defining denotational semantics first and operational semantics second to ensure correctness. By embedding stream-style accumulation inside a state-based progress monitor, \cDL reconciles these two traditions. The result is a framework that supports persistent, explainable, and quantitative accountability without sacrificing correctness guarantees or collapsing violations into a single terminal outcome. This synthesis enables \cDL to move beyond one-shot verification toward operational reasoning about interference-prone collaborative contracts.
+In conclusion, The \cDL framework occupies a distinct and deliberately hybrid position within the monitoring field. On the one hand, its tight forward semantics aligns with the classical correct-by-construction philosophy: every monitor is a deterministic Moore machine whose states and transitions are justified directly by the contract's denotational semantics. This guarantees semantic faithfulness and enables precise reasoning about satisfaction, violation, and responsibility at the trace level. On the other hand, its quantitative layer departs from purely verdict-oriented monitoring, adopting ideas from stream runtime verification to accumulate step-local scores over time. This combination is not accidental; whereas pure automata-based monitors lack the means to retain quantitative information beyond the first decisive verdict, pure stream-based approaches often lack a mechanism of defining denotational semantics first and operational semantics second to ensure correctness. By embedding stream-style accumulation inside a state-based progress monitor, \cDL reconciles these two traditions. The result is a framework that supports persistent, explainable, and quantitative accountability without sacrificing correctness guarantees or collapsing violations into a single terminal outcome. This synthesis enables \cDL to move beyond one-shot verification toward operational reasoning about interference-prone collaborative contracts.
 
 
