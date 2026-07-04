@@ -1017,10 +1017,10 @@ Thus, the violation score is always less than or equal to the total assigned bla
                   Therefore:
                   \[
                   1 \in S \implies x \ge 1 \implies x \neq 0,
-                  \]
-                  \[
+                  \text{ and }
                   2 \in S \implies y \ge 1 \implies y \neq 0.
                   \]
+                  which established the desired property.
               \end{proof}
 After establishing formal properties on the new defined quantitative blame semantics relative to other semantics, we move now to the quantitative blame monitor construction.
 
@@ -1028,9 +1028,7 @@ After establishing formal properties on the new defined quantitative blame seman
                 \label{subsec:qbm}
             
             The forward-looking blame monitor $\bmc(C)$ identifies the \emph{first} decisive blame frontier and then remains in a post-violation sink. To account for \emph{all} blame occurrences over the whole lifespan of an interaction, we introduce a quantitative blame monitor whose output is a pair of natural numbers counting blame assigned to each agent.
-            
-            \paragraph{Monitor interface.}
-            We fix two agents $\{1,2\}$ and write $\mathbb{N}^2$ for blame vectors. For $\vec{n}=(n_1,n_2)$ and $\vec{m}=(m_1,m_2)$ we write
+            For the construction, we fix two agents $\{1,2\}$ and use $\mathbb{N}^2$ for blame vectors. For $\vec{n}=(n_1,n_2)$ and $\vec{m}=(m_1,m_2)$ we recall the vector addition operator:
             \[
             \vec{n}+\vec{m} := (n_1+m_1,\;n_2+m_2).
             \]
@@ -1059,7 +1057,7 @@ After establishing formal properties on the new defined quantitative blame seman
             where $q_{i+1}:=\delta(q_i,A_i)$ and the sum is component-wise.
             \end{definition}
             
-            \paragraph{Conformance to the quantitative blame semantics.}
+
             The next theorem states that the machine-level accumulation coincides with the denotational quantitative blame semantics.
             
             \begin{theorem}[Conformance of $\qbm$ to quantitative blame semantics]
@@ -1071,42 +1069,32 @@ After establishing formal properties on the new defined quantitative blame seman
             \end{theorem}
             
             \begin{proof}
-            We proceed by induction on $n:=|\pi|$.
-            
-            \smallskip
-            \noindent\emph{Base case $n=0$.}
-            If $\pi=\emptytrace$, then by Definition~\ref{def:qbm-score} the sum is the neutral element $(0,0)$.
-            By the definition of $\qblame{\cdot,\cdot}$ on the empty trace, $\qblame{\emptytrace,C}=(0,0)$.
-            Hence, the equality holds.
-            
-            \smallskip
-            \noindent\emph{Inductive step.}
-            Let $\pi=\trace{A}\concat \pi'$ with $|\pi'|=n-1$.
-            The first output produced by $\qbm(C)$ is
-            $\lambda_{\mathbb{N}^2}(q_0,A)=\qblame{\trace{A},C}$
-            by Definition~\ref{def:qbm}. The next state is
-            $q_1=\delta(q_0,A)=\Prog(\trace{A},C)$.
-            Therefore, unfolding Definition~\ref{def:qbm-score} provides
+            Let $\pi = \trace{A_1,\dots,A_{n}}$ be a finite trace of length $n$.
+
+            Let $q_0 := C$ and, for each $1 \le i \le n$, the unique run of $\qbm(C)$ on $\pi$ is
             \[
-            \qscore(\qbm(C),\pi)
-            = \qblame{\trace{A},C} + \qscore(\qbm(q_1),\pi').
+              q_{i} := \delta(q_{i-1},A_i) = \Prog(\trace{A_i},q_{i-1}).
             \]
-            By the induction hypothesis applied to the residual contract $q_1$, we have
+            By the definition of the construction $\qbm(C)$, the transition function $\delta$ applies with $\Prog$ and the output function $\lambda_{\mathbb{N}^2}$ with the instantaneous blame at the specific event:
             \[
-            \qscore(\qbm(q_1),\pi')=\qblame{\pi',q_1}.
+              \delta(q,A) = \Prog(\trace{A},q), \qquad \lambda_{\mathbb{N}^2}(q,A) = \qblame{\trace{A},q}.
             \]
-            Hence
+            By Definition~\ref{def:qbm-score}, we get
             \[
-            \qscore(\qbm(C),\pi)
-            = \qblame{\trace{A},C} + \qblame{\pi',\Prog(\trace{A},C)}.
+              \qscore(\qbm(C),\pi)
+              = \sum_{i=1}^{n} \lambda_{\mathbb{N}^2}(q_{i-1},A_i)
+              = \sum_{i=1}^{n} \qblame{\trace{A_i},q_{i-1}}.
             \]
-            Finally, this is exactly the recursive clause of the quantitative blame semantics: it evaluates the head letter against the current residual, then propagates the resulting residual to the tail. Thus $\qscore(\qbm(C),\pi)=\qblame{\pi,C}$.
+            By unrolling the inductive Definition~\ref{def:quant-blame} for $\qblame{\pi, C}$  to single events, we get the same sum. At each step, we remove the first event $A_i$, add $\qblame{\trace{A_i}, q_{i-1}}$, and continue with the rest using the updated contract $q_i = \Prog(\trace{A_i}, q_{i-1})$. After $n$ steps, we establish the following equality:
+            \[
+              \qblame{\pi,C} = \sum_{i=1}^{n} \qblame{\trace{A_i},q_{i-1}} = \qscore(\qbm(C),\pi). \qedhere
+            \]
             \end{proof}
 
 
-The quantitative blame setting combines the persistence of the quantitative monitors with the responsibility granularity of the blame verdicts.
-Instead of outputting a Boolean or multi-valued status, the monitor outputs a \emph{blame increment vector} in $\mathbb{N}^2$ at each step, where the $i$-th component counts how many violations at that step are blamed on agent $i$.
-The overall quantitative blame score is obtained by summing these vectors along the run.
+The quantitative blame approach combines ongoing monitoring of quantitative metrics with the detailed assignment of blame.
+The monitor produces a blame increment vector in $\mathbb{N}^2$ at each step instead of giving a simple violated/satisfied/? verdict. In this vector, the $i$-th component indicates how many violations at that step are attributed to agent $i$.
+To obtain the total quantitative blame score, these vectors are summed over the course of the run.
 
 \begin{example}[Quantitative Blame Monitor for Double Blame]
 \label{ex:qbm-doubleblame}
@@ -1118,13 +1106,13 @@ where $\perm[1]{\OCC}$ models the tenant's power to occupy.
 As in Example~\ref{example:joint-blame} from the forward tight blame monitor, the first step fully determines whether a violation occurs.
 However, in the quantitative blame view, the transition is labeled with a vector in $\mathbb{N}^2$ that counts \emph{how many} violations occurred at that step and \emph{who} is responsible.
 
-We use the following event classes (as shorthand predicates over a letter $A\subseteq\Gamma$):
+We use the following event classes:
 \begin{itemize}
-  \item $\OCC^\surd$: occupation succeeds (tenant attempts and landlord cooperates),
-  \item $\OCC^\times$: occupation is blocked (tenant attempts, landlord withholds cooperation),
-  \item $\PAY^\surd$: rent payment succeeds (joint execution present),
-  \item $\PAY^{\text{fail}}$: tenant does not attempt to pay ($\PAY^{(1)}\notin A$),
-  \item $\PAY^{\text{blk}}$: tenant attempts to pay but the landlord blocks cooperation ($\PAY^{(1)}\in A\wedge \PAY^{(2)}\notin A$).
+  \item $\OCC^\surd$: occupation succeeds, meaning the tenant attempts and the landlord cooperates.
+  \item $\OCC^\times$: occupation is blocked, meaning the tenant attempts but the landlord withholds cooperation.
+  \item $\PAY^\surd$: rent payment succeeds, meaning both agents cooperate on payment.
+  \item $\PAY^{\text{fail}}$: the tenant does not attempt to pay, that is, $\PAY^{(1)}\notin A$.
+  \item $\PAY^{\text{blk}}$: the tenant attempts to pay but the landlord blocks, that is, $\PAY^{(1)}\in A\wedge \PAY^{(2)}\notin A$.
 \end{itemize}
 
 The crucial point is that the conjunction is \emph{additive} at a time point.
@@ -1156,8 +1144,7 @@ In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ produces
   (q0) edge[bend right=60] node[below] { \footnotesize $\OCC^\times \land \PAY^{\text{blk}}\,/\,(0,2)$} (qe);
 
 \end{tikzpicture}
-\caption{Quantitative blame monitor fragment for $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$.
-The label $/\,(n_1,n_2)$ is the instantaneous blame increment vector.
+\caption{Quantitative blame monitor for $\perm[1]{\OCC} \wedge \obl[1]{\PAY}$. The label $/\,(n_1,n_2)$ is the instantaneous blame increment vector.
 Note the two joint-failure cases: $(1,1)$ when the violations are blamed on different agents, and $(0,2)$ when both violations are blamed on agent $2$ in the same step.}
 \label{fig:qbm-joint-blame}
 \end{figure}
@@ -1506,7 +1493,7 @@ Consistency with this legal convention requires a refinement where the reparatio
 Distinguishing these cases could be achieved by introducing a distinct ``reparation score'' or by masking the violation score of $C$ when $C'$ is successfully executed, ensuring that ``repaired compliance'' is semantically distinct from ``unrepaired violation.''
 
 Furthermore, our framework currently assumes that all failures are directly attributable to the agents.
-This assumption ignores that real-world contracts regularly experience the \emph{impossibility of performance} due to unenforceable events, such as natural disasters or regulatory changes that render performance illegal~\cite{Taylor1863}.
+This assumption ignores that real-world contracts regularly experience the \emph{impossibility of performance} due to unenforceable events, such as natural disasters or regulatory changes that render performance illegal~\cite{eisenberg2009impossibility}.
 Our model penalizes an agent for failing to act even if the environment prevents the action.
 Addressing this limitation requires extending the trace model to include a third component: an \emph{environment trace}.
 Such an extension would allow the semantics to distinguish between unwillingness to perform (fault) and inability to perform (impossibility).
@@ -1520,22 +1507,23 @@ For instance, if a joint project fails because Agent A did not pay, the reparati
 Distinguishing these scenarios requires a richer syntax that propagates blame information into the reparation phase.
 \section{Related Work}
 \label{sec:related-work}
-Having successfully established the formal semantics and automata-theoretic constructions for \cDL, we now move to discuss the broader research field. In this section, we situate our framework against its closest progenitors, specifically \logic{STIT} logic and the \logic{CSL} specification language, and contrast it with orthogonal approaches in runtime verification and causal reasoning. This comparison clarifies how the synthesis for \cDL of collaborative agency and state-based reparation addresses a gap in the governance of autonomous digital interactions. We begin by examining the two formalisms that most directly study responsibility in multi-agent settings and contract specifications, before broadening the analysis to complementary notions of causality and algorithmic verification.
+In this section, we compare \cDL with related frameworks and explain how our work fits into the broader research field. We start by looking at two formalisms that focus on agent responsibility: \logic{STIT} logic and the \logic{CSL} specification language. Next, we expand our analysis to contrast \cDL with orthogonal approaches across five distinct dimensions: temporal scope, contrary-to-duty normative handling, collaborative agency, causal responsibility, and monitoring methodologies. This comparison demonstrates how \cDL bridges the gap between correct-by-construction logic monitors and quantitative stream runtime verification, while tailoring agency and blame attribution to the bilateral, interference-prone nature of joint contracts.
 \subsection{Closest Formalisms: \logic{STIT} and \logic{CSL}}
-\paragraph{Inspiration and Context.}
-The development of \cDL has been significantly inspired by the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. In the following section, we aim to highlight the main differences between these formalisms and \cDL in the most faithful way possible, focusing on the specific divergence in their treatment of agency, reparation, and blame assignment.
+The development of \cDL collaborative interaction and responsibility attribution has been significantly inspired by the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. Despite these conceptual roots, \cDL diverges fundamentally from both formalisms in its concrete treatment of simultaneous agency, sequential reparation semantics, and quantitative blame assignment.
 
 \paragraph{\cDL vs. \logic{STIT}.}
-Both \cDL and \logic{STIT} model simultaneous interaction through discrete rounds, structurally analogous to a game of ``Rock-Paper-Scissors''; however, they diverge significantly in their constraints on agency and reparation.
-(i) \emph{Agency Structure:} In \logic{STIT}, interaction is governed by the \textsf{Independence of Agents} condition \cite{belnap2001facing}, which treats the choice structure at a moment $m$ as a strict \textit{partition} of histories. This axiom asserts that for any set of agents, the intersection of their respective choices is non-empty, but it restricts each agent to exactly one choice partition per moment. Conversely, \cDL is more flexible regarding action composition: since a round is encoded as a set of moments within a window, agents are permitted to perform multiple actions simultaneously.
-(ii) \emph{Semantic Faithfulness:} A deeper divergence appears in the handling of reparation. The \logic{STIT} encoding of reparation via temporal disjunction proves overly permissive, as it lacks the state memory to distinguish between a valid reparation and a spontaneous ``fine payment'' unrelated to any breach. In contrast, \cDL{} enforces the strict procedural semantics of the \textsf{repair} operator ($\repair$) through its state-based transition structure ($\Prog$), where the secondary obligation $\obl[1]{\PAYF}$ appears as a residual \textit{only} after a transition on the violation branch of $\obl[1]{\PAY}$. This mechanism ensures that reparation actions are not globally admissible propositions, but are causally enabled only by a specific antecedent failure, thereby ruling out anomalous traces like $\langle \PAYF, \PAYF \dots \rangle$ where fines are discharged without activation.
-Consequently, while the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ can be approximated in group temporal stit \cite{canavotto2022responsibility} as $\phi_7 := \boldmath{G}\big[ \{1,2\} \text{ cstit: }\big] (\PAY \lor \PAYF)$, the latter fails to enforce the sequence ordering between the violation of the payement and the enforcement of the fine payement.
 
-\paragraph{\cDL vs. \logic{CSL}.}
-While \logic{CSL} also formalizes multi-party contracts through an trace-based model focused on run-time monitoring, the two frameworks diverge fundamentally in their action semantics and blame aggregation. Regarding the temporal model, the traces considered in \logic{CSL} are purely metric timed sequences of events, whereas \cDL employs a periodic synchronized abstraction to group events by period. Although these temporal models are similar modulo the transformations discussed in the preliminaries, the key semantic differences lie in the following points:
-(i) \emph{Action Semantics:} \cDL models the causal ``attempt'' and potential interference  through its synchronized collaborative round structure. In contrast, \logic{CSL} abstracts away action generation entirely, assuming a fixed input trace of timestamped events. Consequently, \logic{CSL} does not account for blocked actions; the success of an obligation depends solely on whether the assigned agent performs the action on the trace, ignoring external interference.
-(ii) \emph{Blame and Quantification:} While \cDL tracks the entire run cumulatively, \logic{CSL} enforces a \textit{fundamental breach} assumption. Although the runtime monitor can assign blame to multiple agents simultaneously, that is, when for the blame set $B$, we have $|B| > 1$, if violations occur at the exact same timestamp, the semantics are strictly non-quantitative. The monitor stops at the \textit{first} violation instance in the trace, fixing the verdict permanently, and thus cannot capture cumulative penalties or successive violations beyond the first breach. We illustrate in \ref{fig:csl-payment-loop} the closest encoding for $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ in \logic{CSL}.
-\begin{figure}[t]
+Both \cDL and \logic{STIT} employ discrete rounds to model simultaneous interaction that could be understood as a kind of Rock-Paper-Scissors game round mechanism. Nonetheless, a difference lies in their treatment of agency and reparation.
+(i) Action atomicity: In \logic{STIT}, the representation of agents' behavior is histories, where a history is a set of moments, and a moment can be composed of one action per agent at most, as known as the atomicity principle discussed for \TDDLfm. In contrast, in \cDL, an event is the basic construct for traces and enables time windows or groups of moments. It may have multiple actions per agent, as we are considering contract rounds rather than atomic moments.
+(ii) Reparation semantics: \cDL includes a reparation operator, while \logic{STIT} does not. In \logic{STIT}, reparation can only be represented by temporal disjunction, which is too permissive because it does not separate genuine payment from fine payment. In \cDL, the secondary obligation $\obl[1]{\PAYF}$ only appears after a violation of $\obl[1]{\PAY}$. This setup ensures that a reparation contract is needed only if there is a failure, so situations like $\langle \PAYF, \PAYF \dots \rangle$, where fines are paid without cause, are avoided.
+As an illustration, the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ can be approximated in group temporal stit \cite{canavotto2022responsibility} as $\phi_7 := \boldmath{G}\big[ \{1,2\} \text{ cstit: }\big] (\PAY \lor \PAYF)$, this approximation fails to enforce the correct sequence between the payment violation and the subsequent fine payment.
+
+
+
+\paragraph{\cDL vs. \logic{CSL}} Although \logic{CSL} is also targeted toward contracts through a trace-based approach centered on runtime monitoring. They differ in that \cDL is focused on collaboration rather than on disjoint agents' actions, and thus has a more refined attribution of blame. In \logic{CSL}, traces consist of metric-timed sequences of events, whereas \cDL organizes events by period using a synchronized abstraction. Although these models can be related through certain transformations, the principal semantic differences are as follows:
+(i) Action Semantics: \cDL captures both the attempt to act and potential interference through its synchronized collaborative round structure. In contrast, \logic{CSL} does not capture attempts and blocked interpretation as an action is successful when the agent succeeds in performing it.
+(ii) Perpetual Blame and Quantification: \cDL quantitative semantics monitors the entire execution and can address multiple violations, whereas \logic{CSL} applies a fundamental breach after the first violation. The semantics of the latter may attribute blame to multiple agents if simultaneous violations occur, but it only considers the first violation in the trace and finalizes the verdict at that point. As a result, \logic{CSL} cannot accommodate cumulative penalties or repeated violations following the initial breach. Figure \ref{fig:csl-payment-loop} presents the closest encoding for $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ in \logic{CSL}.
+\begin{figure}[ht]
   \centering
   \begin{minipage}{0.92\textwidth}
   \[
@@ -1562,7 +1550,7 @@ While \logic{CSL} also formalizes multi-party contracts through an trace-based m
   \]
   \end{minipage}
   \caption{Recursive payment loop specification with primary rent payment and secondary fine obligation.
-  The contrary-to-duty structure is captured using and if then else structure. The specification language does not account for landlords ability to block the payements.}
+  The contrary-to-duty structure is captured using an if-then-else structure. The specification language does not account for the landlord's ability to block the payments.}
   \label{fig:csl-payment-loop}
   \end{figure}
 
@@ -1606,16 +1594,15 @@ The causal question addressed by SCM is inherently counterfactual: explaining re
 
 This shift also applies to graded responsibility. While SCM derives degrees of responsibility from counterfactual minimality, \cDL defines degrees of responsibility internally. Grading is computed from the contract structure and its progress semantics, for instance by counting or weighting violations along the progress-induced run. The resulting notion of responsibility is contract-relative and trace-based: it answers who is responsible, and to what extent, according to the agreed normative commitments rather than an external causal model.
 
-\subsubsection{Monitoring Methodology: Correct-by-Construction meets Stream Processing}
+\subsubsection{Monitoring Methodology: Correct-by-Construction meets Stream Runtime Verification}
 
-The compilation of logical specifications into executable monitors has long been a central focus of the Runtime Verification (RV) community. A cornerstone of this effort is the automata-based approach of Leucker and Schallhart, which systematically translates temporal specifications into monitors with verdicts provably aligned with the underlying logic~\cite{leucker2011teaching}. Complementing this logical rigor in data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa excel in this domain by supporting descriptive stream transformations, a capability essential for monitoring numerical properties over evolving data streams~\cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language}.
+The compilation of logical specifications into executable monitors has long been a central focus of the Runtime Verification (RV) community. A cornerstone of this effort is the automata-based approach of Leucker and Schallhart, which systematically translates temporal specifications into monitors with verdicts provably aligned with the underlying logic~\cite{leucker2011teaching}. Complementing this logical rigor in data-rich settings is Stream Runtime Verification (SRV). Tools such as Lola, hLola, and TeSSLa excel in this domain by supporting descriptive stream transformations, a capability essential for monitoring numerical properties over evolving data streams~\cite{sanchez2018online,gorostiaga2018striver,gorostiaga2021hlola,tessla2015language,Scheffel2022,Schmitz2024Efficient}.
 
-The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction model advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition.
-% TODO: Mention that the state space of this monitor, our reachable residual set of contracts, is closely related to the closure of an LTL formula, as introduced by Vardi and Wolper \cite{VardiWolper1986}.
-The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches state valuations with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
-
+The \cDL framework synthesizes these distinct perspectives via a dual-semantic approach. Regarding \textit{tight forward semantics}, the language follows the classical correct-by-construction model advocated in~\cite{Bauer2011}: monitors arise as Moore machines where every transition derives strictly from the contract's semantic definition. In this setting, the state space of the monitor—consisting of the reachable set of residual contracts—is conceptually and structurally related to the closure of an LTL formula as introduced in the automata-theoretic framework of Vardi and Wolper~\cite{VardiWolper1986}.
+The \textit{quantitative semantics}, conversely, requires a hybrid methodology. While the monitor preserves the rigid structural skeleton of a deterministic state machine, it enriches transitions with stream-based computations characteristic of SRV. This design enables the tracking of evolving quantitative data while maintaining the semantic faithfulness of the underlying automaton.
 
 
-In conclusion, The \cDL framework occupies a distinct and deliberately hybrid position within the monitoring field. On the one hand, its tight forward semantics aligns with the classical correct-by-construction philosophy: every monitor is a deterministic Moore machine whose states and transitions are justified directly by the contract's denotational semantics. This guarantees semantic faithfulness and enables precise reasoning about satisfaction, violation, and responsibility at the trace level. On the other hand, its quantitative layer departs from purely verdict-oriented monitoring, adopting ideas from stream runtime verification to accumulate step-local scores over time. This combination is not accidental; whereas pure automata-based monitors lack the means to retain quantitative information beyond the first decisive verdict, pure stream-based approaches often lack a mechanism of defining denotational semantics first and operational semantics second to ensure correctness. By embedding stream-style accumulation inside a state-based progress monitor, \cDL reconciles these two traditions. The result is a framework that supports persistent, explainable, and quantitative accountability without sacrificing correctness guarantees or collapsing violations into a single terminal outcome. This synthesis enables \cDL to move beyond one-shot verification toward operational reasoning about interference-prone collaborative contracts.
+
+In conclusion, the \cDL framework occupies a distinct and deliberately hybrid position within the monitoring field. On the one hand, its tight forward semantics aligns with the classical correct-by-construction philosophy: every monitor is a deterministic Moore machine whose states and transitions are justified directly by the contract's denotational semantics. This guarantees semantic faithfulness and enables precise reasoning about satisfaction, violation, and responsibility at the trace level. On the other hand, its quantitative layer departs from purely verdict-oriented monitoring, adopting ideas from stream runtime verification to accumulate step-local scores over time. This combination is not accidental; whereas pure automata-based monitors lack the means to retain quantitative information beyond the first decisive verdict, pure stream-based approaches often lack a mechanism of defining denotational semantics first and operational semantics second to ensure correctness. By embedding stream-style accumulation inside a state-based progress monitor, \cDL reconciles these two traditions. The result is a framework that supports persistent, explainable, and quantitative accountability without sacrificing correctness guarantees or collapsing violations into a single terminal outcome. This synthesis enables \cDL to move beyond one-shot verification toward operational reasoning about interference-prone collaborative contracts.
 
 

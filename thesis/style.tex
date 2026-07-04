@@ -37,7 +37,31 @@
 \setcapwidth[c]{0.9\textwidth}
 
 % set the style of the bibliography
-\bibliographystyle{alphadin}
+\usepackage[
+  backend=biber,
+  style=alphabetic,
+  maxnames=3,
+  minnames=1,
+  doi=false,
+  isbn=false,
+  url=false,
+  eprint=false
+]{biblatex}
+\addbibresource{thesisz.bib}
+
+\AtEveryBibitem{
+  \clearlist{publisher}
+  \clearlist{location}
+  \clearfield{pages}
+  \clearfield{volume}
+  \clearfield{number}
+  \clearfield{series}
+  \clearfield{isbn}
+  \clearfield{issn}
+  \clearfield{doi}
+  \clearfield{url}
+  \clearfield{note}
+}
 
 % load extended tabulars used in the list of abbreviation
 \usepackage{tabularx}

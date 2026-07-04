@@ -356,7 +356,7 @@ The blame monitor for conjunction $\bmc(C \wedge C')$ runs the two sub-monitors 
 For Sequence ($C ; C'$), Reparation ($C \repair C'$), Repetition ($C^n, \repit{C}$), and Guarded contracts, the construction follows the exact same mapping and redirection to states as the Tight Satisfaction Monitor constructions in Definitions \ref{def:moore-seq} to \ref{def:moore-repeat-unbounded}, with one key adaptation:
 \begin{itemize}
     \item \textbf{Matching Blame States:} Wherever the tight monitor construction redirects a generic violation state (outputting $\bott$), the blame monitor construction redirects \emph{all} corresponding specific blame states (outputting $\bottp{S}$ for any $S$).
-    \item \textbf{Example (Reparation):} In $\tsmc_{\repair}$, transitions to any state $q$ where $\lambda_5(q)=\bott$ are redirected to the initial state of $C'$. In $\bmc_{\repair}$, transitions to \emph{any} state $q$ where $\lambda_{11}(q)=\bottp{S}$ (regardless of $S$) are redirected to the initial state of $C'$.
+    \item \textbf{Example (Reparation):} In $\tsmc_{\repair}$, transitions to any state $q$ where $\lambda_5(q)=\bott$ are redirected to the initial state of $C'$. In $\bmc_{\repair}$, transitions to \emph{any} state $q$ where $\lambda_{11}(q)=\bottp{S}$ are redirected to the initial state of $C'$.
 \end{itemize}
 This preserves the control-flow semantics of the operators: for example, in reparation, \emph{any} fault by \emph{any} party in the primary contract triggers the secondary contract, effectively masking the initial blame in favor of the reparation's outcome.
 \end{definition}
