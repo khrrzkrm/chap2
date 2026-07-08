@@ -1,6 +1,7 @@
 %!TEX root = thesis.tex
 
 \chapter{Conclusion and Future Works}
+\label{chapter:conclusion}
 This dissertation explores key challenges in using formal methods to digitalize and automate the analysis of normative systems.
 As more laws, regulations, and contracts guide how autonomous software agents act, the vagueness of natural language becomes a challenge.
 To solve this, we showed that Normative System Engineering can work well if we keep logical complexity at a level that practitioners can handle.
@@ -30,6 +31,7 @@ On the syntax side, the logic should smoothly combine interval-based constraints
 This richer syntax would let us specify complex requirements, like saying "Agent 1 must accomplish action $\acta$ within 5 time units without interference from Agent 2."
 
 Putting this unified logic into practice will require a two-part approach to automated reasoning.
+
 First, for static analysis, the conflict detection algorithms from Chapter 3 need to be adapted to handle interference between multiple agents.
 This change would let regulators check not only that time windows can be met, but also that no agent is forced to block another to fulfill their own dutiesallow regulators to verify not only that time windows can be met, but also that no agent is forced to block another agent.
 Second, for dynamic enforcement, the monitoring system needs to move from standard Moore machines to timed automata or other real-time computational models.

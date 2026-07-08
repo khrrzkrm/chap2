@@ -404,7 +404,7 @@ Define \(\LT(\taumt):=\trace{a_1,\,a_2,\,\dots,\,a_{n}}\). All properties follow
 
 
 \paragraph{From metric time to synchronous time.}
-The map \(\ST\) aligns events to a global round clock by inserting ``\((-)\)'' at rounds with no event; erasing ``\((-)\)'' brings us back to logical time.
+The map \(\ST\) aligns events to a global round clock by inserting ``\((-)\)'' at rounds with no event whilst erasing ``\((-)\)'' brings us back to logical time.
 
 \begin{lemma}[Synchronous padding \(\ST\): round-indexed view]
 Let \(\taumt\) be a metric-time word. There exists a unique synchronous word \(\taust=\ST(\taumt)\in(\Sigma\cup\{-\})^{*}\) such that, writing \(T:=\mathsf{last}(\taumt)\) (with \(T=0\) if \(\taumt=\emptytrace\)):
@@ -520,7 +520,7 @@ If this condition is met, the result is a sequence of pairs from the product alp
 If the condition is not met, the operator is undefined, which means a deadlock or an invalid execution.
 \end{definition}
 
-The definition above gives a word over the raw product alphabet \( (\Sigma_1\cup\{(-)\})\times(\Sigma_2\cup\{(-)\}) \). However, it is often helpful to combine joint actions into single events to get a standard word structure. To do this, we need a richer alphabet that can show shared actions, private actions, and private actions happening at the same time.
+The definition above gives a word over the raw product alphabet \( (\Sigma_1\cup\{(-)\})\times(\Sigma_2\cup\{(-)\}) \). However, it is often helpful to combine joint actions into single events to get a standard word structure. To achieve it, we need a richer alphabet that can show shared actions, private actions, and private actions happening at the same time.
 
 \begin{definition}[Collapsed lockstep with handshakes]\label{def:collapsed-hs}
 Let \( P_1 = \Sigma_1 \setminus A \) and \( P_2 = \Sigma_2 \setminus A \) be the sets of private actions. The collapsed alphabet \( \Sigma_{\parallel} \) is defined as:

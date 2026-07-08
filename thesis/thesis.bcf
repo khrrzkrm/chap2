@@ -2447,42 +2447,39 @@
     <bcf:citekey order="63" intorder="1">canavotto2022responsibility</bcf:citekey>
     <bcf:citekey order="64" intorder="1">bulling2015strategic</bcf:citekey>
     <bcf:citekey order="64" intorder="2">HvitvedKZ12</bcf:citekey>
-    <bcf:citekey order="65" intorder="1">broersen2011probabilistic</bcf:citekey>
-    <bcf:citekey order="65" intorder="2">halpern2016causality</bcf:citekey>
-    <bcf:citekey order="65" intorder="3">sanchez2018online</bcf:citekey>
-    <bcf:citekey order="66" intorder="1">Pnueli1977</bcf:citekey>
-    <bcf:citekey order="67" intorder="1">Bauer2011</bcf:citekey>
-    <bcf:citekey order="67" intorder="2">de2013linear</bcf:citekey>
+    <bcf:citekey order="65" intorder="1">Pnueli1977</bcf:citekey>
+    <bcf:citekey order="66" intorder="1">Bauer2011</bcf:citekey>
+    <bcf:citekey order="66" intorder="2">de2013linear</bcf:citekey>
+    <bcf:citekey order="67" intorder="1">leucker2011teaching</bcf:citekey>
+    <bcf:citekey order="67" intorder="2">Bauer2011</bcf:citekey>
     <bcf:citekey order="68" intorder="1">leucker2011teaching</bcf:citekey>
     <bcf:citekey order="68" intorder="2">Bauer2011</bcf:citekey>
-    <bcf:citekey order="69" intorder="1">leucker2011teaching</bcf:citekey>
-    <bcf:citekey order="69" intorder="2">Bauer2011</bcf:citekey>
-    <bcf:citekey order="70" intorder="1">VonWright1951</bcf:citekey>
-    <bcf:citekey order="70" intorder="2">Chisholm1963</bcf:citekey>
-    <bcf:citekey order="70" intorder="3">carmo2001deontic</bcf:citekey>
-    <bcf:citekey order="71" intorder="1">DBLP:conf/deon/BenzmullerFP18</bcf:citekey>
-    <bcf:citekey order="71" intorder="2">Makinson2000</bcf:citekey>
-    <bcf:citekey order="72" intorder="1">PrisacariuS12</bcf:citekey>
-    <bcf:citekey order="72" intorder="2">rohaninezhad2017defeasible</bcf:citekey>
-    <bcf:citekey order="72" intorder="3">HvitvedKZ12</bcf:citekey>
-    <bcf:citekey order="72" intorder="4">wyner2006sequences</bcf:citekey>
-    <bcf:citekey order="73" intorder="1">Alur2002</bcf:citekey>
-    <bcf:citekey order="73" intorder="2">Chatterjee2010</bcf:citekey>
-    <bcf:citekey order="73" intorder="3">bulling2015strategic</bcf:citekey>
-    <bcf:citekey order="73" intorder="4">belardinelli2015logic</bcf:citekey>
-    <bcf:citekey order="73" intorder="5">caltais2014mcmas</bcf:citekey>
-    <bcf:citekey order="74" intorder="1">halpern2014structural</bcf:citekey>
-    <bcf:citekey order="74" intorder="2">halpern2016causality</bcf:citekey>
-    <bcf:citekey order="74" intorder="3">triantafyllou2022causality</bcf:citekey>
-    <bcf:citekey order="75" intorder="1">leucker2011teaching</bcf:citekey>
+    <bcf:citekey order="69" intorder="1">VonWright1951</bcf:citekey>
+    <bcf:citekey order="69" intorder="2">Chisholm1963</bcf:citekey>
+    <bcf:citekey order="69" intorder="3">carmo2001deontic</bcf:citekey>
+    <bcf:citekey order="70" intorder="1">DBLP:conf/deon/BenzmullerFP18</bcf:citekey>
+    <bcf:citekey order="70" intorder="2">Makinson2000</bcf:citekey>
+    <bcf:citekey order="71" intorder="1">PrisacariuS12</bcf:citekey>
+    <bcf:citekey order="71" intorder="2">HvitvedKZ12</bcf:citekey>
+    <bcf:citekey order="71" intorder="3">wyner2006sequences</bcf:citekey>
+    <bcf:citekey order="72" intorder="1">Alur2002</bcf:citekey>
+    <bcf:citekey order="72" intorder="2">Chatterjee2010</bcf:citekey>
+    <bcf:citekey order="72" intorder="3">bulling2015strategic</bcf:citekey>
+    <bcf:citekey order="72" intorder="4">belardinelli2015logic</bcf:citekey>
+    <bcf:citekey order="72" intorder="5">caltais2014mcmas</bcf:citekey>
+    <bcf:citekey order="73" intorder="1">Bauer2011</bcf:citekey>
+    <bcf:citekey order="74" intorder="1">Bauer2011</bcf:citekey>
+    <bcf:citekey order="74" intorder="2">leucker2011teaching</bcf:citekey>
+    <bcf:citekey order="74" intorder="3">VardiWolper1986</bcf:citekey>
+    <bcf:citekey order="75" intorder="1">decker2019dissertation</bcf:citekey>
+    <bcf:citekey order="75" intorder="2">henzinger2023monitoring</bcf:citekey>
+    <bcf:citekey order="75" intorder="3">Bauer2011</bcf:citekey>
     <bcf:citekey order="76" intorder="1">sanchez2018online</bcf:citekey>
     <bcf:citekey order="76" intorder="2">gorostiaga2018striver</bcf:citekey>
     <bcf:citekey order="76" intorder="3">gorostiaga2021hlola</bcf:citekey>
     <bcf:citekey order="76" intorder="4">tessla2015language</bcf:citekey>
     <bcf:citekey order="76" intorder="5">Scheffel2022</bcf:citekey>
     <bcf:citekey order="76" intorder="6">Schmitz2024Efficient</bcf:citekey>
-    <bcf:citekey order="77" intorder="1">Bauer2011</bcf:citekey>
-    <bcf:citekey order="78" intorder="1">VardiWolper1986</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="anyt">
