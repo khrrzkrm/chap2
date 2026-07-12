@@ -3,7 +3,7 @@
 \section{Overview}
 \label{sec:overview}
 
-As discussed in the introduction chapter, normative systems provide the formal backbone for how organizations, individuals, software, and autonomous agents are expected to behave. A \emph{normative specification} describes these expectations as a set of rules determining what an agent ought to do or what the state of affairs ought to be. However, dealing with such specifications is inherently difficult. They combine different types of rules, such as obligations, prohibitions, and permissions, whose interplay can yield overlapping prescriptions. In many situations, complying with one norm causes the violation of another. This situation is referred to as a \emph{normative conflict}.
+As discussed in the introduction chapter, normative systems provide the formal backbone for how organizations, individuals, software, and autonomous agents are expected to behave. A \emph{normative specification} describes these expectations as a set of rules determining what an agent ought to do or what the state of affairs ought to be. However, dealing with such specifications is inherently difficult. They combine different types of rules, such as obligations, prohibitions, and permissions, whose interplay can lead to overlapping prescriptions. In many situations, complying with one norm causes the violation of another. This situation is referred to as a \emph{normative conflict}.
 This chapter studies those conflicts in \emph{ought-to-do} specifications with explicit temporal conditions. 
 
 
@@ -64,11 +64,11 @@ To address these challenges, we first formalize the potential behaviors of agent
 
 
 
-We first define two fundamental types of normative timed conflicts. The first is \emph{deontic}, where rules contradict each other. The second is \emph{ontic}, where rules demand more than the agent can physically perform, given the assumptions we impose on metric timed traces. We show that conflicts often hide within complex time intervals. To expose them, we develop a rigorous transformation process that unfolds specifications into their atomic components. Crucially, we prove that this process is structure-preserving. It reveals only the conflicts present in the original design, without creating spurious ones or erasing existing ones.
+We first define two fundamental types of normative timed conflicts. The first is \emph{deontic}, where rules contradict each other. The second is \emph{ontic}, where rules demand more than the agent can physically perform, given the assumptions we impose on metric timed traces. We show that conflicts often hide within complex time intervals. To expose them, we develop a rigorous transformation process that unfolds specifications into their atomic components. Formally, we prove that this process is structure-preserving. It reveals only the conflicts present in the original design, without creating spurious ones or erasing existing ones.
 
 
 
-With these atomic conflicts exposed, we introduce a quantitative metric to measure the density of inconsistencies in a system. We demonstrate that this measure is directly linked to whether a specification is logically solvable. A fully conflicting system is impossible to satisfy. Conversely, a partially conflicting one can always be automatically repaired. We provide an algorithm for this repair that effectively prunes the contradictory parts while preserving the valid compliant behaviors.
+With these atomic conflicts exposed, we introduce a quantitative metric to measure the density of inconsistencies in a system. We demonstrate that this measure is directly linked to whether a specification is logically solvable. A fully conflicting system is impossible to satisfy. Conversely, a partially conflicting one can always be automatically repaired. We provide an algorithm for this repair that soundly prunes the contradictory parts while preserving the valid compliant behaviors.
 
 
 
@@ -726,7 +726,7 @@ Let us compare the number of obligations measured by the $\eta$ function. We hav
  \eta((\phi_1 \sqcap \phi_2) \sqcup (\phi_1 \sqcap \phi_3))= 2\times \eta(\phi_1) + \eta(\phi_2) + \eta(\phi_3),
 \]
 and  \[\eta(\phi_1 \sqcap (\phi_2 \sqcup \phi_3))= \eta(\phi_1) + \eta (\phi_2)  + \eta (\phi_3).\]
-This shows that distributing a conjunction over a disjunction results in a duplication of $\phi_1$, effectively doubling the number of obligation literals it contributes. As such, each application of the distributivity rule can increase the total number of obligation literals in the formula. 
+This shows that distributing a conjunction over a disjunction results in a duplication of $\phi_1$, thereby doubling the number of obligation literals it contributes. As such, each application of the distributivity rule can increase the total number of obligation literals in the formula. 
 
 When applied recursively,  over nested conjunctions or disjunctions, this process propagates duplication and can cause an exponential growth in the number of obligation literals. Therefore, this justifies the inequality:
 $\eta(\phi) \leq \eta(\phi'),$
@@ -1503,7 +1503,7 @@ Our framework provides a mixed answer: semantic preservation is guaranteed, but 
         
         The conflict density measure component receives information from the conflict detection phase to quantify the degree of normative uncertainty inherent in the original specification. This metric supports informed decision-making by offering a way to compare alternative encodings or prioritize simplification steps.
         
-        Ultimately, the framework yields a refined normative specification $\phi'$ that may be conflict-free and, ideally, more amenable to implementation or automated reasoning. The conciseness ratio $\frac{\size{\phi'}}{\size{\phi}}$ evaluates the trade-off between conflict elimination and formula size. In scenarios where full normalization introduces syntactic blow-up, this ratio provides helpful guidance for designers balancing readability and conflict elimination.
+        Ultimately, the framework produces a refined normative specification $\phi'$ that may be conflict-free and, ideally, more amenable to implementation or automated reasoning. The conciseness ratio $\frac{\size{\phi'}}{\size{\phi}}$ evaluates the trade-off between conflict elimination and formula size. In scenarios where full normalization introduces syntactic blow-up, this ratio provides helpful guidance for designers balancing readability and conflict elimination.
         
         \begin{figure}[h!]
         \centering
@@ -1599,19 +1599,20 @@ In summary, these cited frameworks focus on more expressive norms that are dynam
 
 % Additionally, we believe that our methodology could be replicated to other logics. The normalization pipeline, punctual conflict extraction, and SMT-based feasibility checks can be carried over to other timed or agent centred normative formalisms, and to specification languages that do not adopt \TDDLfm. We expect these techniques to serve as a reusable backbone for future calculi and tools that require transparent conflict detection and verifiable repair.
 
+\section{Conclusion and future work}
 This chapter presented \TDDLfm, a minimal metric-time normative logic in which normative specifications can be expressed over timed conditions as interval sets for obligation, prohibition, and their combination via disjunction and conjunction. The core backbone of this work is the formal pipeline for \emph{explainable} conflict analysis: with syntactic normalization to disjunctive/punctual forms, a sound QF-LIA encoding for satisfiability, a syntactic conflict-detection procedure, and a proof-theoretic conflict calculus. 
 
 
 
-\paragraph{Conflicts beyond satisfiability.} 
+ 
 
 By identifying the correspondence between punctual conflicts and Minimal Unsatisfiable Subsets (MUS) aby nd by introducing a proof-theoretic conflict calculus, we linked the syntactic and semantic properties of conflicts, which was straightforward at the beginning of this work. This correspondence is novel in the field of normative conflicts and precisely distinguishes the notion of unsatisfiability from normative conflicts.
 
-\paragraph{Conflicts Engineering.} 
+
 
 Beyond only detecting conflict, we also contributed to conflict engineering by: (i) defining a \emph{conflict-density} measure  to  reflect the severity  of conflicts in a formula and proving a \emph{pruning theorem} that proves that any partially conflicting specification has a semantically equivalent, conflict-free refinement; and (ii) establishing that \TDDLfm\ satisfiability is NP-complete with a tight QF-LIA encoding bounded by the number of obligations, along with explicit size blow-up bounds for conflict detection via \dpnf.
 
-\paragraph{The Trade-off of Static Resolution.} 
+
 
 We found out that the complete static conflict elimination often causes a significant syntactic blow-up. Especially when using the \dpnf repair algorithm. This suggests that forcing a specification to be entirely conflict-free at design time may sacrifice conciseness and readability. In practice, regulators might prefer to keep compact specifications and defer resolving some conflicts to the agent's operational planning at runtime. Our conflict calculus is an interactive way for choosing which conflict to keep or eliminate. We also avoided defining rules for eliminating partial ontic conflicts, as they lead to instances of large-scale blow-up.
 
@@ -1625,13 +1626,12 @@ We found out that the complete static conflict elimination often causes a signif
 
 
 
-\paragraph{Transferability.}
 
  Our methodology could be applied to existing logics lacking frameworks for reasoning about conflicts. More specifically, agent-centered timed deontic formalisms. The core principles of this framework provide a systematic, reusable foundation for conflict reasoning, verifiable repair, and compliance monitoring across diverse normative  and ontic domains.
 
 
 
-\paragraph{Outlook.}
+
 
 We plan to enrich \TDDLfm gradually in two directions: (1) \emph{expressivity}: actions with duration and ought-to-be literals (defined on states), a reparation operator, conditional/permission literals, and a defeasibility layer; and (2) \emph{interaction}: frames for prevention, enabling, and interference between actions, and relaxing the single-action ontic constraint. We expect the second direction to require substantial methodological changes to the full logic specified in \cite{kharraz2021timed}, as it requires additional structural properties on the underlying frames used to model the ontic properties of the enriched logic.
 

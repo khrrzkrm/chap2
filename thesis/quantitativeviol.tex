@@ -6,7 +6,7 @@ The basic restriction of the forward-looking tight satisfaction semantics, as de
 Despite being computationally fast for stopping compliance systems, such as when a safety-critical property is failing, this ``first-fail'' approach is insufficient for post-hoc auditing or dispute resolution.
 
 It masks the full history of non-compliance, failing to capture cumulative violations or distinct failures by multiple agents over time, a critical requirement for complete legal responsibility.
-To tackle this limitation, it is necessary to transition from a boolean verdict to a \emph{quantitative semantics}, changing the emphasis from the question ``Did a violation occur?'' to ``How many violations occurred, and how much did every agent contributed to those violations?''
+To tackle this limitation, it is necessary to transition from a boolean verdict to a \emph{quantitative semantics}, changing the emphasis from the question ``Did a violation occur?'' to ``How many violations occurred, and how much each agent contributed to those violations?''
 
 
 
@@ -295,7 +295,7 @@ Consider the recurring contract $\repit{C_3}$, where the tenant must pay rent (o
 \noindent\textbf{Trace Analysis.}
 Consider a trace in which the tenant pays in Month 1 but fails to pay in Month 2, instead occupying the property.
 \begin{itemize}
-    \item \textbf{Step 1 ($A_1$):} The tenant pays. The instance of $C_3$ for Month 1 is discharged. Due to the repetition operator, the residual is $\emptc; \repit{C_3} \equiv \repit{C_3}$. The contract effectively ``resets'' for the next month.
+    \item \textbf{Step 1 ($A_1$):} The tenant pays. The instance of $C_3$ for Month 1 is discharged. Due to the repetition operator, the residual is $\emptc; \repit{C_3} \equiv \repit{C_3}$. The contract ``resets'' for the next month.
     \item \textbf{Step 2 ($A_2$):} The tenant occupies but does not pay. The instance of $C_3$ for Month 2 violates the condition. Unlike Step 1, the residual does not reset cleanly. Instead, the violated obligation transforms into its reparation $\obl[1]{\PAYF}$, which must be fulfilled in the \emph{next} step (Month 3), alongside the continuing repetition $\repit{C_3}$.
 \end{itemize}
 This results in an accumulation of duties: the fine from Month 2 and the new rent for Month 3.
@@ -475,5 +475,5 @@ We now turn to the formal study of the notion of reachable residual contracts. T
   \end{claim}
   \vspace{-2em}
   \paragraph{Intuition.}
-The claim follows from the finite syntactic structure of $C$ and the progression function $\Prog$. The function $\Prog$ rewrites contracts using only sub-contracts of the contract, residuals of regular expressions, and the contract terminal state $\emptc$. That is, no new syntactic contract is generated beyond its components and the recursive applications of the recusive application of the progression function always terminates without exploring all the possible traces.
+The claim follows from the finite syntactic structure of $C$ and the progression function $\Prog$. The function $\Prog$ rewrites contracts using only sub-contracts of the contract, residuals of regular expressions, and the contract terminal state $\emptc$. That is, no new syntactic contract is generated beyond its components and recursive applications of the progression function always terminate without exploring all possible traces.
 \input{qviol}

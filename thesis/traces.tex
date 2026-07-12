@@ -84,7 +84,7 @@ For a subset of events $S \subseteq E$, the projection $w{\upharpoonright}S$ is 
 
 \subsection{Logical-Time Words}
 
-Logical-time words capture \emph{order only}, abstracting away any notion of specific timing. They are the staple semantic objects in interleaving models of process calculi, such as CCS \cite{Milner89} and CSP \cite{hoare1978communicating}. Moreover, Mazurkiewicz's trace theory represents concurrent behavior by regrouping words over an alphabet modulo an independence relation: adjacent independent actions may be swapped, and a trace is the resulting equivalence class of words~\cite{diekert1995book,Leucker2002Logics}, which we do not follow in this thesis, only a single order exists in this work.
+Logical-time words capture \emph{order only}, abstracting away any notion of specific timing. They are the staple semantic objects in interleaving models of process calculi, such as CCS \cite{Milner89} and CSP \cite{hoare1978communicating}. Moreover, Mazurkiewicz's trace theory represents concurrent behavior by regrouping words over an alphabet modulo an independence relation: adjacent independent actions may be swapped, and a trace is the resulting equivalence class of words~\cite{diekert1995book,Leucker2002Logics}. In this thesis, we do not adopt this concurrency model; instead, we assume a single, globally ordered sequence of events.
 
 \begin{definition}[Logical-time word, notation \(\tault\)]
   A (finite) logical-time word over an alphabet \(\Sigma\) is a sequence:
@@ -263,7 +263,7 @@ The synchronous hypothesis fixes the intended abstraction level: within one cloc
   where \(s_t\in\Sigma\cup\{(-)\}\) represents the observation at round \(t\) and \(T\) is called the \defn{horizon}.
 \end{definition}
 
-The synchronous-time word timing model is between logical-time words and metric-time words. Like logical time, they are discrete sequences, but they come with an explicit global round index that plays the role of a coarse clock. Like metric time, one can talk about \emph{when} something happens, but only in terms of round numbers rather than absolute timestamps. The crucial difference to both earlier models is that the \emph{absence} of an action is itself observable, represented by the stutter symbol ``$(-)$''. 
+The synchronous-time word timing model occupies a middle ground between logical-time words and metric-time words. Like logical time, they are discrete sequences, but they come with an explicit global round index that plays the role of a coarse clock. Like metric time, one can talk about \emph{when} something happens, but only in terms of round numbers rather than absolute timestamps. The crucial difference to both earlier models is that the \emph{absence} of an action is itself observable, represented by the stutter symbol ``$(-)$''. 
 
 Notice the subtle difference of notations: the empty trace \(\emptytrace\) (a trace of length 0) is different from the single event trace \(\trace{(-)}\), which represents exactly one round of inactivity.
 
@@ -319,7 +319,7 @@ For $a\in\Sigma$, the \defn{count} of $a$ in $\taust$ is $\#(a,\taust):=\big|\{\
 The objective of this subsection is to connect the three action-centric word models introduced above. Given a metric-time word \(\taumt\), we introduce two canonical morphisms that deliberately discard part of the information: the \emph{logical-time projection} \(\LT\), which erases time stamps while preserving the order of events, and the \emph{synchronous padding} \(\ST\), which aligns events to a global round clock by inserting explicit stutter symbols ``\((-)\)''. We set up the clock frequency of the synchronous-time word to correspond to a single unit of metric time.
 
 \noindent\textbf{Summary diagram.}
-\ref{fig:word-models-summary} summarizes the relationship between the three word models using a running toy example with two events. Starting from a metric-time word, synchronous padding $\ST$ aligns events to a global round clock by inserting explicit stutters ``$(-)$'', and logical projection $\LT$ forgets timing information and retains only the event order. The diagram also makes explicit that the co-domain changes across the mappings: $\ST$ moves from time event pairs to round-indexed letters, whereas $\LT$ yields a pure order-only word.
+\ref{fig:word-models-summary} summarizes the relationship between the three word models using a running toy example with two events. Starting from a metric-time word, synchronous padding $\ST$ aligns events to a global round clock by inserting explicit stutters ``$(-)$'', and logical projection $\LT$ forgets timing information and retains only the event order. The diagram also makes explicit that the co-domain changes across the mappings: $\ST$ moves from time event pairs to round-indexed letters, whereas $\LT$ produces a pure order-only word.
 
 \begin{figure}[t]
 \centering
@@ -527,7 +527,7 @@ Let \( P_1 = \Sigma_1 \setminus A \) and \( P_2 = \Sigma_2 \setminus A \) be the
   \[
       \Sigma_{\parallel} \;:=\; A \;\cup\; P_1^{(1)} \;\cup\; P_2^{(2)} \;\cup\; (P_1^{(1)} \times P_2^{(2)}),
   \]
-Here, \( P_i^{(i)} \) means the private actions are labeled with the agent's ID.
+where \( P_i^{(i)} \) means the private actions are labeled with the agent's ID.
   
 The collapsed lockstep with handshakes is defined by applying the function \(\mathsf{coll}_A\) to each pair \((s_t, r_t)\) in the raw lockstep word:
   \[
@@ -543,7 +543,7 @@ The collapsed lockstep with handshakes is defined by applying the function \(\ma
 \end{definition}
 
 \begin{example}[Handover as handshake, failures and successes]
-  Let \(\Sigma_1=\{\textsf{pick},\textsf{handover}\}\), \(\Sigma_2=\{\textsf{scan},\textsf{handover}\}\). Here, \(A=\{\textsf{handover}\}\) is the collaborative handshake action and 
+  Let \(\Sigma_1=\{\textsf{pick},\textsf{handover}\}\), \(\Sigma_2=\{\textsf{scan},\textsf{handover}\}\). We have \(A=\{\textsf{handover}\}\) is the collaborative handshake action and 
   \( P_1=\{\textsf{pick}\} \) and \( P_2=\{\textsf{scan}\} \) are the specific actions for Agent 1 and Agent 2, respectively.
   \begin{itemize}
       \item \emph{Success (aligned handshake).}\\

@@ -184,7 +184,7 @@ C_3 := \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.
 \[
 \pi_1=\langle A_1\rangle,\quad A_1=\{\OCC^{(1)}\}
 \]
-Here, $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdicts are:
+In this case, $\perm[1]{\OCC}$ and $ \obl[1]{\PAY}$ are violated, the blame verdicts are:
 \begin{itemize}
 \item The tenant (1) gets blamed for violating the obligation to pay rent:\\ $\pi_1 \vDash_{\bottp{\{1\}}} \obl[1]{\PAY}$. 
 \item The landlord (2) gets blamed for violating the power of the tenant to occupy the flat:\\
@@ -195,11 +195,11 @@ $\pi_1 \presat \obl[1]{\PAY}\ \repair\ \obl[1]{\PAYF}.$
 Consequently, only the landlord gets the blame for the overall specification:
 \[\pi_1 \vDash_{\bottp{\{2\}}} C_2' \wedge C_3.\]
 
-Moreover, consider the trace of  $\pi_2:= \trace{\{\OCC^{(1)}\}, \{\OCC^{(1)}\}}$, the extension of $\pi_1$ with the same event, as the blame is forward and tight-looking, the blame is still assigned only to agent $2$ (landlord) as they is responsible for the first violation.
+Moreover, consider the trace of  $\pi_2:= \trace{\{\OCC^{(1)}\}, \{\OCC^{(1)}\}}$, the extension of $\pi_1$ with the same event, as the blame is forward and tight-looking, the blame is still assigned only to agent $2$ (landlord), as agent 2 is responsible for the first violation.
 
 Let us consider instead the following trace $\pi_3:=\trace{A_1',A_2}$ with $A_1':= \{\OCC^{(1)}, \OCC^{(2)}\}$ and $A_2:= \{\OCC^{(1)}\}$.
 
-Here:
+In this case:
 \begin{itemize}
 \item The landlord gets the blame at $T=2$ for violating the power of the tenant to occupy the flat in the second month:\\
 $\pi_3 \vDash_{\bottp{\{2\}}} \perm[1]{\OCC}\ ;\ \perm[1]{\OCC} $.
@@ -228,7 +228,7 @@ By structural induction on $C$.
 \paragraph{Literals.}
 For $C=\ell$, the blame rules in Definition~\ref{def:lockstep-hs} distinguish violations by a finite case split on the current letter $A\in\Gamma$.
 In each case, at most one blame set is applicable.
-For instance, for $\obl[p]{a}$, either $a^{(p)}\notin A$ (yielding $\bottp{\{p\}}$), or $a^{(p)}\in A\land a^{(\bar p)}\notin A$ (yielding $\bottp{\{\bar p\}}$), or the joint act occurs (no violation).
+For instance, for $\obl[p]{a}$, either $a^{(p)}\notin A$ (producing $\bottp{\{p\}}$), or $a^{(p)}\in A\land a^{(\bar p)}\notin A$ (producing $\bottp{\{\bar p\}}$), or the joint act occurs (no violation).
 The clauses for $\frb[p]{a}$ and $\perm[p]{a}$ are analogous.
 Post blame is uniquely determined because $\botpp{S}$ holds exactly when some earlier prefix had the corresponding tight blame $\bottp{S}$.
 
@@ -279,7 +279,7 @@ The uniqueness of the blame set follows from Lemma~\ref{lem:blame-deterministic}
 
 In the previous subsection, we defined a denotational blame semantics that refines tight and post violations by assigning responsibility to one or both agents. We now show that this refinement can be implemented in practice.
 Unlike the tight satisfaction monitor, which groups all violations into a single generic $\bott$ verdict, the blame monitor must distinguish between different causes of violation.
-Therefore, we cannot simply relabel the outputs of the Moore machine on tight satisfaction verdicts as the literals blame, for obligations and permissions, is symmetric. Instead, the monitor construction is constructed in our next definitions from the semantics again while reusing some core ideas from the previous monitor construction.
+Therefore, we cannot simply relabel the outputs of the Moore machine on tight satisfaction verdicts as the literals blame, for obligations and permissions, is symmetric. Instead, the blame monitor is constructed in our next definitions from the semantics again, while reusing some core ideas from the previous monitor construction.
 
 \begin{definition}[Moore machine on blame verdicts]
 \label{def:blamemonitor}
@@ -358,7 +358,7 @@ For Sequence ($C ; C'$), Reparation ($C \repair C'$), Repetition ($C^n, \repit{C
     \item \textbf{Matching Blame States:} Wherever the tight monitor construction redirects a generic violation state (outputting $\bott$), the blame monitor construction redirects \emph{all} corresponding specific blame states (outputting $\bottp{S}$ for any $S$).
     \item \textbf{Example (Reparation):} In $\tsmc_{\repair}$, transitions to any state $q$ where $\lambda_5(q)=\bott$ are redirected to the initial state of $C'$. In $\bmc_{\repair}$, transitions to \emph{any} state $q$ where $\lambda_{11}(q)=\bottp{S}$ are redirected to the initial state of $C'$.
 \end{itemize}
-This preserves the control-flow semantics of the operators: for example, in reparation, \emph{any} fault by \emph{any} party in the primary contract triggers the secondary contract, effectively masking the initial blame in favor of the reparation's outcome.
+This preserves the control-flow semantics of the operators: for example, in reparation, \emph{any} fault by \emph{any} party in the primary contract triggers the secondary contract, thereby concealing the initial blame in favor of the reparation's outcome.
 \end{definition}
 
 \begin{theorem}[Correctness of the Blame Monitor]
@@ -585,7 +585,7 @@ To illustrate a scenario where the monitor can output the joint blame verdict $\
 
 
     \begin{example}[Blame Monitor for $\repit{C_3}$]
-      The figure below shows the blame monitor for the unbounded repetition of the rent-and-reparation contract. The generic violation state $q_{\bott}$ from the standard monitor is split into $s_{\bott}^1$ and $s_{\bott}^2$. Crucially, once the monitor transitions to a post-violation sink such as $s_{\botp}^1$, it loops on any input $\Gamma$. This shows the "first blame" limitation: if the tenant is blamed for missing a fine, the monitor will never blame the landlord for any future misconduct.
+      The figure below shows the blame monitor for the unbounded repetition of the rent-and-reparation contract. The generic violation state $q_{\bott}$ from the standard monitor is split into $s_{\bott}^1$ and $s_{\bott}^2$. In particular, once the monitor transitions to a post-violation sink such as $s_{\botp}^1$, it loops on any input $\Gamma$. This shows the "first blame" limitation: if the tenant is blamed for missing a fine, the monitor will never blame the landlord for any future misconduct.
       
       \begin{figure}[h!]
       \centering
@@ -658,8 +658,8 @@ Even if the interaction continues and the landlord subsequently violates their p
 Therefore, while this first family of semantics is sufficient for determining \emph{why} a contract failed, it does not support a cumulative accounting of \emph{all} violations that occur throughout the lifespan of a long-running interaction beyond the first violation.
 
  In contracts law, one always has to account for all violations to determine the full extent of liability or penalties for litigation.
-Capturing such multi-point violations would require a mechanism to accumulate and memories blames for all violation and keeps the responsability of each violation too. 
-In the next section, we developp a first version of refined semantics where we keep a score for violation as well as a blame score for each agent.
+Capturing such multi-point violations would require a mechanism to accumulate and remember blame for all violations, while also tracking the responsibility for each individual violation. 
+In the next section, we develop a first version of refined semantics where we keep a score for violations as well as a blame score for each agent.
 
 % \begin{theorem}[Correctness of the blame monitor]
 % \label{thm:bm-correct}

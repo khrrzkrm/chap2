@@ -1,0 +1,270 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue
+}
+\setlist[itemize]{leftmargin=*, itemsep=0.35em}
+\setlist[enumerate]{leftmargin=*, itemsep=0.35em}
+\newcommand{\sev}[1]{\textbf{#1}}
+\newcommand{\loc}[1]{\texttt{#1}}
+
+\title{Final Dissertation Review Report}
+\author{Generated review for \texttt{thesis.tex}}
+\date{12 July 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Scope and Method}
+
+This report reviews the active dependency tree of \loc{thesis.tex}. The review
+covered the main file, front matter, chapters, transitive inputs, style and macro
+files, and the current build logs. No existing thesis source file was changed.
+
+The review used four read-only passes:
+\begin{itemize}
+  \item \textbf{LaTeX/build/style checker:} build-log warnings, labels, references,
+  theorem setup, PDF metadata, overfull boxes, and source-submission debris.
+  \item \textbf{Fact and citation checker:} internal consistency, scenario logic,
+  terminology, citation coverage, and bibliography warnings using local files.
+  \item \textbf{Readability checker:} argument flow, unclear transitions, overly dense
+  sections, informal conclusion language, and inconsistent scope framing.
+  \item \textbf{Spelling, grammar, and prose-risk checker:} typos, grammar problems,
+  repeated words, unnatural phrasing, and generic prose. This is not an AI-authorship
+  detector; it only flags passages that may read as generic, vague, or synthetic.
+\end{itemize}
+
+\section*{Executive Summary}
+
+\begin{itemize}
+  \item \sev{Critical before submission:} fix the wrong PDF metadata in
+  \loc{thesis.tex:8}; fix math-mode Unicode/corruption in
+  \loc{forwardtight1.tex:406--411}; fix the contradictory blame assignment in
+  \loc{chaptermonitor.tex:242}; fix the duplicated sentence in \loc{fazit.tex:36}.
+  \item \sev{Major consistency issue:} the dissertation scope says timed and
+  distributed normative systems, but the two technical parts remain split:
+  metric-time single-agent conflict analysis and logical-time two-agent monitoring.
+  Add an explicit bridge sentence in the introduction and conclusion.
+  \item \sev{Major prose issue:} the conclusion currently has several typos and
+  informal phrases. It should be edited first because it is short, visible, and
+  central to the final impression.
+  \item \sev{Build status from existing logs:} no active duplicate labels were found,
+  and the current \loc{thesis.log} shows no undefined references or citations.
+  However, it does show theorem-style warnings, invalid text commands in math mode,
+  missing glyphs, and significant overfull boxes.
+\end{itemize}
+
+\section*{Priority 1: Must Fix Before Submission}
+
+\begin{enumerate}
+  \item \sev{Wrong PDF title metadata.} \loc{thesis.tex:8} still sets
+  \verb|pdftitle={Wie schreibe ich eine Masterarbeit?}|. Submission systems and
+  library repositories often index PDF metadata. Replace it with the actual
+  dissertation title from \loc{title.tex:26}.
+
+  \item \sev{Corrupted math-mode text.} \loc{forwardtight1.tex:406--411} contains
+  forms such as \verb|\tsmc©| and curly apostrophes in math, e.g. \verb|C’|.
+  The log reports invalid \verb|\textcopyright| and \verb|\textquoteright| in math
+  mode plus missing glyphs. Replace with standard math/ASCII syntax, likely
+  \verb|\tsmc(C)| and \verb|C'|.
+
+  \item \sev{Contradictory blame assignment.} In \loc{chaptermonitor.tex:242}, the
+  tenant stops paying rent during the three-month notice period, but the verdict
+  assigns blame to the landlord. This conflicts with C5 in
+  \loc{chaptermonitor.tex:158--164}, which says the tenant must continue paying
+  during the notice period. Either assign blame to the tenant or change the scenario
+  so that the landlord obstructs payment or occupancy.
+
+  \item \sev{Guarded termination examples conflict with C5.}
+  \loc{quantitativeviol.tex:349--355} and \loc{qviol.tex:354--360} use
+  \verb|\guard[\Gamma^+ \cdot \notifterm^{(1)}]{\repit{C_3}}| and discharge the
+  contract immediately after notice. Later, \loc{forwardtight.tex:441--449} uses
+  a three-step continuation with \verb|\Gamma^3|. Either add the continuation to
+  these examples or state clearly that they are simplified examples, not C5.
+
+  \item \sev{Garbled future-work sentence.} \loc{fazit.tex:36} contains the merged
+  phrase ``dutiesallow regulators''. Rewrite as one clean sentence about verifying
+  both feasible time windows and absence of forced interference between agents.
+
+  \item \sev{Broken framework-workflow paragraph.} \loc{chapterconflict.tex:1497--1501}
+  mixes SMT checking, DPNF, conflict density, calculus, repair, and interactive
+  workflow in one dense block. It also contains the fragment ``Unless all the other
+  tools in the framework are.'' Rewrite this subsection as a numbered workflow:
+  input specification; SMT feasibility check; DPNF/conflict extraction; density;
+  automatic pruning; optional calculus-guided refinement.
+\end{enumerate}
+
+\section*{Priority 2: Major Conceptual and Structural Edits}
+
+\begin{enumerate}
+  \item \sev{Clarify the thesis scope split.} \loc{einleitung.tex:135} frames the
+  dissertation as timed and distributed ought-to-do normative systems. The actual
+  contributions split into metric-time single-agent static conflict analysis and
+  two-agent logical-time monitoring. Add a sentence explaining that the two parts
+  deliberately isolate complementary dimensions, and that their integration is
+  future work.
+
+  \item \sev{Align chapter title with actual arity.} \loc{chaptermonitor.tex:1}
+  says ``Multi-Party Collaborative Contracts'', but the framework is consistently
+  two-agent/two-party. Either rename the chapter to ``Two-Party'' or add a clear
+  scope note that two-party contracts are the base case for multi-party work.
+
+  \item \sev{Resolve acronym/name inconsistency.} The German abstract
+  \loc{abstract.tex:22} uses ``Two-Agents Collaborative Normative Logic (TACNL)'',
+  while the English abstract \loc{abstract.tex:48} and chapters use \verb|\cDL|.
+  Use one public name/acronym consistently across abstracts, chapter text, and
+  conclusion.
+
+  \item \sev{Strengthen related-work structure in Chapter 4.}
+  \loc{qviol.tex:1491--1586} mixes closest formalisms, broad field, causality, and
+  monitoring methodology. Normalize the hierarchy so each promised comparison
+  dimension has a clear subsection.
+
+  \item \sev{Check the quantitative blame lemma framing.} \loc{qviol.tex:868--880}
+  asks whether blame counters ``always give back the same score'', but the lemma
+  proves only \verb|\qsem{\pi,C} \le n_1+n_2|. Revise the question to match the
+  inequality or strengthen the theorem if equality is intended.
+
+  \item \sev{Add citation near SCM claims.} \loc{qviol.tex:1577--1580} discusses
+  structural causal models without a nearby citation. The local bibliography
+  contains \loc{halpern2014structural} and \loc{halpern2016causality}; cite the
+  relevant one(s) near the SCM comparison.
+\end{enumerate}
+
+\section*{Priority 3: LaTeX and Final-Submission Hygiene}
+
+\begin{enumerate}
+  \item \sev{Unknown theorem styles.} \loc{style.tex:222} and \loc{style.tex:226}
+  use \verb|\theoremstyle{thmstyletwo}| and \verb|\theoremstyle{thmstylethree}|.
+  The log reports unknown theorem-style warnings for examples, remarks,
+  definitions, lemmas, claims, and corollaries. Define these styles or use standard
+  \verb|plain|, \verb|definition|, and \verb|remark|.
+
+  \item \sev{Bookmark-safe math macros.} Section/bookmark titles such as
+  \loc{chapterconflict.tex:373}, \loc{chapterconflict.tex:393},
+  \loc{chapterconflict.tex:516}, \loc{chapterconflict.tex:603},
+  \loc{chapterconflict.tex:932}, and \loc{conflictmeat.tex:922} contain
+  \verb|\TDDLfm|. The log shows \loc{hyperref} PDF-string warnings. Use
+  \verb|\texorpdfstring| or define a bookmark-safe version of the macro.
+
+  \item \sev{Large overfull boxes.} The existing log reports visible overfull boxes,
+  including around \loc{forwardtight1.tex:168} and \loc{forwardtight1.tex:417}.
+  Split long inline constructions into aligned displays.
+
+  \item \sev{Todo package and source debris.} \loc{style.tex:184} and
+  \loc{macros.tex:38} both load \loc{todonotes}. No active todo was found in the
+  compiled text, but final submission should load it once, preferably disabled.
+  Commented reviewer TODO blocks remain in \loc{chapterconflict.tex:383--460};
+  remove them before source archival.
+
+  \item \sev{Bibliography warning.} \loc{thesis.blg:16} reports an invalid ISBN for
+  the entry \loc{10.1145/3597503.3639093} in \loc{thesisz.bib:5}. Validate the ACM
+  ISBN, add expected hyphenation if appropriate, or remove the ISBN field.
+\end{enumerate}
+
+\section*{Priority 4: Spelling, Grammar, and Local Prose Fixes}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.25\linewidth}
+                  >{\raggedright\arraybackslash}p{0.31\linewidth}
+                  >{\raggedright\arraybackslash}p{0.34\linewidth}}
+\textbf{Location} & \textbf{Issue} & \textbf{Suggested correction} \\
+\hline
+\loc{acknowledgment.tex:11} & Duplicate word and spelling: ``defense and and'', ``straight forward''. & ``defense and made ... straightforward''. \\
+\loc{acknowledgment.tex:17} & Sentence fragment beginning ``While I regret not having worked...''. & Join with the next sentence or rewrite. \\
+\loc{acknowledgment.tex:19} & ``inconditional'' and unclear antecedent for ``who''. & ``unconditional''; recast the sentence. \\
+\loc{declaration.tex:13} & ``up to their last versions'' is unnatural. & ``latest versions available as of January 2026''. \\
+\loc{einleitung.tex:95} & ``Model checking'' capitalized mid-sentence. & ``model checking''. \\
+\loc{traces.tex:87} & Mazurkiewicz comparison ends abruptly. & Split the comparison from the design choice. \\
+\loc{traces.tex:266} & ``is between logical-time words and metric-time words''. & ``lies between'' or ``occupies a middle ground between''. \\
+\loc{chaptermonitor.tex:3} & Tense shift and gendered phrasing: ``We built'', ``his attempts''. & Use consistent present tense and ``their attempts'' or ``the agent's attempts''. \\
+\loc{chaptermonitor.tex:7} & Unnatural phrase ``moves to sharper checking''. & ``checks compliance more precisely''. \\
+\loc{chaptermonitor.tex:344--345} & Repetition and missing preposition. & ``period-based action-set traces'' and ``merge both agents' traces into collaborative objectives''. \\
+\loc{chapterconflict.tex:937} & ``inexistance''. & ``nonexistence''. \\
+\loc{chapterconflict.tex:1488} & ``exlosion''. & ``explosion''. \\
+\loc{chapterconflict.tex:1570} & ``achievement achievement'' and unclear sentence. & Remove duplicate and rewrite the contrast. \\
+\loc{chapterconflict.tex:1607} & ``aby nd'' and unclear relative clause. & ``and by''; clarify the sentence. \\
+\loc{conflictmeat.tex:209} & ``deontic operator an action'', ``espcially''. & ``deontic operator and action'', ``especially''. \\
+\loc{conflictmeat.tex:866} & ``a an'', ``less then the the''. & ``an'', ``less than the''. \\
+\loc{tightmotivation.tex:1067} & ``the the'' and stray final ``.x''. & Remove duplicate ``the'' and stray ``x''. \\
+\loc{quantitativeviol.tex:9} & ``did every agent contributed''. & ``did each agent contribute''. \\
+\loc{quantitativeviol.tex:478} & ``recusive'' and repeated ``application''. & ``recursive applications of the progression function''. \\
+\loc{forwardtight.tex:17} & Sentence fragment after alphabet phrase. & Combine with the following sentence. \\
+\loc{forwardtight.tex:343} & ``n repition''. & ``the n-th repetition''. \\
+\loc{forwardtight.tex:488} & ``furthers'', ``definion'', awkward ``disjointedness''. & Rewrite the paragraph. \\
+\loc{forwardtight1.tex:333--335} & ``unsatifiability'', ``raises whe'', ``easly spotable'', ``satifaction''. & Correct spelling and combine sentence fragments. \\
+\loc{forwardtight2.tex:198} & ``they is responsible''. & ``agent 2 is responsible''. \\
+\loc{forwardtight2.tex:282} & ``is constructed is constructed''. & Remove repetition. \\
+\loc{forwardtight2.tex:661--662} & ``memories blames'', ``responsability'', ``developp''. & ``remember blame'', ``responsibility'', ``develop''. \\
+\loc{qviol.tex:1487} & ``payement''. & ``payment''. \\
+\loc{qviol.tex:1504} & Fragment after ``Although \verb|\logic{CSL}|...''. & ``Although ..., \verb|\cDL| and \verb|\logic{CSL}| differ in that...''. \\
+\loc{fazit.tex:3} & ``Future Works''. & ``Future Work''. \\
+\loc{fazit.tex:10} & ``developped'', ``normalform'', informal ``spot'' and ``made a way''. & ``developed'', ``normal form'', ``identify'', ``defined a measure''. \\
+\loc{fazit.tex:14} & ``allowing to explain each failure''. & ``allowing the framework to explain each failure''. \\
+\loc{fazit.tex:25} & ``was focused'', ``was on a single agent setting'', ``two agent setting''. & ``focuses on'', ``single-agent setting'', ``two-agent setting''. \\
+\end{longtable}
+
+\section*{Readability and Argument-Flow Comments}
+
+\begin{itemize}
+  \item \loc{chaptermonitor.tex:11}: the overview mentions ``four semantics'' but
+  does not name them. Name the layers immediately or defer the phrase until the
+  methodology paragraph.
+  \item \loc{chaptermonitor.tex:67}: ``both agents suggest them'' is informal and
+  underdefined. Use the formal term used later, such as attempt, enable, or offer.
+  \item \loc{tightmotivation.tex:422--435}: the transition from contracts to
+  regular-language tightness is abrupt and partly repetitive. Add one bridge
+  sentence explaining why contract evaluation is reduced to prefix classification.
+  \item \loc{conflictmeat.tex:920--932}: the MUS analogy is dense. Add a small
+  mapping: propositional clause set to DPNF product term; clause/literal role to
+  punctual literal; MUS to punctual conflict inside one product term.
+  \item \loc{chapterconflict.tex:1565--1577}: the related-work comparison with
+  Colombo/Governatori contains repetition and unclear wording. Rewrite as a direct
+  contrast between their state/assumption model and your internalized action
+  feasibility assumption.
+\end{itemize}
+
+\section*{AI-Style and Generic-Prose Risk}
+
+This section does not claim to detect AI authorship. It flags passages that may
+read as generic, informal, or insufficiently dissertation-specific.
+\begin{itemize}
+  \item \loc{fazit.tex:5--10}: phrases such as ``work well'', ``keeping things
+  simple'', and ``tough reasoning tasks'' are too informal for a final conclusion.
+  Replace with precise terms such as controlled expressiveness, tractable reasoning,
+  conflict detection, and blame attribution.
+  \item \loc{chaptermonitor.tex:7}: ``moves to sharper checking'' sounds generic.
+  Replace with a concrete description of what is checked: attempts, successful
+  outcomes, interference, and responsibility.
+  \item \loc{einleitung.tex:37--43}: several broad claims about compliance burden
+  and digitalization would benefit from either a citation or more precise framing.
+  Avoid sweeping claims without source support.
+\end{itemize}
+
+\section*{Final Editing Order}
+
+\begin{enumerate}
+  \item Fix the four must-fix consistency/build issues: metadata, corrupted math
+  characters, C5/blame contradiction, and guarded-termination inconsistency.
+  \item Edit \loc{fazit.tex} completely. It is short and currently contains several
+  visible typos, informal phrases, and one garbled sentence.
+  \item Clean the Chapter 3 framework workflow around \loc{chapterconflict.tex:1497}
+  and the Chapter 4 related-work hierarchy around \loc{qviol.tex:1491}.
+  \item Resolve LaTeX warnings: theorem styles, bookmark-safe macros, large overfull
+  boxes, and invalid ISBN.
+  \item Rebuild the thesis from a clean state and inspect \loc{thesis.log} for
+  remaining warnings before submission.
+\end{enumerate}
+
+\end{document}

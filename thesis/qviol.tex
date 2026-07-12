@@ -52,7 +52,7 @@ As an optimization, we define a helper function to evaluate only the currently e
 \qsem{\emptytrace,C}
 &:= 0.
 \end{align}
-    Here, the \emph{instantaneous violation score} for a single event $\trace{A}$ against a contract $C$ is defined inductively on the structure of the contract:
+    where the \emph{instantaneous violation score} for a single event $\trace{A}$ against a contract $C$ is defined inductively on the structure of the contract:
     \[
     \qsem{\trace{A}, C} :=
     \begin{cases} 
@@ -1484,7 +1484,7 @@ Such an extension could support new verdict types, such as shared loss or frustr
 The third limitation is that the reparation operator is agnostic about which party caused the violation.
 In $\repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$, the fine obligation falls on the tenant regardless of why the payment failed.
 If the landlord blocks the payment, the tenant must pay the fine, even though he was not responsible for it.
-This does not reflect legal practice, where the reparation typically depends on the specific breach and the party at fault. To fix this, a \emph{parametrized reparation operator} is required to assign different secondary obligations depending on which agent is blamed for the initial violation, as in our example, blocking payement by the landlord triggers a different reparation than non-payment by the tenant.
+This does not reflect legal practice, where the reparation typically depends on the specific breach and the party at fault. To fix this, a \emph{parametrized reparation operator} is required to assign different secondary obligations depending on which agent is blamed for the initial violation, as in our example, blocking payment by the landlord triggers a different reparation than non-payment by the tenant.
 
 \section{Related Work}
 \label{sec:related-work}
@@ -1501,7 +1501,7 @@ As an illustration, the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl
 
 
 
-\paragraph{\cDL vs. \logic{CSL}} Although \logic{CSL} is also targeted toward contracts through a trace-based approach centered on runtime monitoring. They differ in that \cDL is focused on collaboration rather than on disjoint agents' actions, and thus has a more refined attribution of blame. In \logic{CSL}, traces consist of metric-timed sequences of events, whereas \cDL organizes events by period using a synchronized abstraction. Although these models can be related through certain transformations, the principal semantic differences are as follows:
+\paragraph{\cDL vs. \logic{CSL}} Although \logic{CSL} is also targeted toward contracts through a trace-based approach centered on runtime monitoring, it differs from \cDL in that \cDL is focused on collaboration rather than on disjoint agents' actions, and thus has a more refined attribution of blame. In \logic{CSL}, traces consist of metric-timed sequences of events, whereas \cDL organizes events by period using a synchronized abstraction. Although these models can be related through certain transformations, the principal semantic differences are as follows:
 (i) Action Semantics: \cDL captures both the attempt to act and potential interference through its synchronized collaborative round structure. In contrast, \logic{CSL} does not capture attempts and blocked interpretation as an action is successful when the agent succeeds in performing it.
 (ii) Perpetual Blame and Quantification: \cDL quantitative semantics monitors the entire execution and can address multiple violations, whereas \logic{CSL} applies a fundamental breach after the first violation. The semantics of the latter may attribute blame to multiple agents if simultaneous violations occur, but it only considers the first violation in the trace and finalizes the verdict at that point. As a result, \logic{CSL} cannot accommodate cumulative penalties or repeated violations following the initial breach. Figure \ref{fig:csl-payment-loop} presents the closest encoding for $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ in \logic{CSL}.
 \begin{figure}[ht]

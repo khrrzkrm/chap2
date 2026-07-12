@@ -1,10 +1,10 @@
 \chapter{Reasoning about Blame in Multi-Party Collaborative Contracts}\label{chap:monitoring}
 
-This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents, building on a corrected and reformulated syntax and semantics of our earlier work \cite{Kharraz23}. In a distributed setting, a core challenge is distinguishing the success of an action attributed to an agent from his attempts, as the success of this collaborative action may also depend on another agent's collaboration or non-interference. This distinction is essential for responsibility attribution in collaborative specifications, such as contracts, and cannot be reconstructed from standard trace semantics that do not reason at the attempt level. We establish a formal basis for blame attribution when contractual norms are not met. We built a logic and a runtime verification pipeline capable of handling temporal constraints, reparable violations, and the open-ended structure of real-world contracts.
+This chapter addresses the challenge of monitoring and diagnosing failures in collaborative systems where compliance depends on the joint behavior of multiple autonomous agents, building on a corrected and reformulated syntax and semantics of our earlier work \cite{Kharraz23}. In a distributed setting, a core challenge is distinguishing the success of an action attributed to an agent from their attempts, as the success of this collaborative action may also depend on another agent's collaboration or non-interference. This distinction is essential for responsibility attribution in collaborative specifications, such as contracts, and cannot be reconstructed from standard trace semantics that do not reason at the attempt level. We establish a formal basis for blame attribution when contractual norms are not met. We build a logic and a runtime verification pipeline capable of handling temporal constraints, reparable violations, and the open-ended structure of real-world contracts.
 
 
 
-The core novelty for handling collective norms lies in not abstracting away from collaboration itself by treating it as a semantic object. Unlike traditional runtime verification and temporal logic frameworks, which evaluate compliance solely in terms of successful outcomes, the framework moves to sharper checking by considering what each agent attempted and what did succeed when collaboration was achieved.
+The core novelty for handling collective norms lies in not abstracting away from collaboration itself by treating it as a semantic object. Unlike traditional runtime verification and temporal logic frameworks, which evaluate compliance solely in terms of successful outcomes, the framework checks compliance more precisely by considering what each agent attempted and what did succeed when collaboration was achieved.
 
 \section{Overview}
 
@@ -45,7 +45,7 @@ These considerations motivate the following questions from a formal methods pers
 
 \item How can collaboration be efficiently modeled at the trace level, distinguishing individual attempts from jointly successful outcomes?
 
-\item How can a trace abstraction effectively capture the timing periodicity of open-ended contractual specifications?
+\item How can a trace abstraction faithfully capture the timing periodicity of open-ended contractual specifications?
 
 \item How can open-ended clauses, specifically \emph{repetitions} of duties and rights, be specified and monitored within a contractual framework?
 
@@ -233,13 +233,13 @@ Consider the tenant exercising the power to terminate as in Clause C5.
 
 \begin{itemize}
 
-    \item \textbf{Month 5:} tenant issues a formal written notice to terminate.
+    \item \textbf{Month 5:} The tenant issues a formal written notice to terminate.
 
     \item \textbf{Month 6-8:} The tenant stops paying rent, assuming the notice ended the contract immediately.
 
   \item \textbf{Normative Shift:}  The contract turns into a \emph{finite horizon contract} as it is now fixed to terminate at Month $8=5+3$. 
 
-    \item \textbf{Verdict:} Violation and the blame will be attributed to the Landlord. The desired monitor semantics must enforce that the \emph{obligations persist} during the notice period. The exercising of power did not \emph{immediately} delete the obligations but merely set a horizon for their expiration.
+    \item \textbf{Verdict:} Violation and the blame will be attributed to the tenant. The desired monitor semantics must enforce that the \emph{obligations persist} during the notice period. The exercising of power did not \emph{immediately} delete the obligations but merely set a horizon for their expiration.
 
 \end{itemize}
 
@@ -341,11 +341,11 @@ We introduce the attempted/successful abstraction, suited for capturing interfer
  
  In this subsection, we explicate the abstraction process as a two-step transformation starting from two timed traces that record the timing and content of agent actions.
  
- From these metric traces, where each event is a tuple of action and time point, we impose the contract-period granularity by aggregating behavior into \emph{period-based set of action traces} aligned with the contract’s period for repetition, where one event is a set of actions of all the actions performed during that time period.
- Then we merge both agents' traces \emph{collaborative objectives}, where an event is a set of actions tagged by the agent that performed them.
- This yields a representation where attempts, obstructions, and potential joint successes can be analyzed independently.
+ From these metric traces, where each event is a tuple of action and time point, we impose the contract-period granularity by aggregating behavior into \emph{period-based action-set traces} aligned with the contract’s period for repetition, where one event is a set of actions of all the actions performed during that time period.
+ Then we merge both agents' traces into \emph{collaborative objectives}, where an event is a set of actions tagged by the agent that performed them.
+ This provides a representation where attempts, obstructions, and potential joint successes can be analyzed independently.
  This trace transformation pipeline preserves the timing setting required for blame assignment, although it loses the timing of actions performed during the same period.
- Crucially, no behavior is discarded or reinterpreted; rather, it is lifted to a level of abstraction suitable for contractual reasoning.
+ No behavior is discarded or reinterpreted; rather, it is lifted to a level of abstraction suitable for contractual reasoning.
  Example~\ref{ex:timed-words-only} illustrates four-month behaviors of both agents before our transformation is applied.
  
  \begin{example}[Four-month rental dispute as metric-timed traces]
@@ -486,9 +486,7 @@ $\textsf{pay\_rent\_f}\in \Aik{1}{4}$ (witness times $35<95$), and similarly for
 \end{example}
 
 \subsubsection{Step 2: Abstraction to a Collaboration Alphabet}
-The second aspect of the abstraction is the notion of interaction alphabets. The action alphabet of both agents is merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, when no action is present in the event set $I_k$, the agent either did not perform it or actively performed a blocking action to prevent it. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification; otherwise, the digitization engineer must define them manually, as is done here.
-
-
+The second aspect of the abstraction is the notion of interaction alphabets. The action alphabet of both agents is merged into a single alphabet, and the trace encodes that when $a$ is an event, it indicates that an agent has either instantiated it or accepted to collaborate on it. Conversely, when no action is present in the event set $I_k$, the agent either did not perform it or actively performed a blocking action to prevent it. This transformation cannot be automated unless the set of enabling and interfering actions is explicitly stated in the normative specification. Otherwise, the digitization engineer must define them manually, as is illustrated in what follows.
 
 We consider three collaborative objectives that are identified in the Example~\ref{ME}:
 
@@ -710,7 +708,7 @@ lockstep and handshakes on the collaboration alphabet.
 
   \end{remark}
 
-  However, this abstraction masks the specific source of interference, effectively hiding the agent responsible for the failure. As our framework explicitly assigns blame, we introduce this operator primarily as an optional view to characterize joint success.
+  However, this abstraction masks the specific source of interference, thereby concealing the agent responsible for the failure. As our framework explicitly assigns blame, we introduce this operator primarily as an optional view to characterize joint success.
 
   We now move to reasoning about strategies from agents, where each agent makes a plan based on the other agent's past behavior.
 
@@ -942,7 +940,7 @@ lockstep and handshakes on the collaboration alphabet.
   \begin{proof}
   Determinism ensures that for every product state $(s_{i,t},s_{j,t})$ there is exactly one
   successor $(s_{i,t+1},s_{j,t+1})$, determined by the mutual feedback of outputs.
-  By induction on $t$, this yields a unique run of the product automaton starting from $(s^0_i,s^0_j)$.
+  By induction on $t$, this produces a unique run of the product automaton starting from $(s^0_i,s^0_j)$.
   Collecting the joint outputs at each step produces the word $\pi$, which is therefore unique.
   If the run stabilizes in a sink state with constant outputs, $\pi$ is ultimately periodic
   otherwise $\pi$ is infinite.
@@ -1193,7 +1191,7 @@ Together, these constructs formalize contractual clauses, their activation and t
 Regular-expression guards determine \emph{when} a clause becomes relevant, while deontic literals determine \emph{which} collaborative objective is required, forbidden, or allowed, and by which party.
 The encoding example shows that typical rental clauses can be represented compositionally using sequencing, reparation, triggering, and guarding.
 
-Crucially, the interpretation of these collaborative objectives relies on the interaction model established in \ref{sec:multiagent-sync}. Recall that we explicitly distinguished \emph{attempts} captured in the periodic set traces from \emph{successful collaboration} defined in Definition~\ref{successcomb}. Consequently, although the syntax refers to a collaborative action $a$, the evaluation logic is grounded in the agent-specific attempts $a^{(p)}$ preserved by our abstraction. This ensures that an agent is judged on their active participation rather than the joint outcome, preventing blame assignment when a compliant attempt is blocked by another party.
+Of central importance, the interpretation of these collaborative objectives relies on the interaction model established in \ref{sec:multiagent-sync}. Recall that we explicitly distinguished \emph{attempts} captured in the periodic set traces from \emph{successful collaboration} defined in Definition~\ref{successcomb}. Consequently, although the syntax refers to a collaborative action $a$, the evaluation logic is grounded in the agent-specific attempts $a^{(p)}$ preserved by our abstraction. This ensures that an agent is judged on their active participation rather than the joint outcome, preventing blame assignment when a compliant attempt is blocked by another party.
 
 What remains is to define \emph{how} such contracts are evaluated on traces.
 In \cDL, parts of a contract are \emph{relative} to the prior satisfaction or violation of other parts of the same contract.

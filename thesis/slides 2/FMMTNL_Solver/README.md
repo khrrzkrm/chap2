@@ -1,7 +1,7 @@
 # SMT Solving for Formulas in the Flat Monadic Metric Time Normative Logic:
 
 This project's goal is to reason about the satisfiability of formulas in  FMMTNL 
-Written in Python and using the Z3 solver, the tool computes a formula in the logic and checks weather it is satisfiable and returns the shortest trace in terms of number of events when it exists.
+Written in Python and using the Z3 solver, the tool computes a formula in the logic and checks whether it is satisfiable and returns the shortest trace in terms of number of events when it exists.
 
 
 ## Installation

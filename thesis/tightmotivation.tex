@@ -422,7 +422,7 @@
 In \cdl, contracts allocate responsibilities across two agents over time, making timing essential to their interpretation. Each duty and power is to be enforced at a specific time and under a specific condition. Semantically, this requires partitioning a trace into a contract prefix and a clause suffix for each clause composing the contract. To ensure correct evaluation, the partitioning must be precise. A required property is to have a unique earliest violation point or satisfaction point to decompose observed behavior. Without such unique boundaries in the language's semantics, reparations, for example, may be triggered prematurely, too late, or enforced multiple times. To address this ambiguity, \emph{tight forward} semantics are introduced:
 \begin{itemize}
     \item \textbf{Forward:} Verdicts are determined sequentially from left to right over prefixes, respecting the chronological order of the trace.
-    \item \textbf{Tight:} The semantics anchor on the \emph{first} decisive instant. This isolates a unique earliest satisfaction or violation frontier. Crucially, all strict extensions of this frontier are classified as ``post-frontier,'' preventing the same responsibility from triggering multiple times.
+    \item \textbf{Tight:} The semantics anchor on the \emph{first} decisive instant. This isolates a unique earliest satisfaction or violation frontier. By definition, all strict extensions of this frontier are classified as ``post-frontier,'' preventing the same responsibility from triggering multiple times.
 \end{itemize}
 
 \paragraph{The necessity of tightness.}
@@ -437,7 +437,7 @@ We illustrate the notion of tightness on  regular languages. Regular languages l
 \paragraph{Illustrating prefix ambiguity.} The distinction becomes critical for languages containing prefixes of other member words, such as $L'=\{a, aba\}$ over $\Sigma=\{a,b\}$. In standard language theory, the entire word $aba$ is a valid member of $L'$. However, under a tight behavioral interpretation, success is achieved the moment the initial $a$ is observed. Consequently, the suffix $ba$ is treated as irrelevant post-acceptance behavior.
 \begin{itemize}
 \item \textbf{Acceptance:} The satisfaction frontier is reached after reading the first symbol $a$. Although $aba \in L'$, recognizing this later membership as a new success would imply that a single execution contains multiple distinct ``acceptance points''.
-\item \textbf{Rejection:} Reading $b$ at the first position triggers an eager rejection because no word in $L'$ starts with $b$. The trace has effectively left the prefix closure of $L'$. By contrast, once the system commits to acceptance at the initial $a$, strict extensions can never become rejections; they remain classified as post-acceptance.
+\item \textbf{Rejection:} Reading $b$ at the first position triggers an eager rejection because no word in $L'$ starts with $b$. The trace has irrevocably exited the prefix closure of $L'$. By contrast, once the system commits to acceptance at the initial $a$, strict extensions can never become rejections; they remain classified as post-acceptance.
 \end{itemize}
 Our proposed five-valued semantics guarantees determinacy by identifying exactly one verdict per prefix: the earliest acceptance, the earliest rejection, post-acceptance, post-rejection, or pre-verdict (undecided).
 
@@ -662,7 +662,7 @@ The following theorem summarizes all the desired identified properties for preci
   \end{align*}
   The candidates for eager frontiers are $\minlang{L}=\{a\}$ and $\minlang{\badclass{L}}=\{b, aa\}$.
   
-  Crucially, $aa$ is a bad prefix in the static sense (it is not in $L$), but it extends the accepted word $a$. To preserve tight determinacy, the acceptance of $a$ takes priority. We formally compute the partition sets:
+  Notably, $aa$ is a bad prefix in the static sense (it is not in $L$), but it extends the accepted word $a$. To preserve tight determinacy, the acceptance of $a$ takes priority. We formally compute the partition sets:
   \begin{itemize}
       \item $\EAL{L} = \{a\}$ (the first success).
       \item $\ERL{L} = \{b, aa\} \setminus (\{a\}\Sigma^+) = \{b\}$ (the first failure). Note that $aa$ is removed from the rejection set.
@@ -674,7 +674,7 @@ The following theorem summarizes all the desired identified properties for preci
 
   \medskip
   \noindent
-  \textbf{Trace A (Success):} The user inputs $a$, then continues with $b$.
+  \textbf{Trace A (Success):} First inputs $a$, then continues with $b$.
   \[
     \underbrace{\varepsilon}_{\mathsf{?}\,(\in\Pre{L})}
     \xrightarrow{a}
@@ -688,7 +688,7 @@ The following theorem summarizes all the desired identified properties for preci
 
   \medskip
   \noindent
-  \textbf{Trace B (Failure):} The user inputs $b$, then continues with $a$.
+  \textbf{Trace B (Failure):} First inputs $b$, then continues with $a$.
   \[
     \underbrace{\varepsilon}_{\mathsf{?}\,(\in\Pre{L})}
     \xrightarrow{b}
@@ -721,7 +721,7 @@ The following theorem summarizes all the desired identified properties for preci
 
   \medskip
   \noindent
-  \textbf{Trace A (Success):} The user inputs $a$, then continues with $b$ and $a$.
+  \textbf{Trace A (Success):}  First input $a$, then continue with $b$ and $a$.
   \[
     \underbrace{\varepsilon}_{\mathsf{?}\,(\in\Pre{L'})}
     \xrightarrow{a}
@@ -735,7 +735,7 @@ The following theorem summarizes all the desired identified properties for preci
 
   \medskip
   \noindent
-  \textbf{Trace B (Failure):} The user inputs $b$, then continues with $a$.
+  \textbf{Trace B (Failure):} first input $b$, then continue with $a$.
   \[
     \underbrace{\varepsilon}_{\mathsf{?}\,(\in\Pre{L'})}
     \xrightarrow{b}
@@ -748,7 +748,7 @@ The following theorem summarizes all the desired identified properties for preci
   \emph{Observation:} At $u=b$, the verdict is locked to $\bott$.
 
   \textbf{Comparison with $L=\{a\}$.}
-  Crucially, this decomposition is \emph{identical} to the previous example where $L=\{a\}$. Because the tight semantics halts at the first definitive verdict, the acceptance of the prefix $a$ effectively masks the longer requirement $aba$, rendering the two languages indistinguishable from a monitoring perspective.
+  This decomposition is \emph{identical} to the previous example where $L=\{a\}$. Because the tight semantics halts at the first definitive verdict, the acceptance of the prefix $a$ masks the longer requirement $aba$, rendering the two languages indistinguishable from a monitoring perspective.
 \end{example}
 
 
@@ -863,7 +863,7 @@ Consider the language $L=\{a,ab,bb\}$ over $\Sigma=\{a,b\}$. The minimized five-
 \caption{Minimized five-valued Moore machine for $L=\{a,ab,bb\}$.
 Each node displays its identifier and output verdict.
 Green states indicate satisfaction, red states indicate violation, and gray states remain undecided.
-Starting from $s_0$, inputs $a$ or $bb$ yield $\topt$, input $ba$ produces $\bott$,
+Starting from $s_0$, inputs $a$ or $bb$ produce $\topt$, input $ba$ produces $\bott$,
 and subsequent inputs transition to the irreversible post-frontier states $\topp$ or $\botp$.}
 \label{fig:moore-tight-compact}
 \end{figure}
@@ -1064,7 +1064,7 @@ The resulting NFA accepts exactly $\Lang{re}$.
 
 \paragraph*{Stage 2: Determinization.}
 
-By application of the the standard subset construction with $\varepsilon$-closures, we obtain a DFA $\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language~\cite{RabinScott1959,HopcroftUllman2001}.x
+By application of the standard subset construction with $\varepsilon$-closures, we obtain a DFA $\aut_D(re)=(Q,\Gamma,\delta,q_0,F)$ that recognizes the same language~\cite{RabinScott1959,HopcroftUllman2001}.
 
 \paragraph*{Stage 3: Completion, trimming, and minimization.}
 For monitoring, we assume a \emph{complete} DFA: add (if needed) a sink state so that $\delta$ is total on $Q\times\Gamma$.
@@ -1142,7 +1142,7 @@ From $s_0$ we enter the $\Gamma^{+}$ block ($s_1 \xrightarrow{\Gamma} s_2$ with 
 $\varepsilon$-loop to enforce “one or more” steps), then take a single
 $\mathsf{T}$-labeled letter (the period that contains $\notifterm^{(1)}$),
 followed by exactly three arbitrary periods (three $\Gamma$ transitions) to the
-accepting state $s_7$. Determinization and completion of this NFA yield a DFA
+accepting state $s_7$. Determinization and completion of this NFA produces a DFA
 that recognizes precisely the denotation of $\re_{C_5}$ in
 Definition~\ref{def:re-semantics}.}
 \label{fig:thompson-C5}
@@ -1186,7 +1186,7 @@ Any overrun moves to the sink.}
 \end{figure}
 \end{example}
 
-We now close the pipeline by demonstrating the tight monitor construction. The construction below wraps the language DFA for $\Lang{\re}$ into the five-region Moore machine, yielding a monitor whose output coincides with the five-valued prefix semantics on all prefixes.
+We now close the pipeline by demonstrating the tight monitor construction. The construction below wraps the language DFA for $\Lang{\re}$ into the five-region Moore machine, producing a monitor whose output coincides with the five-valued prefix semantics on all prefixes.
 
 \begin{definition}[Tight monitor construction for regular expressions]\label{def:tsmc-re}
 Let $\re$ be a regular expression over the alphabet $\Gamma$ and let
@@ -1686,7 +1686,7 @@ $re_{C_5}=\Gamma^{+} \cdot \{\notifterm^{(1)}\} \cdot \Gamma^{3}$.
 % $\varepsilon$-loop to enforce “one or more” steps), then take a single
 % $\mathsf{T}$-labeled letter (the period that contains $\notifterm^{(1)}$),
 % followed by exactly three arbitrary periods (three $\Gamma$ transitions) to the
-% accepting state $s_7$. Determinization and completion of this NFA yield a DFA
+% accepting state $s_7$. Determinization and completion of this NFA produces a DFA
 % that recognizes precisely the denotation of $\re_{C_5}$ in
 % Definition~\ref{def:re-semantics}.}
 % \label{fig:thompson-C5}

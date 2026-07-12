@@ -1,17 +1,17 @@
 %!TEX root = thesis.tex
 
-\chapter{Conclusion and Future Works}
+\chapter{Conclusion and Future Work}
 \label{chapter:conclusion}
 This dissertation explores key challenges in using formal methods to digitalize and automate the analysis of normative systems.
 As more laws, regulations, and contracts guide how autonomous software agents act, the vagueness of natural language becomes a challenge.
-To solve this, we showed that Normative System Engineering can work well if we keep logical complexity at a level that practitioners can handle.
-By keeping things simple, we can automate tough reasoning tasks like finding conflicts and assigning blame accurately. Without our approach, these tasks are too hard to solve efficiently in wider settings.
+To address this challenge, we demonstrate that Normative System Engineering can achieve practical efficacy by maintaining a controlled expressiveness in the underlying logic.
+By restricting complexity to ensure tractable reasoning, we can automate critical tasks such as conflict detection and blame attribution. Without this principled restriction, these tasks remain computationally intractable in general settings.
 
-The first main contribution, covered in Chapter 3, is about analyzing normative specifications in a static way. We introduced Micro Metric-Time Normative Logic (\TDDLfm) to formalize how to spot conflicts between time-constrained obligations and prohibitions. We developped a special normalform to account for timing conditions called Disjunctive Punctual Normal Form (\dpnf), which breaks down complex time rules into simple, checkable parts while keeping key properties like the Lowest Upper Common Operator (\LUCO) and Literal Ancestor Preservation (\LAP). This setup let us analyze inconsistencies in detail, showing a direct link between found conflicts and Minimal Unsatisfiable Subsets (MUS). By tying normative requirements to these basic contradictions, we could clearly separate deontic conflicts (normative contradictions) from ontic conflicts (physical impossibilities). We also made a way to measure how dense conflicts are and developed a method to remove them. These tools help regulators check and fix rules before they are used, making sure they are clear and practical.
+The first main contribution, covered in Chapter 3, is about analyzing normative specifications in a static way. We introduced Micro Metric-Time Normative Logic (\TDDLfm) to formalize how to identify conflicts between time-constrained obligations and prohibitions. We developed a special normal form to account for timing conditions called Disjunctive Punctual Normal Form (\dpnf), which breaks down complex time rules into simple, checkable parts while keeping key properties like the Lowest Upper Common Operator (\LUCO) and Literal Ancestor Preservation (\LAP). This setup let us analyze inconsistencies in detail, showing a direct link between found conflicts and Minimal Unsatisfiable Subsets (MUS). By tying normative requirements to these basic contradictions, we could clearly separate deontic conflicts i.e, normative contradictions from ontic conflicts, i.e, physical impossibilities. We also defined a measure of how dense conflicts are and developed a method to remove them. These tools help regulators check and fix rules before they are used, making sure they are clear and practical.
 
 The second main contribution, discussed in Chapter 4, is about monitoring collaborative interactions as they happen. We developed Two-Agents Collaborative Normative Logic (\cDL) to model contracts where following the rules depends on the joint actions of several parties. A key part of this framework is that it clearly separates attempts from outcomes, so the system can tell the difference between real non-compliance and failures caused by interference from someone else.
 
-To fully explain how these interactions work, we built a layered semantic framework. First, we made a forward-looking method to detect exactly when satisfaction or violation happens, using deterministic Moore machines. We also went beyond simple yes-or-no checks by adding Quantitative Blame Semantics, powered by a Contract Progress Monitor. This monitoring approach tracks how contracts change after the first breach, letting the system keep a running total of violation costs. By turning these costs into blame vectors for each agent, the framework gives a detailed view of responsibility, allowing to explain each failure. Putting these ideas into executable Mealy machines gives a reliable and practical way to enforce rules in real time and settle disputes fairly afterward.
+To fully explain how interactions between violations and blames are propagated, we built a layered semantic framework. First, we made a forward-looking method to detect exactly when satisfaction or violation happens, using deterministic Moore machines. We also went beyond simple yes-or-no checks by adding Quantitative Blame Semantics, powered by a Contract Progress Monitor. This monitoring approach tracks how contracts change after the first breach, letting the system keep a running total of violation costs. By turning these costs into blame vectors for each agent, the framework gives a detailed view of responsibility, allowing the framework to explain each failure. Putting these ideas into executable Mealy machines gives a reliable and practical way to enforce rules in real time and settle disputes fairly afterward.
 
 Together, these chapters provide an initial formal method for automating parts of normative systems.
 
@@ -22,7 +22,7 @@ This dissertation explored new research directions in the theory of formal seman
 \subsection{Toward a Unified Formalism (\logic{MTTACNL})}
 
 The next step for this research is to combine the two main formalisms developed in this dissertation.
-Chapter 3 introduced \TDDLfm, which was focused on metric time aspects of normative specification and was on a single agent setting, while Chapter 4 presented \cDL focused on two agent setting with more operators while using logical time. However, keeping them separate limits their use in situations that have both strict timing rules and cooperative dependencies.
+Chapter 3 introduced \TDDLfm, which focuses on metric time aspects of normative specifications in a single-agent setting, while Chapter 4 presented \cDL, which focuses on a two-agent setting with more operators while using logical time. However, keeping them separate limits their use in situations that have both strict timing rules and cooperative dependencies.
 To bridge this gap, a primary objective for future work is to develop a unified framework, tentatively styled as the \emph{Metric-Timed Two-Agents Collaborative Normative Logic} (\logic{MTTACNL}).
 
 Creating this unified framework will require a complete rebuild of the underlying semantic models.
@@ -33,7 +33,7 @@ This richer syntax would let us specify complex requirements, like saying "Agent
 Putting this unified logic into practice will require a two-part approach to automated reasoning.
 
 First, for static analysis, the conflict detection algorithms from Chapter 3 need to be adapted to handle interference between multiple agents.
-This change would let regulators check not only that time windows can be met, but also that no agent is forced to block another to fulfill their own dutiesallow regulators to verify not only that time windows can be met, but also that no agent is forced to block another agent.
+This change would allow regulators to verify both that temporal windows remain feasible and that the contract does not force any agent into a position where they must actively interfere with another to fulfill their own duties.
 Second, for dynamic enforcement, the monitoring system needs to move from standard Moore machines to timed automata or other real-time computational models.
 Achieving this would provide a comprehensive solution that simultaneously monitors adherence to deadlines and assigns blame for non-compliance, thereby fully realizing the vision of robust, time-sensitive digital contracts.
 

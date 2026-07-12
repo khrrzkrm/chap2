@@ -13,9 +13,7 @@ The continuation of this development extends the same methodology to responsibil
 
 \subsection{Denotational Semantics for Forward-Looking Tight Contract Satisfaction}\label{forwardsatsem}
 
-For the tagged collaboration alphabet $\Sigma = \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$
-and the induced letter alphabet $\Gamma = 2^{\Sigma}$.
-Traces, prefixes, suffixes, and their basic operators are defined in \ref{traces}.
+For the tagged collaboration alphabet $\Sigma = \Sigma_C^{(1)} \cup \Sigma_C^{(2)}$ and the induced letter alphabet $\Gamma = 2^{\Sigma}$, traces, prefixes, suffixes, and their basic operators are defined in \ref{traces}.
 In this subsection, we only introduce the forward-looking semantic judgments used to evaluate contracts along such traces.
 
 \paragraph{Core tight judgments.}
@@ -277,7 +275,7 @@ Using the direct satisfaction of $\obl[1]{\PAY}$.
     \[
     \trace{A_1'}\ \satt\ (C_2 \wedge C_3),
     \quad
-    \text{and any extension }\trace{A_1',A_2}\text{ yields }\postsat(C_2\wedge C_3).
+    \text{and any extension }\trace{A_1',A_2}\text{ results in }\postsat(C_2\wedge C_3).
     \]
     \paragraph{Tight violation.}
     Now consider
@@ -340,7 +338,7 @@ With the decomposition by $k=1$,
   \paragraph{Intuition.}
 
   Repetition contracts express the iterative enforcement of a subcontract.
-   $C^n$, the n repition of a contract requires $C$ to be satisfied $n$ times in sequence.
+   $C^n$, the $n$-th repetition of a contract requires $C$ to be satisfied $n$ times in sequence.
   The satisfaction unfolds as:
   a trace satisfies $C^n$ if it can be decomposed into a prefix where the first satisfaction of $C$ holds,
   followed by a  recursive satisfaction for a suffix that satisfies $n-1$ repetition of C.
@@ -485,7 +483,7 @@ $\pi_{\mathsf{viol}}\ \violt\ C_9$.
 
 \subsubsection*{Coherence of the Forward-Looking Contract Satisfaction Semantics}
 
-Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the 5 possible ones. But it also extends to prefix properties: no prefix can tightly satisfy a trace, since a suffix may violate it. The main focus lies on tight satisfaction and violation disjointedness and furthers to the semantic definion of the three other verdicts. The next lemma establishes this important result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
+Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the five possible ones. It also extends to prefix properties: for instance, a prefix that tightly satisfies a contract cannot have a sub-prefix that violates it, and vice versa. The main focus lies on establishing the disjointness of tight satisfaction and tight violation, which is then extended to the semantic definitions of the other three verdicts. The next lemma establishes this crucial result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
 
 \begin{lemma}[Mutual prefix exclusion and disjointness of tight satisfaction and violation]
 \label{lem:mutual prefix}
@@ -586,7 +584,7 @@ In the vacuous satisfaction case, (IH-$re$-3) forbids any earlier $\pi[1,j]\ \sa
 In the active satisfaction case, (IH-$re$-2) gives minimality of $k$, for any prefix $k$, the composite semantics return the undecided verdict, and for any index before $k$, we apply (IH-$C$-2) and (IH-$C$-3) on its suffix.
 
 \paragraph{Guarded $[re]\,C$.}
-While $\pi$ \emph{closes} $re$ (i.e.\ $\pi\ \presat\ re$ or $\pi\ \satt\ re$), any tight failure of $C$ yields a tight failure of the composite.
+While $\pi$ \emph{closes} $re$ (i.e.\ $\pi\ \presat\ re$ or $\pi\ \satt\ re$), any tight failure of $C$ results in a tight failure of the composite.
 Once $re$ is violated, the composite satisfies provided $C$ has not yet failed.
 
 \emph{Claim~(1).}

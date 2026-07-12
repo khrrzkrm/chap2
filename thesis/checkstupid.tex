@@ -1,0 +1,227 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+\setlist[itemize]{leftmargin=*, itemsep=0.3em}
+\setlist[enumerate]{leftmargin=*, itemsep=0.35em}
+\newcommand{\loc}[1]{\texttt{#1}}
+\newcommand{\sev}[1]{\textbf{#1}}
+
+\title{LLM Copy-Paste Residue Check}
+\author{Scan report for the active \texttt{thesis.tex} dependency tree}
+\date{12 July 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Scope}
+
+This report checks the active dissertation source for phrases that often appear
+when text has been pasted from an LLM chat or from generic LLM-style rewrites.
+The check covers the active \loc{thesis.tex} dependency tree only. Existing
+thesis files were not modified.
+
+This is not an AI-authorship detector. The goal is narrower and more useful:
+find chat residue, prompt/answer residue, generic filler, tutorial tone, and
+source scaffolding that should be removed before final submission.
+
+\section*{Summary}
+
+\begin{itemize}
+  \item \sev{No direct smoking-gun chat leakage found.} I did not find active
+  occurrences of phrases such as \verb|here is|, \verb|as requested|,
+  \verb|according to your definition|, \verb|based on your definition|,
+  \verb|using your definition|, \verb|your thesis|, or \verb|let me|.
+  \item \sev{Some false-positive direct matches were harmless.} For example,
+  \loc{chapterconflict.tex:529} and \loc{forwardtight.tex:21} use the word
+  ``below'' in normal academic prose.
+  \item \sev{Real issues exist in three clusters:} prompt/response residue in the
+  introduction's LLM example, generic/tutorial phrasing in several technical
+  sections, and source-scaffolding language around the framework-user discussion.
+  \item \sev{Highest-priority cleanup:} review \loc{einleitung.tex:67--81},
+  \loc{chapterconflict.tex:107}, \loc{chapterconflict.tex:1445},
+  \loc{chapterconflict.tex:1502}, \loc{tightmotivation.tex:673--738},
+  \loc{qviol.tex:868}, and \loc{fazit.tex:10--38}.
+\end{itemize}
+
+\section*{Pattern Counts}
+
+After stripping fully commented lines, the scan found the following counts:
+
+\begin{center}
+\begin{tabular}{lr}
+\textbf{Category} & \textbf{Matches} \\
+\hline
+Direct chat leakage & 2 \\
+Prompt/response residue & 13 \\
+Generic transitions & 24 \\
+Vague filler & 17 \\
+Hedging & 5 \\
+Instructional/tutorial tone & 18 \\
+Scaffolding or source debris & 2 \\
+Citation/fact red flags & 23 \\
+\end{tabular}
+\end{center}
+
+The direct-chat count is misleading: both matches were ordinary uses of
+``below'', not actual chat leakage.
+
+\section*{Priority 1: Inspect and Rewrite}
+
+\begin{enumerate}
+  \item \sev{Prompt/response wording in the introduction.}
+  \loc{einleitung.tex:67} and \loc{einleitung.tex:81} discuss a prompt, a response,
+  and a hallucination detector. This may be intentional because the passage is
+  about LLM hallucinations, but it reads close to chat-analysis language.
+  Suggested action: make it explicit that this is a documented case study or
+  demonstration, not an embedded chat transcript. Avoid vague phrases such as
+  ``The solution uses'' unless the solution is named.
+
+  \item \sev{``The user'' phrasing in formal framework text.}
+  \loc{chapterconflict.tex:107}, \loc{chapterconflict.tex:1445},
+  \loc{chapterconflict.tex:1502}, and \loc{conflictmeat.tex:1180} refer to
+  ``the user'' of the framework. This is not necessarily wrong, but it sounds like
+  tool-documentation prose rather than dissertation prose.
+  Suggested action: replace with ``the designer'', ``the analyst'', ``the regulator'',
+  or ``the specification engineer'', depending on context.
+
+  \item \sev{Broken framework-user paragraph.}
+  \loc{chapterconflict.tex:1502} combines user/tool language, generic terms, and
+  an already-known broken sentence: ``Unless all the other tools in the framework
+  are.'' This is one of the strongest copy/paste-scaffolding signals in the scan.
+  Suggested action: rewrite the paragraph from scratch as an academic workflow.
+
+  \item \sev{Tutorial examples with ``The user inputs''.}
+  \loc{tightmotivation.tex:673--738} repeatedly uses phrases such as
+  ``The user inputs''. This is acceptable for interactive examples, but it reads
+  more like a generated tutorial than a formal dissertation section.
+  Suggested action: use ``the trace begins with'', ``the next symbol is'', or
+  ``the input word is extended by''.
+
+  \item \sev{Question-answer setup in quantitative blame.}
+  \loc{qviol.tex:868} asks: ``does adding up the two blame counters always give
+  back the same score''. This conversational question style is not a direct LLM
+  leak, but it reads like explanatory chat prose.
+  Suggested action: rewrite as a formal motivation for the lemma and align it
+  with the actual inequality proved.
+
+  \item \sev{Conclusion still has generic LLM-like phrasing.}
+  \loc{fazit.tex:10}, \loc{fazit.tex:20}, and \loc{fazit.tex:38} contain phrases
+  such as ``clear and practical'', ``more expressive and easier to use'', and
+  ``comprehensive solution''. These are plausible but generic.
+  Suggested action: replace with concrete claims about decidability, finite-state
+  monitor synthesis, conflict density, and blame attribution.
+\end{enumerate}
+
+\section*{Priority 2: Citation and Fact-Claim Red Flags}
+
+These are not LLM leaks, but they are common LLM-style overclaims unless they are
+properly sourced or carefully qualified.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.24\linewidth}
+                  >{\raggedright\arraybackslash}p{0.36\linewidth}
+                  >{\raggedright\arraybackslash}p{0.30\linewidth}}
+\textbf{Location} & \textbf{Flagged wording} & \textbf{Suggested action} \\
+\hline
+\loc{einleitung.tex:29} & ``Studies show that in places with many regulations...'' & Add a citation or make the claim more cautious. \\
+\loc{einleitung.tex:33} & ``in the literature'', ``widely cited'', ``roughly'' & The footnotes help; keep exact source framing and avoid sounding broader than the cited reports. \\
+\loc{einleitung.tex:43} & ``According to Legal Complex... hundreds of millions'' & The figure source helps; consider adding access date and exact scope. \\
+\loc{chapterconflict.tex:401} & ``well known procrastination effect'' & Already cited; keep if the cited works explicitly support this term. \\
+\loc{chapterconflict.tex:660} & ``commonly used'' & Harmless, but can be shortened. \\
+\loc{chapterconflict.tex:688--690} & ``according to our definition(s)'' & Not chat leakage, but repetitive; replace with direct formal reference. \\
+\loc{conflictmeat.tex:252} & ``According to our definition'' & Fine technically; consider ``By Definition~...''. \\
+\loc{qviol.tex:114,145} & ``According to the definition...'' & Fine technically; ``By Definition~...'' is cleaner. \\
+\end{longtable}
+
+\section*{Priority 3: Generic or Tutorial Tone}
+
+These passages are probably harmless, but they are places where the prose may
+sound generated or overly didactic.
+
+\begin{itemize}
+  \item \loc{chapterconflict.tex:696}: ``We saw that... We proceed now to show...''
+  could be tightened to ``We now prove that...''.
+  \item \loc{chapterconflict.tex:774}: ``We now turn to...'' is normal but repeated
+  often. Use sparingly.
+  \item \loc{conflictmeat.tex:958}: ``We now show... very natural normative
+  intuitions'' sounds conversational. Prefer a direct theorem-introduction sentence.
+  \item \loc{chaptermonitor.tex:11}: ``We begin by motivating...'' is normal, but
+  the paragraph already has several guidepost phrases. Reduce navigation prose.
+  \item \loc{chaptermonitor.tex:348}, \loc{chaptermonitor.tex:1196},
+  \loc{tightmotivation.tex:425}, \loc{tightmotivation.tex:665}, and
+  \loc{tightmotivation.tex:751}: repeated ``Crucially'' can sound LLM-like.
+  Keep only where the claim is genuinely a turning point.
+  \item \loc{forwardtight2.tex:200}: ``Let us consider instead...'' is fine in a
+  proof/example, but use consistently with the rest of the thesis style.
+  \item \loc{quantitativeviol.tex:463}: ``We now turn to...'' is acceptable but can
+  be shortened.
+\end{itemize}
+
+\section*{Probably Harmless Matches}
+
+\begin{itemize}
+  \item \loc{chapterconflict.tex:529}: ``The satisfaction relation below...'' is
+  ordinary exposition.
+  \item \loc{forwardtight.tex:21}: ``semantic clauses below'' is ordinary exposition.
+  \item \loc{preliminaries.tex:51}, \loc{preliminaries.tex:276}, and
+  \loc{preliminaries.tex:424}: ``Consider the following examples'' is normal in
+  mathematical writing.
+  \item \loc{declaration.tex:13--14}: AI tools are explicitly declared. This is not
+  leakage; it is required disclosure text.
+  \item \loc{einleitung.tex:67--81}: ``prompt'' and ``response'' may be necessary
+  because the passage discusses an LLM hallucination example. It still deserves
+  stylistic cleanup.
+\end{itemize}
+
+\section*{Recommended Manual Search Patterns}
+
+Before final submission, run quick searches for these exact phrases:
+
+\begin{verbatim}
+here is
+here are
+as requested
+according to your definition
+based on your definition
+using your definition
+your thesis
+your framework
+the user
+the prompt
+the response
+step-by-step
+it is important to note
+this highlights
+this underscores
+serves as a
+provides a robust
+clear and practical
+comprehensive solution
+roughly speaking
+we now show
+we now turn to
+let us consider
+TODO
+placeholder
+citation needed
+\end{verbatim}
+
+\section*{Bottom Line}
+
+The scan did not find obvious active chat-copy residue such as ``here is the
+rewritten paragraph'' or ``according to your definition''. The dissertation does,
+however, contain several passages that read like generated explanatory prose or
+tool documentation. The highest-value cleanup is to replace ``the user'' with a
+domain role, rewrite the broken framework workflow paragraph, reduce tutorial
+phrasing in tight-semantics examples, and make broad claims more precise or cited.
+
+\end{document}

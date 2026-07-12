@@ -232,7 +232,7 @@ The monitor for $C \wedge C'$ checks both components at the same time and decide
   \topp \sqcap \topp = \topp,
   \]
   The conjunction is only permanently satisfied when both parts are permanent.
-  \emph{Note:} The case $\topt \sqcap \topp = \topt$ reflects that if one component is exactly at its satisfaction frontier ($\topt$) while the other is already past it ($\topp$), the conjunction as a whole is determined by the latter of the two, effectively placing the global frontier at the current step.
+  \emph{Note:} The case $\topt \sqcap \topp = \topt$ reflects that if one component is exactly at its satisfaction frontier ($\topt$) while the other is already past it ($\topp$), the conjunction as a whole is determined by the latter of the two, thereby placing the global frontier at the current step.
   \item If both sides are undecided or only partly satisfied, the result stays $\mathsf{?}$:
   \[
   \mathsf{?}\sqcap v = \mathsf{?}\quad\text{for }v\in\{\mathsf{?},\topt,\topp\},
@@ -330,9 +330,9 @@ into the initial state of $C'$. This produces a tight prefix monitor that exactl
   \end{figure}
   
   \paragraph{Unsatisfiability and conflicts via monitor structure.}
-The example above illustrates unsatifiability: a contract $C$ is unsatisfiable whenever every run of $\tsmc(C)$ reaches $\bott$ and then $\botp$, that is, whenever no state labeled $\topt$ or $\topp$ is reachable from $q_0$. Checking unsatisfiability thus reduces to a reachability query.
+The example above illustrates unsatisfiability: a contract $C$ is unsatisfiable whenever every run of $\tsmc(C)$ reaches $\bott$ and then $\botp$, that is, whenever no state labeled $\topt$ or $\topp$ is reachable from $q_0$. Checking unsatisfiability thus reduces to a reachability query.
 
-However, for the case $\perm[1]{a}\wedge\frb[2]{a}$, the conflict only raises whe agent 1 uses his right. Which is not easly spotable at both the semantics and the tight monitor construction as reaching a tight satifaction state is still possible. This case motivates a more refined classification of right and duty conflicts.
+However, for the case $\perm[1]{a}\wedge\frb[2]{a}$, the conflict only arises when agent 1 exercises their right, which is not easily detectable in either the semantics or the tight monitor construction, as reaching a tight satisfaction state remains possible. This case motivates a more refined classification of right and duty conflicts.
   
 
 \begin{definition}[Sequential Monitor Construction]
@@ -989,7 +989,7 @@ vacuously satisfied. The construction follows the same blueprint as sequence and
 
 
 
-We move now to guarded contracts monitor construction. Unlike conjunction, the guarded contract $\guard[re]{C}$ cannot be monitored via a naive synchronous product. While the tight frontier is determined by the instantaneous state of $re$ and $C$, the stable post-verdicts ($\topp, \botp$) require historical context: the monitor must remember if the decisive frontier has effectively been crossed. A simple pointwise combination of component outputs fails to capture this latching behavior. Consequently, our construction restricts the synchronous product to the active tight region and handles post-verdicts via explicit transitions to global sinks, ensuring the monitor stabilizes correctly immediately after the decisive step. 
+We move now to guarded contracts monitor construction. Unlike conjunction, the guarded contract $\guard[re]{C}$ cannot be monitored via a naive synchronous product. While the tight frontier is determined by the instantaneous state of $re$ and $C$, the stable post-verdicts ($\topp, \botp$) require historical context: the monitor must remember if the decisive frontier has already been crossed. A simple pointwise combination of component outputs fails to capture this latching behavior. Consequently, our construction restricts the synchronous product to the active tight region and handles post-verdicts via explicit transitions to global sinks, ensuring the monitor stabilizes correctly immediately after the decisive step. 
 
 
     \begin{definition}[Guarded Monitor Construction]
@@ -1515,7 +1515,7 @@ from that point on, for the global verdict to be tight or post acceptance.
 \caption{%
 Progressive construction for $\guard[(\Gamma^+ \cdot \notifterm^{(1)})]{\repit{C_3}}$.
 Figure (c) is obtained by applying $\tsmc_\guardd$ to Figures (b) and (a).
-Here, roughly speaking, $\PAY^\surd := \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}$ denotes a joint payment event,$\PAY^\times := \Gamma \setminus \PAY^\surd $ denotes failure of payment.
+$\PAY^\surd := \{\,A\in\Gamma \mid \{\PAY^{(1)},\PAY^{(2)}\}\subseteq A\,\}$ denotes a joint payment event,$\PAY^\times := \Gamma \setminus \PAY^\surd $ denotes failure of payment.
 $T := \{\,A\in\Gamma \mid \notifterm^{(1)}\in A\,\}$ denotes the occurrence of a termination notice by agent~1,
 and $\overline{T} := \Gamma\setminus T$ denotes its absence.
 }
