@@ -426,7 +426,7 @@ In \cdl, contracts allocate responsibilities across two agents over time, making
 \end{itemize}
 
 \paragraph{The necessity of tightness.}
-Without a mechanism to ``lock in'' a verdict at the earliest instance, significant semantic ambiguities arise. If we simply tag a prefix as ``accepted'' whenever it belongs to the target language $L$, we lose the distinction between the \emph{moment} credit is earned and subsequent irrelevant behavior.
+Without a mechanism to ``lock in'' a verdict at the earliest instance, semantic ambiguities arise. If we simply tag a prefix as ``accepted'' whenever it belongs to the target language $L$, we lose the distinction between the \emph{moment} credit is earned and subsequent irrelevant behavior.
 We illustrate the notion of tightness on  regular languages. Regular languages lie at the bottom of the Chomsky hierarchy \cite{chomskySchutzenberger1963}, which can be equivalently characterized by regular expressions, deterministic and nondeterministic finite automata, and monadic second-order logic over words. This equivalence is well understood and forms the backbone of automata-theoretic reasoning \cite{Thomas1997}.
 \paragraph{Trivial example} Consider the regular language $L=\{a\}$ over $\Sigma=\{a,b\}$ interpreted as ``seeing $a$ once is success''.
 \begin{itemize}
@@ -443,7 +443,7 @@ Our proposed five-valued semantics guarantees determinacy by identifying exactly
 
 \subsection{From Regular Language Membership to Tight Prefix Languages} 
 \label{sec:lang-frontiers-tight}
-To generalize this construction to any regular language $L \subseteq \Sigma^*$, we must distinguish between classical \emph{static language membership} and \emph{behavioral language evaluation}. While standard language theory views in a static way weither a word $w$ as either in the language $L$ or not, monitoring asks if the desired behavior has \emph{already} been achieved, necessitating the evaluation through all its prefixes.
+To generalize this construction to any regular language $L \subseteq \Sigma^*$, we must distinguish between classical \emph{static language membership} and \emph{behavioral language evaluation}. While standard language theory views in a static way whether a word $w$ is in the language $L$ or not, monitoring asks if the desired behavior has \emph{already} been achieved, necessitating the evaluation through all its prefixes.
 Our objective is to partition the set of all possible words $\Sigma^*$ into regions that isolate these boundaries of decision. This requires explicitly resolving conflicts between ``good/bad words'' and ``extensions of good /bad words'' in favor of the latter principle, which we term the \emph{eagerness of acceptance and rejection}.
 
 \subsubsection{Topological Frontiers and Canonical Partition}
@@ -520,7 +520,7 @@ For any $L\subseteq\Sigma^*$:
 
 For (3), considering $u \in \closureclass{L}$. There exists $z \in L$ such that $u \preceq z$. Let $m$ be the shortest accepted prefix of $z$ ($m \in \minlang{L}$). Either $u \preceq m$ then $u \in \closureclass{\minlang{L}}$) or $m \prec u$  and then $u \in m\Sigma^+ \subseteq \IAL{L}$).
 
-For (4), it follows from the definition of the bad prefix language and as claim (3) of this Lemma  covers the 3 others languages from the 5 partions leaving the rejection languages. Since the irrelevant rejection is the nonempty extension of the Eager rejection, they are disjoint.
+For (4), it follows from the definition of the bad prefix language and as claim (3) of this Lemma covers the 3 other languages from the 5 partitions, leaving the rejection languages. Since the irrelevant rejection is the nonempty extension of the Eager rejection, they are disjoint.
 
 \end{proof}
 
@@ -609,7 +609,7 @@ The following theorem summarizes all the desired identified properties for preci
 \end{theorem}
 
 \begin{proof}
-\textbf{Monotonicity:} If $\semfive{u \vDash L}=\topt$, then $u \in \EAL{L}$. Any non empty $x$ in $u \concat x$ is a menber of  $\EAL{L}\,\Sigma^+ = \IAL{L}$, so the verdict is $\topp$. If $u \in \IAL{L}$, it is already an extension of a word in $\EAL{L}$, so  further extensions stay in $\IAL{L}$. The rejection case follows identical logic using $\ERL{L}$ and $\IRL{L}$.
+\textbf{Monotonicity:} If $\semfive{u \vDash L}=\topt$, then $u \in \EAL{L}$. Any non empty $x$ in $u \concat x$ is a member of  $\EAL{L}\,\Sigma^+ = \IAL{L}$, so the verdict is $\topp$. If $u \in \IAL{L}$, it is already an extension of a word in $\EAL{L}$, so  further extensions stay in $\IAL{L}$. The rejection case follows identical logic using $\ERL{L}$ and $\IRL{L}$.
 \textbf{Unique Frontier:} If $u \in \IAL{L}$, then $u = m \concat x$ for some $m \in \EAL{L}$. Since $\EAL{L}$ contains \emph{minimal} accepted words, no strict prefix of $m$ is in $L$, and no strict extension of $m$  can be in $\EAL{L}$. Thus, $m$ is the unique frontier point.
 \end{proof}
 
@@ -806,13 +806,13 @@ s_0 := \big(q_{0,\mathrm{PRE}},\,q_{0,\mathrm{EA}},\,q_{0,\mathrm{ER}},\,
              q_{0,\mathrm{IAL}},\,q_{0,\mathrm{IRL}}\big),
 \]
 the transition function operates component-wise
-\[
+$$
 \delta\!\big((q_1,q_2,q_3,q_4,q_5),\,\sigma\big)
 := \big(\delta_{\mathrm{PRE}}(q_1,\sigma),\ \delta_{\mathrm{EA}}(q_2,\sigma),\
           \delta_{\mathrm{ER}}(q_3,\sigma),\
           \delta_{\mathrm{IAL}}(q_4,\sigma),\
           \delta_{\mathrm{IRL}}(q_5,\sigma)\big),
-\]
+$$
 and the output function $\lambda$ assigns verdicts based on component acceptance
 \[
 \lambda(q_1,q_2,q_3,q_4,q_5)
@@ -917,7 +917,7 @@ For the second step, the Moore machine's state space is technically the Cartesia
 
 \end{proof}
 \paragraph*{Summary}
-We have demonstrated using a \emph{correct-by-construction} that any regular language $L\subseteq\Sigma^*$ can be decomposed into the five semantic regions required for tight monitoring instead of just language menbership.
+We have demonstrated using a \emph{correct-by-construction} approach that any regular language $L\subseteq\Sigma^*$ can be decomposed into the five semantic regions required for tight monitoring instead of just language membership.
 This transformation operates on a DFA using standard automata-theoretic operations, such as completion, complement, and breadth-first search for minimal frontiers, and is proved correct by showing that it maps the 5 languages up to the Moore machine recognizing them.
 
 \subsection{Illustration Through Regular Expressions from \cDL}

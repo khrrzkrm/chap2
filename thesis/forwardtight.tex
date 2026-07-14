@@ -25,7 +25,7 @@ We define two tight relations inductively on the syntax of $C$:
 \pi\ \satt\ C \quad\text{(tight satisfaction)},\qquad
 \pi\ \violt\ C \quad\text{(tight violation)}.
 \]
-Intuitively, $\satt$ holds exactly at the \emph{first prefix}
+The relation $\satt$ holds exactly at the \emph{first prefix}
 where the contract becomes satisfied,
 and $\violt$ holds exactly at the \emph{first prefix}
 where it becomes violated at the rejection frontier.
@@ -78,7 +78,7 @@ We therefore interpret them on a single event word $\trace{A}$ with $A\in\Gamma$
 \par
 We present the literal clauses for party $p=1$; the case $p=2$ is symmetric by swapping $a^{(1)}$ and $a^{(2)}$.
 
-Intuitively, for party~1:
+For party~1:
 (i) an \emph{obligation} $\obl[1]{a}$ requires the joint execution of $a^{(1)}$ and $a^{(2)}$;
 (ii) a \emph{prohibition} $\frb[1]{a}$ is satisfied precisely when that joint execution does not occur; and
 (iii) a \emph{power} $\perm[1]{a}$ requires that whenever party~1 attempts $a^{(1)}$,
@@ -152,7 +152,7 @@ Since literals are decided at the first letter, the verdict follows from post sa
 Binary contract operators combine two contracts into structured compositions that capture
 parallel, sequential, or conditional behavior.  
 
-In \cDL, binary contract compositions  are written $C~\textsf{op}~C’$, where
+In \cDL, binary contract compositions  are written $C~\textsf{op}~C'$, where
 \[
 \textsf{op} \in \{\wedge,\ ;\ ,\ \repair\},
 \]
@@ -161,7 +161,7 @@ $\wedge$ specifies that \emph{both} contracts are to be enforced concurrently, t
 
 We only specify the tight semantics for those operators.   For conjunction, the decisive point for satisfaction is the latter of the two individual successes. Violation, on the other hand, is decided on the first conjunct that fails.
 
-For the remaining operators' semantics, a unique index $k$ is used to witness either the satisfaction or violation prefix for the right-hand side contract, say $C$ in $C \textsf{op} C’ $.
+For the remaining operators' semantics, a unique index $k$ is used to witness either the satisfaction or violation prefix for the right-hand side contract, say $C$ in $C \textsf{op} C'$.
 
 For Reparation, the index $k$ is only computed when $C$ is violated. For conjunction, it is only used when the right-hand side contract is satisfied.
 
@@ -348,7 +348,7 @@ With the decomposition by $k=1$,
   The infinite form $\repit{C}$ captures \emph{unbounded repetition}.
   Since finite traces cannot represent infinite behaviors, $\repit{C}$ is never fully satisfied, as captured by the \textsf{false} under the tight semantics of tight satisfaction. Only violations and undecided verdicts can be computed.
   a trace violates $\repit{C}$ once it violates one of its finite unfolding $C^n$.
-  Intuitively, $\repit{C}$ models \emph{renewable or continuing} contracts such as subscriptions or recurring payments, where each cycle restarts the same normative condition indefinitely.
+  The operator $\repit{C}$ models \emph{renewable or continuing} contracts such as subscriptions or recurring payments, where each cycle restarts the same normative condition indefinitely.
 
   \subsubsection*{Regular Expression Binary Operator Semantics}
 
@@ -483,7 +483,7 @@ $\pi_{\mathsf{viol}}\ \violt\ C_9$.
 
 \subsubsection*{Coherence of the Forward-Looking Contract Satisfaction Semantics}
 
-Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the five possible ones. It also extends to prefix properties: for instance, a prefix that tightly satisfies a contract cannot have a sub-prefix that violates it, and vice versa. The main focus lies on establishing the disjointness of tight satisfaction and tight violation, which is then extended to the semantic definitions of the other three verdicts. The next lemma establishes this crucial result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
+Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the five possible ones. It also extends to prefix properties: for instance, a prefix that tightly satisfies a contract cannot have a sub-prefix that violates it, and vice versa. The main focus lies on establishing the disjointness of tight satisfaction and tight violation, which is then extended to the semantic definitions of the other three verdicts. The next lemma establishes this result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
 
 \begin{lemma}[Mutual prefix exclusion and disjointness of tight satisfaction and violation]
 \label{lem:mutual prefix}

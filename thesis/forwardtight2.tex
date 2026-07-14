@@ -113,6 +113,7 @@ Where $\dbot$ stands for a non violation verdict, that is, $\dbot \in \{\,?,\ \t
 \paragraph{Intuition.}
 The three cases summarize the possible outcomes of forward-looking blame.
 The blame goes to the agent responsible for the first violation of the contract: so either C or C', but both contracts could be violated at the same time point, in this case, the agent or agents responsible for \emph{both simultaneous} violation get the blame.
+
 For the rest of the operators,  blame  follows a similar definition as the tight violation, with $k \in [0, \size{\pi}]$:
 \paragraph{Sequence.}
 For \(S\subseteq\{1,2\}\), contracts \(C,C'\) in \cDL, and a synchronous trace \(\pi\):
@@ -374,7 +375,7 @@ The proof proceeds by structural induction on $C$.
 The proof proceeds by structural induction on $C$.
 \begin{itemize}
 \item \textbf{Literals:} The states output function $\bmc_{\mathit{lit}}$ matches explicitly the blame partition rules.
-\item \textbf{Conjunction:} The construction definition for pairs of states $\lambda_{11}^{\wedge}$ outputs the blame state  $S \cup S’$ when both components are in violation states, and selects the single responsible party when only one violates. This matches the semantic clause $\pi \vDash_{\bottp{S \cup S’}} C \wedge C’$.
+\item \textbf{Conjunction:} The construction definition for pairs of states $\lambda_{11}^{\wedge}$ outputs the blame state  $S \cup S'$ when both components are in violation states, and selects the single responsible party when only one violates. This matches the semantic clause $\pi \vDash_{\bottp{S \cup S'}} C \wedge C'$.
 \item \textbf{Other Operators:} The correctness relies on the fact that operators like Sequence and Reparation are defined by switching control phase and only editing the \emph{content} of the blame.
 \end{itemize}
 \end{proof}

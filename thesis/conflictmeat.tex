@@ -575,7 +575,7 @@ Subsequent $\dnf$ and conflict extraction produce the results summarized in \ref
     \left( \ob{\{[1,1]\}}{\pickU} \sqcup \ob{\{[2,2]\}}{\pickU} \right)$
     & 33 \\
     \hline
-    $D\pnf(\phi,2))$ 
+    $D\pnf(\phi,2)$ 
     & 
     $
     \begin{aligned}
@@ -1052,11 +1052,11 @@ Combine Lemma~\ref{lem:full-conflict-implies-unsat} with Corollary~\ref{cor:unsa
 After establishing that when the conflict density of a formula \(\cd(\phi)<1\) is still satisfiable, pruning all conflicting terms produces an equivalent conflict-free disjunction.
 
 \begin{theorem}[Conflict-free rewriting]\label{thm:cfr}
-For any $\phi$ from \TDDLfm, if  $ \cd(\phi) \neq 1 $, then there exists $\phi’$ with $\phi \equiv \phi’$ with $\cd(\phi’)=0$.
+For any $\phi$ from \TDDLfm, if  $ \cd(\phi) \neq 1 $, then there exists $\phi'$ with $\phi \equiv \phi'$ with $\cd(\phi')=0$.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-Using Algorithm.~\ref{fig:conflict-extraction}   computes first the \dpnf rewriting $\phi_{\mathrm{dpnf}}=\bigsqcup_i \pt_i$, then it classifies its product term. By computing a variant at the classification step, we can compute $\text{PT}\text{safe}={ \pt_i \mid \pt_i \in \phi{\mathrm{dpnf}}  \text{ with } \pt_i \text{ has no punctual conflict}}$ as illustrated in Algorithm~.\ref{alg:conflict-free-rewriting}. Set \(\phi’=\bigsqcup_{i\in I}\pt_i\). Consequently, all unsatisfiable product terms are filtered and $\phi \equiv \phi’$ by Lemma~.\ref{disjunctionissat}, and by construction $\cd(\phi’)=0$.
+Using Algorithm.~\ref{fig:conflict-extraction}   computes first the \dpnf rewriting $\phi_{\mathrm{dpnf}}=\bigsqcup_i \pt_i$, then it classifies its product term. By computing a variant at the classification step, we can compute $\text{PT}\text{safe}={ \pt_i \mid \pt_i \in \phi{\mathrm{dpnf}}  \text{ with } \pt_i \text{ has no punctual conflict}}$ as illustrated in Algorithm~.\ref{alg:conflict-free-rewriting}. Set \(\phi'=\bigsqcup_{i\in I}\pt_i\). Consequently, all unsatisfiable product terms are filtered and $\phi \equiv \phi'$ by Lemma~.\ref{disjunctionissat}, and by construction $\cd(\phi')=0$.
 \end{proof}
 
 \begin{algorithm}[H]
@@ -1074,7 +1074,7 @@ $k\gets\textsc{MaxOPoint}(\phi)$; \quad
 \(\Namb(\phi)\gets\bigsqcup_{\pt\in\CF}\pt\); \Return \(\Namb(\phi)\)
 \end{algorithm}
 
-Nonetheless, Conflict elimination could return larger formulas. In particular, many ontic conflicts in the \dpnf formula can lead to a significant blowup.
+Nonetheless, conflict elimination could return larger formulas. In particular, many ontic conflicts in the \dpnf formula can lead to a substantial blow-up.
 
 \begin{example}
 \[
@@ -1086,7 +1086,7 @@ Nonetheless, Conflict elimination could return larger formulas. In particular, m
 \ref{table:ontic-triple-conflict} summarizes the transformation pipeline from \pnf, \dnf, conflict extraction, to the conflict-free rewriting $\Namb(\phi)$.
 The final formula is roughly $20\times$ as large as the original.
 
-Intuitively, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.
+Specifically, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.
 To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4!\cdot!3!\cdot!2=24$ product terms, which demonstrates a substantial increase.
 
 
@@ -1136,15 +1136,15 @@ This example illustrates worst-case scenarios of a verbose conflict-free formula
 
 \begin{example}
 \[
-\UC_2’ :=
+\UC_2' :=
 \ob{{[9,16]}}{\delAtPark}
 \sqcap
 \forb{{[10,14]}}{\delAtPark}
 \sqcap
 \forb{{[2,4],[8,24]}}{\delAtGate}.
 \]
-The conflict-free rewriting $\Namb(\UC_2’)$ retains the non-conflicting obligations $t!\in!{9,15,16}$.
-\ref{table:refactoring-uc2} compares the original, verbose rewriting, and a merged equivalent $\UC_2’'$.
+The conflict-free rewriting $\Namb(\UC_2')$ retains the non-conflicting obligations $t!\in!{9,15,16}$.
+\ref{table:refactoring-uc2} compares the original, verbose rewriting, and a merged equivalent $\UC_2''$.
 
 \begin{table}[h]
 \centering
@@ -1173,7 +1173,7 @@ $\UC_2''$
 \caption{Refactoring a verbose conflict-free rewriting $\Namb(\UC_2')$ into a compact equivalent $\UC_2''$.}
 \label{table:refactoring-uc2}
 \end{table}
-We have $\UC_2’'$ merges the surviving punctual obligations on \delAtPark\ into a single interval set, while prohibitions on \delAtGate\ are recombined into their original form.
+We have $\UC_2''$ merges the surviving punctual obligations on \delAtPark\ into a single interval set, while prohibitions on \delAtGate\ are recombined into their original form.
 \end{example}
 
 These examples motivate a strategy of \emph{controlled conflict-density management}:

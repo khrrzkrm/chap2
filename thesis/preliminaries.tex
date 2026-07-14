@@ -246,8 +246,9 @@ The {intersection} operator: $ \cap:\mathbb{I} \times \mathbb{I}  \to \mathbb{I}
 	\begin{align*}
 		[a,b] \cap [c,d] := 	\left\{
 		\begin{array}{lll}
-			~	\varnothing & \text{iff} &  [a,b] \text{ before } [c,d]\text{ or } [c,d] \text{ before } [a,b] \\
-			~ [max(a, c), min(b,d)] & \text{otherwise}
+			~	\varnothing & \text{iff} &  [a,b] \text{ before } [c,d]\text{ or } \\
+			~               &       &  [c,d] \text{ before } [a,b], \\
+			~ [max(a, c), min(b,d)] & \text{otherwise.}
 		\end{array}
 		\right.
 	\end{align*}
@@ -268,7 +269,7 @@ $$[a,b] \ominus [c,d] := \begin{cases}
 		[a,b] & \text{iff   } [a,b] \cap [c,d]= \varnothing,\\
   \varnothing & \text{iff   } [a,b] \subseteq [c,d],\\
   [a,c-1] & \text{iff   } [a,b] \text{ overlaps or finished by } [c,d],\\
-  [d+1,b] & \text{iff   } [c,d] \text{ overlaps or starts  } [a,b],\\
+  [d+1,b] & \text{iff   } [c,d] \text{ overlaps or starts  } [a,b].\\
 	\end{cases}$$
 
 \begin{example}

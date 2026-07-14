@@ -63,7 +63,7 @@ As an optimization, we define a helper function to evaluate only the currently e
     \]
     \end{definition}
 
-Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract execution as a path-accumulation problem. At every time step, the function performs three operations:
+The formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract execution as a path-accumulation problem. At every time step, the function performs three operations:
 
 \begin{enumerate}
 
@@ -72,17 +72,17 @@ Intuitively, the formula $\qsem{\trace{A}\concat \pi, C}$ treats the contract ex
     \item \textbf{Accumulates:} It adds the snapshot penalty to the result of the recursive call on the remaining trace using the \emph{new} state.
 \end{enumerate}
 
-The contract progress function handles Sequence and Reparation directly, making sure that transitions with no delay are penalized properly. For example, if a contract requires $C$ then $C'$, and an event completes $C$ but violates $C'$ at the same time, the summation logic ($\qsem{\trace{A}, C} + \qsem{\trace{A}, C'}$) makes sure the violation of $C'$ is still counted, even if it happens in a continuation.
+The contract progress function handles Sequence and Reparation directly, ensuring that transitions with no delay are penalized properly. For example, if a contract requires $C$ then $C'$, and an event completes $C$ but violates $C'$ at the same time, the summation logic ($\qsem{\trace{A}, C} + \qsem{\trace{A}, C'}$) ensures the violation of $C'$ is still counted, even if it happens in a continuation.
 The definition of the instantaneous score $\qsem{\trace{A}, C}$ rests on distinguishing between \textbf{concurrent} (parallel) obligations and \textbf{structural} (atomic) constraints. It decouples the measurement of the score  of non-compliance from the binary verification of specific rules.
 
 \paragraph{Additivity of Concurrency.}
-For $\qsem{\trace{A}, C \wedge C'} := \qsem{\trace{A}, C } + \qsem{\trace{A}, C'}$, this shows the ``width'' of the violation, as in Figure~\ref{fig:joint-blame}. In these systems, a conjunction means there are separate, independent obligations occurring simultaneously. By adding the scores, the function ensures the penalty matches the number of parallel duties missed at that moment, so that multiple breaches are not hidden by a single yes-or-no result.
+For $\qsem{\trace{A}, C \wedge C'} := \qsem{\trace{A}, C } + \qsem{\trace{A}, C'}$, this shows the ``width'' of the violation, as in Figure~\ref{fig:joint-blame}. In these systems, a conjunction means there are separate, independent obligations occurring simultaneously. By adding the scores, the function ensures the penalty matches the number of parallel duties missed at that moment, so that multiple breaches are not hidden by a single binary verdict.
 \paragraph{Binary Structural Verdict.}
 For cases that are not separate parallel duties, like literals, sequences, or reparations, the definition uses the binary tight violation relation ($\violt$). This shows whether there is a fault in a structure that cannot be broken down further. For example, a single atomic duty ($\obl{a}$) can only be violated once in each step.
 
 \paragraph{Separation of State and Score.}
 This approach assumes that the complexity of temporal evolution is handled by $\Prog$, while $\qsem{}$ handles the instantaneous cost. By reducing non-conjunction cases to a simple check ($\trace{A} \violt C$), the definition asserts that scoring is local (checking if the current active node is broken), while progression is temporal (handling the flow from one obligation to the next).
-We summarize these properties in the following theorem, which defines that the quantitative score is a monotonically increasing function that acts as a ``super-set'' of the binary violation semantics. While a binary trace might be ``Satisfied'' (via reparation), the quantitative score reveals the true cost of that path.
+We summarize these properties in the following theorem, which defines that the quantitative score is a monotonically increasing function that acts as a ``super-set'' of the binary violation semantics. While a binary trace might be ``Satisfied'' (via reparation), the quantitative score reveals the cumulative cost of that path.
 
 
 The next theorem studies the correspondence between the quantitative score and the five-valued forward-looking tight semantics.
@@ -720,8 +720,7 @@ We now want to define quantitative blame to break down each violation into contr
     \begin{cases}
       \qblame{\trace{A}, C} 
         & \text{if } \pi = \emptytrace \lor \Prog(\trace{A},C)=\emptc,\\[4pt]
-      \qblame{\trace{A}, C} +   & \text{otherwise}.\\ \qblame{\pi, \Prog(\trace{A},C)}
-        
+      \qblame{\trace{A}, C} + \qblame{\pi, \Prog(\trace{A},C)}   & \text{otherwise}.
     \end{cases}
     \]
     
@@ -1115,7 +1114,7 @@ We use the following event classes:
   \item $\PAY^{\text{blk}}$: the tenant attempts to pay but the landlord blocks, that is, $\PAY^{(1)}\in A\wedge \PAY^{(2)}\notin A$.
 \end{itemize}
 
-The crucial point is that the conjunction is \emph{additive} at a time point.
+Importantly, the conjunction is \emph{additive} at a time point.
 Hence, when both conjuncts are violated in the same step, we add their blame contributions component-wise.
 In particular, the joint failure $\OCC^\times\wedge \PAY^{\text{fail}}$ produces a score of $(1,1)$, while the joint failure $\OCC^\times\wedge \PAY^{\text{blk}}$ results in $(0,2)$ since both violations are blamed on agent $2$.
 
@@ -1490,13 +1489,13 @@ This does not reflect legal practice, where the reparation typically depends on 
 \label{sec:related-work}
 In this section, we compare \cDL with related frameworks and explain how our work fits into the broader research field. We start by looking at two formalisms that focus on agent responsibility: \logic{STIT} logic and the \logic{CSL} specification language. Next, we expand our analysis to contrast \cDL with orthogonal approaches across five distinct dimensions: temporal scope, contrary-to-duty normative handling, collaborative agency, causal responsibility, and monitoring methodologies. This comparison demonstrates how \cDL bridges the gap between correct-by-construction logic monitors and quantitative stream runtime verification, while tailoring agency and blame attribution to the bilateral, interference-prone nature of joint contracts.
 \subsection{Closest Formalisms: \logic{STIT} and \logic{CSL}}
-The development of \cDL collaborative interaction and responsibility attribution has been significantly inspired by the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. Despite these conceptual roots, \cDL diverges fundamentally from both formalisms in its concrete treatment of simultaneous agency, sequential reparation semantics, and quantitative blame assignment.
+The development of \cDL collaborative interaction and responsibility attribution shares some core concepts with the logic of agency \logic{STIT} \cite{belnap2001facing,canavotto2022responsibility} and the contract specification language \logic{CSL} \cite{HvitvedKZ12}. Despite these common conceptual roots, \cDL differs from both formalisms in its concrete treatment of simultaneous agency, sequential reparation semantics, and quantitative blame assignment.
 
 \paragraph{\cDL vs. \logic{STIT}.}
 
 Both \cDL and \logic{STIT} employ discrete rounds to model simultaneous interaction that could be understood as a kind of Rock-Paper-Scissors game round mechanism. Nonetheless, a difference lies in their treatment of agency and reparation.
 (i) Action atomicity: In \logic{STIT}, the representation of agents' behavior is histories, where a history is a set of moments, and a moment can be composed of one action per agent at most, as known as the atomicity principle discussed for \TDDLfm. In contrast, in \cDL, an event is the basic construct for traces and enables time windows or groups of moments. It may have multiple actions per agent, as we are considering contract rounds rather than atomic moments.
-(ii) Reparation semantics: \cDL includes a reparation operator, while \logic{STIT} does not. In \logic{STIT}, reparation can only be represented by temporal disjunction, which is too permissive because it does not separate genuine payment from fine payment. In \cDL, the secondary obligation $\obl[1]{\PAYF}$ only appears after a violation of $\obl[1]{\PAY}$. This setup ensures that a reparation contract is needed only if there is a failure, so situations like $\langle \PAYF, \PAYF \dots \rangle$, where fines are paid without cause, are avoided.
+(ii) Reparation semantics: \cDL includes a reparation operator, while \logic{STIT} does not. In \logic{STIT}, reparation can only be represented by temporal disjunction, which is too permissive because it does not separate primary payment from fine payment. In \cDL, the secondary obligation $\obl[1]{\PAYF}$ only appears after a violation of $\obl[1]{\PAY}$. This setup ensures that a reparation contract is needed only if there is a failure, so situations like $\langle \PAYF, \PAYF \dots \rangle$, where fines are paid without cause, are avoided.
 As an illustration, the \cDL contract $C_7 := \repit{(\obl[1]{\PAY} \repair \obl[1]{\PAYF})}$ can be approximated in group temporal stit \cite{canavotto2022responsibility} as $\phi_7 := \boldmath{G}\big[ \{1,2\} \text{ cstit: }\big] (\PAY \lor \PAYF)$, this approximation fails to enforce the correct sequence between the payment violation and the subsequent fine payment.
 
 
@@ -1571,7 +1570,7 @@ This formulation assumes a worst-case setting: the agents outside the coalition 
 
 Consequently, the main goal of these logics is to determine if a winning strategy exists before the interaction begins.
 
-\cDL shifts the focus from strategy  synthesis, i.e, finding a winning coalition, to trace-level normative accountability, monitoring an agreed-upon contract. The logic never treats the two agents as adversaries in a zero-sum game; instead, \cDL monitors whether the agents consistently collaborate according to the contract. The logic also reasons at the level of attempts and blocked actions, identifying when one agent's failure to perform was caused by the other agent's interference.
+\cDL shifts the focus from strategy  synthesis, i.e., finding a winning coalition, to trace-level normative accountability, monitoring an agreed-upon contract. The logic never treats the two agents as adversaries in a zero-sum game; instead, \cDL monitors whether the agents consistently collaborate according to the contract. The logic also reasons at the level of attempts and blocked actions, identifying when one agent's failure to perform was caused by the other agent's interference.
 \subsection{From Counterfactual to Normative Causality}
 
 The causal question addressed by SCM is inherently counterfactual: explaining responsibility by asking what \emph{would} have happened under alternative actions. Such reasoning presupposes an explicit causal model of the environment and its dynamics. In contrast, \cDL adopts a \emph{normative} notion of causality grounded in the rules of the contract itself. Responsibility is not derived from hypothetical alternatives, but from compliance with, or deviation from, the obligations explicitly stated in the contract. A violation is explained by identifying which contractual rule was breached on the observed trace, and blame is assigned to the party whose required contribution was missing, delayed, or blocked according to that rule.

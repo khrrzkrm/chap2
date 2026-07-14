@@ -82,7 +82,7 @@ Finally, we address the practical trade-off between automation and conciseness. 
 
 
 
-In this chapter, we provide a logical framework for \emph{metric-time normative conflicts} that deals with these issues in a mathematically precise manner. Our specific contributions are as follows:
+In this chapter, we provide a logical framework for \emph{metric-time normative conflicts}. Our specific contributions are as follows:
 
 
 
@@ -398,7 +398,7 @@ A literal (or atomic norm) is formed by three components, \begin{inparaenum}[(i)
     \item a set of intervals $\is$.
 \end{inparaenum} 
 
-The literal $\ob{\is}{a}$ intuitively indicates that  ``the agent has an obligation to perform action $\acta$ at least once within the interval set \is''. To avoid the well known procrastination effect, studied in \cite{DBLP:conf/deon/BroersenDDM04} and  \cite{DBLP:conf/prima/BoellaBT08},  we enforce that the specified set of intervals for obligations is not formed by an infinite interval, which enforces a clear deadline on the performance of the obliged action and avoids procrastination.
+The literal $\ob{\is}{a}$ indicates that  ``the agent has an obligation to perform action $\acta$ at least once within the interval set \is''. To avoid the well known problem of procrastination, studied in \cite{DBLP:conf/deon/BroersenDDM04} and  \cite{DBLP:conf/prima/BoellaBT08},  we enforce that the specified set of intervals for obligations is not formed by an infinite interval, which enforces a clear deadline on the performance of the obliged action and avoids procrastination.
 The literal $\forb{\is}{a}$ indicates ``the agent is prohibited from performing action $\acta$ at any time point from the interval set \is''. We do not impose the same constraint of a \emph{finite} deadline for prohibitions as a prohibition does not lead to any procrastination and additionally, some prohibitions, in practice, may be specified to start at some time point $k$ and last \emph{forever}, which could be specified by the interval set $\{[k,\infty]\}$.
 The composition of literals is obtained by the \emph{Boolean operators}: conjunction (\(\sqcap\)) and disjunction (\(\sqcup\)).
 
@@ -483,7 +483,6 @@ The size of a literal obligation or prohibition is determined by: the obligation
 
 The next syntactic metric we define is called the \emph{duty measure}. It estimates the degree of duty a formula imposes on the agent. The measure is counting the number of obligation literals forming the formula.
 \begin{definition}[Duty Measure for a \TDDLfm Formula]\label{def:obligation-count}
-\label{def:obligation-count}
 Let $\phi$ be a formula in \TDDLfm. The \emph{duty measure} $\phi$, denoted by $\eta(\phi)$, corresponds to the number of obligation literals forming the formula and is defined inductively as follows:
 \[
 \eta(\phi) = 
@@ -531,9 +530,9 @@ We adopt a trace-based interpretation over finite timed words. A formula constra
 
 
 
-\subsubsection{Timed Words Semantics}\label{semantics}
+\subsubsection{Timed Words Semantics}\label{subsec:timed-words-semantics}
 % \subsubsection{Timed Words Semantics}
-\begin{definition}[Satisfaction relation]\label{semantics}
+\begin{definition}[Satisfaction relation]\label{def:satisfaction-relation}
 Given a finite \timedword $\tau \in \domtr$ and a formula $\phi$ from \TDDLfm, the satisfaction relation $\tau \dutysat \phi$ (read as``the \timedword $\tau$ satisfies the formula $\phi$'') is defined inductively on the structure of the formula $\phi$ as follows:
     \begin{align}
     \tau&\dutysat \ob{\is}{a}&&\text{ iff } \quad \quad  \exists t \subin \is: \rho(\tau,t) = \acta. \label{obis}\\
@@ -561,8 +560,8 @@ Conjunction ($\sqcap$) adds more duties, and disjunction ($\sqcup$) offers the a
                 \item $\trace{(\delAtGate,1) \ (\pickU,3) \ (\delAtPark,11) } \nvDash \DC \sqcap \SR \sqcap \MA$.
 \end{itemize}
 \end{example}
-\begin{remark}[Kinds of obligations and probihitions]
- Note that there are many different ways to capture the idea of obligation and prohibition in ways such as achievement and maintenance related to the timed interpretation as defined in \cite{DBLP:conf/deon/BroersenDDM04,governatori2011justice}: Achievement refers to successfully achieving a task at least once before a specific deadline, like submitting a report on time. Once this task is accomplished, the achievement constraint is relieved. In contrast, maintenance involves consistently upholding a property over a specific \emph{period} of time. It is not enough to do it just once; it must be sustained over time.
+\begin{remark}[Kinds of obligations and prohibitions]
+ Note that there are many different ways to capture the idea of obligation and prohibition in ways such as achievement and maintenance related to the timed interpretation as defined in \cite{DBLP:conf/deon/BroersenDDM04,governatori2011justice}: Achievement refers to successfully achieving a task at least once before a specific deadline, like submitting a report on time. Once this task is accomplished, the achievement constraint is relieved. In contrast, maintenance involves consistently upholding a property over a specific \emph{period} of time. It is not enough to do it just to be performed once, a state has to be sustained over time.
  Our definition of obligation fits the definition of \emph{achievement obligations} from \cite{DBLP:conf/hicss/DignumK98}. 
 Likewise, we understand our definition of prohibition as \emph{negative achievement} over a set of time points, despite its similarity with maintenance prohibition, as both require full coverage on the prohibited specified timed points. The key difference resides in the fact that the prohibited event must \emph{never} occur rather than maintaining a continuous state.
 \end{remark}
@@ -606,7 +605,7 @@ The language of a literal obligation is the set of \timedwords where the obligat
  In this subsection, we explain and analyze some specific semantic properties of \TDDLfm. Most of our discussion is concentrated on the influence of logical operators on formula satisfiability in the sense of how unsatisfiable ``parts'' of formulae influence compound expressions. We also examine how unsatisfiable components of a formula can be eliminated without altering its overall meaning. To achieve this, we define a representation of literals as combinations of more elementary ones.
 
 
-We begin by stating the fundamental algebraic equivalence properties of the logical operators, namely: commutativity, associativity, and distributivity, presented in Lemma~\ref{lemma:operequiv}. Equivalence between two formulas $\phi \nd \phi'$ is written by $\phi \equiv \phi'$, when their duty classes are equal, i.e $\dutyclass{\phi}= \dutyclass{\phi'}$. They are identical to those in classical logic and other standard logical systems. These properties play a crucial role in reducing representations to normal forms, which in effect facilitates the detection of unsatisfiable sub-formulas and enables systematic reasoning regarding the inconsistencies of a specification.
+We begin by stating the fundamental algebraic equivalence properties of the logical operators, namely: commutativity, associativity, and distributivity, presented in Lemma~\ref{lemma:operequiv}. Equivalence between two formulas $\phi \nd \phi'$ is written by $\phi \equiv \phi'$, when their duty classes are equal, i.e $\dutyclass{\phi}= \dutyclass{\phi'}$. They are identical to those in classical logic and other standard logical systems. These properties play an important role in the transformation of formulas to normal forms, which explicitly supports the detection of unsatisfiable sub-formulas and enables systematic reasoning regarding the inconsistencies of a specification.
 
 \begin{lemma}[Algebraic Equivalences of \TDDLfm Operators] \label{lemma:operequiv}
 Let $\phi_1, \phi_2, \phi_3$ be formulas in \TDDLfm. Then the following equivalences hold:
@@ -895,12 +894,12 @@ Since $\is \subseteq \is'$, the prohibition disjunction simplifies as:
 This reflects the fact that the disjunction does not weaken the prohibition, since the smaller set $\is$ is already sufficient to capture the intended restriction on $\acta$.
 \end{example}
 
-When specifying time-dependent norms, the choice of how to represent temporal constraints can significantly impact the syntactic size and readability of a formula. While punctual representations (i.e., using single time points) offer the finest granularity, they often lead to verbose encodings, especially when applied to longer durations or non-unifiable intervals. Conversely, more structured representations, such as intervals or sets of intervals, can convey the same semantics far more succinctly. This syntactic economy becomes especially valuable when reasoning over large normative systems or when transforming formulas into normal forms. The following remark highlights this advantage of conciseness.
+When specifying time-dependent norms, the choice of how to represent temporal constraints directly impacts the syntactic size and readability of a formula. While punctual representations (i.e., using single time points) offer the finest granularity, they often lead to verbose encodings, especially when applied to longer durations or non-unifiable intervals. Conversely, more structured representations, such as intervals or sets of intervals, can convey the same semantics far more succinctly. This syntactic economy becomes especially valuable when reasoning over large normative systems or when transforming formulas into normal forms. The following remark highlights this advantage of conciseness.
 
 \begin{remark}[Conciseness of Interval Sets in Literal Representation]
 \label{obs:interval-conciseness}
 
-The way literals represent time constraints has a significant impact on the overall size and readability of formulas. Thanks to the compression equivalences (\textbf{ObDis}) and (\textbf{FConj}) in Lemma~\ref{lemma:literal-compression}, multiple intervals involving the same action can be merged into a single literal whose interval set is a union of the original intervals. This reduces the syntactic overhead and improves overall readability, which facilitates the subjects of the normative system to get a more straightforward interpretation.
+The way literals represent time constraints directly determines the overall size and readability of formulas. Thanks to the compression equivalences (\textbf{ObDis}) and (\textbf{FConj}) in Lemma~\ref{lemma:literal-compression}, multiple intervals involving the same action can be merged into a single literal whose interval set is a union of the original intervals. This reduces the syntactic overhead and improves overall readability, which facilitates the subjects of the normative system to get a more straightforward interpretation.
 
 Consider, for example, the literal $\forb{{[2,4],[8,24]}}{\delAtGate}$, which expresses a prohibition over two time ranges. As shown in \ref{table:ma-conciseness}, this specification can be written in multiple ways, with varying levels of granularity. We compare three syntactic alternatives: using single time points, using individual intervals, and using a set of intervals. The table highlights that the interval set representation is by far the most concise, requiring fewer symbols to express the same semantics.
 
@@ -1231,7 +1230,7 @@ $\dutyclass \phi \subseteq (\dutyclass{\phi} \cup \dutyclass{\phi'})$, thus by t
 
 
 
-While satisfiability checking determines whether a normative specification admits at least one compliant behavior, it falls short in providing explanatory insight. Specifically, it does not reveal which parts of the specification are the root cause for unsatisfiability, nor does it clarify how or why certain norms render the system infeasible. It offers a binary answer, satisfiable or not,without explaining the origins of unsatisfiability or identifying potential resolutions. To overcome this limitation, we now turn to a more detailed analysis of normative conflicts, grounded in the semantics of \TDDLfm.
+While satisfiability checking determines whether a normative specification admits at least one compliant behavior, it falls short in providing explanatory insight. Specifically, it does not reveal which parts of the specification are the root cause for unsatisfiability, nor does it clarify how or why certain norms render the system infeasible. It offers a binary answer, satisfiable or not,without explaining the origins of unsatisfiability or identifying potential resolutions. To overcome this limitation, we now turn to a more detailed analysis of normative conflicts, based on the semantics of \TDDLfm.
 
 
 
@@ -1336,7 +1335,7 @@ The conflict calculus in \ref{fig:conflict-calculus} admits eight inference rule
 Together, they form a structured system for detecting, rewriting, and resolving normative conflicts.
 
 \begin{itemize}
-\item \textbf{(O-Union)} and \textbf{(F-Union)} correspond to the literal compression Lemma~{lemma:literal-compression}
+\item \textbf{(O-Union)} and \textbf{(F-Union)} correspond to the literal compression Lemma~\ref{lemma:literal-compression}
 \item \textbf{($\bm{\bot\sqcap}$)} and \textbf{($\bm{\bot\sqcup}$)} streamline the construction of a proof of unsatisfiability in conjunction and disjunction of two formulas.
 \item \textbf{($\bm{\sqcup\bot}$)} prunes the unsatisfiable formula in its disjunction with another one.
 \item \textbf{($\bm{\bot\equiv}$)}  proves unsatisfiability through equivalence.
@@ -1442,7 +1441,7 @@ Hence the global formula $\UC$ is equivalent to its conflict-free refinement $\U
 
 \medskip
 \noindent
-The conflict calculus for \TDDLfm captures all types of deontic conflicts and only total ontic ones. It is designed with a set of simple rules to isolate the minimal sources of unsatisfiability and eliminate timed normative conflicts. The user may navigate through logical equivalence in any direction he wants. This formalism not only identifies unsatisfiability and conflicts but also provides a structured way to resolve them through systematic refinement.
+The conflict calculus for \TDDLfm captures all types of deontic conflicts and only total ontic ones. It is designed with a set of simple rules to isolate the minimal sources of unsatisfiability and eliminate timed normative conflicts. The designer may navigate logical equivalence bidirectionally. This formalism not only identifies unsatisfiability and conflicts but also provides a structured way to resolve them through systematic refinement.
  We plan to encode the entire framework in a theorem prover such as Isabelle \cite{wenzel2008isabelle}, Lean \cite{de2015lean}, or Rocq \cite{bertot2013interactive} as future work.
 
 \subsubsection{Answering RQ1: The Relation between Unsatisfiability and Conflict}
@@ -1486,7 +1485,7 @@ Our framework provides a mixed answer: semantic preservation is guaranteed, but 
     
     \item \textbf{Structural Compactness:} We showed that this resolution is \emph{not} always compact. \textbf{Theorem~\ref{complexityofconf}} establishes that the full normalization required for conflict elimination can induce an exponential blow-up in formula size.
     
-    \item \textbf{Mitigation:} However, we demonstrated that compactness can often be restored using \emph{Literal Compression rules} (Lemma~\ref{lemma:literal-compression}) and the \emph{Conflict Calculus} (\ref{fig:conflict-calculus}). These tools allow for big-step manual simplifications (e.g., Lemma~\ref{Gdeontic-conflict}) to mitigate the verbosity of the automated output. We also suggested the conflict calculus that enables one to choose which conflicts to use to avoid size exlosion. The conflict calculus has no rule for eliminating ontic conflicts as it has an important blow-up factor.
+    \item \textbf{Mitigation:} However, we demonstrated that compactness can often be restored using \emph{Literal Compression rules} (Lemma~\ref{lemma:literal-compression}) and the \emph{Conflict Calculus} (\ref{fig:conflict-calculus}). These tools allow for big-step manual simplifications (e.g., Lemma~\ref{Gdeontic-conflict}) to mitigate the verbosity of the automated output. We also suggested the conflict calculus that enables one to choose which conflicts to use to avoid size explosion. The conflict calculus has no rule for eliminating ontic conflicts as it has an important blow-up factor.
 \end{itemize}
 
 \noindent \textbf{Answer:} We can always resolve conflicts while preserving the intended \emph{compliant behaviors} (semantics). However, we cannot guarantee \emph{structural compactness}; conflict elimination may increase the size of the specification, necessitating a post-processing refactoring step.
@@ -1496,96 +1495,85 @@ Our framework provides a mixed answer: semantic preservation is guaranteed, but 
         
         
         The possible usages of the framework’s tools is illustrated in \ref{fig:framework_summary}. It begins with a normative specification $\phi$, which undergoes both logical and feasibility analysis. A key starting point is the SMT-based time infeasibility check, which identifies whether the timing constraints in the specification are jointly satisfiable. The specification could also be translated into Disjunctive Punctual Normal Form (DPNF). This transformation enables fine-grained conflict detection and explanation by reducing complex temporal constructs into atomic, punctual obligations and prohibitions.
+        \begin{figure}[ht]
+        \centering
+        \definecolor{ConflictGreen}{RGB}{43,122,83}
+        \makebox[\textwidth][c]{
+        \begin{tikzpicture}[
+          node distance=14mm and 16mm,
+          rect/.style={rectangle, draw, rounded corners, text width=42mm, align=center, minimum height=11mm},
+          ell/.style={ellipse, draw, minimum width=32mm, minimum height=16mm, align=center},
+          specstyle/.style={ell, fill=ConflictGreen!20},
+          res/.style={ell, fill=orange!20},
+          auto/.style={rect, fill=blue!10},
+          manual/.style={rect, fill=red!15},
+          arr/.style={-{Stealth[round]}, thick},
+          scale=0.77, transform shape
+        ]
+          \node[specstyle] (spec) {Specification\\$\phi$};
+          \node[auto, below=of spec] (smt) {SMT Time\\Feasibility};
+          \node[manual, below left=5mm and 8mm of smt] (calc) {Conflict\\Calculus};
+          \node[auto, below right=5mm and 8mm of smt] (det) {Conflict Detection\\(\dpnf)};
+          \node[auto, below=10mm of det] (elim) {Conflict Elimination};
+          \node[res, right=15mm of det] (pc) {$\mathcall{PC}(\phi)$};
+          \node[res, below right=5mm and 8mm of det] (cdens) {$\cd(\phi)$};
+          \node[specstyle, below=20mm of calc] (ref) {Refined\\$\phi'$};
+
+          \draw[arr] (spec) -- (smt);
+          \draw[arr] (spec.west) -| (calc.north);
+          \draw[arr] (spec.east) -| (det.north);
+          \draw[arr] (smt) -- (det);
+          \draw[arr] (det) -- (pc);
+          \draw[arr] (det) -- (elim);
+          \draw[arr] (det) -- (cdens);
+          \draw[arr] (elim.south) -- ++(0,-0.7) -| (ref.east);
+          \draw[arr] (calc) to[bend left=20] (ref);
+          \draw[arr] (ref) to[bend left=20] (calc);
+
+          % Legend (positioned under the Refined node and centered horizontally)
+          \begin{scope}[shift={(spec |- ref.south)}, yshift=-10mm, xshift=-27.5mm]
+            \node[draw, rounded corners, fill=white, minimum width=55mm, minimum height=34mm, anchor=north west] (legbox) at (0,0) {};
+            \node[draw, rectangle, fill=ConflictGreen!20, minimum width=5mm, minimum height=2.5mm] at (5mm, -6mm) {};
+            \node[anchor=west] at (11mm, -6mm) {Specification};
+            
+            \node[draw, rectangle, fill=orange!20, minimum width=5mm, minimum height=2.5mm] at (5mm, -13mm) {};
+            \node[anchor=west] at (11mm, -13mm) {Analysis Results};
+            
+            \node[draw, rectangle, fill=blue!10, minimum width=5mm, minimum height=2.5mm] at (5mm, -20mm) {};
+            \node[anchor=west] at (11mm, -20mm) {Automatic Procedure};
+            
+            \node[draw, rectangle, fill=red!15, minimum width=5mm, minimum height=2.5mm] at (5mm, -27mm) {};
+            \node[anchor=west] at (11mm, -27mm) {Manual Procedure};
+          \end{scope}
+        \end{tikzpicture}
+        }
+        \caption{Diagram summarizing the   conflict analysis and resolution framework.}
+        \label{fig:framework_summary}
+        \end{figure}
         
         Conflict detection then classifies inconsistencies into ontic and deontic types. The structural transformations inform this process applied through DPNF and return the set of punctual conflicts $\mathcall{PC}(\phi)$ as well as the conflict density measure $\cd(\phi)$. Once identified, conflicts are passed to the conflict elimination phase, which removes all product terms containing conflicts. As discussed previously, this automatic conflict elimination procedure can result in returning a refined specification $\phi'$ that does not contain any conflict but may have a bad conciseness ratio.
         
-        The conflict calculus provides the user with the option for a tailored trade-off and simpler reasoning while preserving soundness to the conflict detection algorithm. It offers a higher-level analysis of normative specification without going to the disjunctive punctual normal form, which is too verbose for human processing. It enables formal reasoning through rule-based derivations, allowing designers to manually prune, rewrite, or simplify problematic portions of a specification to reduce the conflict density measure while maintaining a desired concise ratio compared to the original normative specification. The calculus is also bidirectionally connected to the refined normative specification $\phi'$, as it both informs its construction and enables subsequent updates or revisions. This interactive loop reflects real-world design cycles where specifications evolve iteratively under refinement, correction, or contextual adaptation. Unless all the other tools in the framework are. The calculus is not automated and requires the user to understand the semantics and rules of the proof system but offers him shorter explanation and big steps reasoning. 
+        The conflict calculus provides the user with the option for a tailored trade-off and simpler reasoning while preserving soundness to the conflict detection algorithm. It offers a higher-level analysis of normative specification without going to the disjunctive punctual normal form, which is too verbose for human processing. It enables formal reasoning through rule-based derivations, allowing designers to manually prune, rewrite, or simplify problematic portions of a specification to reduce the conflict density measure while maintaining a desired concise ratio compared to the original normative specification. The calculus is also bidirectionally connected to the refined normative specification $\phi'$, as it both informs its construction and enables subsequent updates or revisions. This interactive loop reflects real-world design cycles where specifications evolve iteratively under refinement, correction, or contextual adaptation. The calculus is not automated and requires the user to understand the semantics and rules of the proof system but offers him shorter explanation and big steps reasoning. 
         
         The conflict density measure component receives information from the conflict detection phase to quantify the degree of normative uncertainty inherent in the original specification. This metric supports informed decision-making by offering a way to compare alternative encodings or prioritize simplification steps.
         
         Ultimately, the framework produces a refined normative specification $\phi'$ that may be conflict-free and, ideally, more amenable to implementation or automated reasoning. The conciseness ratio $\frac{\size{\phi'}}{\size{\phi}}$ evaluates the trade-off between conflict elimination and formula size. In scenarios where full normalization introduces syntactic blow-up, this ratio provides helpful guidance for designers balancing readability and conflict elimination.
         
-        \begin{figure}[h!]
-        \centering
-        \begin{tikzpicture}[
-            node distance=1.8cm and 2cm,
-            rect/.style={rectangle, draw, rounded corners, text width=3.2cm, align=center, minimum height=1cm, fill=blue!10},
-            decision/.style={diamond, draw, aspect=2.5, text width=3cm, align=center, fill=orange!10},
-            ellip/.style={ellipse, draw, minimum width=3cm, minimum height=1.5cm, align=center, fill=green!10},
-            arrow/.style={-{Stealth[round]}, thick},
-            scale=0.82, transform shape,scale=0.9
-        ]
         
-        % Nodes
-        \node[ellip] (spec) {Normative\\ Specification $\phi$};
-        \node[rect, below=of spec] (smt) {SMT-based \\Time Infeasibility};
-        \node[rect, below left= 1.7cm of smt] (calculus) {Conflict Calculus};
-        \node[rect, below right= 1.7cm of smt] (conflicts) {Conflict Detection\\
-        (\dpnf)};
-        \node[rect, below= 1.5cm of conflicts] (conflicte) {Conflict Elimination};
-        \node[ellip, below right=2cm of conflicts] (conflict density) {Conflict Density\\
-        $\cd(\phi)$};
-        \node[ellip, right=1.5cm of conflicts] (PC) {Punctual Conflicts\\ $\mathcall{PC}(\phi)$
-        };
-        \node[ellip, below =4cm of calculus] (resolution) {Refined\\  Specification $\phi'$};
-        \node[ellip, below =2cm of conflicte] (cf-resolution) { $\Namb(\phi)$};
-        % \node[ellip, below right=1.5cm of resolution] (consin) {Conciseness Ratio\\ $\frac{\size{\phi'}}{\size{\phi}}$};
-        
-        % Arrows
-        \draw[arrow] (spec) -- (smt);
-        \draw[arrow] (conflicte) -- (cf-resolution);
-        \draw[arrow] (spec.west) -| (calculus.north);
-        \draw[arrow] (spec.east) -| (conflicts.north);
-        \draw[arrow] (smt) -- (calculus);
-        \draw[arrow] (conflicts) -- (PC);
-        \draw[arrow] (smt) -- (conflicts);
-        %\draw[arrow] (resolution.south) (resolution.south) -- ++(0,-1.5)
-          -- ++(-7,0)
-          -- ++(0,14)
-          -- ++(7,0)
-          -- ++(0,-1.5)
-          -- (spec.north); 
-        
-        \draw[arrow] (conflicts) -- (conflicte);
-        \draw[arrow] (calculus) to[bend left=25] (resolution);
-        \draw[arrow] (resolution) --(conflicts);
-        \draw[arrow] (resolution) to[bend left=25] (calculus);
-        %\draw[arrow]  ([xshift=0.8cm]resolution.north) |- (conflicts.west) ;
-        \draw[arrow] (conflicts) -- (conflict density);
-        %\draw[arrow] (resolution) -- (consin);
-        
-        \end{tikzpicture}
-        \caption{Diagram summarizing the   conflict analysis and resolution framework.}
-        \label{fig:framework_summary}
-        \end{figure}
-
-
 
         \section{Related Work}
 
-To our knowledge, our framework is the first to offer a systematic approach that studies metric-time deontic logic with action-based semantics with interval-set representation to compactly encode temporal constraints to offer syntactic and semantic study of timed normative conflicts by using algorithmic conflict detection and elimination, a proof-theoretic conflict calculus, and quantitative measures of conflict density and conciseness. We now proceed to a discussion of related work.
+To our knowledge, our framework is the first to offer a systematic approach that studies metric-time deontic logic with action-based semantics and interval-set representations to compactly encode temporal constraints. This enables a syntactic and semantic study of timed normative conflicts using algorithmic conflict detection and elimination, a proof-theoretic conflict calculus, and quantitative measures of conflict density and conciseness. We now proceed to discuss related work.
 
+The closest work to our approach is Colombo and Governatori~\cite{colombo2014detecting}. In their work, conflicts are characterized as unsatisfiable or non-compliant formulas. These formulas are formed with untimed literals over actions and states, while the models are timed traces where events capture \begin{inparaenum}[(i)] \item the action performed by the agent, \item the states of the system, and \item the triggers and deadlines of the untimed literals\end{inparaenum}. Additionally, their logic relies on specification assumptions to encode action incompatibilities (for example, that going to a pub is incompatible with submitting a research paper). Our framework, on the other hand, focuses on \begin{inparaenum}[(i)] \item actions only, \item uses literals tagged with timed constraints, \item characterizes conflicts as Minimal Unsatisfiable Subsets (MUS) of a normal form, and \item defines ontic conflicts (the equivalent of achievement obligations) using the axiom that actions are never achievable at the same time points (single action per event)\end{inparaenum}. This intrinsic treatment of metric intervals allows purely semantic detection without auxiliary declarations about actions. Nevertheless, our framework could relax the single-action assumption by introducing a feasibility predicate that defines which actions are co-executable, thereby bridging their semantic traces to our interval semantics.
 
-The closest work to our approach is Colombo and Governatori~\cite{colombo2014detecting}: 
-Conflicts are first characterized as unsatisfiable/non-compliant formulas, where the formulas are formed with untimed literals over action and states, and the models are timed traces where events capture \begin{inparaenum}[(i)]
- \item the action performed by the agent, \item states of a system, and  \item the triggers and deadlines of the untimed literals \end{inparaenum}. Additionally, the logic relies on the specification assumptions to encode action incompatibilities, such as the fact that going to a pub is incompatible with submitting a research paper. Our framework, on the other hand, focuses on \begin{inparaenum}[(i)] \item actions only, \item uses literals tagged with timed constraints, \item characterizes conflicts as Minimal unsatisfiable subsets of a normal form, and \item Our definition of ontic conflicts, the equivalent of achievement achievement, rely on an axiom are never achivievable at the same time points (single action per event).\end{inparaenum} Nevertheless, we could relax this assumption by introducing a feasibility predicate that defines which actions are co-executable, in contrast to  which ones are non-co-executable, in order to encode real-life settings for continuous actions.  
-This intrinsic treatment of metric intervals allows purely semantic detection without auxiliary declarations about actions.  
-Nevertheless, our framework could relax the single-action assumption by introducing a feasibility predicate that defines which actions are co-executable, thereby bridging their semantic traces to our interval semantics.
+Tamargo et al.~\cite{DBLP:journals/flap/TamargoMRG21} study normative systems as dynamic systems where rules are introduced or updated and norms are timed. They use a belief-revision operator $\otimes$ that trims sub-intervals leading to contradictions in the updated normative system. This method partially removes conflicts while preserving as much temporal structure as possible. Our approach differs in that it handles both deontic and ontic conflicts under a uniform action-based semantics, treats the entire specification rather than single insertions, and reasons at the level of interval sets rather than single intervals, thereby supporting concise rewritings after elimination. Moreover, our conflict calculus provides a formal proof framework that explains each elimination step.
 
-Tamargo et al.~\cite{DBLP:journals/flap/TamargoMRG21} study normative systems as dynamic systems in which rules are introduced or updated, and norms are timed. In this work, they use a belief-revision operator $\otimes$ that trims sub-intervals that lead to contradictions in the updated normative system. Their method partially removes conflicts while preserving as much temporal structure as possible.  
-Our approach differs in that it handles both deontic and ontic conflicts under a uniform action-based semantics, treats the entire specification rather than single insertions, and reasons at the level of interval sets rather than single intervals, thereby supporting concise rewritings after elimination.  Moreover, our conflict calculus provides a formal proof framework that explains each elimination step.
+Pace and Schapachnik~\cite{pace2020general} focus on another type of ontic conflicts, namely \emph{environmental conflicts} in logical time. This generalizes our ontic conflicts by formalizing more infeasible combinations of required actions due to external constraints (e.g., an agent cannot be in different places at the same time). Their work uses a dynamic, operational approach to detect both deontic and environmental constraints as they materialize over time.
 
-Pace and Schapachnik~\cite{pace2020general} focus on another type of ontic conflicts, namely \emph{environmental conflicts} in logical time, which generalizes our ontic conflicts by formalizing more infeasible combinations of required actions due to external constraints, such as an agent cannot be in different places at the same time. The work uses a dynamic, operational approach to detect both deontic and environmental constraints as they may materialize over time.
+Another perspective on conflict detection is presented in~\cite{10.1145/3597503.3639093}, which models normative specifications as a set of rules that can express deadlines over time points, conditionals, and exceptions (defeaters). They distinguish mainly two types of conflicts: (i) \emph{vacuous} conflicts, where the involved rules can never be jointly satisfied, and (ii) \emph{situational} conflicts, which only arise under specific triggering conditions. While their specification language \tool{SLEEC} is more expressive than \TDDLfm, their conflict specification is close to our deontic conflicts. However, we specify a granularity at all time points where a literal is in force, and we also consider ontic conflicts. To detect conflicts, they encode the types of conflicts as unsatisfiability conditions and translate the normative specification into first-order logic with relational objects. They then apply a causality check to find the root causes of the unsatisfiability of a formula by eliminating unnecessary rules from the proof. In our approach, we go further: even if the formula is unsatisfiable, we trim the unsatisfiable part of the rules.
 
-
-
-
-
-
-
-Another perspective on conflict detection is presented in~\cite{10.1145/3597503.3639093}, which models normative specifications as a set of rules that can express deadlines over time points, conditionals, and exceptions (defeaters). They distinguish mainly two types of conflicts: (i) \emph{vacuous} conflicts, where the involved rules can never be jointly satisfied, and (ii) \emph{situational} conflicts, which only arise under specific triggering conditions. While their specification language \tool{SLEEC} is more expressive than \TDDLfm, their conflicts specification is close to our deontic conflicts, but we specify a granularity at all time points where a literal is in force, and we also consider ontic conflicts. To detect conflicts, they encode the types of conflicts as unsatisfiability conditions and the normative specification into first-order logic with relational objects, and apply a causality check to find the root causes of the unsatisfiability of a formula by eliminating unnecessary rules for the proof. In our approach, we go further: even if the formula is unsatisfiable, we trim the unsatisfiable part of the rules.
-
-In summary, these cited frameworks focus on more expressive norms that are dynamic due to triggers and exceptions that are difficult to detect statically. On the other hand, our work established both an axiomatic and a semantic characterization of conflicts, which we study through a variety of methods, such as SAT solving, conflict-preserving rewriting, proof systems, and conflict elimination procedures.
+In summary, these cited frameworks focus on more expressive norms that are dynamic due to triggers and exceptions that are difficult to detect statically. On the other hand, our work establishes both an axiomatic and a semantic characterization of conflicts, which we study through a variety of methods, such as SAT solving, conflict-preserving rewriting, proof systems, and conflict elimination procedures.
 % \section{Conclusion}
 % This paper introduced a structured framework for reasoning about conflicts in normative systems specified in a metric-time. Our approach integrates syntactic normalization, SMT-based feasibility checks, a dedicated conflict detection algorithm, and a formal conflict calculus to classify and resolve both ontic and deontic inconsistencies. By internalizing temporal constraints as first-class logical constructs, our logic avoids reliance on external assumptions about action incompatibility and enables conflict detection based purely on the interaction of time-bounded norms.
 
@@ -1606,7 +1594,7 @@ This chapter presented \TDDLfm, a minimal metric-time normative logic in which n
 
  
 
-By identifying the correspondence between punctual conflicts and Minimal Unsatisfiable Subsets (MUS) aby nd by introducing a proof-theoretic conflict calculus, we linked the syntactic and semantic properties of conflicts, which was straightforward at the beginning of this work. This correspondence is novel in the field of normative conflicts and precisely distinguishes the notion of unsatisfiability from normative conflicts.
+By identifying the correspondence between punctual conflicts and Minimal Unsatisfiable Subsets (MUS) and by introducing a proof-theoretic conflict calculus, we linked the syntactic and semantic properties of conflicts, which was straightforward at the beginning of this work. This correspondence is novel in the field of normative conflicts and precisely distinguishes the notion of unsatisfiability from normative conflicts.
 
 
 
@@ -1614,7 +1602,7 @@ Beyond only detecting conflict, we also contributed to conflict engineering by: 
 
 
 
-We found out that the complete static conflict elimination often causes a significant syntactic blow-up. Especially when using the \dpnf repair algorithm. This suggests that forcing a specification to be entirely conflict-free at design time may sacrifice conciseness and readability. In practice, regulators might prefer to keep compact specifications and defer resolving some conflicts to the agent's operational planning at runtime. Our conflict calculus is an interactive way for choosing which conflict to keep or eliminate. We also avoided defining rules for eliminating partial ontic conflicts, as they lead to instances of large-scale blow-up.
+We found out that the complete static conflict elimination often causes a substantial syntactic blow-up. Especially when using the \dpnf repair algorithm. This suggests that forcing a specification to be entirely conflict-free at design time may sacrifice conciseness and readability. In practice, regulators might prefer to keep compact specifications and defer resolving some conflicts to the agent's operational planning at runtime. Our conflict calculus is an interactive way for choosing which conflict to keep or eliminate. We also avoided defining rules for eliminating partial ontic conflicts, as they lead to instances of large-scale blow-up.
 
 
 

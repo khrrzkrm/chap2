@@ -335,7 +335,7 @@ We introduce the attempted/successful abstraction, suited for capturing interfer
  For example, the landlord should provide/confirm (\textsf{account\_info}), (\textsf{ack\_pay}), and (\textsf{grant\_occ}) upon settlement; symmetrically, the tenant should (\textsf{pay\_rent}) and not (\textsf{return\_payment}).
  \end{itemize}
  
- Standard interleaving and lockstep semantics provide robust principles for combining agents’ actions over time. These standard models, however, abstract away from a distinct phenomenon central to normative reasoning: environment manipulation. The issue is not simply whether actions occur asynchronously, but whether an attempted action can be defeated by another agent altering the foundational settings before the attempted action. Standard semantics easily model a simple delay in a tenant's rent payment. Our trace abstraction allows us to still observe the landlord's action of closing his bank account, even without seeing the environment change. But a more fine-grained abstraction that also shows the account's state is still necessary.
+ Standard interleaving and lockstep semantics provide formal rules for combining agents’ actions over time. These standard models, however, abstract away from a distinct phenomenon central to normative reasoning: environment manipulation. The issue is not simply whether actions occur asynchronously, but whether an attempted action can be defeated by another agent altering the foundational settings before the attempted action. Standard semantics easily model a simple delay in a tenant's rent payment. Our trace abstraction allows us to still observe the landlord's action of closing his bank account, even without seeing the environment change. But a more fine-grained abstraction that also shows the account's state is still necessary.
  
  \subsection{From Metric-Timed to Collaborative Periodic Synchronized Set Traces}
  
@@ -382,7 +382,7 @@ We introduce the attempted/successful abstraction, suited for capturing interfer
  In the first month, rent is paid by the tenant and correctly accepted by the landlord, and occupancy is granted but not yet exercised. In the second month, occupancy begins, and payment is acknowledged without conflict.
  In the third month, the tenant continues to occupy while failing to pay, and the landlord remains passive.
  In the fourth month, the tenant attempts to remedy the earlier violation by paying a late fee, which is explicitly rejected, and then engages in active obstruction of occupancy by changing the lock.
- While this description summarizes each agent's behavior, we still need to amend these traces to be easier to analyze in light of the semantics of our logic. We proceed to the first transformation, regrouping them by contract period.
+ While this description summarizes each agent's behavior, these traces must be formatted to align with our contract semantics. The first transformation regroups them by contract period.
  \subsubsection{Step 1: Abstraction into Periodic Synchronized Set Trace}
  Since the contract regulates obligations and permissions \emph{per month} rather than per day, we periodize
  the timeline into month windows $\Ik{1},\Ik{2},\Ik{3},\ldots$ and aggregate the actions of each agent
@@ -1109,7 +1109,7 @@ These constructs enable the specification of patterns such as: (i) ``When the fl
   This block provides the primitive deontic statements for a single month:
   \emph{obligation} \(\obl[p]{a}\), \emph{prohibition} \(\frb[p]{a}\), and \emph{power} \(\perm[p]{a}\), and the two \emph{valid} \(\top\) and \emph{invalid} \(\bot\).
   Here \(p \in \{1,2\}\) identifies the party in the set of the two agents, and \(a \in \Sigma_C\) is a collaboration action.
-  Intuitively, literals say \emph{what} is required/forbidden/allowed of \emph{whom}, independently of timing. 
+  Literals define \emph{what} is required, forbidden, or allowed of \emph{whom}, independently of timing. 
 
   \paragraph{Contracts (\emph{C}).}
 

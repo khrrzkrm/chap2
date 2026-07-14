@@ -98,7 +98,7 @@ $
 && \delta(q_0,A)=
   \begin{cases}
     q_s & \text{if }\trace{A}\ \satt\ \ell,\\
-    q_v & \text{if }\trace{A}\ \violt\ \ell;
+    q_v & \text{if }\trace{A}\ \violt\ \ell.
   \end{cases}\\[2pt]
 &\text{(2) post transitions: }
 && \delta(q_s,A)=q_{ps},\ \delta(q_v,A)=q_{pv},\ \\ & &&
@@ -403,19 +403,27 @@ trace.
 
 \begin{lemma}[Correctness of the sequential monitor construction]
 \label{lem:seq-correct}
-Let the two $\tsmc©$ and $\tsmc(C’)$ be the monitors for $C$ and $C’$,
-and let $\tsmc_{\bm{;}}(\tsmc©,\tsmc(C’))
+Let the two $\tsmc(C)$ and $\tsmc(C')$ be the monitors for $C$ and $C'$,
+and let $\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))
 = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. For every trace $\pi$, the monitor outputs the same verdict according to the sequence semantics:
 \[
 \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)=
-\semfive{\pi \vDash C;C’}.
+\semfive{\pi \vDash C;C'}.
 \]
 \end{lemma}
 
 
 \begin{proof}
     We prove by induction on the length of the input trace $n:=|\pi|$.
-    Let $M:=\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. We have:
+    Let
+    \[
+    \begin{aligned}
+    M
+    &:= \tsmc_{\bm{;}}(\tsmc(C),\tsmc(C')) 
+    = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;}).
+    \end{aligned}
+    \]
+    We have:
     \[
     \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
     \;=\;
