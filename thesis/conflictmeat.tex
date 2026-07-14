@@ -554,10 +554,11 @@ The maximal obligation time point is $k=2$.
 Applying $\pnf(\phi,2)$ expands obligations and prohibitions up to $t\le2$, while retaining the tail $[3,5]$.  
 Subsequent $\dnf$ and conflict extraction produce the results summarized in \ref{table:conflict-analysis}.
 
-\begin{table}
-    \centering
-    \renewcommand{\arraystretch}{1.5}
-    \begin{tabular}{|l|p{12cm}|c|}
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|c|}
     \hline
     \textbf{Step} & \textbf{Value} & \textbf{Size} \\
     \hline
@@ -624,7 +625,7 @@ Subsequent $\dnf$ and conflict extraction produce the results summarized in \ref
     $
     & -- \\
     \hline
-    \end{tabular}
+    \end{tabularx}
     \caption{Normal form analysis with sizes for $\phi := \ob{\{[1,2]\}}{\delAtGate} \sqcap \forb{\{[2,5]\}}{\delAtGate} \sqcap \ob{\{[1,2]\}}{\pickU}$.}
     \label{table:conflict-analysis}
     \end{table}
@@ -866,8 +867,8 @@ The density measures how many conflicts occur within its punctual representation
 A high conflict density indicates an overloaded specification with conflicting timed conditions: the set of feasible behaviors is less than the timed conditions specified in the literals, which complicates compliance planning, and makes interpretation of the overall desired behavior more difficult. We compute this measure via a simple formal definition.
 
 \begin{definition}[Conflict density]\label{def:Conflict density-measure}
-Let $\phi$ be a formula in \TDDLfm and let $k=\textsc{MaxOPoint}(\phi)$.  
-The \defn{conflict density} of $\phi$, written $\cd(\phi)$, is the ratio between the number of conflicting product terms and the total number of product terms in $\dnf(\pnf(\phi,k))$:
+Let $\phi$ be a formula in \TDDLfm and let the upper bound\\ $k=\textsc{MaxOPoint}(\phi)$.  
+The \defn{conflict density} of $\phi$, written $\cd(\phi)$, is the ratio between the number of conflicting product terms and the total number of product terms in $\dpnf(\phi,k))$:
 \[
 \cd(\phi) := \frac{\size{\mathcall{PC}(\phi)}}{\Xi(\phi)}.
 \]

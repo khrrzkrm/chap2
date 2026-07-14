@@ -715,14 +715,16 @@ We now want to define quantitative blame to break down each violation into contr
     $n_i$ counts the number of violations attributed to agent $i$.
     
     The function is defined recursively on the trace structure as follows:
-    \[
-    \qblame{\trace{A}\concat \pi, C} :=
-    \begin{cases}
-      \qblame{\trace{A}, C} 
-        & \text{if } \pi = \emptytrace \lor \Prog(\trace{A},C)=\emptc,\\[4pt]
-      \qblame{\trace{A}, C} + \qblame{\pi, \Prog(\trace{A},C)}   & \text{otherwise}.
-    \end{cases}
-    \]
+\[
+\qblame{\trace{A}\concat \pi, C} :=
+\begin{cases}
+  \qblame{\trace{A}, C},
+    & \text{if } \pi = \emptytrace \text{ or } C_A=\emptc,\\[2pt]
+  \qblame{\trace{A}, C} + \qblame{\pi, C_A},
+    & \text{otherwise.}
+\end{cases}
+\]
+where \(C_A := \Prog(\trace{A},C)\).
     
     The \emph{instantaneous quantitative blame} for a single event
     $\trace{A}$ against a contract $C$ is defined by:
@@ -864,7 +866,7 @@ The definition uses the forward-looking blame semantics on the literal head of t
   This matches the joint responsibility verdict $\bottp{\{1,2\}}$ derived in the forward semantics.
   \end{example}
 
-So far, we have introduced two quantitative views of non-compliance. The first one, $\qsem{\pi,C}$, gives a single number that counts the number of violations along the trace, without caring who caused them. The second one, $\qblame{\pi,C}$, keeps the same idea but splits the count into two parts, one per agent. Since both definitions use the same progress function and add up step-by-step contributions, it is natural to ask how the split version relates to the original violation score. In other words, does adding up the two blame counters always give back the same score as $\qsem{\pi,C}$? The following lemma answers this by proving that the overall quantitative violation score acts as a lower bound for the total assigned blame.
+So far, we have introduced two quantitative views of non-compliance. The first one, $\qsem{\pi,C}$, returns a single number that counts violations along the trace, without assigning responsibility to the agents. The second one, $\qblame{\pi,C}$, keeps the same idea but splits the count into two parts, one per agent. Since both definitions use the same progress function and add up step-by-step contributions, it is natural to ask how the split version relates to the original violation score. In other words, does adding up the two blame counters always return the same score as $\qsem{\pi,C}$? The following lemma addresses this by proving that the overall quantitative violation score serves as a lower bound on the total assigned blame.
 
 
     \begin{lemma}[The relation of the blame score to the violation score]

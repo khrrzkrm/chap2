@@ -233,7 +233,7 @@ Prefixes can be defined by \emph{length} \( \taumt[1,k] \), or by \emph{time} \(
 
 
 \begin{example}[Metric-time operators]
-  Consider an alphabet $\Sigma=\{\textsf{badge\_tapped},\textsf{door\_open}\}$.
+  Consider the metric timed trace \(\taumt\) defined on the alphabet $\Sigma=\{\textsf{badge\_tapped},\textsf{door\_open}\}$:
   \[
   \taumt=\trace{(\textsf{badge\_tapped},1),(\textsf{door\_open},3)}.
   \]
@@ -367,12 +367,12 @@ The objective of this subsection is to connect the three action-centric word mod
     \draw[map line] (s1) -- (l1);
     \draw[map line] (s3) -- (l2);
 
-    \node[right, black, font=\footnotesize, align=left] at (8.5, -1.25)
+    \node[right, black, font=\footnotesize, align=left] at (7.5, -1.25)
         {\textbf{Synchronous Padding} $\ST$\\
          Aligns events to clock ticks\\
          Inserts `$(-)$' when an event \\is missing at time $t$};
 
-    \node[right, black, font=\footnotesize, align=left] at (8.5, -3.75)
+    \node[right, black, font=\footnotesize, align=left] at (7.5, -3.75)
         {\textbf{Logical Projection} $\LT$\\
          Forgets time and stutters\\
          Preserves order only};
@@ -574,7 +574,7 @@ The collapsed lockstep with handshakes is defined by applying the function \(\ma
   \midrule
   \multicolumn{4}{l}{\textit{Word Models}} \\
   Logical-Time & $\tault$ & $\Sigma^*$ & Order only; no timing info. \\
-  Metric-Time & $\taumt$ & $(\Sigma \times \mathbb{N})^*$ & Precise timestamps; quantitative timing. \\
+  Metric-Time & $\taumt$ & $(\Sigma \times \mathbb{N})^*$ & quantitative timestamps \\
   Synchronous-Time & $\taust$ & $(\Sigma \cup \{(-)\})^*$ & Round-based; explicit stutters ($(-)$). \\
   \midrule
   \multicolumn{4}{l}{\textit{Canonical Morphisms}} \\
@@ -582,9 +582,9 @@ The collapsed lockstep with handshakes is defined by applying the function \(\ma
   Synchronous Padding & $\ST$ & $\taumt \to \taust$ & Aligns events to rounds, inserts $(-)$. \\
   \midrule
   \multicolumn{4}{l}{\textit{Synchronization Operators}} \\
-  Async. Interleaving & $\shuffle$ & $\tault \times \tault$ & All order-preserving shuffles (interleaving). \\
-  Lockstep Zip & $\parallel_{\mathrm{lock}}$ & $\taust \times \taust$ & Aligns rounds strictly. \\
-  Handshake & $\parallel_{\mathrm{hs}}^{A}$ & $\taust \times \taust$ & Synchronizes shared $A$, interleaves private. \\
+  Async. Interleaving & $\shuffle$ & $\tault \times \tault$ & All order-preserving interleaving. \\
+  Lockstep Zip & $~~~~~\parallel_{\mathrm{lock}}$ & $\taust \times \taust$ & Aligns rounds strictly. \\
+  Handshake & $~~~\parallel_{\mathrm{hs}}^{A}$ & $\taust \times \taust$ & Synchronizes + interleaves private. \\
   \bottomrule
   \end{tabular}
   \end{table}

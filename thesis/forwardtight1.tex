@@ -167,7 +167,7 @@ Let $C$ and $C'$ be contracts in \cDL, and let
 \tsmc(C') = (Q', q'_0, \Gamma, \tightverdicts, \delta', \lambda'_5).
 \]
 The tight satisfaction monitor construction for the conjunction
-$C \wedge C'$, written $\tsmc_{\wedge}(\tsmc(C),\tsmc(C'))$, is defined as:
+$C \wedge C'$, written\\ $\tsmc_{\wedge}(\tsmc(C),\tsmc(C'))$, is defined as:
 \[
 \tsmc_{\wedge}(\tsmc(C),\tsmc(C'))
   = (Q_{\wedge}, q_0^{\wedge}, \Gamma, \tightverdicts, \delta_{\wedge}, \lambda_5^{\wedge}).
@@ -415,15 +415,7 @@ and let $\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))
 
 \begin{proof}
     We prove by induction on the length of the input trace $n:=|\pi|$.
-    Let
-    \[
-    \begin{aligned}
-    M
-    &:= \tsmc_{\bm{;}}(\tsmc(C),\tsmc(C')) 
-    = (Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;}).
-    \end{aligned}
-    \]
-    We have:
+    \\Let $M:=\tsmc_{\bm{;}}(\tsmc(C),\tsmc(C'))=(Q_{;}, q_0^{;}, \Gamma, \tightverdicts, \delta_{;}, \lambda_5^{;})$. We have:
     \[
     \lambda_5^{;}\big(\delta_{;}(q_0^{;},\pi)\big)
     \;=\;
