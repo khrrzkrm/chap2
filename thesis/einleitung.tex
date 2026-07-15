@@ -4,11 +4,13 @@
 
 \section{What are Normative Specifications?}
 
-A norm is a rule or principle specifying what the members of a group ought to do, are permitted to do, or must refrain from doing. A normative system is the setting in which such norms operate to regulate behavior. An agent may comply with a norm, disregard it, or violate it outright. Violation typically triggers a consequence, such as a sanction, a penalty, or some other corrective response, rather than becoming logically impossible.
+A norm is defined as a rule or standard that designates actions, decisions, or states of affairs as obligatory, permitted, or prohibited within a specific context. 
 
-Normative specifications represent attempts to formalize, at least partially, the norms operating within a given normative system. They are usually represented as documents or models that prescribe how a system, component, process, or agent ought to behave, rather than describing how it actually behaves. In engineering, contracting, standardization, and agent-based systems, normative specifications use controlled deontic vocabulary to distinguish mandatory requirements from recommendations or optional guidance.
+A normative system comprises a set of norms along with the relevant conditions, agents, institutions, or procedures necessary for their interpretation and application. The main goal of these systems is to apply the rules of norms they contain to guide, regulate, and evaluate behavior and states of affairs. Agents may comply with a norm or violate it, with violations generally resulting in consequences enforced by the system such as sanctions, penalties, reparations, or other corrective responses.
 
-A main distinction within normative specifications should be made between \emph{ought-to-do} and \emph{ought-to-be} specifications. 
+A normative specification is an explicit and structured representation of some of the norms associated with a normative system. Normative specifications may take the form of legal texts, technical standards, contracts, policies, requirements documents, processes, or executable rule sets. They are most often written in natural language and, more recently, increasingly defined using controlled natural language or formal language, each offering different trade-offs between expressiveness and precision. Normative specifications are typically targeted toward systems and their components, processes, or agents whose behavior can be assessed against the norms they express.
+
+An important distinction within normative specifications may be drawn between \emph{ought-to-do} and \emph{ought-to-be} specifications. 
 
 \begin{itemize}
 
@@ -32,7 +34,7 @@ For the European Union, the European Commission has estimated that administrativ
 
 For the United States, economy-wide estimates of the aggregate annual cost of federal regulation have been reported in the trillion-dollar range in the literature, with one widely cited estimate reporting roughly \$2.0 trillion in 2012.\footnote{Sources (visited on 21 December 2025)~\url{https://www.congress.gov/crs-product/R44348} \; \\  \url{https://conservativereform.com/files/data-and-reports/cost-of-federal-regulations/federal-regulation-executive-summary.pdf}}
 
-A large part of this burden does not arise from the substantive goals of regulation alone, but from its structural complexity. Normative systems are typically fragmented across jurisdictions, amended incrementally, and expressed in heterogeneous legal language. As a result, regulated entities must invest considerable efforts and time to determine which duties and rights apply in a given situation and whether exceptions or loopholes do apply. This analytical effort is repeated across organizations and over time, which leads to duplicated work and increases the chance of avoidable errors.
+Regulatory burden arises not only from the substantive demands of regulation, but also from its structural complexity. Normative systems are typically fragmented across jurisdictions, amended incrementally, and expressed in heterogeneous legal language. As a result, regulated entities must invest considerable effort and time to determine which duties and rights apply in a given situation and whether exceptions or loopholes apply. This analytical effort is repeated across organizations and over time, which leads to duplicated work and increases the chance of avoidable errors.
 
 These challenges are especially clear in busy administrative tasks. Tasks like procurement, licensing, certification, and eligibility checks often require extensive manual review, even when the rules are clear. Small mistakes or misunderstandings can cause whole applications to be rejected, wasting time and resources for the administrative agents and clients involved. As more rules are added, the cost and effort needed to check and document everything grow much faster than the rules themselves.
 
@@ -40,7 +42,7 @@ These observations motivate the growing interest in computational approaches to 
 
 \subsection{Efforts in the Digitalization of Compliance}
 
-The transformation of rules and regulations into digital systems is growing quickly. According to Legal Complex, startups in this area operate worldwide and have raised hundreds of millions of dollars. Figure~\ref{fig:top3} shows their data for the six largest economies. A well-known example is Taxfix\footnote{https://taxfix.de/}, a popular software that has made tax filing digital in Germany.
+The digital transformation of normative systems is growing quickly. According to Legal Complex, startups in this area operate worldwide and have raised hundreds of millions of dollars. Figure~\ref{fig:top3} shows their data for the six largest economies. A well-known example is Taxfix\footnote{https://taxfix.de/}, a popular software that has made tax filing digital in Germany.
 
 \begin{figure}[h]
 
@@ -64,7 +66,7 @@ To meet the challenges of digitalization, the main goal is to reason about norms
 
 \end{enumerate}
 
-Although statistical approaches are easy to use, they have reliability problems. Truth Systems\footnote{\url{https://www.truthsystems.ai/}} reported at the April 2024 Codex workshop\footnote{\href{https://law.stanford.edu/2024/04/02/youre-invited-codex-meeting-on-april-4-truth-systems-standard-draft/}{Stanford CodeX Workshop, April 2024}} that ChatGPT 4's accuracy for legal reasoning was about $59.2\%$. This low precision is due to hallucinations in large language models. Figure~\ref{Hallucination} shows an example where a prompt about four people (Lucas, Amelia, Benjamin, and Olivia) suing each other is analyzed. The response is checked with a hallucination detector: red indicates proven hallucinations, green indicates verified facts and arguments, and orange indicates unverified facts due to tool limitations.
+Although statistical approaches offer flexibility, they have reliability problems. Truth Systems\footnote{\url{https://www.truthsystems.ai/}} reported at the April 2024 Codex workshop\footnote{\href{https://law.stanford.edu/2024/04/02/youre-invited-codex-meeting-on-april-4-truth-systems-standard-draft/}{Stanford CodeX Workshop, April 2024}} that ChatGPT 4's accuracy for legal reasoning was about $59.2\%$. This low precision is due to hallucinations in large language models. Figure~\ref{Hallucination} shows an example where a prompt about four people (Lucas, Amelia, Benjamin, and Olivia) suing each other is analyzed. The response is checked with a hallucination detector: red indicates proven hallucinations, green indicates verified facts and arguments, and orange indicates unverified facts due to tool limitations.
 
 \begin{figure}[h]
 
@@ -86,17 +88,17 @@ In the scope of this dissertation, we are interested in fully formal methods.
 
 Formal methods rest on a simple but demanding principle \cite{woodcock2009formal}. System descriptions and their expected behavior are treated as mathematical objects, and questions about their behavior are formulated as precise logical or algebraic problems. This shift increases the modeling effort, but it replaces persuasive arguments with verifiable outcomes such as theorems, counterexamples, or computed verdicts.
 
-Formal methods could help guarantee correctness for digitalization. They could help to address a basic problem in modern regulation: the replacement of natural language and human interpretation with clear, formal language and automated, checkable rules for specifying and deciding. Closing this gap is necessary if we want to enforce rules reliably as systems get more complex.
+Formal methods could help guarantee correctness for the digitalization of normative systems by addressing a basic problem in modern regulation: the replacement of natural language and human interpretation with clear, formal language and automated, checkable rules for specifying and deciding. Closing this gap becomes increasingly important if we want to enforce rules reliably as systems get more complex.
 
-Formal methods can be broadly classified by the nature of their inputs and the type of analysis they provide; we briefly outline the most relevant categories are:
+Formal methods can be broadly classified by the nature of their inputs and the type of analysis they provide; we briefly outline the most relevant categories:
 
 \paragraph{Model-based verification.}
 
-Model-based verification, such as model checking, operates on symbolic representations of system behavior, such as transition systems, SAT encodings, and Petri nets, while the properties to check against are specified in logics or formal languages such as regular expressions and temporal logics \cite{DBLP:journals/cacm/ClarkeES09, DBLP:books/daglib/0020348}. The challenges for those methods are developing an expressive enough logic while remaining decidable for satisfiability and model checking, and designing the right abstraction to represent the system under study, in which behavior can be finitely represented or soundly abstracted to avoid the known problem of state explosion. 
+Model-based verification, such as model checking, operates on symbolic representations of system behavior, such as transition systems, SAT encodings, and Petri nets, while the properties to check against are specified in logics or formal languages such as regular expressions and temporal logics \cite{DBLP:journals/cacm/ClarkeES09, DBLP:books/daglib/0020348}. The challenges for these methods are developing an expressive enough logic while remaining decidable for satisfiability and model checking, and designing the right abstraction to represent the system under study, in which behavior can be finitely represented or soundly abstracted to avoid the known problem of state explosion. 
 
 \paragraph{Deductive and proof-based methods.}
 
-Theorem-proving and proof-carrying approaches reason at the level of logical theories rather than at the level of state exploration. Systems are described by axioms, inference rules, and invariants. Correctness is based on proofs in a formal calculus, either purely manual or semi-automated fashion using fixpoints. They are designed to handle more complex systems, such as infinite-state systems and richer data domains than model-based verification, but on the other hand rely more on human guidance for appropriate abstraction choices, proof construction, invariant guessing, and false-positive alarm mitigation \cite{DBLP:books/sp/93/Hoare93,DBLP:books/ph/Dijkstra76,DBLP:conf/popl/CousotC77}.
+Theorem-proving and proof-carrying approaches reason at the level of logical theories rather than at the level of state exploration. Systems are described by axioms, inference rules, and invariants. Correctness is based on proofs in a formal calculus, either purely manually or in a semi-automated way using fixpoints. They are designed to handle more complex systems, such as infinite-state systems and richer data domains than model-based verification, but on the other hand rely more on human guidance for appropriate abstraction choices, proof construction, invariant guessing, and false-positive alarm mitigation \cite{DBLP:books/sp/93/Hoare93,DBLP:books/ph/Dijkstra76,DBLP:conf/popl/CousotC77}.
 
 \paragraph{Specification and system-contract methods.}
 
@@ -106,7 +108,7 @@ Specification languages, design-by-contract techniques, and normative formalisms
 
 Runtime verification and monitoring techniques analyze behavior represented as traces of a system and/or its agents. Instead of establishing correctness for all possible behaviors, they evaluate concrete traces against a formal specification. The result may be a verdict that evolves over time, such as satisfaction, violation, or an inconclusive status. These methods sacrifice completeness for practicality and are effective when full system models are unavailable, too complex, or when systems operate in open or partially observable environments \cite{DBLP:journals/jlp/LeuckerS09,bartocci2018rv}.
 
-These formal methods, and the others, do not remove complexity, nor do they verify everything. They make the complexity explicit, structure it, and delimit precisely what can and cannot be correctly verified as a consequence of Rice's theorem \cite{rice1953classes}.
+Formal methods do not remove complexity, nor do they verify everything. They make the complexity explicit, structure it, and delimit precisely what can and cannot be correctly verified as a consequence of Rice's theorem \cite{rice1953classes}.
 
 \section{Applications of Formal Methods in Computational Law}
 
@@ -139,8 +141,8 @@ Existing approaches often treat norms as static constraints or verify them centr
 Furthermore, in distributed settings, agents may have different or conflicting understandings of their normative state.
 
 \paragraph{Contributions.}
-This dissertation explores the formal analysis of simple normative specifications within a deliberately limited-expressivity formal language. The focus is on developing logical frameworks that demonstrate methodologies for formulating, interpreting, and enforcing aspects of norms in regulatory and contractual practice, where time bounds, deadlines, and blame assignment are required. The expressiveness limitation keeps reasoning frameworks decidable, easy to understand, and transferable.
-Another challenge in this dissertation is to remain closely aligned with the reasoning used in legal and regulatory practice.
+This dissertation studies the formal analysis of normative specifications within a deliberately limited-expressivity formal logic. The main goal is to develop preliminary logical frameworks aligned with the reasoning used in legal and regulatory practice, with a special focus on conflicts in metric-timed normative specifications and on blame assignment in collaborative multi-agent normative specifications. 
+The expressiveness limitation keeps reasoning frameworks decidable, easy to understand, and transferable.
 
 The main contributions of this work are:
 
@@ -150,7 +152,7 @@ The main contributions of this work are:
 
  \item We present a runtime verification framework that evaluates bilateral contract compliance. The main feature is to reason about and distinguish the \emph{attempt} to perform an action from its \emph{successful outcome}. This attempt-based interaction model allows the system to accurately assign responsibility for non-compliance, recognizing when a failure is caused by one agent's lack of effort versus the other agent's active interference or refusal to collaborate.
 
- \end{enumerate}
+  \end{enumerate}
 
  
 
@@ -187,14 +189,9 @@ The main contributions of this work are:
 This thesis is structured into the following four chapters:
 
 \begin{description}
-
-  \item[\ref{chapter:preliminaries}] defines the data structures in this thesis, mainly to represent time in interval sets and the different types of traces used as models for the developed reasoning framework. The goal is to ensure that later definitions and results can be stated clearly. It also establishes common ground between concepts from logic, formal methods, and normative reasoning that are otherwise introduced inconsistently in the literature.
-
-  \item[\ref{chap:conflict}] presents the static analysis of normative specifications under metric time and studies the formal notion of timed normative conflicts. The chapter defines when time-constrained obligations and prohibitions are incompatible and how such conflicts can be detected syntactically and semantically. It further introduces measures and rewriting techniques that allow conflicting specifications to be analyzed and, when possible, repaired without altering their intended meaning.
-
-  \item[\ref{chap:monitoring}] develops a runtime semantics and constructions for violation and blame that distinguish among individual attempts and joint outcomes during contract execution. Based on this distinction, it provides monitoring mechanisms that establish responsibility in cases of partial or failed compliance and during the whole duration of contract enforcement.
-
-  \item[\ref{chapter:conclusion}] revisits the main technical contributions in light of the initial research questions and reflects on the limitations of the proposed approaches and their implications for future developments.
-
+  \item[\ref{chapter:preliminaries}] defines the data structures and helper functions, mainly to represent time in interval sets and the different types of traces used as models for the developed logics. The goal is to ensure that later definitions and results can be stated clearly using these data structures in the contribution chapters. 
+  \item[\ref{chap:conflict}] presents the static analysis of normative specifications under metric time and studies the formal notion of timed normative conflicts. The chapter defines when time-constrained obligations and prohibitions are incompatible and how such conflicts can be detected syntactically and characterized semantically. It further introduces measures and rewriting techniques that allow conflicting specifications to be analyzed and, when possible, repaired without altering their intended meaning.
+  \item[\ref{chap:monitoring}] develops monitoring semantics and constructions for violation and blame that distinguish between individual agents' attempts and the joint outcomes of their collaborations during contract execution. Based on this distinction, it provides monitoring mechanisms that assign blame to agents during the full duration of contract enforcement for each case of non-compliance.
+  \item[\ref{chapter:conclusion}] revisits the main technical contributions in light of the initial research questions and reflects on how to combine the results of the contributions as well as the limitations of the proposed approaches and their implications for future developments.
 \end{description}
 
