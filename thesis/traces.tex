@@ -3,7 +3,7 @@ Since our normative specifications constrain what agents ought to do, we take di
 In contrast to control-theoretic and physical models based on continuous signals or state trajectories, our setting is action-centric: we record which actions occur, and we reason about their order and, when needed, their timing.
 Accordingly, a word is a sequence of discrete events that captures ``what happened'', rather than a valuation that describes ``what holds'' over time.
 These words form the basic semantic objects for the logics developed in subsequent chapters.
-When we speak of traces, we mean recorded words obtained from concrete executions.
+When we speak of traces, we mean observed words during concrete executions of a system or agent performance.
 
 We begin by establishing three word models depending on their timing settings and the canonical morphisms between them. Subsequently, we study how to synchronize two words of the same type.
 
@@ -446,13 +446,13 @@ Both \(\LT\) and \(\ST\) are \emph{many-to-one}. In particular, \(\LT\) is \emph
 \(\LT\) and \(\ST\) are the canonical forgetful maps from metric time to, respectively, order-only and round-synchronous views. They preserve exactly the event properties listed above and discard the rest.
 
 \subsection{Synchronization of Words}\label{operators}
-In this subsection, we illustrate the complexity of synchronizing traces across different timing settings. We define three operators, adapted from standard formulations to fit our specific two-agent models denoted by indices 1 and 2, with alphabets $\Sigma_1$ and $\Sigma_2$. We cover:
+In this subsection, we illustrate the complexity of synchronizing traces across different timing settings. We define three word-level operators, adapted from standard process and synchronous-language formulations to fit our specific two-agent models denoted by indices 1 and 2, with alphabets $\Sigma_1$ and $\Sigma_2$. They should therefore be read as adapted trace operators used in this dissertation, not as verbatim reproductions of the cited operational semantics. We cover:
 (i) \emph{asynchrony} on logical-time words (\(\tault\)),
 (ii) \emph{lockstep synchrony} on synchronous words (\(\taust\)),
 and (iii) \emph{synchronous handshake} on synchronous words with an explicit set \(A\) of shared actions.
 
 \subsubsection{Asynchrony Operator on Logical Time}
-The asynchronous operator models purely interleaved joint behavior, generating \emph{all shuffles} that preserve each agent’s local order. No global clock or rendezvous is assumed. To avoid accidental identification of simultaneous events, the global alphabet is taken as the \emph{disjoint union} $\Sigma=\Sigma_1\uplus\Sigma_2$, tagging each action with its agent of origin. This is the standard interleaving semantics of CCS and CSP.
+The asynchronous operator models purely interleaved joint behavior, generating \emph{all shuffles} that preserve each agent’s local order. No global clock or rendezvous is assumed. To avoid accidental identification of simultaneous events, the global alphabet is taken as the \emph{disjoint union} $\Sigma=\Sigma_1\uplus\Sigma_2$, tagging each action with its agent of origin. This is the standard pure-interleaving view used in process calculi such as CCS and CSP when no synchronization constraint is imposed \cite{Milner89,Hoare85}.
 
 \begin{definition}[Asynchronous interleaving on $\tault$]
   Let $\tault_1\in\Sigma_1^{*}$ and $\tault_2\in\Sigma_2^{*}$ be logical-time words. The \emph{asynchronous interleaving operator} 
@@ -489,7 +489,7 @@ As a result, we have that every $w\in \tault_1 \shuffle \tault_2$ satisfies the 
 
 \subsubsection{Synchronous Lockstep Operator on Synchronous Time}
 
-The \emph{lockstep} operator combines two synchronous words by aligning them round by round under a shared global clock. If the two words have different horizons, the shorter one is right-padded with the stutter symbol ``$(-)$'' so that both align on the common index set $\{1,\dots,T\}$, where $T=\max(T_1,T_2)$.
+The \emph{lockstep} operator combines two synchronous words by aligning them round by round under a shared logical clock.  If the two words have different horizons, the shorter one is right-padded with the stutter symbol ``$(-)$'' so that both align on the common index set $\{1,\dots,T\}$, where $T=\max(T_1,T_2)$.
 
 \begin{definition}[Lockstep zip on $\taust$]
   Let $\taust_1=\trace{(s_1),\dots,(s_{T_1})}$ and $\taust_2=\trace{(r_1),\dots,(r_{T_2})}$ be two synchronous words. Extend the shorter word with stutters ``$(-)$'' up to $T:=\max(T_1,T_2)$. The \emph{lockstep zip} operator is defined by:
@@ -504,7 +504,7 @@ The result is a synchronous word over the product alphabet $(\Sigma_1\cup\{(-)\}
 
 \subsubsection{Synchronous Operator with Handshake Actions}
 
-In many systems, certain actions can only be executed \emph{jointly} and must occur in \emph{the same round} for both agents. Let $A\subseteq \Sigma_1\cap\Sigma_2$ denote the set of \defn{handshake actions}. The idea is that if one agent performs a handshake action $a\in A$ at some round, then the other agent must also perform $a$ at that exact round. This principle, specified in synchronous CCS \cite{milner1983calculi}, requires handshake actions to be treated as simultaneous, mutually synchronized events.
+In many systems, certain actions can only be executed \emph{jointly} and must occur in \emph{the same round} for both agents. Let $A\subseteq \Sigma_1\cap\Sigma_2$ denote the set of \defn{handshake actions}. The idea is that if one agent performs a handshake action $a\in A$ at some round, then the other agent must also perform $a$ at that exact round. This shared-event principle is closest to CSP-style synchronization on common events \cite{Hoare85}. CCS has a related rendezvous mechanism, but it synchronizes complementary actions and hides the communication as an internal action rather than requiring the same visible label on both sides \cite{Milner89,milner1983calculi}.
 
 \begin{definition}[Lockstep with handshakes on synchronous words]\label{def:lockstep-hs}
 Let $A\subseteq \Sigma_1\cap\Sigma_2$ be a nonempty set of handshake actions. The lockstep with handshakes operator, written \( \taust_1 \parallel_{\mathrm{hs}}^{A} \taust_2 \), takes two synchronous words \(\taust_1\) and \(\taust_2\), extends them to the same length $T$, and applies the handshake constraint.

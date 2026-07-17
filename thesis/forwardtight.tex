@@ -292,17 +292,17 @@ Using the direct satisfaction of $\obl[1]{\PAY}$.
  since the reparation in $C_3=\obl[1]{\PAY}\repair\obl[1]{\PAYF}$ has not yet been evaluated.
 With the decomposition by $k=1$,
 
-    $\pi[1,1]\ \violt\ \obl[1]{\PAY}$ and
+    $$\pi[1,1]\ \violt\ \obl[1]{\PAY}$$ and
 
-    $\pi[2,2]\ \violt\ \obl[1]{\PAYF}$,
+    $$\pi[2,2]\ \violt\ \obl[1]{\PAYF}$$,
 
     hence
 
-    $\pi_{\textsf{viol}}\ \violt\ C_3$.
+    $$\pi_{\textsf{viol}}\ \violt\ C_3$$.
 
     Thus, the overall violation arises from $C_3$, and by conjunction,
 
-    $\pi_{\textsf{viol}}\ \violt\ (C_2 \wedge C_3)$,
+    $$\pi_{\textsf{viol}}\ \violt\ (C_2 \wedge C_3)$$,
 
     with decisive index $t=2$.
 
@@ -371,9 +371,9 @@ Two regular expression conditional contracts  are distinguished:
     $$
     \begin{array}{l@{\quad}c@{\quad}l}
     \pi\ \satt\ \trig[re]{C}
-      &\mydef& 
-      \pi\ \violt\ re\
-      \sor\
+      &\mydef&
+      \pi\ \violt\ re
+      \sor
       \big(\exists\,k \in [1, s-1]:\ \pi_k\ \satt\ re\ \nd\ \pi^{k}\ \satt\ C\big),
       \\[1.2ex]
     
@@ -396,7 +396,6 @@ Two regular expression conditional contracts  are distinguished:
     $$
     Where $\pi\ \clossat\ X$ abbreviates $(\pi\ \presat\ X\ \sor\ \pi\ \satt\ X)$.
   \end{definition}
-  
 
 \begin{example}[Triggered and guarded contracts]
 \label{ex:trigger-guard}
@@ -430,19 +429,18 @@ thus $\pi_{\mathsf{sat}}\ \satt\ C_4$.
 A_1=\{\notifrepair^{(1)}\} \nd
 A_2'=\emptyset.
 \]
-The trigger in month 1, but the obligation is unfulfilled:
+The trigger activates in month 1, but the obligation is still to be fulfilled:
 $\pi_{\mathsf{viol}}\ \violt\ C_4$.
 
 \paragraph{(b) Guarded repetition.}
-To limit repetition to the occupancy period, combine guard and repetition:
 \[
 C_9 := \guard[\,\Gamma^+\,;\,\{\notifterm^{(1)}\}\,;\,\Gamma^{3}]{\repit{\obl[1]{\PAY}}}.
 \]
-The guard pattern 
+The guard pattern
 $\Gamma^+;\{\notifterm^{(1)}\};\Gamma^{3}$
 means “for any non-empty prefix up to the termination notice
-$\notifterm^{(1)}$, and for at most three additional steps afterward.”
-Within this region, the obligation to pay rent repeats.
+$\notifterm^{(1)}$, and for the three additional steps afterward.”
+For each time point within this time window, the obligation to pay rent repeats.
 Once $\notifterm^{(1)}$ occurs, the duty remains for three more periods,
 and the contract is satisfied at $t{=}1{+}3{=}4$.
 
@@ -459,7 +457,7 @@ A_2=\{\notifterm^{(1)},\PAY^{(1)},\PAY^{(2)}\},\\
 A_3=A_4=A_5=\{\PAY^{(1)},\PAY^{(2)}\}.
 \end{array}
 \]
-The guard is satisfied in month 5 and the payments were all successful, hence $\pi_{\mathsf{sat}}\ \satt\ C_9$.
+The guard is satisfied in month 5, and the payments were all successful, hence $\pi_{\mathsf{sat}}\ \satt\ C_9$.
 
 \emph{Tight violation.}
 \[
@@ -476,14 +474,14 @@ A_4=\emptyset,\\
 A_5=\{\PAY^{(1)},\PAY^{(2)}\}.
 \end{array}
 \]
-A missing payment in the fourth month breaks the repetition duty
+A missing payment in the fourth month breaks the repetition duty,
 while the guard still holds, so
 $\pi_{\mathsf{viol}}\ \violt\ C_9$.
 \end{example}
 
 \subsubsection*{Coherence of the Forward-Looking Contract Satisfaction Semantics}
 
-Coherence requires that, for any fixed contract and trace, the semantics conclude a unique verdict out of the five possible ones. It also extends to prefix properties: for instance, a prefix that tightly satisfies a contract cannot have a sub-prefix that violates it, and vice versa. The main focus lies on establishing the disjointness of tight satisfaction and tight violation, which is then extended to the semantic definitions of the other three verdicts. The next lemma establishes this result, proving both point-wise disjointness and cross-prefix exclusion in a single pass.
+Semantic coherence is a required property in logic to ensure that reasoning does not lead to different conclusions. In the case of forward semantics, it means that for any given contract and trace, the semantics must produce exactly one of five possible verdicts. This principle should also apply to prefixes: if a prefix fully satisfies a contract, none of its sub-prefixes can violate it, and vice versa. The main goal is to show that tight satisfaction and tight violation do not overlap, and then t use this result to generalize coherence for the remaining three verdicts. The next lemma proves both that these cases are separate and that sub-prefixes cannot contradict their prefixes, all at once.
 
 \begin{lemma}[Mutual prefix exclusion and disjointness of tight satisfaction and violation]
 \label{lem:mutual prefix}
@@ -508,7 +506,7 @@ By structural induction on the syntax of $C$. In each case below, we prove all t
 By Definition~\ref{def:lattsat}, literals are all decided on a single letter trace:
 $\trace{A}\ \satt\ \ell$ iff the letter constraint holds, and
 $\trace{A}\ \violt\ \ell$ iff it does not. The conditions are all exclusive, as no literal can be simultaneously satisfied and violated under the same conditions on the unique event of the trace. Claim~(1) follows from that.
-Claims~(2) and~(3) follow by definition, because the only strict prefix of a single letter trace is $\emptytrace$, on which $\emptytrace\ \presat\ \ell$ holds by definition.
+Claims~(2) and~(3) follow by definition, because the only strict prefix of a single-letter trace is $\emptytrace$, on which $\emptytrace\ \presat\ \ell$ holds by definition.
 
 \medskip
 \noindent\textbf{Inductive hypotheses.}
@@ -526,81 +524,80 @@ Assume all three claims hold for every subcontract. We write:
 and similarly for a second operand $C'$ or a regex guard $re$.
 
 \paragraph{Conjunction $C\wedge C'$.}
-\emph{Claim~(1).}
-By contradiction, assume $\pi\ \satt\ (C\wedge C')$ and $\pi\ \violt\ (C\wedge C')$.
+\emph{Claim (1).}
+Assume for the sake of contradiction that there exists $\pi\ \satt\ (C\wedge C')$ and $\pi\ \violt\ (C\wedge C')$.
 From the tight satisfaction semantic conditions, there exist $k,k'\in[1,s]$ with $\pi_k\ \satt\ C$, $\pi_{k'}\ \satt\ C'$, and $s=\max(k,k')$. And From violation, $\pi\ \violt\ C$ or $\pi\ \violt\ C'$.
-If $\pi\ \violt\ C$: when $k=s$, we have $\pi\ \satt\ C$ and $\pi\ \violt\ C$, contradicting (IH-$C$-1). If $k<s$, the strict prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
 
 
-\emph{Claims~(2) and~(3).}
-Tight satisfaction establishes a unique index $j = \max(k,k')$ such that $\pi_k\ \satt\ C$ and $\pi_{k'}\ \satt\ C'$.
-For any $j' < j$, either $j' < k$ or $j' < k'$, so by (IH-$C$-2) and (IH-$C'$-2), neither conjunct is tightly violated at $\pi[1,j']$, hence $C\wedge C'$ is not violated either.
-For the dual, if $\pi\ \violt\ (C\wedge C')$ via a violation of conjunct $C$, then (IH-$C$-3) forbids any earlier $\pi[1,j']\ \satt\ C$, which is necessary for $\pi[1,j']\ \satt\ (C\wedge C')$.
+If $\pi\ \violt\ C$ then either (1) $k=s$, but $\pi\ \satt\ C$ and $\pi\ \violt\ C$, contradicting (IH-$C$-1). (2) $k<s$, the prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
+
+\emph{Claims (2) and (3).}
+Conjunction establishes a maximal position for satisfaction $j = \max(k,k')$ such that $\pi_k\ \satt\ C$ and $\pi_{k'}\ \satt\ C'$.
+For any $j' < j$, either $j' < k$ or $j' < k'$, by (IH-$C$-2) and (IH-$C'$-2), no conjunct is tightly violated at $\pi[1,j']$, hence $C\wedge C'$ is not violated either.
+If $\pi\ \violt\ (C\wedge C')$ via a violation of conjunct $C$, then (IH-$C$-3) forbids any earlier $\pi[1,j']\ \satt\ C$, which is necessary for $\pi[1,j']\ \satt\ (C\wedge C')$.
 
 \paragraph{Sequence $C\mathbin{;}C'$.}
-\emph{Claim~(1).}
+\emph{Claim (1).}
 Assume $\pi\ \satt\ (C;C')$ and $\pi\ \violt\ (C;C')$.
 From satisfaction, there exists $k\in[1,s{-}1]$ with $\pi_k\ \satt\ C$ and $\pi^{k}\ \satt\ C'$.
 From violation, either (i)~$\pi\ \violt\ C$, or (ii)~there exists $m$ with $\pi_m\ \satt\ C$ and $\pi^{m}\ \violt\ C'$.
-In case~(i), the prefix $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
-In case~(ii), both (IH-$C$-2) and (IH-$C$-3) imply that tight satisfaction of $C$ occurs at a unique prefix, so $k = m$. Thus, $\pi^{k}\ \satt\ C'$ and $\pi^{k}\ \violt\ C'$, contradicting (IH-$C'$-1).
+In case~(i), the satisfaction of $\pi_k\ \satt\ C$ contradicts (IH-$C$-3).
+In case~(ii),  using (IH-$C$-2) and (IH-$C$-3) ensures that tight satisfaction for $C$ occurs at a unique prefix, so $k = m$. Thus, $\pi^{k}\ \satt\ C'$ and $\pi^{k}\ \violt\ C'$, contradicting the continuation hypothesis for the right hand-side hypothesis (IH-$C'$-1).
 
-\emph{Claims~(2) and~(3).}
-For any $j \le k$, (IH-$C$-2) ensures that $\pi[1,j]\ \violt\ C$. Similarly, for $j > k$, (IH-$C'$-2) on the suffix prevents violation of $C'$ before its tight point. Thus, there cannot exist any prefix that violates $C;C'$.
-
+\emph{Claims(2) and (3).}
+Sequence operates on the decisive point $k$, for any $j \le k$, applying (IH-$C$-2) ensures that $\pi[1,j]\ \violt\ C$, and similarly for $j > k$, (IH-$C'$-2) for $C'$. 
 
 \paragraph{Reparation $C\mathbin{\repair} C'$.}
-\emph{Claim~(1).}
+\emph{Claim(1).}
 Assume $\pi\ \satt\ (C\repair C')$ and $\pi\ \violt\ (C\repair C')$.
 For the violation semantics, there exists $k$ with $\pi_k\ \violt\ C$ and $\pi^{k}\ \violt\ C'$.
-And for the satifaction semantics, either (a)~$\pi\ \satt\ C$, or (b)~there exists $m$ with $\pi_m\ \violt\ C$ and $\pi^{m}\ \satt\ C'$.
+And for the satisfaction semantics, either (a)~$\pi\ \satt\ C$, or (b)~there exists $m$ with $\pi_m\ \violt\ C$ and $\pi^{m}\ \satt\ C'$.
 In case~(a), $\pi\ \satt\ C$ with the strict-prefix violation $\pi_k\ \violt\ C$ contradicts (IH-$C$-2).
-In case~(b), tight violation of $C$ is unique by (IH-$C$-2) and (IH-$C$-3), so $k = m$.
+In the case~(b), tight violation of $C$ is unique by (IH-$C$-2) and (IH-$C$-3), so $k = m$.
 Next, using $\pi^{k}\ \violt\ C'$ and $\pi^{k}\ \satt\ C'$ contradicts (IH-$C'$-1).
 
-\emph{Claims~(2) and~(3).}
+\emph{Claims(2) and (3).}
 In the no reparation case $\pi\ \satt\ C$, (IH-$C$-2) excludes earlier violations of $C$, so it applies for $C\repair C'$.
-In the repaired case, (IH-$C$-3) gives minimality of the failure point of $C$, and (IH-$C'$-2) on the suffix excludes earlier failure of the composition of both contracts before its tight success.
-
+In the repaired case, (IH-$C$-3) gives the minimality of the failure point of $C$, and (IH-$C'$-2) on the suffix excludes earlier failure of the composition of both contracts before its tight success.
 
 \paragraph{Finite repetition $C^n$.}
-By unfolding the condition as $C^n \equiv C;(C^{n-1})$, the sequence is proved and by induction on $n-1$.
+The proof proceeds by induction on the unfolding of $ C^n$ as $C;(C^{n-1})$ of length $ n$, and the proof for conjunction.
 
 \paragraph{Unbounded repetition $\repit{C}$.}
-By definition, $\pi\ \satt\ \repit{C}$ is \emph{false} for every finite trace. Hence, all the claims trivially hold by induction on C.
-
+By definition, $\pi\ \satt\ \repit{C}$ is \emph{false} for every finite trace. Hence, all the claims trivially hold by induction on $C$.
 
 \paragraph{Triggered $\langle re\rangle C$.}
-From Definition~\ref{def:trigger-guard-semantics}, either $re$ is violated leading to a vacuous satisfaction of the composed contract, or there is a first $k$ with $\pi_k\ \satt\ re$.
+From Definition~\ref{def:trigger-guard-semantics}, either $re$ is violated, leading to a vacuous satisfaction of the composed contract, or there is a first $k$ with $\pi_k\ \satt\ re$.
 
-\emph{Claim~(1).} Assume both $\pi\ \satt\ \trig[re]{C}$ and $\pi\ \violt\ \trig[re]{C}$.
+\emph{Claim(1).} Assume both $\pi\ \satt\ \trig[re]{C}$ and $\pi\ \violt\ \trig[re]{C}$.
 Violation necessitates that exists $k$ with $\pi_k\ \satt\ re$ and $\pi^{k}\ \violt\ C$.
 If the regular expression is not matched $\pi\ \violt\ re$, then $\pi_k\ \satt\ re$ with $\pi\ \violt\ re$ which contradicts (IH-$re$-2).
 If satisfaction also holds then there exists an $m$ with $\pi_m\ \satt\ re$ and $\pi^{m}\ \satt\ C$, then $k = m$ by the uniqueness of the tight frontier for $re$ (from (IH-$re$-2) and (IH-$re$-3)).
 This gives $\pi^{k}\ \satt\ C$ and $\pi^{k}\ \violt\ C$ on the same suffix, contradicting (IH-$C$-1).
 
-\emph{Claims~(2) and~(3).}
-In the vacuous satisfaction case, (IH-$re$-3) forbids any earlier $\pi[1,j]\ \satt\ re$, so there is no earlier prefix that activates the trigger to enforce C.
+\emph{Claims(2) and (3).}
+In the vacuous satisfaction case, (IH-$re$-3) forbids any earlier $\pi[1,j]\ \satt\ re$, so there is no earlier prefix that activates the trigger to enforce $C$.
 In the active satisfaction case, (IH-$re$-2) gives minimality of $k$, for any prefix $k$, the composite semantics return the undecided verdict, and for any index before $k$, we apply (IH-$C$-2) and (IH-$C$-3) on its suffix.
 
 \paragraph{Guarded $[re]\,C$.}
 While $\pi$ \emph{closes} $re$ (i.e.\ $\pi\ \presat\ re$ or $\pi\ \satt\ re$), any tight failure of $C$ results in a tight failure of the composite.
 Once $re$ is violated, the composite satisfies provided $C$ has not yet failed.
 
-\emph{Claim~(1).}
+\emph{Claim(1).}
 Violation requires $\pi\ \clossat\ re$ and $\pi\ \violt\ C$.
 Satisfaction requires either (i)~$\pi\ \violt\ re$ and $\pi\ \clossat\ C$, or (ii)~$\pi\ \clossat\ re$ and $\pi\ \satt\ C$.
 In case~(ii), $\pi\ \satt\ C$ and $\pi\ \violt\ C$ contradicts (IH-$C$-1).
 In case~(i), $\pi\ \clossat\ re$ and $\pi\ \violt\ re$:
 expanding $\clossat$, either $\pi\ \satt\ re$ and $\pi\ \violt\ re$ (contradicting (IH-$re$-1)) or $\pi\ \presat\ re$ and $\pi\ \violt\ re$ (contradicting the definition of $\presat$).
 
-\emph{Claims~(2) and~(3).}
+\emph{Claims(2) and (3).}
 By (IH-$re$-2), (IH-$re$-3), (IH-$C$-2), and (IH-$C$-3) with the guarded case in Definition~\ref{def:trigger-guard-semantics} to derive both implications.
 
 \medskip
 All the contract literals and composition operators preserve the three claims. Thus, the lemma holds for all $C$.
 \end{proof}
 
+We generalize the lemma to the 5 overall forward semantics.
 \begin{theorem}[Consistency of the forward-looking five tight semantics for \cDL]\label{thm:five-partition}
 The five forward satisfaction relations
 $\{\presat,\satt,\violt,\postsat,\postviol\}$ for \cDL are pairwise disjoint and jointly exhaustive.
