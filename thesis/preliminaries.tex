@@ -197,7 +197,7 @@ In \ref{tab:IAdesc} we specify the constraints associated with each case for the
         $\boldsymbol{I~m~I'}$  & $I$ meets $I'$  & $\max(I)+1 =\min(I')$ \\
         $\boldsymbol{I'~mi~I}$  & $I'$ is met by $I$  &  \\
         \hline
-        $\boldsymbol{I~o~I'}$  & $I$ overlaps with $I'$  & $\min(I) <_\infty \min(I') < \max(I) <_\infty \max(I')$ \\
+        $\boldsymbol{I~o~I'}$  & $I$ overlaps with $I'$  & $\min(I) <_\infty \min(I') \leq_\infty \max(I) <_\infty \max(I')$ \\
         $\boldsymbol{I'~oi~I}$  & $I'$ is overlapped by $I$  & \\
         \hline
         $\boldsymbol{I~s~I'}$  & $I$ starts $I'$  & $\min(I) = \min(I')$, $\max(I) <_\infty \max(I')$ \\
@@ -524,5 +524,7 @@ From the interval sets $\is_1$, $\is_2$, and $\is_3$ introduced above, we have:
     \item $\is_1 \ominus \is_2= \{[9,16]\} \ominus \{[10,14]\}= \{[9,9],[15,16]\}.$
     \item $\is_1 \ominus \is_3 = \{[9,16]\} \ominus \{[2,4],[8, 24]\}= \emptyset. $
 \end{itemize}
+
+In this section, we have formally introduced interval sets as a canonical representation of possibly discontinuous time ranges over natural numbers. We have also defined the arithmetic operations needed to manipulate these ranges, in particular intersection, union, and difference. These operations provide the temporal domain used later to express and combine metric constraints.
 
 \input{traces.tex}

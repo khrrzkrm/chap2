@@ -436,7 +436,7 @@ The composition of literals is obtained by the \emph{Boolean operators}: conjunc
 
 \begin{definition}[Syntax of \TDDLfm] Given a set of actions $\Sigma$, the syntax of \TDDLfm formulas over $\Sigma$ is defined inductively via the following grammar: 
 \[
-	\phi  \quad ::= \quad  \ob{\is^*}{a} \mid \forb{\is}{a} \mid \phi \sqcup \phi\mid \phi \sqcap \phi 
+	\phi  \quad ::= \quad  \ob{\is^*}{a} \mid \forb{\is}{a} \mid \phi \sqcup \phi\mid \phi \sqcap \phi.
 \]
 where $\is^*$ is an interval set formed by finite intervals ranging over elements of $\domIS$, $\is$ ranges over elements of $\domIS$, and $\acta$ ranges over $\Sigma$. When $\Sigma$ is clear from the context, we may omit it.
 \end{definition}
@@ -502,7 +502,7 @@ Let $\phi$ be a formula in \TDDLfm. The \emph{duty measure} $\phi$, denoted by $
 We have $\UC := \DC \sqcap \SR \sqcap \MA$.
 Applying the definitions for the size and duty measure we obtain:
 \begin{itemize}
-\item For $\DC:=\ob{\{[9,16]\}}{\delAtPark} \sqcup \ob{\{[9,16]\}}{\delAtPark}$, we have \\ $\size{\DC}= (2+2)+1+(2+2) = 9$ and $\eta(\DC)=2$.
+\item For $\DC:=\ob{\{[9,16]\}}{\delAtGate} \sqcup \ob{\{[9,16]\}}{\delAtPark}$, we have \\ $\size{\DC}= (2+2)+1+(2+2) = 9$ and $\eta(\DC)=2$.
 \item For $\SR:= \forb{\{[10,14]\}}{\delAtPark}$, we have: $\size{\SR}= 4$ and $\eta(\SR):= 0$.
 \item For $\MA:=  \forb{\{[2,4],[8,24]\}}{\delAtGate}$ we have $\size{\MA}=6 \nd \eta(\MA)=0$.
 \end{itemize}
@@ -535,11 +535,16 @@ We adopt a trace-based interpretation over finite timed words. A formula constra
 \begin{definition}[Satisfaction relation]\label{def:satisfaction-relation}
 Given a finite \timedword $\tau \in \domtr$ and a formula $\phi$ from \TDDLfm, the satisfaction relation $\tau \dutysat \phi$ (read as``the \timedword $\tau$ satisfies the formula $\phi$'') is defined inductively on the structure of the formula $\phi$ as follows:
     \begin{align}
-    \tau&\dutysat \ob{\is}{a}&&\text{ iff } \quad \quad  \exists t \subin \is: \rho(\tau,t) = \acta. \label{obis}\\
-	\tau&\dutysat \forb{\is}{a}&&\text{ iff } \quad \quad  \forall t \subin \is: \rho(\tau,t) \neq \acta. \label{fis}\\
-%	\tau&\dutysat \monadop{P}{\is}{a}&& \text{ undefined } \label{pis}\\
-	\tau&\dutysat \phi \sqcup \phi'&&  \text{ iff }\quad \quad \tau \dutysat \phi \sor \tau \dutysat \phi'.\\
-	\tau&\dutysat  \phi \sqcap \phi'&& \text{ iff }  \quad \quad\tau \dutysat \phi \nd \tau \dutysat \phi'.
+   \tau \dutysat \ob{\is}{a}
+    &\text{ iff } \exists t \subin \is: \rho(\tau,t) = \acta. \label{obis}\\
+	\tau \dutysat \forb{\is}{a}
+	&\text{ iff } \forall t \subin \is: \rho(\tau,t) \neq \acta. \label{fis}\\
+%	\tau \dutysat \monadop{P}{\is}{a}
+%	&\text{ undefined } \label{pis}\\
+	\tau \dutysat \phi \sqcup \phi'
+	&\text{ iff } \tau \dutysat \phi \sor \tau \dutysat \phi'.\\
+	\tau \dutysat \phi \sqcap \phi'
+	&\text{ iff } \tau \dutysat \phi \nd \tau \dutysat \phi'.
 \end{align}
 \end{definition}
 
@@ -870,7 +875,6 @@ Let $\is, \is'$ be interval sets such that $\is \subseteq \is'$. Then the disjun
 
 \begin{proof}
 We reason using the semantics of prohibition in \TDDLfm. A prohibition $\forb{\is}{a}$ means that the action $\acta$ is forbidden at all time points in $\is$.
-who present a temporal semantic framework for analyzing various types of obligations, standard, achievement, maintenance, preemptive, and compensable—using timed traces as semantic models.
 \begin{itemize}
     \item The disjunction $\forb{\is}{a} \sqcup \forb{\is'}{a}$ holds whenever at least one of the two prohibitions holds.
     \item Since $\is \subseteq \is'$, if $\forb{\is'}{a}$ holds, then so does $\forb{\is}{a}$.
@@ -1020,7 +1024,7 @@ The number of these \emph{necessary events} is bounded by the number of obligati
          \Case{\(\forb{\is}{a}\)}{
             \ForEach{\([\tmini,\tmaxi] \in \is\)}{
              \ForEach{\((\acta_i,t_i)\) from $\tau$}{
-                \If {\(\acta_i = \acta \text{ and } \leq t_i\leq \)}
+                \If {\(\acta_i = \acta \text{ and } \tmini \leq t_i\leq_\infty \tmaxi\)}
                  {\Return False}
             }
             }
@@ -1252,7 +1256,7 @@ These rules form a \emph{conflict calculus}, enabling systematic exploration of 
 \medskip
 
 \noindent
-Table~\ref{syncnotation} summarizes the syntactic notations of our deductive system, grounded in the extensional semantics of \TDDLfm.  
+\ref{syncnotation} summarizes the syntactic notations of our deductive system, grounded in the extensional semantics of \TDDLfm.  
 We use standard derivability and equivalence symbols, with their semantic counterparts defined over duty classes.
 
 \begin{table}[h]
@@ -1262,7 +1266,7 @@ We use standard derivability and equivalence symbols, with their semantic counte
 \hline
 \textbf{Notation} & \textbf{Meaning} & \textbf{Semantic mapping} \\ \hline
 $\phi \vdash \bot$ & $\phi$ is unsatisfiable & $\dutyclass{\phi} = \emptyset$ \\ \hline
-$\vdash \phi$ & $\phi$ is valid & $\dutyclass{\phi} = 2^{\domtr}$ \\ \hline
+$\vdash \phi$ & $\phi$ is valid & $\dutyclass{\phi} = \domtr$ \\ \hline
 $\phi \vdash \phi'$ & $\phi$ entails $\phi'$ & $\dutyclass{\phi} \subseteq \dutyclass{\phi'}$ \\ \hline
 $\phi \equiv \phi'$ & $\phi$ is equivalent to $\phi'$ & $\dutyclass{\phi} = \dutyclass{\phi'}$ \\ \hline
 \end{tabular}
@@ -1351,17 +1355,17 @@ Together, they form a structured system for detecting, rewriting, and resolving 
 \begin{minipage}{0.95\textwidth}
 \[
 \begin{array}{c}
-\textbf{(O-Union)} \quad \displaystyle \frac{ \is = \is_1 \cup \is_2 }{ \ob{\is_1}{a} \sqcup \ob{\is_2}{a} \dutyequiv \ob{\is}{a} } 
+\textbf{(O-Union)} \quad \displaystyle \frac{  }{ \ob{\is}{a} \sqcup \ob{\is'}{a} \dutyequiv \ob{\is \cup \is'}{a} } 
 \\[3ex]
 
-\textbf{(F-Union)} \quad \displaystyle \frac{ \is = \is_1 \cup \is_2 }{ \forb{\is_1}{a} \sqcup \forb{\is_2}{a} \dutyequiv \forb{\is}{a} } 
+\textbf{(F-Union)} \quad \displaystyle \frac{ }{ \forb{\is}{a} \sqcap \forb{\is'}{a} \dutyequiv \forb{\is \cup \is'}{a} } 
 \\[3ex]
 
-\textbf{(Distr1L)} \quad \displaystyle \frac{~}{ \phi_1 \sqcap (\phi_2 \sqcup \phi_3) \dutyequiv (\phi_1 \sqcap \phi_2) \sqcup (\phi_1 \sqcap \phi_3) } 
+\textbf{(Distr1L)} \quad \displaystyle \frac{~}{ \phi \sqcap (\phi' \sqcup \phi'') \dutyequiv (\phi \sqcap \phi') \sqcup (\phi \sqcap \phi'') } 
 \\[3ex]
 
 \begin{array}{rlcl}
-\textbf{($\bm{\equiv\sqcap}$)} & \displaystyle \frac{ \phi_1 \equiv \phi_1' }{ \phi_1 \sqcap \phi_2 \equiv \phi_1' \sqcap \phi_2 } 
+\textbf{($\bm{\equiv\sqcap}$)} & \displaystyle \frac{ \phi \equiv \phi' }{ \phi \sqcap \phi'' \equiv \phi' \sqcap \phi'' } 
 & \quad
 \textbf{($\bm{\bot\equiv}$)} & \displaystyle \frac{ \phi' \dutymodel \bot \quad \phi \equiv \phi' }{ \phi \dutymodel \bot } 
 \end{array}
@@ -1380,7 +1384,7 @@ Together, they form a structured system for detecting, rewriting, and resolving 
 \textbf{(T-DeoConf)} \quad \displaystyle \frac{ \is \subseteq \is'}{ \ob{\is}{a} \sqcap \forb{\is'}{a} \vdash \bot } 
 \\[3ex]
 
-\textbf{(OntConf)} \quad \displaystyle \frac{ \size{\is} <_\infty \size{\{a_1,\dots,a_n\}} }{ \bigsqcap_{a_i \in \{a_1,\dots,a_n\}} \ob{\is}{a_i} \dutymodel \bot } 
+\textbf{(OntConf)} \quad \displaystyle \frac{ \size{\is} <_\infty \size{A} }{ \bigsqcap_{a\in A} \ob{\is}{a} \dutymodel \bot } 
 \\[3ex]
 
 \textbf{(P-DeoConf)} \quad \displaystyle \frac{ \is \cap \is' \neq \emptyset \quad \is \not\subset \is'}{ \ob{\is}{a} \sqcap \forb{\is'}{a} \dutyequiv \ob{\is \ominus \is'}{a} \sqcap \forb{\is'}{a} }
@@ -1398,11 +1402,10 @@ Let $\UC := \UC_1' \sqcup \UC_2'$ where:
 \UC_1' &:= \ob{\{[9,16]\}}{\delAtGate} \sqcap \MA \sqcap \SR, \\
 \UC_2' &:= \ob{\{[9,16]\}}{\delAtPark} \sqcap \MA \sqcap \SR,
 \end{align*}
-with:
-\begin{align*}
-\MA &:= \forb{\{[2,4],[8,24]\}}{\delAtGate}, \\
-\SR &:= \forb{\{[10,14]\}}{\delAtPark}.
-\end{align*}
+
+with: $\MA := \forb{\{[2,4],[8,24]\}}{\delAtGate}$ and
+$\SR := \forb{\{[10,14]\}}{\delAtPark}$.
+
 A constructive way to prune $\UC$ is by following these three steps:
 
 \textbf{Step 1: Total deontic conflict in $\UC_1'$.}
@@ -1628,9 +1631,6 @@ We plan to enrich \TDDLfm gradually in two directions: (1) \emph{expressivity}: 
 \paragraph{From Static Specifications to Dynamic Collaboration.} 
 
 Our study so far has focused on the time consistency of a specification from a single agent's perspective. However, real-world digital contracts govern interactions among multiple potentially adversarial parties. Even if a specification is statically conflict-free, an agent could still fail to comply at runtime due to interference or inaction by a collaborator. Having secured the static foundations of metric time norms, the next chapter turns attention to the dynamic lifecycle of contracts. We will explore how to monitor collaborative compliance at runtime and, when breaches occur, how to precisely assign blame among interacting agents.
-
-
-
 
 
 

@@ -231,7 +231,7 @@ A formula $\phi$ \defn{has a conflict} iff there exists a formula $\phi'$ such t
 \begin{enumerate}[(i)]
     \item $\phi' \dutyequiv \phi$,
     \item $\phi'$ preserves \LUCO\ and \LAP\ with respect to $\phi$,
-    \item $\phi'$ has a punctual conflict as a sub-formula.
+    \item $\phi'$ is syntactically formed by a puntcual conflict.
 \end{enumerate}
 \end{definition}
 
@@ -272,7 +272,7 @@ and
   Moreover, the descendants recombine conjunctively or disjunctively exactly as required to recover their ancestors. Hence \LAP\ is satisfied.
 
   \item \textbf{Conflicts appear as subterm.}  
-  The first disjunct of $\phi'$ visibly contains the punctual conflict
+  The first disjunct of $\phi'$ is syntactically formed by a punctual deontic conflict.
   \[
     \ob{\{[2,2]\}}{a} \;\sqcap\; \forb{\{[2,2]\}}{a}.
   \]
@@ -701,7 +701,7 @@ $\ell$, the disjunction for $\tool{O}$ or conjunction for $\tool{F}$, and by
 \textbf{ObDis}/\textbf{FConj} the resulting expression is syntactically equivalent to~$\ell$.
 \end{proof}
 
-\begin{lemma}[LUCO preservation under $\pnf$]\label{lem:witness-punct-pnf}
+\begin{lemma}[Punctual witness preservation under $\pnf$]\label{lem:witness-punct-pnf}
 Let $\phi\in\TDDLfm$ with unique literal occurrences and
 $k=\textsc{MaxOPoint}(\phi)$. Suppose literals
 $\ell=\monadop{D}{\is}{a}$ and $\ell'=\monadop{D'}{\is'}{a'}$
@@ -861,62 +861,19 @@ and it captures  the worst-case space of the normalization chain.
 \end{proof}
 
 
-\subsubsection{Conflict Density}
-We move now to introduce the \emph{conflict density} of a formula, which is a quantitative metric for conflicts presence in formulas from \TDDLfm.  
-The density measures how many conflicts occur within its punctual representation of a formula.  
-A high conflict density indicates an overloaded specification with conflicting timed conditions: the set of feasible behaviors is less than the timed conditions specified in the literals, which complicates compliance planning, and makes interpretation of the overall desired behavior more difficult. We compute this measure via a simple formal definition.
-
-\begin{definition}[Conflict density]\label{def:Conflict density-measure}
-Let $\phi$ be a formula in \TDDLfm and let the upper bound\\ $k=\textsc{MaxOPoint}(\phi)$.  
-The \defn{conflict density} of $\phi$, written $\cd(\phi)$, is the ratio between the number of conflicting product terms and the total number of product terms in $\dpnf(\phi,k))$:
-\[
-\cd(\phi) := \frac{\size{\mathcall{PC}(\phi)}}{\Xi(\phi)}.
-\]
-Where:
-\begin{itemize}
-    \item $\size{\mathcall{PC}(\phi)}$ is the number of product terms identified as conflicting by Algorithm~\ref{fig:conflict-extraction}, and
-    \item $\Xi(\phi)$ is the total number of product terms in $\dnf(\pnf(\phi,k))$.
-\end{itemize}
-\end{definition}
-
-Conflict density captures the proportion of punctual obligations involved in conflicts.  
-A formula with $\cd(\phi)=0$ is \defn{conflict-free}; when $\cd(\phi)=1$ it is \defn{fully conflicting}.
-
-\begin{example}[Conflict density computation]
-From \ref{table:conflict-analysis} for Example~\ref{ex:easy}, we have:
-\[
-\Xi(\phi)=4, \qquad \size{\mathcall{PC}(\phi)}=3.
-\]
-Hence,
-\[
-\cd(\phi)=\frac{3}{4}=0.75.
-\]
-Thus, $75\%$ of the product terms in $\phi$ contain conflicts, signaling an over-constrained specification.
-\end{example}
-
-\begin{example}[Conflict density for \UC]\label{ex:Conflict density-UC1-UC2}
-For our use case, Algorithm~1 reports 13 deontic punctual conflicts: five on the action $\delAtPark$ at time points $10,11,12,13,14$, and eight on the action $\delAtGate$ at each time point in $[9,16]$. Consequently,
-$$
-\size{\mathcall{PC}(\UC)}=13, \qquad
-\Xi(\UC)=16, \qquad
-\cd(\UC)=\tfrac{13}{16}\approx 0.81.
-$$
-About $81\%$ of the punctual obligations in $\UC$ are involved in conflicts.
-
-\end{example}
-
-
-A formula with $\cd(\phi)=0$ is \defn{conflict-free}; a formula with $\cd(\phi)=1$ is \defn{fully conflicting} in the sense that every product term in its \dpnf contains at least one punctual conflict.  The following section lifts these punctual patterns and the conflict density measure to a proof-theoretic level, by relating conflicts in \TDDLfm\ to minimal unsatisfiable subsets.
-
 \section{Semantic Characterization of Timed Normative Conflicts and Conflict Elimination}\label{sec:unsat-conflicts}
 
 This section lays the semantic basis for timed normative conflicts. We first recall propositional unsatisfiability, unsatisfiable cores, and minimal unsatisfiable subsets (MUS). We then transfer these notions to \TDDLfm\ by viewing product terms of the disjunctive punctual normal form (\dpnf) as local clause sets. The key outcome is that punctual conflicts in \TDDLfm\ coincide with MUSes over punctual literals inside a single product term. This provides an exact assessment and explainability for formula unsatisfiability via conflict density and supports conflict-free rewriting. We close with the syntactic cost of conflict elimination.
 
 \subsection{Unsatisfiable Cores and MUS in Propositional Logic}
 
-When a formula from propositional logic \(F= f_1 \cap f_2 \dots f_n\) in CNF is unsatisfiable, an \emph{unsatisfiable core} is any subset \(F'\subseteq F\) of disjuncts that is unsatisfiable. Unsat cores are usually discovered during learning based SAT solving when the solver reaches a dead end.
+When a formula from propositional logic \(F= f_1 \cap f_2 \dots f_n\) in CNF is unsatisfiable, an \emph{unsatisfiable core} is any subset \(F'\subseteq F\) of disjuncts that is unsatisfiable. Unsat cores are usually discovered during learning-based SAT solving when the solver reaches a dead end.
 
-\emph{Minimal unsatisfiable subsets} (MUS) have been studied in \cite{MarquesSilva2010MUSsurvey} to refine unsat cores where a MUS is an unsat core \(U\subseteq F\) such that removing any clause from \(U\) makes it  satisfiable. The advantage of MUS over unsat cores is that it identifies which clauses cause unsatisfiability, reducing the unsat core from hundreds to tens, which is useful for debugging. Secondly, an unsatisfiable formula can contain several MUSes, which map directly to which clauses conflicts directly with others. A single clause may also appear in multiple MUSes, since different minimal combinations of clauses can independently give rise to unsatisfiability. The problem of enumerating all MUSes is nonetheless intractable because of the potentially exponential size of the result as discussed in \cite{Liffiton2008MUS}.  
+\emph{Minimal unsatisfiable subsets} (MUS) have been suggested to refine unsat cores \cite{Liffiton2008MUS}. A MUS is an unsat core \(U\subseteq F\) such that removing any clause from \(U\) makes it satisfiable. Identifying these subsets offers a significant advantage over standard unsat cores, as MUS clauses represent the minimal sufficient cause of unsatisfiability. Consequently, debugging efforts and formula relaxations should be targeted precisely there. This targeted approach is more practical than debugging standard unsat cores, which typically contain redundant clauses and are much larger.
+
+Furthermore, analyzing an unsatisfiable formula can reveal several MUSes, which isolate the small fragments to be corrected. Within these fragments, a single clause may appear in multiple MUSes, since different minimal combinations of clauses can independently give rise to unsatisfiability. Enumerating all such MUSes is a computationally demanding problem. The difficulty arises not only because the result size can be exponential, but also because verifying whether a given subset is a MUS is \(D^P\)-complete.
+
+%\emph{Minimal unsatisfiable subsets} (MUS) have been suggested to refine unsat cores \cite{Liffiton2008MUS}, where a MUS is an unsat core \(U\subseteq F\) such that removing any clause from \(U\) makes it  satisfiable. The advantage of identifying MUS over unsat cores is that MUS clauses are the minimal sufficient cause of unsatisfiability, and correcting or relaxing the formula should be targeted there. It is more practical than debugging on unsat cores, which are larger in most cases. Secondly, an unsatisfiable formula can contain several MUSes, which isolate the small fragment to be corrected. A single clause may also appear in multiple MUSes, since different minimal combinations of clauses can independently give rise to unsatisfiability. The problem of enumerating all MUSes is computationally demanding because checking whether a given subset is minimal is itself coNP-complete and the result size may be exponential.  
 
 In our setting, this perspective is guided by the output of our conflict detection procedure Algorithm~\ref{fig:conflict-extraction}: conflicts surface locally inside individual product terms of \dpnf, not across the disjunction. We therefore analyze MUSes \emph{per product term}, where the roles of clauses are played by punctual literals. The minimal unsatisfiable subsets of these literals are exactly the punctual conflicts that cause unsatisfiability in \TDDLfm.
 
@@ -959,18 +916,18 @@ Conflicts, therefore, appear only when we combine punctual literals.
 We now show that there are exactly two kinds of minimal combinations that fail, which correspond to two very natural normative intuitions.
 
 \begin{lemma}[Deontic punctual conflict is a punctual MUS]\label{lem:punct-deontic}
-the set \(\{\ob{\{[t,t]\}}{a},\ \forb{\{[t,t]\}}{a}\}\) is a punctual MUS.
+Any set of punctual literals formed by a deontic conflict, i.e. \(\{\ob{\{[t,t]\}}{a},\ \forb{\{[t,t]\}}{a}\}\), is a punctual MUS.
 \end{lemma}
 
 \begin{proof}
 We have:
 \begin{itemize}
 \item By semantic definition, this pattern is unsatisfiable.
-\item Minimality follows from Lemma~\ref{lem:punct-solo-sat}; each literal alone is satisfiable.\end{itemize}
+\item Minimality follows from Lemma~\ref{lem:punct-solo-sat}, as we proved that each literal alone is satisfiable.\end{itemize}
 \end{proof}
 
 \begin{lemma}[Ontic punctual conflict is a punctual MUS]\label{lem:punct-ontic}
-the set \(\{\ob{\{[t,t]\}}{a},\ \ob{\{[t,t]\}}{b}\}\) is a punctual MUS.
+Any set of punctual literals formed by an ontic conflict, i.e. \(\{\ob{\{[t,t]\}}{a},\ \ob{\{[t,t]\}}{b}\}\) with \(a\neq b\), is a punctual MUS.
 \end{lemma}
 \begin{proof}
 We have:
@@ -1021,8 +978,54 @@ Algorithmically, this means that conflict detection at the punctual level reduce
 
 
 \subsection{Conflict Density and Exact Unsatisfiability Criterion}
+We move now to introduce the \emph{conflict density} of a formula, which is a quantitative metric for conflicts presence in formulas from \TDDLfm.  
+The density measures how many conflicts occur within its punctual representation of a formula.  
+A high conflict density indicates an overloaded specification with conflicting timed conditions: the set of feasible behaviors is less than the timed conditions specified in the literals, which complicates compliance planning, and makes interpretation of the overall desired behavior more difficult. The following definition defines it.
 
-Let \(\cd(\phi)\) denote the fraction of product terms in \(\dpnf(\phi,k)\) that contain a punctual conflict. Write \(\Xi(\phi)\) for the number of product terms and \(\mathcall{PC}(\phi)\) for the set of conflicting product terms, so \(\cd(\phi)=\size{\mathcall{PC}(\phi)}/\Xi(\phi)\).
+\begin{definition}[Conflict density]\label{def:Conflict density-measure}
+Let $\phi$ be a formula in \TDDLfm and let the upper bound\\ $k=\textsc{MaxOPoint}(\phi)$.  
+The \defn{conflict density} of $\phi$, written $\cd(\phi)$, is the ratio between the number of conflicting product terms and the total number of product terms in $\dpnf(\phi,k))$:
+\[
+\cd(\phi) := \frac{\size{\mathcall{PC}(\phi)}}{\Xi(\phi)}.
+\]
+Where:
+\begin{itemize}
+    \item $\size{\mathcall{PC}(\phi)}$ is the number of product terms identified as conflicting by Algorithm~\ref{fig:conflict-extraction}, and
+    \item $\Xi(\phi)$ is the total number of product terms in $\dnf(\pnf(\phi,k))$.
+\end{itemize}
+\end{definition}
+
+Conflict density captures the proportion of punctual obligations involved in conflicts.  
+A formula with $\cd(\phi)=0$ is \defn{conflict-free}; when $\cd(\phi)=1$ it is \defn{fully conflicting}.
+
+\begin{example}[Conflict density computation]
+From \ref{table:conflict-analysis} for Example~\ref{ex:easy}, we have:
+\[
+\Xi(\phi)=4, \qquad \size{\mathcall{PC}(\phi)}=3.
+\]
+Hence,
+\[
+\cd(\phi)=\frac{3}{4}=0.75.
+\]
+Thus, $75\%$ of the product terms in $\phi$ contain conflicts, signaling an over-constrained specification.
+\end{example}
+
+\begin{example}[Conflict density for \UC]\label{ex:Conflict density-UC1-UC2}
+For our use case, Algorithm~1 reports 13 deontic punctual conflicts: five on the action $\delAtPark$ at time points $10,11,12,13,14$, and eight on the action $\delAtGate$ at each time point in $[9,16]$. Consequently,
+$$
+\size{\mathcall{PC}(\UC)}=13, \qquad
+\Xi(\UC)=16, \qquad
+\cd(\UC)=\tfrac{13}{16}\approx 0.81.
+$$
+About $81\%$ of the punctual obligations in $\UC$ are involved in conflicts.
+
+\end{example}
+
+A formula with $\cd(\phi)=0$ is \defn{conflict-free}; a formula with $\cd(\phi)=1$ is \defn{fully conflicting} in the sense that every product term in its \dpnf contains at least one punctual conflict.
+
+\subsubsection{Exact Unsatisfiability Criterion}
+
+The extreme value \(\cd(\phi)=1\) has a precise semantic meaning. It states that every product term obtained from \(\dpnf(\phi,k)\) contains a punctual conflict. The next results show that this syntactic condition is not only sufficient for unsatisfiability, but also necessary.
 
 \begin{lemma}[Full conflict implies unsatisfiable]\label{lem:full-conflict-implies-unsat}
 If \(\cd(\phi)=1\), then \(\phi\) is unsatisfiable.
@@ -1037,7 +1040,7 @@ If \(\phi\) is unsatisfiable, then \(\cd(\phi)=1\).
 \end{corollary}
 
 \begin{proof}
-\(\phi\) is the disjunction of its product terms. If \(\phi\) is unsatisfiable, each product term is unsatisfiable as each contains a punctual conflict, so every term is correctly accounted for in \(\mathcall{PC}(\phi)\).
+\(\phi\) is equivalent to the disjunction of its product terms in \(\dpnf(\phi,k)\). If \(\phi\) is unsatisfiable, then no product term can be satisfiable; otherwise the whole disjunction would be satisfiable. Hence each product term is unsatisfiable. For each such term, take a minimally unsatisfiable subset. By Lemma~\ref{lem:punct-completeness}, this subset is either a deontic or an ontic punctual conflict. Therefore every product term is accounted for in \(\mathcall{PC}(\phi)\), and thus \(\cd(\phi)=1\).
 \end{proof}
 
 \begin{theorem}[Exact characterization of unsatisfiability]\label{thm:exact-unsat}
@@ -1050,14 +1053,14 @@ Combine Lemma~\ref{lem:full-conflict-implies-unsat} with Corollary~\ref{cor:unsa
 
 \subsection{Semantic-Preserving Conflict-Free Pruning and Induced Verbosity}
 
-After establishing that when the conflict density of a formula \(\cd(\phi)<1\) is still satisfiable, pruning all conflicting terms produces an equivalent conflict-free disjunction.
+After establishing that when the conflict density of a formula \(\cd(\phi)<1\) is still satisfiable, we establish now that pruning all conflicting terms produces an equivalent conflict-free disjunction.
 
 \begin{theorem}[Conflict-free rewriting]\label{thm:cfr}
 For any $\phi$ from \TDDLfm, if  $ \cd(\phi) \neq 1 $, then there exists $\phi'$ with $\phi \equiv \phi'$ with $\cd(\phi')=0$.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-Using Algorithm.~\ref{fig:conflict-extraction}   computes first the \dpnf rewriting $\phi_{\mathrm{dpnf}}=\bigsqcup_i \pt_i$, then it classifies its product term. By computing a variant at the classification step, we can compute $\text{PT}\text{safe}={ \pt_i \mid \pt_i \in \phi{\mathrm{dpnf}}  \text{ with } \pt_i \text{ has no punctual conflict}}$ as illustrated in Algorithm~.\ref{alg:conflict-free-rewriting}. Set \(\phi'=\bigsqcup_{i\in I}\pt_i\). Consequently, all unsatisfiable product terms are filtered and $\phi \equiv \phi'$ by Lemma~.\ref{disjunctionissat}, and by construction $\cd(\phi')=0$.
+Using Algorithm.~\ref{fig:conflict-extraction}   computes first the \dpnf rewriting $\phi_{\mathrm{dpnf}}=\bigsqcup_i \pt_i$, then it classifies its product term. By computing a variant at the classification step, we can compute $\text{PT}\text{safe}={ \pt_i \mid \pt_i \in \phi{\mathrm{dpnf}}  \text{ with } \pt_i \text{ has no punctual conflict}}$ as illustrated in Algorithm~.\ref{alg:conflict-free-rewriting}. Set \(\phi'=\bigsqcup_{i\in I}\pt_i\). Consequently, all unsatisfiable product terms are filtered and $\phi \equiv \phi'$ by Lemma~.\ref{empty_inter_union}, and by construction $\cd(\phi')=0$.
 \end{proof}
 
 \begin{algorithm}[H]
@@ -1088,7 +1091,7 @@ Nonetheless, conflict elimination could return larger formulas. In particular, m
 The final formula is roughly $20\times$ as large as the original.
 
 Specifically, $\dnf(\pnf(\phi,3))$ enumerates all $4^3$ assignments of times to $(\mathsf{a},\mathsf{b},\mathsf{c})$.
-To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4!\cdot!3!\cdot!2=24$ product terms, which demonstrates a substantial increase.
+To avoid conflicts, only combinations with pairwise distinct times remain, i.e.\ $4\cdot3\cdot2=24$ product terms, which demonstrates a substantial increase.
 
 
 \begin{table}[h]
